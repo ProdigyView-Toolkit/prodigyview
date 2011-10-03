@@ -60,6 +60,7 @@ class PVRouter extends PVStaticObject{
 	 * @param string url: An Optional parameter to be redirected to.
 	 * 
 	 * @return void
+	 * @access public
 	 */
 	public static function activateSSL($url=''){
 		
