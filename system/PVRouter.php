@@ -39,6 +39,7 @@ class PVRouter extends PVStaticObject{
 	 * Called of method can be modified in the bootap.
 	 * 
 	 * @return void
+	 * @access public
 	 */
 	public static function init(){
 		$config=PVConfiguration::getSiteCompleteConfiguration();
@@ -105,19 +106,15 @@ class PVRouter extends PVStaticObject{
 	 * Adds a rule to the router. The rule determines how the
 	 * router will react..
 	 * 
-	 * @param mixed route
-	 * 
-	 * Mixed route can either be a string or an array of information.
-	 * 
-	 * 
-	 * Array(
-	 * 	rule=>''m		//The rule pased is the syntax of the uri that will cause the router to react
-	 *  route=>'',
-	 *  access_level=>'', //Set access levels that correspond to the access levels in the user data. Will check to make sure user has access level.
-	 * 'access_level_redirect'=> //If a user does not have the required access level, they are redirected to this url
-	 * 'user_roles'=>'' //Set the roles required to access the uri. Roles correspond to roles in the roles table and given to a user
-	 * 'user_roles_redirect'=>'', Redirect the user to this uri if they do not have the necessary role.		
-	 * )
+	 * @param mixed $route Can a string that merely sets a rule or an array with configuration information for rule.
+	 * 			- 'rule' _string_: A rule to follow that will be matched using a preg_match.
+	 * 			- 'redirect' _string_: A location to redirect if the uri matches the rule
+	 * 			- 'access_level' _int_: A level of access required for the matching rule.
+	 * 			- 'access_level_redirect' _string_: The location to be redirected too if the route matches and
+	 * 				the access level was not high enough.
+	 * 			- 'user_roles' _array_: An array of user roles that are allowed to access this location
+	 * 			- 'user_roles_redirect' _string_: A location to be redirected to if the route matches and the
+	 * 				required role was not present.
 	 * 
 	 * @return void
 	 */
@@ -138,6 +135,7 @@ class PVRouter extends PVStaticObject{
 	 * @param string uri: The uri to set.
 	 * 
 	 * @return void
+	 * @access public
 	 */
 	public static function setRoute($uri=''){
 		if(empty($uri)){
@@ -180,8 +178,6 @@ class PVRouter extends PVStaticObject{
 					$default_route=$matches;
 					$default_route_options=$route;
 				}
-				
-	            
 			}//end if prgrack mage
 		}//end first for
 		
@@ -232,9 +228,9 @@ class PVRouter extends PVStaticObject{
 	 * echo $id
 	 * //Should print 3124
 	 * 
-	 * @param string parameter: a variable to retrieve that is in the url
+	 * @param string $parameter A variable to retrieve that is in the url
 	 * 
-	 * @return string variable: Gets the variable, if it exist.
+	 * @return string $variable Gets the variable, if it exist.
 	 */
 	public static function getRouteVariable($parameter){
 		return self::$route_parameters[$parameter];
@@ -265,8 +261,8 @@ class PVRouter extends PVStaticObject{
 	 * 
 	 * //Will print out /gohard/gohome
 	 * 
-	 * @param string url: A url to be parsed
-	 * @param array options:
+	 * @param string $url A url to be parsed
+	 * @param array $options
 	 * 
 	 * @return stinrg url: Returns the url
 	 */
