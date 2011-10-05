@@ -35,25 +35,28 @@ class PVObject extends PVPatterns {
 	
 	public function __set($index, $value) {
 		if($this->data==null) {
-			$this->data=new PVDataSet();
+			$this->data=new PVCollection();
 		}
 		$this->data->addWithName($index, $value);
  	}
 	
 	public function __get($index) {
+		if($this->data==null) {
+			$this->data=new PVCollection();
+		}
 		return $this->data->get($index);
  	}
 	
 	protected function _addToDataSet($data) {
 		if($this->data==null) {
-			$this->data=new PVDataSet();
+			$this->data=new PVCollection();
 		}
 		$this->data->add($data);
 	}//end 
 	
 	protected function _addToDataSetWithName($name, $data) {
 		if($this->data==null) {
-			$this->data=new PVDataSet();
+			$this->data=new PVCollection();
 		}
 		$this->data->addWithName($name, $data);
 	}//end 

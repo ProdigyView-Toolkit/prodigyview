@@ -35,28 +35,31 @@ class PVStaticObject extends PVPatterns {
 	
 	protected static $_filters;
 	
-	public static function __set($index, $value) {
+	public static function set($index, $value) {
 		if(self::$data==null) {
-			self::$data=new PVDataSet();
+			self::$data=new PVCollection();
 		}
 		
 		self::$data->addWithName($index, $value);
  	}
 	
-	public static function __get($index) {
+	public static function get($index) {
+		if(self::$data==null) {
+			self::$data=new PVCollection();
+		}
 		return self::$data[$index];
  	}
 	
 	protected static function addToDataSet($data) {
 		if(self::$data==null) {
-			self::$data=new PVDataSet();
+			self::$data=new PVCollection();
 		}
 		self::$data->add($data);
 	}//end 
 	
 	protected static function addToDataSetWithName($name, $data) {
 		if(self::$data==null) {
-			self::$data=new PVDataSet();
+			self::$data=new PVCollection();
 		}
 		self::$data->addWithName($name, $data);
 	}//end 
