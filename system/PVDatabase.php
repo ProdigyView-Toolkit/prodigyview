@@ -368,7 +368,7 @@ class PVDatabase extends PVStaticObject {
 			return $result->fetch_fields();
 		}
 		else if(self::$dbtype==self::$mySQLConnection && get_class($result)=='mysqli_stmt'){
-			$result_set=new PVDataSet();
+			$result_set=new PVCollection();
 			
 			while ($result->fetch() ){
 				$object = new stdclass();
@@ -848,6 +848,8 @@ class PVDatabase extends PVStaticObject {
 	
 	/**
 	 *  Function needs improvment.
+	 * @access public
+	 * @todo write better code
 	 */
 	public static function preparedInsert($table_name, $data, $formats=array()){
 		
@@ -925,6 +927,8 @@ class PVDatabase extends PVStaticObject {
 	 * @param awrray data: The data to be inserted in the format of the key being the column and the 
 	 * key's value being the data.
 	 * @param array formats: Still in progress. Formats a preparted statemet.
+	 * @access public
+	 * @todo write better code
 	 */
 	public static function preparedReturnLastInsert($table_name, $returnField, $returnTable,  $data, $formats=array()) {
 		
@@ -1007,6 +1011,8 @@ class PVDatabase extends PVStaticObject {
 	 * should be the column's value.
 	 * 
 	 * @return data result: Retuns a result that will need to be run through fetch process.
+	 * @access public
+	 * @todo write better code
 	 */
 	public static function preparedSelect($query, $data, $formats=array()){
 		$params=array();
@@ -1059,9 +1065,12 @@ class PVDatabase extends PVStaticObject {
 	/**
 	 *  Updates a tables data using a prepared query.
 	 * 
-	 * @param string table: The name of the table to be updated.
-	 * @param array data:
-	 * @param array wherelist: 
+	 * @param string $table The name of the table to be updated.
+	 * @param array $data
+	 * @param array $wherelist
+	 * 
+	 * @access public
+	 * @todo write better code
 	 */
 	public static function preparedUpdate($table, $data, $wherelist, $formats=array(), $whereformats=array()){
 		
@@ -1165,7 +1174,6 @@ class PVDatabase extends PVStaticObject {
 				$first=0;
 				$count++;
 			}//end foreach
-			
 		}
 		
 		if(self::$dbtype==self::$mySQLConnection){
@@ -1178,22 +1186,16 @@ class PVDatabase extends PVStaticObject {
 			
 			$stmt->execute();
 			
-		}
-		else if(self::$dbtype==self::$postgreSQLConnection){
+		} else if (self::$dbtype==self::$postgreSQLConnection){
 			
 			$result=pg_prepare(self::$link, '', $query);
-			
 			$result = pg_execute(self::$link , '', $wherelist); 
-			
 			return $result;
-		}
-		else if(self::$dbtype==self::$oracleConnection){
+		} else if (self::$dbtype==self::$oracleConnection){
 			
-		}
-		else if(self::$dbtype==self::$msSQLConnection){
+		} else if (self::$dbtype==self::$msSQLConnection){
 			
 			$stmt = sqlsrv_prepare(self::$link, $query, $wherelist);
-			
 			return sqlsrv_execute( $stmt);
 		}
 		
@@ -1211,74 +1213,7 @@ class PVDatabase extends PVStaticObject {
 		} 
 		
 		return '?';
-	}
-	
-	public static function insertPreparedStatementIntoDatabase($table_name, $data, $data_types=''){
-		
-		if(!empty($table_name) && self::$dbtype==self::$mySQLConnection){
-			
-			
-			$data=self::makeSafe($data);
-			$first=1;
-			$count=0;
-			$params=array();
-			foreach($data as $key=>$value){
-				
-				$params[$key]=$data_types[$count];
-				
-				if($first==0){
-					$columns.=' ,'.$key;
-					$values.=' ,\''.$value.'\' ';
-					$place_holders=', ?';
-				}
-				else{
-					$columns=$key;
-					$values=' \''.$value.'\' ';
-					$place_holders='?';
-				}
-				
-				$count++;
-				$first=0;
-			}//end foreach
-			
-			
-			$statement = mysqli_prepare(self::$link,'INSERT INTO '.$table_name.' ('.$columns.') VALUES ('.$place_holders.')');
-			self::bindParameters($statement, $params);
-			
-			self::query($query);
-		}
-		else if(!empty($table_name) && self::$dbtype==self::$postgreSQLConnection){
-			
-			$data=self::makeSafe($data);
-			$first=1;
-			$count=1;
-			$params=array();
-			foreach($data as $key=>$value){
-				
-				$params[$key]=$data_types[$count];
-				
-				if($first==0){
-					$columns.=' ,'.$key;
-					$values.=' ,\''.$value.'\' ';
-					$place_holders=', $.'.$count.'';
-				}
-				else{
-					$columns=$key;
-					$values=' \''.$value.'\' ';
-					$place_holders='$.'.$count.'';
-				}
-				
-				$count++;
-				$first=0;
-			}//end foreach
-			
-			pg_prepare(self::$link , "my_query", 'INSERT INTO '.$table_name.'('.$columns.') VALUES('.$place_holders.')');
-			
-			pg_execute(self::$link, "my_query", $data );
-			
-		}//end elf if postgresql connection
-		
-	}//end insertIntoDatabase
+	}//end getPreparedPlaceHolder
 	
 	public static function formatTableName($table_name){
 		
@@ -1318,6 +1253,142 @@ class PVDatabase extends PVStaticObject {
 	    }    
 	   @call_user_func_array(mysqli_stmt_bind_result, $fields);
 	}
+	
+	public static function createTable($table_name, $columns=array(), $options=array()) {
+		$defaults=array(
+			'format_table'=>true,
+			'execute'=>true,
+			'return_query'=>true,
+			'primary_key'=>''		
+		);
+		$options += $defaults;
+		
+		$column_query='';
+		if(!empty($columns) && is_array($columns)) {
+			$first=1;
+			foreach($columns as $column_name=>$column) {
+				$column_query.=(!$first) ? ',' : '';
+				$column_query.=self::formatColumn($column_name, $column);
+				$first=0;
+			}
+		}
+		
+		if(!empty($options['primary_key']))
+			$column_query.=',PRIMARY KEY('.$options['primary_key'].')';
+			
+		if(!empty($column_query) )
+			$column_query='('.$column_query.')';
+		
+		if($options['format_table']) 
+			$table_name=self::formatTableName($table_name);
+		
+		if(self::$dbtype==self::$mySQLConnection){
+			$query='CREATE TABLE '.$table_name.' '.$column_query.';';	
+		} else if(self::$dbtype==self::$postgreSQLConnection){
+			$query='CREATE TABLE '.$table_name.' ;';
+		} else if(self::$dbtype==self::$msSQLConnection){
+			$query='CREATE TABLE '.$table_name.' ;';
+		}
+		
+		if($options['execute'])
+			PVDatabase::query($query);
+		if($options['return_query'])
+			return $query;
+	}
+	
+	public static function formatColumn($name, $options=array()) {
+		$defaults=array(
+			'primary_key'=>false,
+			'unique'=>false,
+			'not_null'=>true,
+			'type'=>'string',
+			'precision'=>'',
+			'default'=>null,
+			'auto_increment'=>false
+		);
+		
+		$options += $defaults;
+		
+		$precision = (!empty($options['precision'])) ? '('.$options['precision'].')' : '';
+		$null = ($options['not_null']==true) ? 'NOT NULL' : 'NULL';
+		$default = (isset($options['default'])) ? 'DEFAULT '.$options['default'] : '';
+		$auto_increment = ($options['auto_increment']==true) ? self::getAutoIncrement() : '';
+		$unique = ($options['unique']==true) ? 'UNIQUE' : '';
+		
+		if($options['auto_increment']==true && self::$dbtype==self::$postgreSQLConnection) {
+			$options['type']='SERIAL';
+		}
+		
+		if(self::$dbtype==self::$mySQLConnection){
+			$query=$name.' '.self::columnTypeMap($options['type']).$precision.' '.$null. ' '.$default.' '.$auto_increment.' '.$unique;
+		} else if(self::$dbtype==self::$postgreSQLConnection){
+			$query='CREATE TABLE '.$table_name.' ;';
+		} else if(self::$dbtype==self::$msSQLConnection){
+			$query='CREATE TABLE '.$table_name.' ;';
+		}
+
+		return $query;
+	}
+	
+	private static function getAutoIncrement(){
+		if(self::$dbtype==self::$mySQLConnection){
+			return 'AUTO_INCREMENT';
+		} else if(self::$dbtype==self::$postgreSQLConnection){
+			$query='';
+		} else if(self::$dbtype==self::$msSQLConnection){
+			$query='IDENTITY (1,1)';
+		}
+	}
+	
+	private static function columnTypeMap($type) {
+		$type=strtolower($type);
+		
+		$types=array(
+			'integers'=>array(
+				'match'=>array('int', 'integer'),
+				'database'=>array('mysql'=>'INT', 'mssql'=>'INT', 'postgresql'=>'INTEGER')
+			),
+			'double'=>array(
+				'match'=>array('double', 'float'),
+				'database'=>array('mysql'=>'DOUBLE', 'mssql'=>'FLOAT', 'postgresql'=>'DOUBLE PRECISION')
+			),
+			'string'=>array(
+				'match'=>array('string', 'varchar','character varying'),
+				'database'=>array('mysql'=>'VARCHAR', 'mssql'=>'VARCHAR', 'postgresql'=>'CHARACTER VARYING')
+			),
+			'text'=>array(
+				'match'=>array('text'),
+				'database'=>array('mysql'=>'TEXT', 'mssql'=>'TEXT', 'postgresql'=>'TEXT')
+			),
+			'boolean'=>array(
+				'match'=>array('boolean'),
+				'database'=>array('mysql'=>'BOOLEAN', 'mssql'=>'BIT', 'postgresql'=>'BOOLEAN')
+			),
+			'timestamp'=>array(
+				'match'=>array('timestamp'),
+				'database'=>array('mysql'=>'TIMESTAMP', 'mssql'=>'datetime', 'postgresql'=>'TIMESTAMP')
+			),
+			'date'=>array(
+				'match'=>array('date', 'date/time'),
+				'database'=>array('mysql'=>'TIMESTAMP', 'mssql'=>'datetime', 'postgresql'=>'TIMESTAMP')
+			),
+			'serial'=>array(
+				'match'=>array('serial'),
+				'database'=>array('mysql'=>'SERIAL', 'mssql'=>'unknown', 'postgresql'=>'serial')
+			),
+			'bigserial'=>array(
+				'match'=>array('bigserial'),
+				'database'=>array('mysql'=>'unknown', 'mssql'=>'unknown', 'postgresql'=>'bigserial')
+			),
+		);
+		
+		foreach($types as $key=>$value){
+			if(in_array($type, $value['match'])){
+				return $value['database'][self::$dbtype];
+			}//end if
+		}//end for each
+		
+	}//end type map
 	
 	/**
 	 * Returns the table name for the application's permissions.
