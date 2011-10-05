@@ -119,11 +119,22 @@ class PVRouter extends PVStaticObject{
 	 * @return void
 	 */
 	public static function addRouteRule($route){
+		$defaults = array(
+			'route'=>null,
+			'access_level'=>null,
+			'access_level_redirect'=>null,
+			'user_roles'=>null,
+			'user_roles_redirect'=>null,
+			'rule'=>null
+		);
+		
 		if(is_array($route)){
+			$route += $defaults;
 			array_push(self::$routes, $route);
 		}
 		else{
-			array_push(self::$routes, array('rule'=>$route));
+			$defaults['rule']=$route;
+			array_push(self::$routes, $defaults);
 		}
 	}
 	
@@ -143,7 +154,7 @@ class PVRouter extends PVStaticObject{
 		}
 		
 		if(substr ( $uri, strlen($uri)-1) == '/') {
-			$uri=substr_replace($uri, '', strlen($temp)-1);
+			$uri=substr_replace($uri, '', strlen($uri)-1);
 		}
 		
 		$routes=array();
@@ -198,19 +209,20 @@ class PVRouter extends PVStaticObject{
 		self::$route_parameters=$final_route;
 		self::$route_options=$route_options;
 		
-		if(isset($route_options['access_level'])){
-			if(!PVSecurity::checkUserAccessLevel(PVUsers::getUserID(), $route_options['access_level']) && isset($route_options['access_level_redirect'])){
+		
+		if(!empty($route_options['access_level'])){
+			if(!PVSecurity::checkUserAccessLevel(PVUsers::getUserID(), $route_options['access_level']) && !empty($route_options['access_level_redirect'])){
 				self::redirect($route_options['access_level_redirect']);
 			}
 		}
 		
-		if(isset($route_options['user_roles'])){
-			if(!PVSecurity::checkUserPermission(PVUsers::getUserRole(), $route_options['user_roles']) && isset($route_options['user_roles_redirect'])){
+		if(!empty($route_options['user_roles'])){
+			if(!PVSecurity::checkUserPermission(PVUsers::getUserRole(), $route_options['user_roles']) && !empty($route_options['user_roles_redirect'])){
 				self::redirect($route_options['user_roles_redirect']);
 			}
 		}
 		
-		if(isset($route_options['redirect'])){
+		if(!empty($route_options['redirect'])){
 			self::redirect($route_options['redirect']);
 		}
 		
@@ -233,7 +245,8 @@ class PVRouter extends PVStaticObject{
 	 * @return string $variable Gets the variable, if it exist.
 	 */
 	public static function getRouteVariable($parameter){
-		return self::$route_parameters[$parameter];
+		if(isset(self::$route_parameters[$parameter]))
+			return self::$route_parameters[$parameter];
 	}
 	
 	public static function getRouteParameter($parameter){
