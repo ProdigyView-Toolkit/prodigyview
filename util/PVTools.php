@@ -198,7 +198,7 @@ class PVTools extends PVStaticObject {
 	public static function getCurrentBaseUrl() {
 		$current_page_url = 'http';
 		 
-		if ($_SERVER['HTTPS'] == 'on') { $current_page_url .= 's';}
+		if (@$_SERVER['HTTPS'] == 'on') { $current_page_url .= 's';}
 			$current_page_url .= '://';
 		 
 		if ($_SERVER['SERVER_PORT'] != '80') {
