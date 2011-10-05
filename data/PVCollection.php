@@ -27,10 +27,14 @@
 *or implied, of ProdigyView LLC.
 */
 
-class PVDataSet implements IteratorAggregate {
+class PVCollection implements IteratorAggregate {
     private $dataset = array();
     private $count = 0;
 
+	public function __construct($data=array()) {
+		$this->dataset=$data;
+		
+	}
     // Required definition of interface IteratorAggregate
     public function getIterator() {
         return new PVIterator($this->dataset);
@@ -45,8 +49,14 @@ class PVDataSet implements IteratorAggregate {
 		}
     }//end add
     
-    public function get($index) {
-    	return $this->dataset[$index];
+    public function __get($index) {
+    	if(isset($this->dataset[$index]))
+    		return $this->dataset[$index];
+    }
+	
+	 public function get($index) {
+    	if(isset($this->dataset[$index]))
+    		return $this->dataset[$index];
     }
 	
     
