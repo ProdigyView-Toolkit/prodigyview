@@ -1256,10 +1256,10 @@ class PVDatabase extends PVStaticObject {
 	
 	public static function createTable($table_name, $columns=array(), $options=array()) {
 		$defaults=array(
-			'format_table'=>true,
+			'format_table'=>false,
 			'execute'=>true,
 			'return_query'=>true,
-			'primary_key'=>''		
+			'primary_key'=>'',	
 		);
 		$options += $defaults;
 		
@@ -1295,6 +1295,31 @@ class PVDatabase extends PVStaticObject {
 		if($options['return_query'])
 			return $query;
 	}
+
+	public static function addColumn($table_name, $column_name, $column_data=array(), $options=array()) {
+		$defaults=array(
+			'format_table'=>false,
+			'execute'=>true,
+			'return_query'=>true,	
+		);
+		$options += $defaults;
+		
+		if($options['format_table']) 
+			$table_name=self::formatTableName($table_name);
+		
+		if(self::$dbtype==self::$mySQLConnection){
+			$query='ALTER TABLE '.$table_name.' ADD '.$column_name.' '.self::formatColumn($column_data).';';	
+		} else if(self::$dbtype==self::$postgreSQLConnection){
+			$query='ALTER TABLE '.$table_name.' ADD COLUMN '.$column_name.' '.self::formatColumn($column_data).';';
+		} else if(self::$dbtype==self::$msSQLConnection){
+			$query='ALTER TABLE '.$table_name.' ADD '.$column_name.' '.self::formatColumn($column_data).';';
+		}
+		
+		if($options['execute'])
+			PVDatabase::query($query);
+		if($options['return_query'])
+			return $query;
+	}
 	
 	public static function formatColumn($name, $options=array()) {
 		$defaults=array(
@@ -1322,9 +1347,9 @@ class PVDatabase extends PVStaticObject {
 		if(self::$dbtype==self::$mySQLConnection){
 			$query=$name.' '.self::columnTypeMap($options['type']).$precision.' '.$null. ' '.$default.' '.$auto_increment.' '.$unique;
 		} else if(self::$dbtype==self::$postgreSQLConnection){
-			$query='CREATE TABLE '.$table_name.' ;';
+			$query=$name.' '.self::columnTypeMap($options['type']).$precision.' '.$null. ' '.$default.' '.$auto_increment.' '.$unique;
 		} else if(self::$dbtype==self::$msSQLConnection){
-			$query='CREATE TABLE '.$table_name.' ;';
+			$query=$name.' '.self::columnTypeMap($options['type']).$precision.' '.$null. ' '.$default.' '.$auto_increment.' '.$unique;
 		}
 
 		return $query;
