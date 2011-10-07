@@ -28,35 +28,6 @@
 */
 class PVUsers extends PVStaticObject {
 	
-	//Variables
-	private static $cookie_lifetime=0;
-	private static $cookie_path='/';
-	private static $cookie_domain='';
-	private static $cookie_secure=false;
-	private static $cookie_httponly=false;
-	private static $version=0.4;
-	private static $uniqueName="pv_user_manager";
-	
-	function PVUsersManager(){
-		
-		$defaults=array(
-			'cookie_path'=>'/',
-			'cookie_domain'=>$_SERVER['HTTP_HOST'],
-			'cookie_secure'=>false,
-			'cookie_httponly'=>false,
-			'cooke_lifetime'=>5000
-		);
-		
-		$session_vars=PVConfiguration::getSiteSessionConfiguration();
-		$session_vars += $defaults;
-		
-		self::$cookie_path=$session_vars['cookie_path'];
-		self::$cookie_domain=$session_vars['cookie_domain'];
-		self::$cookie_secure=$session_vars['cookie_secure'];
-		self::$cookie_httponly=$session_vars['cookie_httponly'];
-		self::$cookie_lifetime=$session_vars['cookie_lifetime'];
-		
-	}//end constructor
 	
 	/**
 	 * Check if the user has a current active session
@@ -67,15 +38,10 @@ class PVUsers extends PVStaticObject {
 		if(PVSession::readCookie('pv_username')){
 			return true;
 		}
-		else if(isset($_SESSION['pv_username'])){
-			$user=$_SESSION['pv_username'];			
-			return 1;
+		else if(PVSession::readSession('pv_username')){
+			return true;
 		}
-		else{
-			return 0;	
-		}
-		
-		
+		return false;
 	}//endcheckLogin
 	
 	/**
@@ -87,13 +53,10 @@ class PVUsers extends PVStaticObject {
 		if(PVSession::readCookie('pv_userid')){
 			return PVSession::readCookie('pv_userid');	
 		}
-		else if(isset($_SESSION['pv_userid'])){
-			return $_SESSION['pv_userid'];
+		else if(PVSession::readSession('pv_userid')){
+			return PVSession::readSession('pv_userid');
 		}
-		else{
-			return 0;	
-		}
-		
+		return false;
 	}//end getUserID
 	
 	
@@ -101,41 +64,30 @@ class PVUsers extends PVStaticObject {
 		if(PVSession::readCookie('pv_username')){
 			return PVSession::readCookie('pv_username');
 		}
-		else if(isset($_SESSION['pv_username'])){
-			$user=$_SESSION['pv_username'];
-			return $user;
+		else if(PVSession::readSession('pv_username')){
+			return PVSession::readSession('pv_username');
 		}
-		else{
-			return 0;	
-		}
-		
+		return false;
 	}//end getUserID
 	
 	public static function getUserEmail(){
 		if(PVSession::readCookie('pv_useremail')) {
 			return PVSession::readCookie('pv_useremail');	
 		}
-		if(isset($_SESSION['pv_useremail'])){
-			$email=$_SESSION['pv_useremail'];
-			return $email;	
+		else if(PVSession::readSession('pv_useremail')){
+			return PVSession::readSession('pv_useremail');	
 		}
-		else{
-			return 0;	
-		}
-		
+		return false;
 	}//end getUserID
 	
 	public static function getUserRole(){
 		if(PVSession::readCookie('pv_roles')){
 			return PVSession::readCookie('pv_roles');
 		}
-		else if(isset($_SESSION['pv_roles'])){
-			return $_SESSION['pv_roles'];
+		else if(PVSession::readSession('pv_roles')){
+			return PVSession::readSession('pv_roles');
 		}
-		else{
-			return 1;	
-		}
-		
+		return false;
 	}//end getUserRole
 	
 	
@@ -143,13 +95,10 @@ class PVUsers extends PVStaticObject {
 		if(PVSession::readCookie('pv_access_level')){
 			return PVSession::readCookie('pv_access_level');
 		}
-		else if(isset($_SESSION['pv_access_level'])){
-			return $_SESSION['pv_access_level'];
+		else if(PVSession::readSession('pv_access_level')){
+			return PVSession::readSession('pv_access_level');
 		}
-		else{
-			return 1;	
-		}
-		
+		return false;
 	}//end getUserRole
 	
 	public static function getAssignedUserRoles($user_id){
