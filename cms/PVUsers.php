@@ -741,11 +741,12 @@ class PVUsers extends PVStaticObject {
 		if(empty($username)){
 			$username=$email;	
 		}
-		$_SESSION['pv_userid']=$user_id;
-		$_SESSION['pv_username']=$username;
-		$_SESSION['pv_useremail']=$email;
-		$_SESSION['pv_roles']=$role;
-		$_SESSION['pv_access_level']=$access_level; 
+		
+		PVSession::writeSession('pv_userid', $user_id);
+		PVSession::writeSession('pv_username', $username);
+		PVSession::writeSession('pv_useremail', $email);
+		PVSession::writeSession('pv_roles', $roles);
+		PVSession::writeSession('pv_access_level', $access_level);
 			
 	}
 	
