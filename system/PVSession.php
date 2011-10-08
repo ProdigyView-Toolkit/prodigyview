@@ -35,6 +35,12 @@ class PVSession extends PVStaticObject {
 	private static $cookie_secure=false;
 	private static $cookie_httponly=false;
 	private static $hash_cookie=false;
+	
+	private static $session_lifetime=5000;
+	private static $session_path='/';
+	private static $session_domain='';
+	private static $session_secure=false;
+	private static $session_httponly=false;
 	private static $hash_session=false;
 	
 	/**
@@ -88,11 +94,17 @@ class PVSession extends PVStaticObject {
 		self::$cookie_httponly=$session_vars['cookie_httponly'];
 		self::$cookie_lifetime=$session_vars['cookie_lifetime'];
 		
+		self::$session_path=$session_vars['session_path'];
+		self::$session_domain=$session_vars['session_domain'];
+		self::$session_secure=$session_vars['session_secure'];
+		self::$session_httponly=$session_vars['session_httponly'];
+		self::$session_lifetime=$session_vars['session_lifetime'];
+		
 		self::$hash_cookie=$session_vars['hash_cookie'];
 		self::$hash_session=$session_vars['hash_session'];
 		
 		session_name($session_vars['session_name']);
-		session_set_cookie_params($session_vars['session_lifetime'], $session_vars['session_path'], $session_vars['session_domain']);
+		session_set_cookie_params($session_vars['session_lifetime'], $session_vars['session_path'], $session_vars['session_domain'], $session_vars['session_secure'], $session_vars['session_httponly']);
 		
 		if($session_vars['session_start'])
 			session_start();
@@ -276,12 +288,12 @@ class PVSession extends PVStaticObject {
 	 */
 	private static function getSessionDefaults() {
 		$defaults=array(
-			'session_path'=>self::$cookie_path,
-			'session_path'=>self::$cookie_domain,
-			'session_secure'=>self::$cookie_secure,
-			'session_httponly'=>self::$cookie_httponly,
-			'session_lifetime'=>self::$cookie_lifetime,
-			'hash_session'=>self::$hash_cookie
+			'session_path'=>self::$session_path,
+			'session_path'=>self::$session_domain,
+			'session_secure'=>self::$session_secure,
+			'session_httponly'=>self::$session_httponly,
+			'session_lifetime'=>self::$session_lifetime,
+			'hash_session'=>self::$hash_session
 		);
 		
 		return $defaults;
