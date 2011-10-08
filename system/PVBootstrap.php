@@ -57,6 +57,7 @@ class PVBootstrap extends PVStaticObject{
 			'initialize_router'=>true,
 			'initialize_template'=>true,
 			'initailize_validator'=>true,
+			'initailize_security'=>true,
 			'load_plugins'=>true
 		);
 		$args += $defaults;
@@ -83,6 +84,9 @@ class PVBootstrap extends PVStaticObject{
 		
 		if($args['initailize_validator'])
 			PVValidator::init();
+		
+		if($args['initailize_security'])
+			PVSecurity::init();
 		
 		self::removeMagicQuotes();
 		
