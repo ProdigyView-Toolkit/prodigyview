@@ -41,7 +41,7 @@ class PVBootstrap extends PVStaticObject{
 	 * @param array $args Arguments to pass that affect how ProdigyView will boot
 	 * 			-'initialize_database' _boolean_: Initialize the database and set the database to the default config
 	 * 			-'initialize_libraries' _boolean_: Initializes the libraries
-	 * 			-'initailize_router' _boolean_: Initializes the router
+	 * 			-'initialize_router' _boolean_: Initializes the router
 	 * 			-'initialize_template' _boolean_:Initializes the template
 	 * 			-'initalize_validator' _boolean_: Initializes the validator
 	 * 			-'load_plugins' _booleans_: Loads the plug-ins at boot.
@@ -56,9 +56,9 @@ class PVBootstrap extends PVStaticObject{
 			'initialize_libraries'=>true,
 			'initialize_router'=>true,
 			'initialize_template'=>true,
-			'initailize_validator'=>true,
-			'initailize_security'=>true,
-			'initailize_session'=>true,
+			'initialize_validator'=>true,
+			'initialize_security'=>true,
+			'initialize_session'=>true,
 			'load_plugins'=>true
 		);
 		$args += $defaults;
@@ -83,13 +83,13 @@ class PVBootstrap extends PVStaticObject{
 		if($args['initialize_router'])
 			PVRouter::init();
 		
-		if($args['initailize_validator'])
+		if($args['initialize_validator'])
 			PVValidator::init();
 		
-		if($args['initailize_security'])
+		if($args['initialize_security'])
 			PVSecurity::init();
 		
-		if($args['initailize_session'])
+		if($args['initialize_session'])
 			PVSession::init();
 		
 		self::removeMagicQuotes();
