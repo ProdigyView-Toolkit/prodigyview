@@ -28,12 +28,35 @@
 */
 class PVSecurity extends PVStaticObject {
 	
-		static $version=0.8;
-		static $uniqueName="pv_security";
+	private static $cipher;
+	private static $mcrypt_algorithm;
+	private static $mcrypt_algorithm_directory;
+	private static $mcrypt_mode;
+	private static $mcrypt_mode_directory;
+	private static $mcrypt_key;
+	private static $mcrypt_iv;
+	
+	
+	public static function init($args=array()) {
+		$defaults=array(
+			'mcrypt_algorithm'=>MCRYPT_DES,
+			'mcrypt_algorithm_directory'=>'',
+			'mcrypt_mode'=>'ofb',
+			'mcrypt_mode_directory'=>'',
+			'mcrypt_key'=>'pvkey',
+			'mcrypt_iv'=>'pviv'
+		);
 		
-	function PVSecurity() {
-			
-	}//end constructor
+		$args += $defaults;
+		
+		self::$cryptModule;
+		self::$mcrypt_algorithm=$args['mcrypt_algorithm'];
+		self::$mcrypt_algorithm_directory=$args['mcrypt_algorithm_directory'];
+		self::$mcrypt_mode=$args['mcrypt_mode'];
+		self::$mcrypt_mode_directory=$args['mcrypt_mode_directory'];
+		self::$mcrypt_key=$args['mcrypt_key'];
+		self::$mcrypt_iv=$args['mcrypt_iv'];
+	}
 		
 	/**
 	 * Retrives the roles for users/
@@ -1673,6 +1696,67 @@ class PVSecurity extends PVStaticObject {
 	function deleteUserPermission($permission_unique_name, $app_id=0){
 		
 	}
+	
+	
+  public static function encrypt($data, $options=array()) {
+  	$options += self::getEncryptDefaults();
+	
+	if(self::$cipher==null || $options['recreate_cipher'])
+		self::$cipher = mcrypt_module_open($options['mcrypt_algorithm'], $options['mcrypt_algorithm_directory'], $options['mcrypt_mode'], $options['mcrypt_mode_directory']);
+	
+   	$iv = self::checkIv($options['mcrypt_iv']);
+    $key = self::checkKey($options['mcrypt_key']);
+
+    mcrypt_generic_init(self::$cipher, $key, $iv);
+    $encrypted_data = mcrypt_generic(self::$cipher, $data);
+    mcrypt_generic_deinit(self::$cipher);
+
+    return $encrypted_data;
+  }
+  
+  public function decrypt($data, $options=array()) {
+  	$options += self::getEncryptDefaults();
+	
+	if(self::$cipher==null || $options['recreate_cipher'])
+		self::$cipher = mcrypt_module_open($options['mcrypt_algorithm'], $options['mcrypt_algorithm_directory'], $options['mcrypt_mode'], $options['mcrypt_mode_directory']);
+	
+    $iv = self::checkIv($options['mcrypt_iv']);
+    $key = self::checkKey($options['mcrypt_key']);
+	
+    mcrypt_generic_init(self::$cipher, $key, $iv);
+    $decrypted_data = mdecrypt_generic(self::$cipher, $data);
+    mcrypt_generic_deinit(self::$cipher);
+	
+	return  $decrypted_data;
+  }
+  
+  private static function checkIv($iv) {
+    $ivSize = mcrypt_enc_get_iv_size(self::$cipher);
+    if (strlen($iv) > $ivSize)
+      $iv = substr($iv, 0, $ivSize);
+    return ($iv);
+  }
+
+  private static function checkKey($key) {
+    $keySize = mcrypt_enc_get_key_size(self::$cipher);
+    if (strlen($key) > $keySize)
+      $key = substr($key, 0, $keySize);
+    return ($key);
+  }
+  
+  private static function getEncryptDefaults() {
+  	$defaults=array(
+			'mcrypt_algorithm'=>self::$mcrypt_algorithm,
+			'mcrypt_algorithm_directory'=>self::$mcrypt_algorithm_directory,
+			'mcrypt_mode'=>self::$mcrypt_mode,
+			'mcrypt_mode_directory'=>self::$mcrypt_mode_directory,
+			'recreate_cipher'=>false,
+			'mcrypt_key'=>self::$mcrypt_key,
+			'mcrypt_iv'=>self::$mcrypt_iv,
+	);
+	return $defaults;
+  }
+  
 
 	
 }//end class
