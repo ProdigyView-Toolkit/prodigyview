@@ -124,7 +124,12 @@ class PVSession extends PVStaticObject {
 			$value=serialize($value);
 		}
 		
-		setcookie($name, $user_id, time()+$cookie_lifetime, $cookie_path, $cookie_path, $cookie_secure, $cookie_httponly );
+		if($options['hash_cookie']) {
+			$name=PVSecurity::encrypt($name);
+			$value=PVSecurity::encrypt($value);
+		}
+		
+		setcookie($name, $value, time()+$cookie_lifetime, $cookie_path, $cookie_path, $cookie_secure, $cookie_httponly );
 	}
 	
 	/**
@@ -138,10 +143,16 @@ class PVSession extends PVStaticObject {
 	public static function readCookie($name, $options=array()) {
 		$options += self::getCookieDefaults();
 		
+		if($options['hash_cookie'])
+			$name=PVSecurity::encrypt($name);
+		
 		if(!isset($_COOKIE[$name]))
 			return false;
 		
 		$cookie_value=$_COOKIE[$name];
+		
+		if($options['hash_cookie'])
+			$cookie_value=PVSecurity::decrypt($cookie_value);
 		
 		$data = @unserialize($cookie_value);
 		if($data !== false || $cookie_value === 'b:0;')
@@ -154,7 +165,10 @@ class PVSession extends PVStaticObject {
 		$options += self::getCookieDefaults();
 		extract($options);
 		
-		setcookie($name, $NULL, time()-4800,$cookie_path, $cookie_path, $cookie_secure, $cookie_httponly);
+		if($options['hash_cookie'])
+			$name=PVSecurity::encrypt($name);
+		
+		setcookie($name, NULL, time()-4800,$cookie_path, $cookie_path, $cookie_secure, $cookie_httponly);
 		unset($_COOKIE[$name]);
 	}
 	/**
@@ -179,6 +193,11 @@ class PVSession extends PVStaticObject {
 			$value=serialize($value);
 		}
 		
+		if($options['hash_session']) {
+			$name=PVSecurity::encrypt($name);
+			$value=PVSecurity::encrypt($value);
+		}
+		
 		$_SESSION[$name]=$value;
 	}
 	
@@ -193,10 +212,17 @@ class PVSession extends PVStaticObject {
 	 */
 	public static function readSession($name,$options=array()) {
 		$options += self::getSessionDefaults();
+		
+		if($options['hash_session'])
+			$name=PVSecurity::encrypt($name);
+		
 		if(!isset($_SESSION[$name]))
 			return false;
 		
 		$session_value=$_SESSION[$name];
+		
+		if($options['hash_session'])
+			$session_value=PVSecurity::decrypt($session_value);
 		
 		$data = @unserialize($session_value);
 		if($data !== false || $session_value === 'b:0;')
@@ -214,6 +240,9 @@ class PVSession extends PVStaticObject {
 	public static function deleteSession($name, $options=array()) {
 		$options += self::getSessionDefaults();
 		extract($options);
+		
+		if($options['hash_session'])
+			$name=PVSecurity::encrypt($name);
 		
 		if(isset($_SESSION[$name] )){
 			unset($_SESSION[$name]);
