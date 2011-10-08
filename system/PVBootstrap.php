@@ -58,6 +58,7 @@ class PVBootstrap extends PVStaticObject{
 			'initialize_template'=>true,
 			'initailize_validator'=>true,
 			'initailize_security'=>true,
+			'initailize_session'=>true,
 			'load_plugins'=>true
 		);
 		$args += $defaults;
@@ -88,16 +89,15 @@ class PVBootstrap extends PVStaticObject{
 		if($args['initailize_security'])
 			PVSecurity::init();
 		
+		if($args['initailize_session'])
+			PVSession::init();
+		
 		self::removeMagicQuotes();
 		
 		if(empty($config['default_time_zone'])){
 			date_default_timezone_set('America/New_York');
 		} else {
 			date_default_timezone_set($config['default_time_zone']);
-		}
-		
-		if($config['enable_session_handling']==1 || $config['enable_session_handling']=='true'){
-			PVSession::setSessionConfig($config);
 		}
 		
 		if($config['enable_cache']==1){

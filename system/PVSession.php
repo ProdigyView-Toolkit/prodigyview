@@ -128,8 +128,7 @@ class PVSession extends PVStaticObject {
 			$name=PVSecurity::encrypt($name);
 			$value=PVSecurity::encrypt($value);
 		}
-		
-		setcookie($name, $value, time()+$cookie_lifetime, $cookie_path, $cookie_path, $cookie_secure, $cookie_httponly );
+		setcookie($name, $value, time()+$cookie_lifetime, $cookie_path, $cookie_domain, $cookie_secure, $cookie_httponly );
 	}
 	
 	/**
@@ -225,8 +224,9 @@ class PVSession extends PVStaticObject {
 			$session_value=PVSecurity::decrypt($session_value);
 		
 		$data = @unserialize($session_value);
+		
 		if($data !== false || $session_value === 'b:0;')
-		    return $session_value;
+		    return $data;
 		else
 		   return$session_value;
 	}
@@ -261,7 +261,7 @@ class PVSession extends PVStaticObject {
 			'cookie_domain'=>self::$cookie_domain,
 			'cookie_secure'=>self::$cookie_secure,
 			'cookie_httponly'=>self::$cookie_httponly,
-			'cooke_lifetime'=>self::$cookie_lifetime,
+			'cookie_lifetime'=>self::$cookie_lifetime,
 			'hash_cookie'=>self::$hash_cookie
 		);
 		

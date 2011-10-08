@@ -43,13 +43,12 @@ class PVSecurity extends PVStaticObject {
 			'mcrypt_algorithm_directory'=>'',
 			'mcrypt_mode'=>'ofb',
 			'mcrypt_mode_directory'=>'',
-			'mcrypt_key'=>'pvkey',
-			'mcrypt_iv'=>'pviv'
+			'mcrypt_key'=>'prodgiyviewkey',
+			'mcrypt_iv'=>'prodgiyviewiv'
 		);
 		
 		$args += $defaults;
 		
-		self::$cryptModule;
 		self::$mcrypt_algorithm=$args['mcrypt_algorithm'];
 		self::$mcrypt_algorithm_directory=$args['mcrypt_algorithm_directory'];
 		self::$mcrypt_mode=$args['mcrypt_mode'];
