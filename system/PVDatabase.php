@@ -1308,11 +1308,11 @@ class PVDatabase extends PVStaticObject {
 			$table_name=self::formatTableName($table_name);
 		
 		if(self::$dbtype==self::$mySQLConnection){
-			$query='ALTER TABLE '.$table_name.' ADD '.$column_name.' '.self::formatColumn($column_data).';';	
+			$query='ALTER TABLE '.$table_name.' ADD '.self::formatColumn($column_name,$column_data).';';	
 		} else if(self::$dbtype==self::$postgreSQLConnection){
-			$query='ALTER TABLE '.$table_name.' ADD COLUMN '.$column_name.' '.self::formatColumn($column_data).';';
+			$query='ALTER TABLE '.$table_name.' ADD COLUMN '.self::formatColumn($column_name,$column_data).';';
 		} else if(self::$dbtype==self::$msSQLConnection){
-			$query='ALTER TABLE '.$table_name.' ADD '.$column_name.' '.self::formatColumn($column_data).';';
+			$query='ALTER TABLE '.$table_name.' ADD '.self::formatColumn($column_name,$column_data).';';
 		}
 		
 		if($options['execute'])
