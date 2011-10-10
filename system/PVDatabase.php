@@ -58,17 +58,6 @@ class PVDatabase extends PVStaticObject {
 	//Variables
 	private static $row;
 	
-	//*** Function: DbConnector, Purpose: Connect to the database ***
-	function __construct(){
-		self::$mySQLConnection = "mysql";
-		self::$postgreSQLConnection="postgresql";
-		self::$oracleConnection="oracle";
-		self::$msSQLConnection="mssql";
-		self::$sqLiteConnection="sqlite";
-		self::$version=".42";
-		
-	}
-	
 	public static function init(){
 		self::$connections=array();
 		
