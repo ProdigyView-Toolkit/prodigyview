@@ -36,13 +36,7 @@ class PVLibraries extends PVStaticObject{
 	private static $css_files_array;
 	private static $open_javascript;
 	
-	function __construct(){
-		
-	}
-	
-	function init(){
-		$config=PVConfiguration::getSiteCompleteConfiguration();
-		
+	function init($config=array()){
 		self::$javascript_libraries_array=array();
 		self::$jquery_libraries_array=array();
 		self::$prototype_libraries_array=array();
