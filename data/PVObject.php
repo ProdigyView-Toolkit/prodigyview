@@ -47,14 +47,14 @@ class PVObject extends PVPatterns {
 		return $this->data->get($index);
  	}
 	
-	protected function _addToDataSet($data) {
+	protected function _addToCollection($data) {
 		if($this->data==null) {
 			$this->data=new PVCollection();
 		}
 		$this->data->add($data);
 	}//end 
 	
-	protected function _addToDataSetWithName($name, $data) {
+	protected function _addToCollectionWithName($name, $data) {
 		if($this->data==null) {
 			$this->data=new PVCollection();
 		}
