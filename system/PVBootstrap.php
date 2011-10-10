@@ -29,10 +29,6 @@
 
 class PVBootstrap extends PVStaticObject{
 	
-	function __construct(){
-		
-	}
-	
 	/**
 	 * Booth the ProdigyView system. Initilize variables, set logging,
 	 * sessions, etc. Many of the configuration settings are located in the xml
@@ -59,11 +55,16 @@ class PVBootstrap extends PVStaticObject{
 			'initialize_validator'=>true,
 			'initialize_security'=>true,
 			'initialize_session'=>true,
-			'load_plugins'=>true
+			'load_plugins'=>true,
+			'load_configuration'=>true
 		);
+		
+		$default_config=array('report_errors'=>false, 'log_errors'=>true, 'error_report_level'=>E_ALL);
 		$args += $defaults;
 		
-		$config=PVConfiguration::getSiteCompleteConfiguration();
+		if($args['load_configuration'])
+			$config=PVConfiguration::getSiteCompleteConfiguration() + $default_config;
+		
 		self::setErrorReporting($config['report_errors'],$config['log_errors'], $config['error_report_level'] );
 		
 		if($args['initialize_database']) {
@@ -78,19 +79,19 @@ class PVBootstrap extends PVStaticObject{
 			PVLibraries::init();
 		
 		if($args['initialize_template'])
-			PVTemplate::init();
+			PVTemplate::init($config);
 		
 		if($args['initialize_router'])
-			PVRouter::init();
+			PVRouter::init($config);
 		
 		if($args['initialize_validator'])
 			PVValidator::init();
 		
 		if($args['initialize_security'])
-			PVSecurity::init();
+			PVSecurity::init($config);
 		
 		if($args['initialize_session'])
-			PVSession::init();
+			PVSession::init($config);
 		
 		self::removeMagicQuotes();
 		
@@ -164,7 +165,7 @@ class PVBootstrap extends PVStaticObject{
 	 * @return void
 	 * @access private
 	 */
-	private static function setErrorReporting($report_errors, $log_errors ,$error_report_level) {
+	private static function setErrorReporting($report_errors=FALSE, $log_errors=TRUE ,$error_report_level=E_ALL) {
 	
 		if($error_report_level==0){
 			error_reporting(E_ERROR | E_WARNING | E_PARSE);
