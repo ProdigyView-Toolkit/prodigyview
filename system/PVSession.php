@@ -83,9 +83,6 @@ class PVSession extends PVStaticObject {
 			'session_start'=>true
 		);
 		
-		if(empty($session_vars))
-			$session_vars=PVConfiguration::getSiteSessionConfiguration();
-		
 		$session_vars += $defaults;
 		
 		self::$cookie_path=$session_vars['cookie_path'];
