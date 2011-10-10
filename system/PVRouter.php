@@ -41,8 +41,12 @@ class PVRouter extends PVStaticObject{
 	 * @return void
 	 * @access public
 	 */
-	public static function init(){
-		$config=PVConfiguration::getSiteCompleteConfiguration();
+	public static function init($config=array()){
+		$defaults=array(
+			'seo_urls'=>true
+		);
+		
+		$config += $defaults;
 		
 		self::$routes=array();
 		self::$route_parameters=array();
