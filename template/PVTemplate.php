@@ -33,12 +33,14 @@ class PVTemplate extends PVStaticObject {
 	private static $siteMetaTags;
 	private static $siteMetaDescription;
 	
-	function __construct(){
-	
-	}
-	
-	function init() {
-		$config=PVConfiguration::getSiteCompleteConfiguration();
+	function init($config=array()) {
+		$defaults = array(
+			'site_name'=>'',
+			'meta_keywords'=>'',
+			'meta_description'=>''
+		);
+			
+		$config += $defaults;
 		
 		self::$siteTitle=$config['site_name'];
 		self::$siteMetaTags=$config['meta_keywords'];
