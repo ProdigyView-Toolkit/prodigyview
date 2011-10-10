@@ -47,7 +47,7 @@ class PVStaticObject extends PVPatterns {
 		if(self::$data==null) {
 			self::$data=new PVCollection();
 		}
-		return self::$data[$index];
+		return self::$data->$index;
  	}
 	
 	protected static function _addToCollection($data) {
