@@ -29,10 +29,83 @@
 
 class PVConfiguration extends PVStaticObject{
 	
-	function __construct(){
+	/**
+	 * Initializes the configuration class by adding values to the collection
+	 * available in the static parent object. Because the variable is added statically,
+	 * the informatiol will be available anywhere on the site.
+	 * 
+	 * @param array $args Arguements to be added to the configuration
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function init($args=array()) {
 		
+		if(!empty($args)) {
+			foreach($args as $key=>$value) {
+				self::_addToCollectionWithName($key, $value);
+			}
+		}
 	}
 	
+	/**
+	 * Adds a configuration to the Configuration class based
+	 * upon a key and value.
+	 * 
+	 * @param string $key The Key to be used for accessing the configuration
+	 * @param string $value The string value to be stored in the configuration
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function addConfiguration($key, $value) {
+		self::_addToCollectionWithName($key, $value);
+	}
+	
+	/**
+	 * Retrieves a stored configuration based upon the key that was
+	 * assigned to it.
+	 * 
+	 * @param string $key The key to the string stored
+	 * 
+	 * @return string $configuration
+	 * @access pulbic
+	 */
+	public static function getConfiguration($key) {
+		return  parent::get($key);
+	}
+	
+	/**
+	 * Outside of the standardrd xml file reading, a custom xml configuration
+	 * can be set in the xml file and read when needed.
+	 * 
+	 * @param string $node_name The parent node in the xml file in which all children with be read rom.
+	 * 
+	 * @return void mixed $config Any infomration retrieved from that node
+	 * @access public
+	 */
+	public static function loadXMLConfigurationFromFile($nodes_name) {
+		$filename = PV_CONFIG; 
+		$paramater_array=array();
+		
+		$doc = new DOMDocument();
+		$doc->formatOutput = true;
+		$doc->preserveWhiteSpace = false; 
+		$doc->load( $filename );
+		$node_array= $doc->getElementsByTagName( $nodes_name ); 
+		
+		foreach( $node_array as $node ) { 
+			if($node->childNodes->length) {
+	            foreach($node->childNodes as $i) {
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+	            }//end foreach
+	        }//end if
+			
+		}//end foreach
+		
+		return $paramater_array;
+	}
 	
 	/**
 	 * Retrieve the preferences in the sites xml
@@ -40,6 +113,7 @@ class PVConfiguration extends PVStaticObject{
 	 * the elements betweeen the <email></email> tags.
 	 * 
 	 * @return array email_options: Returns the email options in an array
+	 * @access public
 	 */
  	public static function getSiteEmailConfiguration(){
 		
@@ -50,14 +124,13 @@ class PVConfiguration extends PVStaticObject{
 		$doc->formatOutput = true;
 		$doc->preserveWhiteSpace = false; 
 		$doc->load( $filename );
-		
 		$node_array= $doc->getElementsByTagName( 'email' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -71,7 +144,8 @@ class PVConfiguration extends PVStaticObject{
 	 * configuration. The configuration options retrieved will be
 	 * the elements betweeen the <sessions></sessions> tags.
 	 * 
-	 * @return array session_options: Returns the session options in an array
+	 * @return array $session_options Returns the session options in an array
+	 * @access public
 	 */
 	public static function getSiteSessionConfiguration(){
 		
@@ -82,22 +156,19 @@ class PVConfiguration extends PVStaticObject{
 		$doc->formatOutput = true;
 		$doc->preserveWhiteSpace = false; 
 		$doc->load( $filename );
-		
 		$node_array= $doc->getElementsByTagName( 'sessions' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
 		}//end foreach
 		
 		return $paramater_array;
-		
-		
 	}//end getSiteEmailConfiguration
 	
 	/**
@@ -105,7 +176,8 @@ class PVConfiguration extends PVStaticObject{
 	 * configuration. The configuration options retrieved will be
 	 * all the xml in the file.
 	 * 
-	 * @return array options: Returns all the options in an array
+	 * @return array options Returns all the options in an array
+	 * @access public
 	 */
 	public static function getSiteCompleteConfiguration(){
 		
@@ -116,7 +188,6 @@ class PVConfiguration extends PVStaticObject{
 		$doc->formatOutput = true;
 		$doc->preserveWhiteSpace = false;
 		$doc->load( $filename );
-		
 		$node_array= $doc->getElementsByTagName( 'general' ); 
 		
 		foreach( $node_array as $node ) 
@@ -134,7 +205,8 @@ class PVConfiguration extends PVStaticObject{
 		{ 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -142,11 +214,11 @@ class PVConfiguration extends PVStaticObject{
 		
 		$node_array= $doc->getElementsByTagName( 'system' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 	        
@@ -154,22 +226,22 @@ class PVConfiguration extends PVStaticObject{
 		
 		$node_array= $doc->getElementsByTagName( 'libraries' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 		}//end foreach
 		
 		$node_array= $doc->getElementsByTagName( 'sessions' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 		}
@@ -182,7 +254,8 @@ class PVConfiguration extends PVStaticObject{
 	 * configuration. The configuration options retrieved will be
 	 * the one elements betweeen the <general></general> and <email></email> tags.
 	 * 
-	 * @return array general_options: Returns the general options in an array
+	 * @return array $general_options Returns the general options in an array
+	 * @access public
 	 */
 	public static function getSiteGeneralConfiguration(){
 		
@@ -193,14 +266,13 @@ class PVConfiguration extends PVStaticObject{
 		$doc->formatOutput = true;
 		$doc->preserveWhiteSpace = false; 
 		$doc->load( $filename );
-		
 		$node_array= $doc->getElementsByTagName( 'general' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -208,11 +280,11 @@ class PVConfiguration extends PVStaticObject{
 		
 		$node_array= $doc->getElementsByTagName( 'email' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -226,7 +298,8 @@ class PVConfiguration extends PVStaticObject{
 	 * configuration. The configuration options retrieved will be
 	 * the one elements betweeen the <system></system> tags.
 	 * 
-	 * @return array system_options: Returns the system options in an array
+	 * @return array $system_options Returns the system options in an array
+	 * @access public
 	 */
 	public static function getSystemConfiguration(){
 		
@@ -237,14 +310,13 @@ class PVConfiguration extends PVStaticObject{
 		$doc->formatOutput = true;
 		$doc->preserveWhiteSpace = false;
 		$doc->load( $filename );
-		
 		$node_array= $doc->getElementsByTagName( 'system' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -259,6 +331,7 @@ class PVConfiguration extends PVStaticObject{
 	 * the one elements betweeen the <general></general> tags.
 	 * 
 	 * @return array site_options: Returns the site options in an array
+	 * @access public
 	 */
 	public static function getSiteConfiguration(){
 		
@@ -268,15 +341,14 @@ class PVConfiguration extends PVStaticObject{
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;
 		$doc->preserveWhiteSpace = false; 
-		$doc->load( "$filename" );
-		
+		$doc->load( $filename );
 		$node_array= $doc->getElementsByTagName( 'general' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -290,7 +362,8 @@ class PVConfiguration extends PVStaticObject{
 	 * configuration. The configuration options retrieved will be
 	 * the one elements betweeen the <server></server> tags.
 	 * 
-	 * @return array sever_options: Returns the site server in an array
+	 * @return array $sever_options Returns the site server in an array
+	 * @access public
 	 */
 	public static function getServerConfiguration(){
 		
@@ -301,14 +374,13 @@ class PVConfiguration extends PVStaticObject{
 		$doc->formatOutput = true;
 		$doc->preserveWhiteSpace = false; 
 		$doc->load( $filename );
-		
 		$node_array= $doc->getElementsByTagName( 'server' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            		$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
