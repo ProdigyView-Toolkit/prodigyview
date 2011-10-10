@@ -36,7 +36,19 @@ class PVSecurity extends PVStaticObject {
 	private static $mcrypt_key;
 	private static $mcrypt_iv;
 	
-	
+	/**
+	 * Initializes the security class for using encryption. Requires that
+	 * the package mcrypt be installed.
+	 * 
+	 * @param array $args An array of arguments to be passed into the security class.
+	 * 			-'mcrypt_algorithm' _string_ : The algorthim to be used for encruption. MCRYPT_DES is default
+	 * 			-'mcrypt_algorithm_directory' _string_: The directory the algorithm
+	 * 			-'mcrypt_mode' _string_ : The mode to set for mcrypt. Defaults of 'ofb'
+	 * 			-''
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function init($args=array()) {
 		$defaults=array(
 			'mcrypt_algorithm'=>MCRYPT_DES,
