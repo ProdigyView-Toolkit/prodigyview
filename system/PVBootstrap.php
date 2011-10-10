@@ -57,16 +57,15 @@ class PVBootstrap extends PVStaticObject{
 			'initialize_session'=>true,
 			'load_plugins'=>true,
 			'load_configuration'=>true,
-			'config'=>array('report_errors'=>false, 'log_errors'=>true, 'error_report_level'=>E_ALL)
+			'config'=>array( 'report_errors'=>false, 'log_errors'=>true, 'error_report_level'=>E_ALL, 'enable_cache'=>true, 'unset_cookie'=>false,'unset_session'=>false,'unset_post'=>false,'unset_get'=>false,'unset_request'=>false,'unset_env'=>false,'unset_files'=>false,'unset_server'=>false,'cache_time'=>15)
 		);
 		
-		$args += $defaults;
-		
+		$args +=  $defaults;
 		if($args['load_configuration'])
 			$config=PVConfiguration::getSiteCompleteConfiguration() + $defaults['config'];
 		else
-			$config=$defaults['config'];
-		
+			$config=$args['config']+$defaults['config'];
+			
 		self::setErrorReporting($config['report_errors'],$config['log_errors'], $config['error_report_level'] );
 		
 		if($args['initialize_database']) {
