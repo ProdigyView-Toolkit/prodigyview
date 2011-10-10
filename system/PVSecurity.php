@@ -70,9 +70,10 @@ class PVSecurity extends PVStaticObject {
 	}
 		
 	/**
-	 * Retrives the roles for users/
+	 * Retrieves the roles for users/
 	 * 
 	 * @return array user roles
+	 * @access public
 	 */			
 	public static function getUserRoles() {
 			
@@ -91,8 +92,8 @@ class PVSecurity extends PVStaticObject {
 	/**
 	 * Checks the user access level of the user based occepeted roles.
 	 * 
-	 * @param id user_id: The is od the user whose roles will be cheked
-	 * @param int access_levvel: The access level to check eagaint.
+	 * @param id $user_id The is od the user whose roles will be cheked
+	 * @param int $access_level The access level to check eagaint.
 	 */
 	public static function checkUserAccessLevel($user_id, $required_level) {
 		
