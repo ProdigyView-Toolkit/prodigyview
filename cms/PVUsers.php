@@ -175,6 +175,23 @@ class PVUsers extends PVStaticObject {
 		return FALSE;
 	}//end attemptLogin
 	
+	/**
+	 * Adds a user to the database with the passed information. The only actual required
+	 * information is the user's email.
+	 * 
+	 * @param array $args The passed values in an array that define a user.
+	 * 			-'user_email' _string_: The email address of the user. Can be used for logging in with password
+	 * 			-'username' _string_: The user's name. Can be used for logging in with password.
+	 * 			-'user_access_level' _int_: The user's level access that can be used with a security settings
+	 * 			-'user_password' _string_: The password the user. Will be MD5 hashed unless other hashing algorithim is defined
+	 * 			-'activation_code' _string_: The code that will be used for activating an account. Will be auto-generated if not defined
+	 * 			-'registration_date' _date/time_: Records the date/time a user has registerd. Will default to current timestamp of not defined
+	 * 			-'user_role' _mixed_: Can either be a role passed as a string(role name) or id(role_id) or an array of role_ids or role_names
+	 * @param boolean $password_encoded If set to false, password will be md5 hashed. Otherwise password is saved as passed.
+	 *  
+	 * @return int $user_id Returns the id of thew newly created user
+	 * @access public
+	 */
 	public static function addUser($args=array(), $password_encoded=false){
 		$args += self::getUserDefaults();
 		$args = PVDatabase::makeSafe($args);
@@ -221,22 +238,36 @@ class PVUsers extends PVStaticObject {
 				if(is_array($user_role)){
 					
 					foreach($user_role as $key=>$role_value){
+						
+						if(!PVValidator::isInteger($role_value)){
+							$tmp_role=self::getUserRoleByName($role_value);
+							$role_value=$tmp_role['role_id'];
+						}
 						$query="INSERT INTO ".PVDatabase::getUserRolesRelationsTableName()."(role_id, user_id) VALUES('$role_value', '$user_id')";
 						PVDatabase::query($query);
 					}//end foreach
 					
-				} else {
+				} else if(!empty($user_role)) {
+					if(!PVValidator::isInteger($role_value)){
+						$tmp_role=self::getUserRoleByName($role_value);
+						$role_value=$tmp_role['role_id'];
+					}
 					$query="INSERT INTO ".PVDatabase::getUserRolesRelationsTableName()."(role_id, user_id) VALUES('$user_role', '$user_id')";
 					PVDatabase::query($query);
 				}
 				
 				return $user_id;
-			} else {
-				return 0;
-			}
+			} 
+
+			return false;
 		}//end if user email not empty
 	}
 	
+	/**
+	 * Updates a user's data based upoon the id of the user. The sam
+	 * 
+	 * @see addUser. Same parameters can be passed 
+	 */
 	public static function updateUser($args=array()){
 		$args += self::getUserDefaults();
 		$args = PVDatabase::makeSafe($args);
@@ -269,7 +300,6 @@ class PVUsers extends PVStaticObject {
 			$query="UPDATE ".PVDatabase::getUsersTableName()." SET user_password='$user_password' WHERE user_id='$user_id' ";
 			
 			PVDatabase::query($query);
-			
 		}
 		
 	}//end  update User
@@ -281,14 +311,13 @@ class PVUsers extends PVStaticObject {
 		if(!empty($user_info)){
 			
 			$user_id=$user_info['user_id'];
-			$reset_code=PVTools::generateRandomString($numOfChars = 20);	
+			$reset_code=PVTools::generateRandomString(20);	
 			
 			$query="UPDATE ".PVDatabase::getUserActivationTableName()." SET reset_code='$reset_code' WHERE user_id='$user_id'";
 			PVDatabase::query($query);
 			
 			return $reset_code;
 		}
-		
 		
 	}//end generateResetCode
 	
@@ -483,16 +512,20 @@ class PVUsers extends PVStaticObject {
 	}//end addUserRole
 	
 	public static function getUserRolesList($args=array()){
+		$args += self::getUserRoleDefaults();
+		$args += self::_getSqlSearchDefaults();
+		
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$prefix_args=$args['prefix_args'];
+		$PREQUERY=$args['prequery'];
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 		$content_array=array();
 		
-		if(is_array($args)){
-			$args=PVDatabase::makeSafe($args);
-			extract($args);
-		}
-		
 		$first=1;
-		$WHERE_CLAUSE.='';
+		$WHERE_CLAUSE='';
 			
 		if(!empty($role_id)){
 					
@@ -509,9 +542,9 @@ class PVUsers extends PVStaticObject {
 				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($role_id, 'role_id');
 				
 				$first=0;
-			}//end not empty app_id
+		}//end not empty app_id
 			
-			if(!empty($role_name)){
+		if(!empty($role_name)){
 					
 				$role_name=trim($role_name);
 				
@@ -564,11 +597,6 @@ class PVUsers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
-			
-	
-		
-		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
@@ -576,8 +604,6 @@ class PVUsers extends PVStaticObject {
 		$ORDER_BY=$args['order_by'];
 		
 		$LIMIT=$args['limit'];
-		
-		
 		
 		if(!empty($LIMIT)){
 			$LIMIT=" limit $LIMIT ";
@@ -598,12 +624,9 @@ class PVUsers extends PVStaticObject {
     	$content_array=PVDatabase::formatData($content_array);
     	
 		return $content_array;	
-		
-		
 	}//end get user Role list
 	
 	public static function getUserRoleByID($role_id){
-		
 		
 		if(!empty($role_id)){
 			
@@ -641,12 +664,10 @@ class PVUsers extends PVStaticObject {
 	}//end getUserRoleByName
 	
 	public static function updateUserRole($args){
-		
+		$args += self::getUserRoleDefaults();
+		$args=PVDatabase::makeSafe($args);
 		
 		if(is_array($args) && !empty($args['role_id']) ){
-			
-			$args=PVDatabase::makeSafe($args);
-			
 			$role_id=PVDatabase::makeSafe($role_id);
 			$role_type=$role_type;
 			$is_editable=ceil($is_editable);
@@ -671,6 +692,30 @@ class PVUsers extends PVStaticObject {
 			PVDatabase::query($query);
 		}//end role_id
 	}//end deleteUserRole
+	
+	/**
+	 * Used for quick retrieval of roles that are assigned to a user
+	 * based on the user's id.
+	 * 
+	 * @param string $user_id The id of the user whose roles to retrieve
+	 * 
+	 * @return array $roles The id and name of the roles
+	 * @access public
+	 */
+	public static function getAssignedRoles($user_id) {
+		
+		$user_id=PVDatabase::makeSafe($user_id);
+		$roles=array();
+		
+		$query="SELECT role_id, role_name FROM ".PVDatabase::getUserRolesTableName()." JOIN ".PVDatabase::getUserRolesRelationsTableName()." ON ".PVDatabase::getUserRolesRelationsTableName().".user_id=".PVDatabase::getUserRolesTableName().".user_id WHERE user_id='$user_id'";
+		$result=PVDatabase::query($query);
+	
+		while ($row = PVDatabase::fetchArray($result)){
+			array_push($roles, $row);
+    	}//end while
+	
+		return $roles;
+	}//end getAssignedRoles
 	
 	public static function loginUser($username, $options=array() ){
 		$defaults=array(
@@ -1108,7 +1153,6 @@ class PVUsers extends PVStaticObject {
 	public static function getUserListWithRoles($args=''){
 		
 		$user_array=array();
-		
 		
 		if(is_array($args)){
 			$args=PVDatabase::makeSafe($args);
@@ -1726,8 +1770,6 @@ class PVUsers extends PVStaticObject {
 			$row=PVDatabase::formatData($row);
 			
 			return $row;
-			
-			
 		}
 		
 		return 0;
@@ -1808,20 +1850,17 @@ class PVUsers extends PVStaticObject {
 				
 				if(PVValidator::isID($value)){
 					array_push($roles_array, $value );
-				}
-				else{
+				} else {
 					$role=self::getUserRoleByName($value);
 					if(!empty($role)){
 						array_push($roles_array, $role['role_id'] );
 					}
 				}
 			}//end foreach
-		}
-		else{
+		} else {
 			if(PVValidator::isID($value)){
 					array_push($roles_array, $value );
-			}
-			else{
+			} else {
 				$role=self::getUserRoleByName($value);
 				if(!empty($role)){
 					array_push($roles_array, $role['role_id'] );
