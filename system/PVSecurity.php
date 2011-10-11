@@ -179,7 +179,7 @@ class PVSecurity extends PVStaticObject {
 	public static function checkUserRole($user_id, $roles) {
 		
 		if(!empty($user_id) ){
-			$assigned_roles=PVUsers::getAssignedRoles($user_id);
+			$assigned_roles=PVUsers::getAssignedUserRoles($user_id);
 			return in_array($roles, $assigned_roles);
 		}
 		return 0;
