@@ -101,6 +101,15 @@ class PVUsers extends PVStaticObject {
 		return false;
 	}//end getUserRole
 	
+	/**
+	 * Used for quick retrieval of roles that are assigned to a user
+	 * based on the user's id.
+	 * 
+	 * @param string $user_id The id of the user whose roles to retrieve
+	 * 
+	 * @return array $roles The id and name of the roles
+	 * @access public
+	 */
 	public static function getAssignedUserRoles($user_id){
 		
 		$user_id=PVDatabase::makeSafe($user_id);
@@ -134,7 +143,17 @@ class PVUsers extends PVStaticObject {
 		
 	}//end getUserRoleType
 	
-	
+	/**
+	 * Validates a user based upon the creditenials of a login and password.
+	 * 
+	 * @param string $username Can either be the username or password of a user
+	 * @param string $password The password associated with the username
+	 * @param boolean $save_cookie Sets a cookie with the user's information on login
+	 * @param boolean $password_encoded Will hash the password to MD5 if set to false.
+	 * 
+	 * @return boolean $success Returns true if the login was a success
+	 * @access public
+	 */
 	public static function attemptLogin($username, $password, $save_cookie=TRUE, $password_encoded=false) {
 		
 		$username=PVDatabase::makeSafe($username);
@@ -248,9 +267,9 @@ class PVUsers extends PVStaticObject {
 					}//end foreach
 					
 				} else if(!empty($user_role)) {
-					if(!PVValidator::isInteger($role_value)){
-						$tmp_role=self::getUserRoleByName($role_value);
-						$role_value=$tmp_role['role_id'];
+					if(!PVValidator::isInteger($user_role)){
+						$tmp_role=self::getUserRoleByName($user_role);
+						$user_role=$tmp_role['role_id'];
 					}
 					$query="INSERT INTO ".PVDatabase::getUserRolesRelationsTableName()."(role_id, user_id) VALUES('$user_role', '$user_id')";
 					PVDatabase::query($query);
@@ -344,6 +363,17 @@ class PVUsers extends PVStaticObject {
 		
 	}//end addUserTRole
 	
+	/**
+	 * Removes a user from a role.
+	 * 
+	 * @param id $user_id The id of user to remove from the role.
+	 * @param mixed $role_id Either the name of the role or the id of the role.
+	 * 			Be aware that if there are multipe rows with the same name, using the
+	 * 			role name feature will delete the first one retrieved
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function removeUserFromeRole($user_id, $role_id){
 		
 		if(!PVValidator::isID($role_id) && !empty($role_id)){
@@ -351,7 +381,6 @@ class PVUsers extends PVStaticObject {
 				$role_id=$role['role_id'];
 		}
 			
-		
 		if(!empty($user_id) && !empty($role_id)){
 			
 			$user_id=PVDatabase::makeSafe($user_id);
@@ -359,11 +388,26 @@ class PVUsers extends PVStaticObject {
 			
 			$query="DELETE FROM ".PVDatabase::getUserRolesRelationsTableName()." WHERE user_id='$user_id' AND role_id='$role_id'";
 			PVDatabase::query($query);
-			
 		}//end
 		
 	}//end removeUserFromRole
 	
+	/**
+	 * Delete a user from the database and also delete associated content with that user.
+	 * 
+	 * @param int $user_id The id of the user to be removed
+	 * @param array $options A list of options to delete content associated with the user
+	 * 			-'remove_user_content' _boolean_: Default is true. Will remove any content associated with the user's id
+	 * 			-'remove_user_comments' _boolean_: Default is true. Will remove any comments associated with the user's id
+	 * 			-'remove_user_subscriptions' _boolean_: Default is true. Will remove any subscriptions associated with the user's id
+	 * 			-'remove_user_points' _boolean_: Default is true. Will remove any points associated with the user's id
+	 * 			-'remove_user_categories' _boolean_: Default is true. Will remove any categories associated with the user's id
+	 * 			-'remove_user_options' _boolean_: Default is true. Will remove any options associated with the user's id
+	 * 			-'remove_user_mutli_author' _boolean_: Default is true. Will remove multi_author status associated with the user's id
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deleteUser($user_id, $options=array()){
 		$defaults=array(
 			'remove_user_content'=>TRUE,
@@ -390,7 +434,6 @@ class PVUsers extends PVStaticObject {
 				}//end foreach
 			}
 			
-			
 			if($remove_user_comments){
 				$user_comment_list=PVComments::getCommentList(array('owner_id'=>$user_id));
 				
@@ -398,8 +441,6 @@ class PVUsers extends PVStaticObject {
 					PVComments::deleteComment($value['comment_id']);
 				}//end foreach
 			}
-			
-			
 			
 			if($remove_user_subscriptions){
 				$user_subscription_list=PVSubscriptions::getSubscriptionList(array('user_id'=>$user_id));
@@ -409,7 +450,6 @@ class PVUsers extends PVStaticObject {
 				}//end foreach
 			}
 			
-			
 			if($remove_user_points){
 				$user_point_list=PVPoints::getPointsList(array('user_id'=>$user_id));
 				
@@ -418,7 +458,6 @@ class PVUsers extends PVStaticObject {
 				}//end foreach
 			}
 			
-			
 			if($remove_user_categories){
 				$user_category_list=PVContent::getCategoryList(array('category_owner'=>$user_id));
 				
@@ -426,7 +465,6 @@ class PVUsers extends PVStaticObject {
 					PVContent::deleteCategory($value['cateogry_id']);
 				}//end foreach
 			}
-			
 			
 			if($remove_user_options){
 				$user_option_list=PVTools::getOptionList(array('user_id'=>$user_id));
@@ -454,7 +492,6 @@ class PVUsers extends PVStaticObject {
 	
 	public static function updateUserFields($args){
 		
-		
 		if(!empty($args['user_id']) && is_array($args) ){
 			
 			$UPDATE_CLAUSE='';
@@ -472,7 +509,6 @@ class PVUsers extends PVStaticObject {
 			}//end foreach
 			
 			$user_id=PVDatabase::makeSafe($args['user_id']);
-			
 			$query="UPDATE ".PVDatabase::getUsersTableName()." SET $UPDATE_CLAUSE WHERE user_id='$user_id' ";
 			
 			PVDatabase::query($query);
@@ -511,6 +547,15 @@ class PVUsers extends PVStaticObject {
 		
 	}//end addUserRole
 	
+	/**
+	 * Retrievles the user's role content. The arguements passed followed the ProdigyView Standard Search Query.
+	 * ',' seperate objects to form an OR
+	 * '+' seperate objects to form an AND
+	 * 
+	 * @param array $args An array of arguements to pass when removeing roles
+	 * 		-'role_id' _id_: The role id
+	 * 		@see PVUsers::addUserRole : Same arguements and be passed here when searching.
+	 */
 	public static function getUserRolesList($args=array()){
 		$args += self::getUserRoleDefaults();
 		$args += self::_getSqlSearchDefaults();
@@ -626,6 +671,13 @@ class PVUsers extends PVStaticObject {
 		return $content_array;	
 	}//end get user Role list
 	
+	/**
+	 * Returns a user role based up on that role's id.
+	 * 
+	 * @param id $role_id The id of the role to be retrieved
+	 * 
+	 * @return array $role The role information in an array
+	 */
 	public static function getUserRoleByID($role_id){
 		
 		if(!empty($role_id)){
@@ -644,7 +696,15 @@ class PVUsers extends PVStaticObject {
 		
 	}//getUserRoleByID
 	
-	
+	/**
+	 * Get user role by the name of the role. Beaware that using this method will return the first
+	 * result of two or more roles of have the same name.
+	 * 
+	 * @param string $role_name The name of the role
+	 * 
+	 * @return array $role The data pertaining to a role
+	 * @access public
+	 */
 	public static function getUserRoleByName($role_id){
 		
 		if(!empty($role_id)){
@@ -663,7 +723,20 @@ class PVUsers extends PVStaticObject {
 		
 	}//end getUserRoleByName
 	
-	public static function updateUserRole($args){
+	/**
+	 * Update a user role based on the role id
+	 * 
+	 * @param arrays $role Data pertaining to a role.
+	 * 			-'role_id' _id_: The id of the role. Is required
+	 * 			-'role_name' _string_: The name of the role.
+	 * 			-'role_type' _string_: The type of the role. Can be used to distinguish roles with the same name
+	 * 			-'role_description' _string_: Text that descriptions the role
+	 * 			-'is_editable' _boolean_: Determines if the role is editable
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function updateUserRole($args=array()){
 		$args += self::getUserRoleDefaults();
 		$args=PVDatabase::makeSafe($args);
 		
@@ -679,12 +752,18 @@ class PVUsers extends PVStaticObject {
 		
 	}//end updateUserRole
 	
-	
-	
+	/**
+	 * Removes a role based on the role id and also removes any users from that role
+	 * 
+	 * @param id $role_id The id of the role to be deleted
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deleteUserRole($role_id){
+		$role_id=PVDatabase::makeSafe($role_id);
 		
 		if(!empty($role_id)){
-			
 			$query="DELETE FROM ".PVDatabase::getUserRolesTableName()." WHERE role_id='$role_id' ";
 			PVDatabase::query($query);
 			
@@ -693,29 +772,6 @@ class PVUsers extends PVStaticObject {
 		}//end role_id
 	}//end deleteUserRole
 	
-	/**
-	 * Used for quick retrieval of roles that are assigned to a user
-	 * based on the user's id.
-	 * 
-	 * @param string $user_id The id of the user whose roles to retrieve
-	 * 
-	 * @return array $roles The id and name of the roles
-	 * @access public
-	 */
-	public static function getAssignedRoles($user_id) {
-		
-		$user_id=PVDatabase::makeSafe($user_id);
-		$roles=array();
-		
-		$query="SELECT role_id, role_name FROM ".PVDatabase::getUserRolesTableName()." JOIN ".PVDatabase::getUserRolesRelationsTableName()." ON ".PVDatabase::getUserRolesRelationsTableName().".user_id=".PVDatabase::getUserRolesTableName().".user_id WHERE user_id='$user_id'";
-		$result=PVDatabase::query($query);
-	
-		while ($row = PVDatabase::fetchArray($result)){
-			array_push($roles, $row);
-    	}//end while
-	
-		return $roles;
-	}//end getAssignedRoles
 	
 	public static function loginUser($username, $options=array() ){
 		$defaults=array(
