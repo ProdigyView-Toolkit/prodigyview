@@ -135,8 +135,6 @@ class PVUsers extends PVStaticObject {
 	}//end getUserRoleType
 	
 	
-	
-	
 	public static function attemptLogin($username, $password, $save_cookie=TRUE, $password_encoded=false) {
 		
 		$username=PVDatabase::makeSafe($username);
@@ -454,18 +452,28 @@ class PVUsers extends PVStaticObject {
 		
 	}//end updateUserField
 	
-	
-	public static function addUserRole($args){
+	/**
+	 * Created a user roles. Role can later be assigned to the user.
+	 * 
+	 * @param array $args Arguements that make up a user role
+	 * 			-'role_name' _string_: The name of the role
+	 * 			-'role_type' _string_: The type of the role. Can be used to distinguish roles with the same name
+	 * 			-'role_description' _string_: Text that descriptions the role
+	 * 			-'is_editable' _boolean_: Determines if the role is editable
+	 * 
+	 * @return int role_id: The id of the newly created role.
+	 * @access public
+	 */
+	public static function addUserRole($args=array()){
+		$args += self::getUserRoleDefaults();
+		$args=PVDatabase::makeSafe($args);
 		
 		if(is_array($args) && !empty($args)){
 			
-			$args=PVDatabase::makeSafe($args);
 			extract($args);
-			
 			$is_editable=ceil($is_editable);
 			
 			$query="INSERT INTO ".PVDatabase::getUserRolesTableName()."( role_name, role_description, role_type, is_editable) VALUES('$role_name', '$role_description', '$role_type', '$is_editable')";
-			
 			$role_id=PVDatabase::return_last_insert_query($query, 'role_id', PVDatabase::getUserRolesTableName());
 			
 			return $role_id;
@@ -1776,7 +1784,6 @@ class PVUsers extends PVStaticObject {
 			
 			PVDatabase::query($query);
 			
-			
 		}//end if not empty
 		
 	}//end deleteUserRelationship
@@ -1856,6 +1863,18 @@ class PVUsers extends PVStaticObject {
 			'user_role'=>0,
 			'activation_code'=>''
 		);
+		return $defaults;
+	}
+	
+	private static function getUserRoleDefaults() {
+		$defaults=array(
+			'role_id'=>0,
+			'role_name'=>'',
+			'role_description'=>'',
+			'role_type'=>'',
+			'is_editable'=>0
+		);
+		
 		return $defaults;
 	}
 	
