@@ -70,7 +70,7 @@ class PVSecurity extends PVStaticObject {
 	}
 		
 	/**
-	 * Retrieves the roles for users/
+	 * Retrieves the roles for users.
 	 * 
 	 * @return array user roles
 	 * @access public
@@ -165,6 +165,26 @@ class PVSecurity extends PVStaticObject {
 		}//end else
 		
 	}//end checkUserPermissions
+	
+	/**
+	 * Checks if a user has a specified role assigned to them. Can either search for the
+	 * role based upon the role name or role id.
+	 * 
+	 * @param id $user_id The id of the user
+	 * @param mixed $roles Either an id or name of a role or an array of ids and/or names of toles
+	 * 
+	 * @return boolean $hasRole Returns true if user has that role, otherwise false
+	 * @access public
+	 */
+	public static function checkUserRole($user_id, $roles) {
+		
+		if(!empty($user_id) ){
+			$assigned_roles=PVUsers::getAssignedRoles($user_id);
+			return in_array($roles, $assigned_roles);
+		}
+		return 0;
+		
+	}
 	
 	/**
 	 * Finds the first role by passing in an array of roles with IDs
