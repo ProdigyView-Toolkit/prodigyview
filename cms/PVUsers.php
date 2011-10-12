@@ -1475,55 +1475,6 @@ class PVUsers extends PVStaticObject {
 		}
 	}//end getUserIDByName
 	
-	public static function getUserPageUrl($user_id){
-	
-		$app_object=PVApplications::getAppObject('pv_user_manager');
-		//$user_id=PVDatabase::makeSafe($user_id);	
-		$userAdmin=new $app_object;
-		
-		return $userAdmin->getUserPageUrl($user_id);
-	}//end getUserHomePageLink
-	
-	public static function getUserImageUrl($user_id){
-		
-		$user_id=PVDatabase::makeSafe($user_id);	
-		$image_url='';
-		$query="SELECT user_image FROM ".PVDatabase::getUsersTableName()." WHERE user_id='$user_id'";
-		
-		$result=PVDatabase::query($query);
-		$row = PVDatabase::fetchArray($result);
-		
-		if(empty($row['user_image'])){
-			$image_url='apps/UserManager/default_user.png';
-		}
-		else{
-			$image_url=$row['user_image'];
-		}
-	
-		return $image_url;
-	
-	}//end getUserImageUrl
-	
-	public static function getUserImageThumbUrl($user_id){
-		
-		$user_id=PVDatabase::makeSafe($user_id);	
-		$image_url='';
-		
-		$query="SELECT user_image_thumb FROM ".PVDatabase::getUsersTableName()." WHERE user_id='$user_id'";
-		
-		$result=PVDatabase::query($query);
-		$row = PVDatabase::fetchArray($result);
-	
-		if(empty($row['user_image_thumb'])){
-			$image_url='apps/UserManager/default_user.png';
-		}
-		else{
-			$image_url=$row['user_image_thumb'];
-		}
-	
-		return $image_url;
-	}//getUserImageThumbUrl
-	
 	public static function addUserRelationship($requesting_user_id, $requested_user_id, $relationship_type='', $relationship_status=0 ){
 		
 		if(is_array($requesting_user_id)){
