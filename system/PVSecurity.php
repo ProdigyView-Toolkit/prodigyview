@@ -180,10 +180,10 @@ class PVSecurity extends PVStaticObject {
 		
 		if(!empty($user_id) ){
 			$assigned_roles=PVUsers::getAssignedUserRoles($user_id);
-			return in_array($roles, $assigned_roles);
+			if(PVTools::arraySearchRecursive($roles, $assigned_roles))
+				return true;
 		}
 		return 0;
-		
 	}
 	
 	/**
@@ -191,7 +191,7 @@ class PVSecurity extends PVStaticObject {
 	 * and the NAME of the role to be found.
 	 * 
 	 * @param stirng role: The name of the role to be passed
-	 * @param array role_array: An arrray of roles with the role anme and ID
+	 * @param array role_array: An arrray of roles with the role name and ID
 	 * 
 	 * @return int role_id: The id of the role
 	 */	
