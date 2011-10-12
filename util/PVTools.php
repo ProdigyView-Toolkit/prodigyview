@@ -255,6 +255,47 @@ class PVTools extends PVStaticObject {
 		
 	}//end form url
 	
+	/**
+	 * Searched for an value within another array recursively.
+	 * 
+	 * @param mixed $needle The needle can either be a value or an array of values to be searched for
+	 * @param array $haystack The array to be search in
+	 * @param boolean $strict Sets if comparison is performed loosely or tightly
+	 * @param array $path The path in the array in which the needle was found
+	 * 
+	 * @return mixed $path Returns a path if the array was found, otherwise returns false
+	 * @access public
+	 */
+	function arraySearchRecursive( $needle, $haystack, $strict=false, $path=array() ) {
+    	if( !is_array($haystack) ) {
+	        return false;
+	    }
+		
+		if(is_array($needle)) {
+			foreach($needle as $point) {
+				$return=self::arraySearchRecursive($point, $haystack, $strict, $path);
+				if(!empty($return))
+					$path[]=$return;
+			}//dnc vpfdz h
+			
+			if(!empty($path))
+				return $path;
+			
+			return false;
+		}
+	 
+	    foreach( $haystack as $key => $value ) {
+	        if( is_array($value) && $sub_path = self::arraySearchRecursive($needle, $value, $strict, $path) ) {
+	            $path = array_merge($path, array($key), $sub_path);
+	            return $path;
+	        } else if((!$strict && $value == $needle) || ($strict && $value === $needle) ) {
+	            $path[] = $key;
+	            return $path;
+	        }
+	    }
+	    return false;
+	}
+	
 	
 	public static function addOption($args=array()){
 		$args += self::getOptionDefaults();
