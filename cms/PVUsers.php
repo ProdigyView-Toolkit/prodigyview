@@ -340,6 +340,17 @@ class PVUsers extends PVStaticObject {
 		
 	}//end generateResetCode
 	
+	
+	/**
+	 * Adds a user to a role. The should be created first.
+	 * 
+	 * @param id $user_id The id of the user to add the role to.
+	 * @param mixed $role_id The id of the role to add the user too or the name of the role. id is a better option if
+	 * 		  there are multiple roles with the same name
+	 * 
+	 * @return boolean $success Returns true if the user was added, otherwise false.
+	 * @access public
+	 */
 	public static function addUserToRole($user_id, $role_id){
 		
 		if(!PVValidator::isID($role_id) && !empty($role_id)){
@@ -352,15 +363,17 @@ class PVUsers extends PVStaticObject {
 			$user_id=PVDatabase::makeSafe($user_id);
 			$role_id=PVDatabase::makeSafe($role_id);
 			
-			$query="INSERT INTO ".PVDatabase::getUserRolesRelationsTableName()."(user_id, role_id) VALUES('$user_id', '$role_id')";
-			PVDatabase::query($query);
+			$query="SELECT * FROM ".PVDatabase::getUserRolesRelationsTableName()." WHERE user_id='$user_id' AND role_id='$role_id' ";
+			$result = PVDatabase::query($query);
 			
-			return true;
-			
+			if(PVDatabase::resultRowCount($result)<=0) {
+				$query="INSERT INTO ".PVDatabase::getUserRolesRelationsTableName()."(user_id, role_id) VALUES('$user_id', '$role_id')";
+				PVDatabase::query($query);	
+				return true;
+			}
 		}//end
 		
 		return false;
-		
 	}//end addUserTRole
 	
 	/**
