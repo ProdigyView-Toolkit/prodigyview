@@ -645,7 +645,7 @@ class PVTools extends PVStaticObject {
 			PVDatabase::query($query);
 		}
 		else{
-			self::addOption($option_array);
+			self::addOption($args);
 		}
 	
 	}//setOption
