@@ -221,7 +221,7 @@ class PVRouter extends PVStaticObject{
 		}
 		
 		if(!empty($route_options['user_roles'])){
-			if(!PVSecurity::checkUserPermission(PVUsers::getUserRole(), $route_options['user_roles']) && !empty($route_options['user_roles_redirect'])){
+			if(!PVSecurity::checkUserRole(PVUsers::getUserID(), $route_options['user_roles']) && !empty($route_options['user_roles_redirect'])){
 				self::redirect($route_options['user_roles_redirect']);
 			}
 		}
