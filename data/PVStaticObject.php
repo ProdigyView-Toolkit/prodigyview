@@ -35,6 +35,17 @@ class PVStaticObject extends PVPatterns {
 	
 	protected static $_filters;
 	
+	/**
+	 * Adds a value to the classes Collection. By default the collection is stored
+	 * in the public instance data. The stored instance can be retrieved later by called
+	 * in it's key value.
+	 * 
+	 * @param string $index The key or index to store the value at
+	 * @param mixed $value A mixed value that can be anytype
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function set($index, $value) {
 		if(self::$data==null) {
 			self::$data=new PVCollection();
@@ -43,6 +54,14 @@ class PVStaticObject extends PVPatterns {
 		self::$data->addWithName($index, $value);
  	}
 	
+	/**
+	 * Retrieves a value that is in the public data collection or was pass through
+	 * by the set method.
+	 * 
+	 * @param string $index The index to retrieve a value from
+	 * 
+	 * @return mixed $data The data that was stored in that index
+	 */
 	public static function get($index) {
 		if(self::$data==null) {
 			self::$data=new PVCollection();
@@ -50,6 +69,15 @@ class PVStaticObject extends PVPatterns {
 		return self::$data->$index;
  	}
 	
+	/**
+	 * Adds a data to the public collection, index will be assigned. Primary used for adding
+	 * launch quanties of data to the collection,
+	 * 
+	 * @param mixed $data Any information type( Object, Array, etc) to add to the public data collection
+	 * 
+	 * @return void
+	 * @access public	 
+	 */
 	protected static function _addToCollection($data) {
 		if(self::$data==null) {
 			self::$data=new PVCollection();
@@ -57,6 +85,12 @@ class PVStaticObject extends PVPatterns {
 		self::$data->add($data);
 	}//end 
 	
+	/**
+	 * Adds data to the public collection.
+	 * @see seet
+	 * 
+	 * @todo check the relevance of get and set
+	 */
 	protected static function _addToCollectionWithName($name, $data) {
 		if(self::$data==null) {
 			self::$data=new PVCollection();
@@ -64,6 +98,17 @@ class PVStaticObject extends PVPatterns {
 		self::$data->addWithName($name, $data);
 	}//end 
 	
+	/**
+	 * Adds a filter to the class that will affect children/sublassed classes.
+	 * A filter should be associated with the function through the correct name.
+	 * 
+	 * @param string $class The name of the class the filter belongs too
+	 * @param string $method The method or class that the filter is in
+	 * @param string $callback The function to be called that will handle the data to be filters
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function _addFilter($class, $method, $callback){
 		
 		if(!isset(self::$_filters[$class][$method])){
