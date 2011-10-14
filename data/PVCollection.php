@@ -35,11 +35,26 @@ class PVCollection implements IteratorAggregate {
 		$this->dataset=$data;
 		
 	}
-    // Required definition of interface IteratorAggregate
+   
+   	/**
+	 * Returns an iterable object that can iteratered over in a loop.
+	 * 
+	 * @return PVIterator $iterable
+	 * @access public
+	 */
     public function getIterator() {
         return new PVIterator($this->dataset);
     }
 
+	/**
+	 * Adds the passed data to an index in the collection to be
+	 * retrieved later.
+	 * 
+	 * @param mixed $data Passed data can be an array, object and any other value.
+	 * 
+	 * @return void
+	 * @access public
+	 */
     public function add($data) {
     		
     	if(is_array($data)) {
@@ -49,17 +64,39 @@ class PVCollection implements IteratorAggregate {
 		}
     }//end add
     
+    /**
+	 * PHP magic function that returns an index if it is
+	 * in the collection.
+	 * 
+	 * @param string $index An index/key that will pull a value if present
+	 * 
+	 * @return void
+	 * @access public
+	 */
     public function __get($index) {
     	if(isset($this->dataset[$index]))
     		return $this->dataset[$index];
     }
 	
+	/**
+	 * Same as the magic function __get.
+	 * @see get
+	 */
 	 public function get($index) {
     	if(isset($this->dataset[$index]))
     		return $this->dataset[$index];
     }
 	
-    
+    /**
+	 * Adds a value to the collectionn but defines the index
+	 * that it will be sent it.
+	 * 
+	 * @param string $name The name/index/key that will be associated with the passed value
+	 * @param mixed $data The data the will be story associated with thhat key.
+	 * 
+	 * @return void
+	 * @access public
+	 */
     public function addWithName($name, $data) {
     		
     	if(is_array($data)) {
@@ -76,7 +113,16 @@ class PVCollection implements IteratorAggregate {
 class PVIterator implements Iterator {
     private $data = array();
 
-    public function __construct($array) {
+	/**
+	 * Initializes the iterater of information to
+	 * iterate through.
+	 * 
+	 * @param array $array An array of information to make iterabl.e
+	 * 
+	 * @return void
+	 * @access public
+	 */
+    public function __construct($array=array()) {
         if (is_array($array)) {
             $this->data = $array;
         }
