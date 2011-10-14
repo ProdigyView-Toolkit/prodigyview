@@ -33,17 +33,47 @@ class PVPatterns {
 	
 	protected static $_observers=array();
 	
-	protected static function _addAdapter($class, $method, $options) {
+	/**
+	 * Adapters allows completely override the method of another class by calling a different class
+	 * with the same function name.
+	 * 
+	 * @param string $trigger_class  The class that contains the function the adapter will respond too
+	 * @param string $trigger_method The method called that will have the adapter to be called.
+	 * @param string $call_call The new class to be called that has the same method name
+	 * @param array $options An array of options that be called
+	 * 			-'call' _string_ : Assumes that default method in the class to be called is static. If called
+	 * 			needs to be instantiated, change to instance and one will be created before the adapter calld the function
+	 * 			-'call_method' _string_: By default the method to be called to override the current one should be the
+	 * 			same name. But this can be ovveridden to call a different method.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function _addAdapter($trigger_class, $trigger_method, $call_class, $options=array()) {
 		$defaults=array(
 			'call'=> 'static',
-			'class'=>$class,
-			'method'=>$method
+			'call_class'=>$call_class,
+			'class'=>$trigger_class,
+			'method'=>$trigger_method,
+			'call_method=>'=>$trigger_method
 		);
 		$options += $defaults;
 		
 		self::$_adapters[$class][$method]=$options;
 	}
 	
+	/**
+	 * Calls an adapter for this class. The easiest way of implementing an adapter is by placing the
+	 * adapter at the top of the function that it is being called in. An infinite amout of parameters
+	 * can be passed to the adapter BUT the parameters should be the same as the parents.
+	 * 
+	 * @param string $class The name of the class the adapter is in
+	 * @param string $method THe name of the method the class is being called from.
+	 * @param mixed $args An infiniate amout of parameters to passed to this class.
+	 * 
+	 * @return mixed $value A value that the adapter returns
+	 * @access protected
+	 */
 	protected static function _callAdapter($class, $method) {
 		$args = func_get_args();
         array_shift($args);
@@ -54,9 +84,19 @@ class PVPatterns {
             $passasbe_args[$key] = &$arg;
         } 
 		
+		$options=self::$_adapters[$class][$method];
+		if($options['call']=='instance')
+			
+			
+		
 		return call_user_func_array(array($class, $method), $passasbe_args);
 	}//end _callAdapter
 	
+	/**
+	 * Checks if an adapter is set for the function.
+	 * 
+	 * @param string 
+	 */	
 	protected static function _hasAdapter($class, $method) {
 		if(isset(self::$_adapters[$class][$method])) {
 			return TRUE;
