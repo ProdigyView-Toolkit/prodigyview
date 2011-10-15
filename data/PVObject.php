@@ -31,8 +31,6 @@ class PVObject extends PVPatterns {
 	
 	public $data=null;
 	
-	protected $_filters;
-	
 	public function __set($index, $value) {
 		if($this->data==null) {
 			$this->data=new PVCollection();
@@ -60,34 +58,6 @@ class PVObject extends PVPatterns {
 		}
 		$this->data->addWithName($name, $data);
 	}//end 
-	
-	public function _addFilter($class, $method, $callback){
-		
-		if(!isset($this->_filters[$class][$method])){
-			$this->_filters[$class][$method]=array();
-		}
-		
-		array_push($this->_filters[$class][$method], $callback);
-		
-	}//end _addFilter
-	
-	protected function _applyFilter( $class, $method, $data, $default_return){
-		
-		if(!isset($this->_filters[$class][$method])){
-			return $default_return;
-		}
-		
-		if(count($this->_filters[$class][$method])>1){
-			$result=array();
-			foreach($this->_filters[$class][$method] as $function){
-				
-				$result[]=call_user_func ( $function , $data );
-			}
-			return $result;
-		}
-		
-		return call_user_func ( $this->_filters[$class][$method][0] , $data );
-	}
 	
 	protected function getSqlSearchDefaults() {
 		$defaults=array(
