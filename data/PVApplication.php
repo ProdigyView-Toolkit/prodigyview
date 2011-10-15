@@ -29,15 +29,36 @@
 
 abstract class PVApplication extends PVObject {
 	
-	public function commandInterpeter($command, $params) {
+	/**
+	 * Takes in a command and arguements and if the command exist, will pass that command to
+	 * a function with the same name.
+	 * 
+	 * @param string $command The name of the function to be called
+	 * @param mixed $args An infinate amount of parameters that can be passed. to a function.
+	 * 
+	 * @return mixed $return Returns the value of the function that is called
+	 * @access public
+	 */
+	public function commandInterpeter($command) {
+		$args = func_get_args();
+        array_shift($args);
+       
+        $passasbe_args = array();
+        foreach($args as $key => &$arg){
+            $passasbe_args[$key] = &$arg;
+        } 
 		
 		if(function_exists($command)) {
-			return call_user_func_array($command, $params);
+			return call_user_func_array($this->{$command}, $passasbe_args);
 		} else {
 			return $this->defaultFunction($params);	
 		}
 	}
 	
+	/**
+	 * The default function that must be implemented. If the commandIntepreter cannot find a correspoding
+	 * function, this function will be called.
+	 */
 	abstract function defaultFunction($params);
 	
 }//end class
