@@ -29,11 +29,11 @@
 
 class PVPatterns {
 	
-	protected static $_adapters=array();
+	protected $_adapters=array();
 	
-	protected static $_observers=array();
+	protected $_observers=array();
 	
-	protected static $_filters;
+	protected $_filters;
 	
 	/**
 	 * Adapters allows completely override the method of another class by calling a different class
@@ -51,17 +51,17 @@ class PVPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public static function _addAdapter($trigger_class, $trigger_method, $call_class, $options=array()) {
+	public function _addAdapter($trigger_class, $trigger_method, $call_class, $options=array()) {
 		$defaults=array(
 			'object'=> 'static',
 			'call_class'=>$call_class,
 			'class'=>$trigger_class,
 			'method'=>$trigger_method,
-			'call_method=>'=>$trigger_method
+			'call_method'=>$trigger_method
 		);
 		$options += $defaults;
 		
-		self::$_adapters[$class][$method]=$options;
+		$this->_adapters[$trigger_class][$trigger_method]=$options;
 	}
 	
 	/**
@@ -76,7 +76,7 @@ class PVPatterns {
 	 * @return mixed $value A value that the adapter returns
 	 * @access protected
 	 */
-	protected static function _callAdapter($class, $method) {
+	protected function _callAdapter($class, $method) {
 		$args = func_get_args();
         array_shift($args);
         array_shift($args);
@@ -86,13 +86,12 @@ class PVPatterns {
             $passasbe_args[$key] = &$arg;
         } 
 		
-		$options=self::$_adapters[$class][$method];
+		$options=$this->_adapters[$class][$method];
 		if($options['object']=='instance')
-			$call_class=$options['call_class'];
+			return self::_invokeMethod($options['call_class'], $options['call_method'], $passasbe_args);
 		else 
-			$call_class=$options['call_class'].'::';
-		
-		return call_user_func_array(array($class, $options['call_method']), $passasbe_args);
+			return self::_invokeStaticMethod($options['call_class'], $options['call_method'], $passasbe_args);
+			
 	}//end _callAdapter
 	
 	/**
@@ -104,8 +103,8 @@ class PVPatterns {
 	 * @return boolea $hasAdapter Returns true if it has an adapter or false if it doesn not
 	 * @access protected
 	 */	
-	protected static function _hasAdapter($class, $method) {
-		if(isset(self::$_adapters[$class][$method])) {
+	protected function _hasAdapter($class, $method) {
+		if(isset($this->_adapters[$class][$method])) {
 			return TRUE;
 		}
 		return FALSE;
@@ -126,7 +125,7 @@ class PVPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public static function _addObserver($event , $class, $method, $options=array()) {
+	public function _addObserver($event , $class, $method, $options=array()) {
 		$default=array(
 			'object'=>'static',
 			'class'=>$class,
@@ -134,7 +133,7 @@ class PVPatterns {
 		);
 		
 		$options += $default;
-		self::$_observers[$event][]=$options;
+		$this->_observers[$event][]=$options;
 	}//end _addObersver
 	
 	/**
@@ -147,7 +146,7 @@ class PVPatterns {
 	 * @return void
 	 * @access protected
 	 */
-	protected static function _notify($event) {
+	protected function _notify($event) {
 		$args = func_get_args();
         array_shift($args);
        
@@ -156,31 +155,48 @@ class PVPatterns {
             $passasbe_args[$key] = &$arg;
         } 
 		
-		if(isset(self::$_observers[$event])) {
-			foreach(self::$_observers[$event] as $options) {
-				
+		if(isset($this->_observers[$event])) {
+			foreach($this->_observers[$event] as $options) {
+				if($options['object']=='instance')
+					self::_invokeMethod($options['class'], $options['method'], $passasbe_args);
+				else 
+					self::_invokeStaticMethod($options['class'], $options['method'], $passasbe_args);
 			}//end for each
 		}
 		
 	}//end _notify
 	
 	/**
-	 * Adds a filter to the class
+	 * Adds a filter to the class. Filters are for modifying a value within a class and should not
+	 * interpet the normal flow within the method.
 	 * 
 	 * @param string $class The name of the class the filter is going in
 	 * @param string $method The name of the method the filter is in
-	 * @param stinrg $callback Class and function to call back
+	 * @param string $filter_class The class that the filter resides in.
+	 * @param string $filter_method The method in the class that the parameters will be passed too.
+	 * @param array $options Options that can be set for further modifying the filter.
+	 * 			-'object' _string_: If the method being called is static, static should be inserted. If its in an instance, 'instance' should be set.
+	 * 			Default is set to static.
+	 * 			-'event' _string_: Associate this filter with an event.
 	 * 
 	 * @return void
 	 * @access public
 	 */
-	public static function _addFilter($class, $method, $callback){
+	public function _addFilter($class, $method, $filter_class, $filter_method, $options=array()){
+		$defaults=array(
+			'object'=>'static',
+			'class'=>$filter_class,
+			'method'=>$filter_method,
+			'event'=>null
+		);
 		
-		if(!isset(self::$_filters[$class][$method])){
-			self::$_filters[$class][$method]=array();
+		$options += $defaults;
+		
+		if(!isset($this->_filters[$class][$method])){
+			$this->_filters[$class][$method]=array();
 		}
 		
-		array_push(self::$_filters[$class][$method], $callback);
+		array_push($this->_filters[$class][$method], $options);
 		
 	}//end _addFilter
 	
@@ -190,28 +206,33 @@ class PVPatterns {
 	 * @param string $class The name of the class the filter is in
 	 * @param string $method The method the filter is in
 	 * @param mixed $data The data that is being passed to the filter
-	 * @param mixed $default_return The data that is returned if no filter exist
-	 * @param array $options Options to be passed to the filter
+	 * @param array $options options to be passed to the filter. Passed options we be passed to the function.
+	 * 			-'default_return' _mixed_: If no filter is return, the data passed in by default will be return. Can be overriden
+	 * 			-'event' _string_: An event to associate with the filter. Default is null
 	 * 
 	 * @return mixed $data The data the function returns
 	 * @access protected
 	 */
-	protected static function _applyFilter( $class, $method, $data, $default_return, $options=array()){
+	protected function _applyFilter( $class, $method, $data, $options=array()){
+		$defaults=array('default_return'=>$data, 'event'=>null);
+		$options += $defaults;
 		
-		if(!isset(self::$_filters[$class][$method])){
-			return $default_return;
+		if(!isset($this->_filters[$class][$method])){
+			return $options ['default_return'];
 		}
 		
-		if(count(self::$_filters[$class][$method])>1){
-			$result=array();
-			foreach(self::$_filters[$class][$method] as $function){
+		$passable_args=array($data, $options);
+		
+		foreach($this->_filters[$class][$method] as $function){
 				
-				$result[]=call_user_func ( $function , $data, $options );
+			if($function['event']==$options['event']) {
+				if($function['object']=='instance')
+					$passable_args[0]=$this->_invokeMethod($function['class'], $function['method'], $passable_args);
+				else 
+					$passable_args[0]=$this->_invokeStaticMethod($function['class'], $function['method'], $passable_args);
 			}
-			return $result;
 		}
-		
-		return call_user_func ( $this->_filters[$class][$method][0] , $data );
+		return $passable_args[0];
 	}
 	
 	/**
@@ -220,42 +241,91 @@ class PVPatterns {
 	 * @param string $class The class the filter is in
 	 * @param string $method The method of the class that the filter is in
 	 */
-	protected static function _hasFilter($class, $method) {
-		if(isset(self::$_filters[$class][$method]))
+	protected function _hasFilter($class, $method) {
+		if(isset($this->_filters[$class][$method]))
 			return TRUE;
 		return false;
 	}
 	
-	
-	protected static function _invokeMethod($class, $method, $args) {
+	/**
+	 * Calls a methods that is an instance of an class. This method is generally
+	 * faster than using user_call_func_array.
+	 * 
+	 * @param string $class The name of the class to be called
+	 * @param string $method The name of the method in the class to be called
+	 * @param array $args An array of arguements. Arguements have to be embedded in an array to be called.
+	 * 
+	 * @return mixed $data Data returned by the function called
+	 * @access protected
+	 */
+	protected function _invokeMethod($class, $method, $args) {
+		if(!is_object($class))
+			$class=new $class();
+		
 		switch(count($args)): 
 	        case 0: 
-	        	$class->{$method}(); 
+	        	return $class->{$method}(); 
 	        	break; 
 	        case 1: 
-	        	$class->{$method}($args[0]); 
+	        	return $class->{$method}($args[0]); 
 	        	break; 
 	        case 2: 
-	        	$class->{$method}($args[0], $args[1]); 
+	        	return $class->{$method}($args[0], $args[1]); 
 	        	break; 
 	        case 3: 
-	        	$class->{$method}($args[0], $args[1], $args[2]); 
+	        	return $class->{$method}($args[0], $args[1], $args[2]); 
 	        	break; 
 	        case 4: 
-	        	$class->{$method}($args[0], $args[1], $args[2], $args[3]); 
+	        	return $class->{$method}($args[0], $args[1], $args[2], $args[3]); 
 	        	break; 
 	        case 5: 
-	        	$class->{$method}($args[0], $args[1], $args[2], $args[3], $args[4]); 
+	        	return $class->{$method}($args[0], $args[1], $args[2], $args[3], $args[4]); 
 	        	break; 
 	        default: 
-	        	call_user_func_array(array($class, $method), $args);  
+	        	return call_user_func_array(array($class, $method), $args);  
 	        	break; 
 	    endswitch; 
 		
 	}//end _invokeMethod
 	
-	protected static function _invokeMethodArray($class, $name, $args) {
+	/**
+	 * Calls a methods that is a method of a class. This method is generally
+	 * faster than using user_call_func_array.
+	 * 
+	 * @param string $class The name of the class to be called
+	 * @param string $method The name of the method in the class to be called
+	 * @param array $args An array of arguements. Arguements have to be embedded in an array to be called.
+	 * 
+	 * @return mixed $data Data returned by the function called
+	 * @access protected
+	 */
+	protected function _invokeStaticMethod($class, $method, $args) {
+		switch(count($args)): 
+	        case 0: 
+	        	return $class::$method(); 
+	        	break; 
+	        case 1: 
+	        	return $class::$method($args[0]); 
+	        	break; 
+	        case 2: 
+	        	return $class::$method($args[0], $args[1]); 
+	        	break; 
+	        case 3: 
+	        	return $class::$method($args[0], $args[1], $args[2]); 
+	        	break; 
+	        case 4: 
+	        	return $class::$method($args[0], $args[1], $args[2], $args[3]); 
+	        	break; 
+	        case 5: 
+	        	return $class::$method($args[0], $args[1], $args[2], $args[3], $args[4]); 
+	        	break; 
+	        default: 
+	        	return call_user_func_array(array($class, $method), $args);  
+	        	break; 
+	    endswitch; 
 		
-	}
+	}//end _invokeMethod
+	
+	
 }
 	
