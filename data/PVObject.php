@@ -29,35 +29,39 @@
 
 class PVObject extends PVPatterns {
 	
-	public $data=null;
+	protected $_collection=null;
 	
 	public function __set($index, $value) {
-		if($this->data==null) {
-			$this->data=new PVCollection();
+		if($this->_collection==null) {
+			$this->_collection=new PVCollection();
 		}
-		$this->data->addWithName($index, $value);
+		$this->_collection->addWithName($index, $value);
  	}
 	
 	public function __get($index) {
-		if($this->data==null) {
-			$this->data=new PVCollection();
+		if($this->_collection==null) {
+			$this->_collection=new PVCollection();
 		}
-		return $this->data->get($index);
+		return $this->_collection->get($index);
  	}
 	
 	protected function _addToCollection($data) {
-		if($this->data==null) {
-			$this->data=new PVCollection();
+		if($this->_collection==null) {
+			$this->_collection=new PVCollection();
 		}
-		$this->data->add($data);
+		$this->_collection->add($data);
 	}//end 
 	
 	protected function _addToCollectionWithName($name, $data) {
-		if($this->data==null) {
-			$this->data=new PVCollection();
+		if($this->_collection==null) {
+			$this->_collection=new PVCollection();
 		}
-		$this->data->addWithName($name, $data);
+		$this->_collection->addWithName($name, $data);
 	}//end 
+	
+	public function _getIterator() {
+		return $this->_collection->getIterator();
+	}
 	
 	protected function getSqlSearchDefaults() {
 		$defaults=array(
