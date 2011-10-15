@@ -112,6 +112,19 @@ class PVCollection implements IteratorAggregate {
 		
 		$this->count++;
     }//end add
+    
+    /**
+	 * Remove a value the index that the item is currently location.
+	 * 
+	 * @param mixed $index The index can either be a int or string
+	 * 
+	 * @return voic
+	 * @access public
+	 */
+    public function remove($index) {
+    	if(isset($this->dataset[$index])) 
+    		unset($this->dataset[$index]);
+    }
 
 }//end class
 
@@ -133,25 +146,77 @@ class PVIterator implements Iterator {
         }
     }
 
+	/**
+	 * Sets the pointer to the first index in the array
+	 * 
+	 * @return void
+	 * @access public
+	 */
     public function rewind() {
         reset($this->data);
     }
+	
+	/**
+	 * Moves the pointer to the last index in the array and returns
+	 * the value of the last index
+	 * 
+	 * @return mixed $value
+	 * @access public
+	 */
+	public function last() {
+		return end($this->data);
+	}
   
+  	/**
+	 * Returns the value of the current index in the array.
+	 * 
+	 * @return mixed $value
+	 * @access public
+	 */
     public function current() {
         $data = current($this->data);
         return $data;
     }
   
+  	/**
+	 * Returns the key value of the current index
+	 * 
+	 * @return mixed $key
+	 * @access public
+	 */
     public function key()  {
         $data = key($this->data);
         return $data;
     }
-  
+  	
+	/**
+	 * Returns the value of the next pointer in the array
+	 * 
+	 * @return mixed $value
+	 * @access public
+	 */
     public function next() {
         $data = next($this->data);
         return $data;
     }
+	
+	/**
+	 * Returns the value of the previous pointer in the array
+	 * 
+	 * @return mixed $value
+	 * @access public
+	 */
+	public function previous() {
+		 $data = prev($this->data);
+        return $data;
+	}
   
+  	/**
+	 * Determines if the key exist, and then returns the associated data
+	 * 
+	 * @return mixed $value
+	 * @access public
+	 */
     public function valid() {
         $key = key($this->data);
         $data = ($key !== NULL && $key !== FALSE);
