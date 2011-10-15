@@ -39,7 +39,7 @@ abstract class PVApplication extends PVObject {
 	 * @return mixed $return Returns the value of the function that is called
 	 * @access public
 	 */
-	public function commandInterpeter($command) {
+	public function commandInterpreter($command) {
 		$args = func_get_args();
         array_shift($args);
        
@@ -48,10 +48,10 @@ abstract class PVApplication extends PVObject {
             $passasbe_args[$key] = &$arg;
         } 
 		
-		if(function_exists($command)) {
-			return call_user_func_array($this->{$command}, $passasbe_args);
+		if(method_exists ($this,$command)) {
+			return $this->_invokeMethod($this, $command, $passasbe_args);
 		} else {
-			return $this->defaultFunction($params);	
+			return $this->_invokeMethod($this, 'defaultFunction', $passasbe_args);
 		}
 	}
 	
@@ -59,7 +59,7 @@ abstract class PVApplication extends PVObject {
 	 * The default function that must be implemented. If the commandIntepreter cannot find a correspoding
 	 * function, this function will be called.
 	 */
-	abstract function defaultFunction($params);
+	abstract function defaultFunction($params=array());
 	
 }//end class
 	
