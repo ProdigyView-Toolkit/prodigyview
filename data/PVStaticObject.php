@@ -27,13 +27,11 @@
 *or implied, of ProdigyView LLC.
 */
 
-class PVStaticObject extends PVPatterns {
+class PVStaticObject extends PVStaticPatterns {
 	
-	public static $data=null;
+	public static $_collection=null;
 	
-	private static $instance;
-	
-	protected static $_filters;
+	private static $_instance;
 	
 	/**
 	 * Adds a value to the classes Collection. By default the collection is stored
@@ -46,12 +44,12 @@ class PVStaticObject extends PVPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public static function set($index, $value) {
-		if(self::$data==null) {
-			self::$data=new PVCollection();
+	public static function _set($index, $value) {
+		if(self::$_collection==null) {
+			self::$_collection=new PVCollection();
 		}
 		
-		self::$data->addWithName($index, $value);
+		self::$_collection->addWithName($index, $value);
  	}
 	
 	/**
@@ -62,11 +60,11 @@ class PVStaticObject extends PVPatterns {
 	 * 
 	 * @return mixed $data The data that was stored in that index
 	 */
-	public static function get($index) {
-		if(self::$data==null) {
-			self::$data=new PVCollection();
+	public static function _get($index) {
+		if(self::$_collection==null) {
+			self::$_collection=new PVCollection();
 		}
-		return self::$data->$index;
+		return self::$_collection->$index;
  	}
 	
 	/**
@@ -79,10 +77,10 @@ class PVStaticObject extends PVPatterns {
 	 * @access public	 
 	 */
 	protected static function _addToCollection($data) {
-		if(self::$data==null) {
-			self::$data=new PVCollection();
+		if(self::$_collection==null) {
+			self::$_collection=new PVCollection();
 		}
-		self::$data->add($data);
+		self::$_collection->add($data);
 	}//end 
 	
 	/**
@@ -92,49 +90,14 @@ class PVStaticObject extends PVPatterns {
 	 * @todo check the relevance of get and set
 	 */
 	protected static function _addToCollectionWithName($name, $data) {
-		if(self::$data==null) {
-			self::$data=new PVCollection();
+		if(self::$_collection==null) {
+			self::$_collection=new PVCollection();
 		}
-		self::$data->addWithName($name, $data);
+		self::$_collection->addWithName($name, $data);
 	}//end 
 	
-	/**
-	 * Adds a filter to the class that will affect children/sublassed classes.
-	 * A filter should be associated with the function through the correct name.
-	 * 
-	 * @param string $class The name of the class the filter belongs too
-	 * @param string $method The method or class that the filter is in
-	 * @param string $callback The function to be called that will handle the data to be filters
-	 * 
-	 * @return void
-	 * @access public
-	 */
-	public static function _addFilter($class, $method, $callback){
-		
-		if(!isset(self::$_filters[$class][$method])){
-			self::$_filters[$class][$method]=array();
-		}
-		
-		array_push(self::$_filters[$class][$method], $callback);
-		
-	}//end _addFilter
-	
-	protected static function _applyFilter( $class, $method, $data, $default_return){
-		
-		if(!isset(self::$_filters[$class][$method])){
-			return $default_return;
-		}
-		
-		if(count(self::$_filters[$class][$method])>1){
-			$result=array();
-			foreach(self::$_filters[$class][$method] as $function){
-				
-				$result[]=call_user_func ( $function , $data );
-			}
-			return $result;
-		}
-		
-		return call_user_func ( self::$_filters[$class][$method][0] , $data );
+	public function _getIterator() {
+		return self::$_collection->getIterator();
 	}
 	
 	protected static function _getSqlSearchDefaults() {
@@ -166,11 +129,11 @@ class PVStaticObject extends PVPatterns {
 	
   	public static function getInstance() { 
 
-    	if(!self::$instance) { 
-      		self::$instance = new self(); 
+    	if(!self::$_instance) { 
+      		self::$_instance = new self(); 
     	} 
 
-    	return self::$instance;
+    	return self::$_instance;
   	} 
 	
 }//end class
