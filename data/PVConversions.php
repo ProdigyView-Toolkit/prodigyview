@@ -28,6 +28,14 @@
 */
 class PVConversions {
 	
+	/**
+	 * Converts an array to an object using the stdClass,
+	 * 
+	 * @param array $data An array of data
+	 * 
+	 * @return stdClass $data The return array in an object format
+	 * @access public
+	 */
 	public static function arrayToObject($data) {
     	if(!is_array($data)) {
         	return $data;
@@ -50,6 +58,15 @@ class PVConversions {
 	    }
 	}
 	
+	/**
+	 * Converts an object to type array. Keep in mind that that private and protected
+	 * variables may not be returned
+	 * 
+	 * @param object $object An object
+	 * 
+	 * @return array $array, The passed object in array formart/
+	 * @access public
+	 */
 	 public static function objectToArray( $object ) {
         if( !is_object( $object ) && !is_array( $object ) ) {
             return $object;
