@@ -31,9 +31,14 @@ class PVCollection implements IteratorAggregate {
     private $dataset = array();
     private $count = 0;
 
+	/**
+	 * The constructor of this class takes in an array and passes
+	 * it the collection.
+	 * 
+	 * @param array $array An array of data
+	 */
 	public function __construct($data=array()) {
 		$this->dataset=$data;
-		
 	}
    
    	/**
