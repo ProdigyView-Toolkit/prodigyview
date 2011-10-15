@@ -33,6 +33,8 @@ class PVPatterns {
 	
 	protected static $_observers=array();
 	
+	protected static $_filters;
+	
 	/**
 	 * Adapters allows completely override the method of another class by calling a different class
 	 * with the same function name.
@@ -41,7 +43,7 @@ class PVPatterns {
 	 * @param string $trigger_method The method called that will have the adapter to be called.
 	 * @param string $call_call The new class to be called that has the same method name
 	 * @param array $options An array of options that be called
-	 * 			-'call' _string_ : Assumes that default method in the class to be called is static. If called
+	 * 			-'object' _string_ : Assumes that default method in the class to be called is static. If called
 	 * 			needs to be instantiated, change to instance and one will be created before the adapter calld the function
 	 * 			-'call_method' _string_: By default the method to be called to override the current one should be the
 	 * 			same name. But this can be ovveridden to call a different method.
@@ -51,7 +53,7 @@ class PVPatterns {
 	 */
 	public static function _addAdapter($trigger_class, $trigger_method, $call_class, $options=array()) {
 		$defaults=array(
-			'call'=> 'static',
+			'object'=> 'static',
 			'call_class'=>$call_class,
 			'class'=>$trigger_class,
 			'method'=>$trigger_method,
@@ -85,17 +87,22 @@ class PVPatterns {
         } 
 		
 		$options=self::$_adapters[$class][$method];
-		if($options['call']=='instance')
-			
-			
+		if($options['object']=='instance')
+			$call_class=$options['call_class'];
+		else 
+			$call_class=$options['call_class'].'::';
 		
-		return call_user_func_array(array($class, $method), $passasbe_args);
+		return call_user_func_array(array($class, $options['call_method']), $passasbe_args);
 	}//end _callAdapter
 	
 	/**
 	 * Checks if an adapter is set for the function.
 	 * 
-	 * @param string 
+	 * @param string class The associated class the function is calling
+	 * @param string $method The associated method
+	 * 
+	 * @return boolea $hasAdapter Returns true if it has an adapter or false if it doesn not
+	 * @access protected
 	 */	
 	protected static function _hasAdapter($class, $method) {
 		if(isset(self::$_adapters[$class][$method])) {
@@ -104,16 +111,150 @@ class PVPatterns {
 		return FALSE;
 	}
 	
-	protected static function _addObserver() {
+	/**
+	 * Adds an observer to the class. Observer events can fired in any method
+	 * to trigger a response.
+	 * 
+	 * @param string $event The name of the event that will cause a certain class and method to fire
+	 * @param string $class The name of the class that contains the function that will be fired for this event
+	 * @param string $method The name of the method that will be fired when the event occurs
+	 * @param array $options Options to further the define the firing of an event
+	 * 			-'object' _string_ : If the method being called is static, should be set to static. Else set to instance
+	 * 			-'class' _stinrg_ : The name of the class to be called. Default is the class that is passed in.
+	 * 			-'method' _string_: The name of the method to be called. Default is the method that is passed in.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function _addObserver($event , $class, $method, $options=array()) {
+		$default=array(
+			'object'=>'static',
+			'class'=>$class,
+			'method'=>$method
+		);
 		
+		$options += $default;
+		self::$_observers[$event][]=$options;
+	}//end _addObersver
+	
+	/**
+	 * Calls any functions that have been added to the observer if the event is present in the 
+	 * observers array.
+	 * 
+	 * @param string $event The name of the even that occured that will trigger notifies
+	 * @param mixed $args An array of infinite arguements that will passed to each function related to the event
+	 * 
+	 * @return void
+	 * @access protected
+	 */
+	protected static function _notify($event) {
+		$args = func_get_args();
+        array_shift($args);
+       
+        $passasbe_args = array();
+        foreach($args as $key => &$arg){
+            $passasbe_args[$key] = &$arg;
+        } 
+		
+		if(isset(self::$_observers[$event])) {
+			foreach(self::$_observers[$event] as $options) {
+				
+			}//end for each
+		}
+		
+	}//end _notify
+	
+	/**
+	 * Adds a filter to the class
+	 * 
+	 * @param string $class The name of the class the filter is going in
+	 * @param string $method The name of the method the filter is in
+	 * @param stinrg $callback Class and function to call back
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function _addFilter($class, $method, $callback){
+		
+		if(!isset(self::$_filters[$class][$method])){
+			self::$_filters[$class][$method]=array();
+		}
+		
+		array_push(self::$_filters[$class][$method], $callback);
+		
+	}//end _addFilter
+	
+	/**
+	 * Apply a fitler if filter is set.
+	 * 
+	 * @param string $class The name of the class the filter is in
+	 * @param string $method The method the filter is in
+	 * @param mixed $data The data that is being passed to the filter
+	 * @param mixed $default_return The data that is returned if no filter exist
+	 * @param array $options Options to be passed to the filter
+	 * 
+	 * @return mixed $data The data the function returns
+	 * @access protected
+	 */
+	protected static function _applyFilter( $class, $method, $data, $default_return, $options=array()){
+		
+		if(!isset(self::$_filters[$class][$method])){
+			return $default_return;
+		}
+		
+		if(count(self::$_filters[$class][$method])>1){
+			$result=array();
+			foreach(self::$_filters[$class][$method] as $function){
+				
+				$result[]=call_user_func ( $function , $data, $options );
+			}
+			return $result;
+		}
+		
+		return call_user_func ( $this->_filters[$class][$method][0] , $data );
 	}
 	
-	protected static function _fireEvent($event_type) {
-		//foreach($_observers[$event_type])
-		//self::_notify($obj, $event)
+	/**
+	 * Checks if a filter has been set.
+	 * 
+	 * @param string $class The class the filter is in
+	 * @param string $method The method of the class that the filter is in
+	 */
+	protected static function _hasFilter($class, $method) {
+		if(isset(self::$_filters[$class][$method]))
+			return TRUE;
+		return false;
 	}
 	
-	protected static function _notify($obj, $event) {
+	
+	protected static function _invokeMethod($class, $method, $args) {
+		switch(count($args)): 
+	        case 0: 
+	        	$class->{$method}(); 
+	        	break; 
+	        case 1: 
+	        	$class->{$method}($args[0]); 
+	        	break; 
+	        case 2: 
+	        	$class->{$method}($args[0], $args[1]); 
+	        	break; 
+	        case 3: 
+	        	$class->{$method}($args[0], $args[1], $args[2]); 
+	        	break; 
+	        case 4: 
+	        	$class->{$method}($args[0], $args[1], $args[2], $args[3]); 
+	        	break; 
+	        case 5: 
+	        	$class->{$method}($args[0], $args[1], $args[2], $args[3], $args[4]); 
+	        	break; 
+	        default: 
+	        	call_user_func_array(array($class, $method), $args);  
+	        	break; 
+	    endswitch; 
+		
+	}//end _invokeMethod
+	
+	protected static function _invokeMethodArray($class, $name, $args) {
 		
 	}
 }
