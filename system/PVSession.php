@@ -169,6 +169,17 @@ class PVSession extends PVStaticObject {
 		   return $cookie_value;
 	}
 	
+	/**
+	 * Removes a cookie from the system,
+	 * 
+	 * @param string $name The name/key of the current cookie
+	 * @param array $options Options than can be defined to customize the cookie deletion process
+	 * 			-'hash_session' _boolean: If the cookie is hashed, use this to delete it.
+	 * 			-'cookie_path' _string_: The path where the cookie is to be stored
+	 * 			-'cookie_domain' _string_: The domain the that the cookie resides on
+	 * 			-'cookie_secure' _boolean_:
+	 * 			-'cookie_httponly' _boolean_:
+	 */
 	public static function deleteCookie($name, $options=array()){
 		$options += self::getCookieDefaults();
 		extract($options);
@@ -176,7 +187,7 @@ class PVSession extends PVStaticObject {
 		if($options['hash_cookie'])
 			$name=PVSecurity::encrypt($name);
 		
-		setcookie($name, NULL, time()-4800,$cookie_path, $cookie_path, $cookie_secure, $cookie_httponly);
+		setcookie($name, NULL, time()-4800,$cookie_path, $cookie_domain, $cookie_secure, $cookie_httponly);
 		unset($_COOKIE[$name]);
 	}
 	/**
@@ -188,7 +199,7 @@ class PVSession extends PVStaticObject {
 	 * @param string value The value that will be stored in the session
 	 * @param array options Options that can be changed that will ovveride the
 	 * 		  values passed in the init
-	 * 			-'hash_session' _boolean: Has a season so its value is not easily readable
+	 * 			-'hash_session' _boolean: Hash a session so its value is not easily readable
 	 * 
 	 * @return void
 	 * @access public
