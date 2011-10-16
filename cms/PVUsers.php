@@ -834,10 +834,10 @@ class PVUsers extends PVStaticObject {
 			$role_type=$row['role_type'];
 			$user_access_level=$row['user_access_level'];
 			$roles=self::getAssignedUserRoles($user_id);
-			self::setUserSession($user_id, $username, $email , $roles, $user_access_level );
+			self::setUserSession($row,  $roles );
 			
 			if($options['set_cookie']){
-				self::setUserCookies($user_id, $username, $email, $roles, $user_access_level );
+				self::setUserCookies($row,  $roles);
 			}
 		}
 		
