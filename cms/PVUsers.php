@@ -906,34 +906,31 @@ class PVUsers extends PVStaticObject {
 	
 	}//end getOnlineUsersSession
 	
+	/**
+	 * Logs out a user by removing all the session and cookie variables
+	 * that are in the user's table. Session will be destroyed if it exist.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function logout(){
 		
-		if(isset($_SESSION['pv_userid'])){
+		if(PVSession::readSession('user_id')){
 			$session_exist=true;
 		}
-
+		
 		$user_info=self::getUserInfo(self::getUserID());
 		
-		unset($_SESSION['pv_userid']);
-		unset($_SESSION['pv_username']);
-		unset($_SESSION['pv_useremail']);
-		unset($_SESSION['pv_role_id']);
-		unset($_SESSION['pv_role_type']);
-		unset($_SESSION['pv_access_level']);
-		
-		setcookie("pv_userid", $user_info['user_id'], time()-4800);
-		setcookie("pv_username", $user_info['username'] , time()-4800);
-		setcookie("pv_useremail", $user_info['user_email'], time()-4800);
-		setcookie("pv_role_id", $role_id, time()-4800);
-		setcookie("pv_role_type", $role_type, time()-4800);
-		setcookie("pv_access_level", $pv_access_level, time()-4800);
+		foreach($user_info as $key=>$value ){
+			if(!PVValidator::isInteger($key)) {
+				PVSession::deleteSession($key);
+				PVSession::deleteCookie($key);
+			}
+		}
 		
 		if($session_exist){
 			session_destroy();
 		}
-		
-		
-
 	}//end logout
 	
 	public static function getUserList($args=array()){
