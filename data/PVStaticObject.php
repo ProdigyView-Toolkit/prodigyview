@@ -97,6 +97,9 @@ class PVStaticObject extends PVStaticPatterns {
 	}//end 
 	
 	public function _getIterator() {
+		if(self::$_collection==null) {
+			self::$_collection=new PVCollection();
+		}
 		return self::$_collection->getIterator();
 	}
 	
@@ -128,9 +131,9 @@ class PVStaticObject extends PVStaticPatterns {
 	}
 	
   	public static function getInstance() { 
-
-    	if(!self::$_instance) { 
-      		self::$_instance = new self(); 
+    	if(!self::$_instance) {
+    		$class=get_class(); 
+      		self::$_instance = new $class(); 
     	} 
 
     	return self::$_instance;
