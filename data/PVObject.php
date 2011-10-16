@@ -60,6 +60,9 @@ class PVObject extends PVPatterns {
 	}//end 
 	
 	public function _getIterator() {
+		if($this->_collection==null) {
+			$this->_collection=new PVCollection();
+		}
 		return $this->_collection->getIterator();
 	}
 	
