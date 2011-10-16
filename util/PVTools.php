@@ -28,10 +28,6 @@
 */
 class PVTools extends PVStaticObject {
 	
-	function __construct(){
-		
-	}//end constructor
-	
 	public static function includeDirectory($path_to_directory){
 	
 		// Loop through directory, strip out . and ..
@@ -296,7 +292,21 @@ class PVTools extends PVStaticObject {
 	    return false;
 	}
 	
-	
+	/**
+	 * Adds an options to the options collection to be retrieved later. Options is any data that is stored by a multiple
+	 * set of keys.
+	 * 
+	 * @param array $args The Arguements that make up the option
+	 * 			-'app_id' _id_: The id of the application this option is associated with
+	 * 			-'user_id' _id_: The id of the user this option is associated with
+	 * 			-'content_id' _id_: The id of the content this option is associated with
+	 * 			-'option_name' _string_: The name of the option
+	 * 			-'option_value' _mixed_: The information to be stored in this option.
+	 * 			-'option_type' _string_: The type of option this option is considered to be, if any
+	 * 
+	 * @return id $option_id The id of the new option
+	 * @access public
+	 */
 	public static function addOption($args=array()){
 		$args += self::getOptionDefaults();
 		$args = PVDatabase::makeSafe($args);
@@ -308,6 +318,21 @@ class PVTools extends PVStaticObject {
 		return $option_id;
 	}//end addOption
 	
+	/**
+	 * Retrieved a list of the options stored. Follows the ProdigyView Standard Search.
+	 * 
+	 * @param array $args The Arguements that make up the option that can be search for
+	 * 			-'app_id' _id_: The id of the application this option is associated with
+	 * 			-'user_id' _id_: The id of the user this option is associated with
+	 * 			-'content_id' _id_: The id of the content this option is associated with
+	 * 			-'option_name' _string_: The name of the option
+	 * 			-'option_value' _mixed_: The information to be stored in this option.
+	 * 			-'option_type' _string_: The type of option this option is considered to be, if any
+	 * 			-'option_date'_date_: The date of the object
+	 * 
+	 * @return array $options A list of options retrieved based on the passed parameters
+	 * @access public
+	 */
 	public static function getOptionList($args=array()){
 		$args += self::getOptionDefaults();
 		$args += self::_getSqlSearchDefaults();
@@ -545,22 +570,44 @@ class PVTools extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-		
     	return $content_array;
 	}//end getOptionList
 	
-	
+	/**
+	 * Retrieves an option by the ID of the option.
+	 * 
+	 * @param id $option_id The id of the option to be retrieved
+	 * 
+	 * @return array $option The data associated with the option
+	 * @access public
+	 */
 	public static function getOptionByID($option_id){
 	
 		if(!empty($option_id)){
 			$query="SELECT option_id, app_id, user_id , content_id, option_name, option_value , option_type FROM ".pv_getOptionsTableName()." WHERE option_id= '$option_id' ";	
 			$result = PVDatabase::query($query);
-			
-			return $row = PVDatabase::fetchArray($result);
+			$row = PVDatabase::fetchArray($result);
+			$row= PVDatabase::formatData($row);
+			return $row;
 		}//end
 	
 	}//end
 	
+	/**
+	 * Update an option based upon the option's ID.
+	 * 
+	 *  @param array $args The Arguements that can be updated
+	 * 			-'app_id' _id_: The id of the application this option is associated with
+	 * 			-'user_id' _id_: The id of the user this option is associated with
+	 * 			-'content_id' _id_: The id of the content this option is associated with
+	 * 			-'option_name' _string_: The name of the option
+	 * 			-'option_value' _mixed_: The information to be stored in this option.
+	 * 			-'option_type' _string_: The type of option this option is considered to be, if any
+	 * 			-'option_id' _id_: Cannot be updated by used as the key for identying which row to update
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function updateOption($args=array()){
 		$args += self::getOptionDefaults();
 		$args = PVDatabase::makeSafe($args);
@@ -574,10 +621,26 @@ class PVTools extends PVStaticObject {
 		
 	}//end update updateUpdate
 	
+	/**
+	 * Set an option based upon the values passed. If the update exist, the update will be updated. Otherwise the option wil created. A new vs old
+	 * option is decided on if the following fields can be matched 'option_name', 'option_type', 'user_id', 'app_id', 'content_id'. Changing any
+	 * one of these will be considered a new option.
+	 * 
+	 * @param array $args The Arguements that can be used to set the option
+	 * 			-'app_id' _id_: The id of the application this option is associated with
+	 * 			-'user_id' _id_: The id of the user this option is associated with
+	 * 			-'content_id' _id_: The id of the content this option is associated with
+	 * 			-'option_name' _string_: The name of the option
+	 * 			-'option_value' _mixed_: The information to be stored in this option.
+	 * 			-'option_type' _string_: The type of option this option is considered to be, if any
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function setOption($args=array()){
 		$args += self::getOptionDefaults();
-		$args = PVDatabase::makeSafe($args);
-		extract($args);
+		$search_args = PVDatabase::makeSafe($args);
+		extract($search_args);
 		
 		$WHERE_CLAUSE="";
 	    	
@@ -650,6 +713,21 @@ class PVTools extends PVStaticObject {
 	
 	}//setOption
 	
+	/**
+	 * Retrieves the data of an option that has been stored based on the value parameters:
+	 * 'option_name', 'option_type', 'user_id', 'app_id', 'content_id'
+	 * 
+	 * @param array $args The Arguements that can be used to get the options value
+	 * 			-'app_id' _id_: The id of the application this option is associated with
+	 * 			-'user_id' _id_: The id of the user this option is associated with
+	 * 			-'content_id' _id_: The id of the content this option is associated with
+	 * 			-'option_name' _string_: The name of the option
+	 * 			-'option_value' _mixed_: The information to be stored in this option.
+	 * 			-'option_type' _string_: The type of option this option is considered to be, if any
+	 * 
+	 * @return array $data The data associated with the search parameters
+	 * @access public
+	 */
 	public static function getOption($args=array()){
 		$args += self::getOptionDefaults();
 		$args = PVDatabase::makeSafe($args);
@@ -718,7 +796,7 @@ class PVTools extends PVStaticObject {
 	
 		if(PVDatabase::resultRowCount($result) > 0){
 			$row=PVDatabase::fetchArray($result);
-			
+			$row=PVDatabase::formatData($row);
 			return $row;
 		}
 		
@@ -726,6 +804,20 @@ class PVTools extends PVStaticObject {
 	
 	}//setOption
 	
+	/**
+	 * Retrieves the value of an option that has been stored based on the value parameters:
+	 * 'option_name', 'option_type', 'user_id', 'app_id', 'content_id'
+	 * 
+	 * @param array $args The Arguements that can be used to get the options value
+	 * 			-'app_id' _id_: The id of the application this option is associated with
+	 * 			-'user_id' _id_: The id of the user this option is associated with
+	 * 			-'content_id' _id_: The id of the content this option is associated with
+	 * 			-'option_name' _string_: The name of the option
+	 * 			-'option_type' _string_: The type of option this option is considered to be, if any
+	 * 
+	 * @return mixed $value The value of the retrieved option
+	 * @access public
+	 */
 	public static function getOptionValue($args=array()){
 		$row=self::getOption($args);
 		
@@ -734,12 +826,19 @@ class PVTools extends PVStaticObject {
 		}
 	}//end getOption
 	
+	/**
+	 * Delete an option based upon the id of the option.
+	 * 
+	 * @param id $option_id The id of the option to be deleted
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deleteOption($option_id, $deleteChildrenOptions=false){
 		
-		$option_id=ceil($option_id);
+		$option_id=PVDatabase::makeSafe($option_id);
 		
 		if(!empty($option_id)){
-			
 			$query="DELETE FROM ".pv_getOptionsTableName()." WHERE option_id='$option_id' ";
 			PVDatabase::query($query);
 		}//end if
