@@ -35,10 +35,10 @@ class PVUsers extends PVStaticObject {
 	 * @return boolean logged_in: True if logged in, else false
 	 */
 	public static function checkLogin(){
-		if(PVSession::readCookie('pv_username')){
+		if(PVSession::readCookie('user_id')){
 			return true;
 		}
-		else if(PVSession::readSession('pv_username')){
+		else if(PVSession::readSession('user_id')){
 			return true;
 		}
 		return false;
@@ -50,53 +50,53 @@ class PVUsers extends PVStaticObject {
 	 * @return boolean logged_in: True if logged in, else false
 	 */
 	public static function getUserID(){
-		if(PVSession::readCookie('pv_userid')){
-			return PVSession::readCookie('pv_userid');	
+		if(PVSession::readCookie('user_id')){
+			return PVSession::readCookie('user_id');	
 		}
-		else if(PVSession::readSession('pv_userid')){
-			return PVSession::readSession('pv_userid');
+		else if(PVSession::readSession('user_id')){
+			return PVSession::readSession('user_id');
 		}
 		return false;
 	}//end getUserID
 	
 	
 	public static function getUserName(){
-		if(PVSession::readCookie('pv_username')){
-			return PVSession::readCookie('pv_username');
+		if(PVSession::readCookie('username')){
+			return PVSession::readCookie('username');
 		}
-		else if(PVSession::readSession('pv_username')){
-			return PVSession::readSession('pv_username');
+		else if(PVSession::readSession('username')){
+			return PVSession::readSession('username');
 		}
 		return false;
 	}//end getUserID
 	
 	public static function getUserEmail(){
-		if(PVSession::readCookie('pv_useremail')) {
-			return PVSession::readCookie('pv_useremail');	
+		if(PVSession::readCookie('user_email')) {
+			return PVSession::readCookie('user_email');	
 		}
-		else if(PVSession::readSession('pv_useremail')){
-			return PVSession::readSession('pv_useremail');	
+		else if(PVSession::readSession('user_email')){
+			return PVSession::readSession('user_email');	
 		}
 		return false;
 	}//end getUserID
 	
 	public static function getUserRole(){
-		if(PVSession::readCookie('pv_roles')){
-			return PVSession::readCookie('pv_roles');
+		if(PVSession::readCookie('user_roles')){
+			return PVSession::readCookie('user_roles');
 		}
-		else if(PVSession::readSession('pv_roles')){
-			return PVSession::readSession('pv_roles');
+		else if(PVSession::readSession('user_roles')){
+			return PVSession::readSession('user_roles');
 		}
 		return false;
 	}//end getUserRole
 	
 	
 	public static function getUserAccessLevel(){
-		if(PVSession::readCookie('pv_access_level')){
-			return PVSession::readCookie('pv_access_level');
+		if(PVSession::readCookie('user_access_level')){
+			return PVSession::readCookie('user_access_level');
 		}
-		else if(PVSession::readSession('pv_access_level')){
-			return PVSession::readSession('pv_access_level');
+		else if(PVSession::readSession('user_access_level')){
+			return PVSession::readSession('user_access_level');
 		}
 		return false;
 	}//end getUserRole
@@ -178,15 +178,16 @@ class PVUsers extends PVStaticObject {
 			$email=$row['user_email'];
 			$user_access_level=$row['user_access_level'];
 			
-			$row=self::_applyFilter( get_class(), 'pre_'.__FUNCTION__ , $row , $row);
+			$row=self::_applyFilter( get_class(), __FUNCTION__, $row);
 			
 			if(self::comparePasswords($password, $dbpassword, $password_encoded)) {
 					
-				$row=self::_applyFilter( get_class(), 'post_'.__FUNCTION__ , $row , $row);
+				$row=self::_applyFilter( get_class(), __FUNCTION__, $row, array('event'=>'success'));
+				
 				$roles=self::getAssignedUserRoles($user_id);
-				self::setUserSession($user_id, $username, $email , $roles, $user_access_level );
+				self::setUserSession($row , $roles );
 				if($save_cookie) {
-					self::setUserCookies($user_id, $username, $email , $roles, $user_access_level );
+					self::setUserCookies($row, $roles );
 				}
 				return TRUE;
 			}
@@ -459,7 +460,7 @@ class PVUsers extends PVStaticObject {
 				$user_subscription_list=PVSubscriptions::getSubscriptionList(array('user_id'=>$user_id));
 				
 				foreach($user_subscription_list as $key=>$value){
-					PVSubscriptions::deleteUserSubscription($value['subscription_id']);
+					PVSubscriptions::deleteSubscription($value['subscription_id']);
 				}//end foreach
 			}
 			
@@ -467,7 +468,7 @@ class PVUsers extends PVStaticObject {
 				$user_point_list=PVPoints::getPointsList(array('user_id'=>$user_id));
 				
 				foreach($user_point_list as $key=>$value){
-					PVPoints::deleteUserPoint($value['point_id']);
+					PVPoints::deletePoint($value['point_id']);
 				}//end foreach
 			}
 			
@@ -859,30 +860,24 @@ class PVUsers extends PVStaticObject {
 		}
 	}//end comparePassword
 	
-	private static function setUserSession($user_id, $username, $email , $roles, $access_level=0 ){
-		if(empty($username)){
-			$username=$email;	
-		}
-		
-		PVSession::writeSession('pv_userid', $user_id);
-		PVSession::writeSession('pv_username', $username);
-		PVSession::writeSession('pv_useremail', $email);
-		PVSession::writeSession('pv_roles', $roles);
-		PVSession::writeSession('pv_access_level', $access_level);
+	private static function setUserSession($data=array(), $roles ){
 			
+		foreach($data as $key=>$value) {
+			if(!PVValidator::isInteger($key))
+				PVSession::writeSession($key, $value);
+		}	
+		
+		PVSession::writeSession('user_roles', $roles);
 	}
 	
-	private static function setUserCookies($user_id, $username, $email , $roles, $access_level=0  ){
-		if(empty($username)){
-			$username=$email;	
-		}
+	private static function setUserCookies($data=array(), $roles  ){
 		
-		PVSession::writeCookie('pv_userid', $user_id);
-		PVSession::writeCookie('pv_username', $username);
-		PVSession::writeCookie('pv_useremail', $email);
-		PVSession::writeCookie('pv_roles', $roles);
-		PVSession::writeCookie('pv_access_level', $access_level);
+		foreach($data as $key=>$value) {
+			if(!PVValidator::isInteger($key))
+				PVSession::writeCookie($key, $value);
+		}	
 		
+		PVSession::writeCookie('user_roles', $roles);
 	}
 	
 	public static function getOnlineUsersSession(){
@@ -1827,7 +1822,6 @@ class PVUsers extends PVStaticObject {
 				return 1;	
 			}
 			
-			
 		}
 		
 		return 0;
@@ -1932,6 +1926,20 @@ class PVUsers extends PVStaticObject {
 			'role_description'=>'',
 			'role_type'=>'',
 			'is_editable'=>0
+		);
+		
+		return $defaults;
+	}
+	
+	private static function getUserRelationshipDefaults() {
+		$defaults=array(
+			'relationship_id'=>0,
+			'requesting_user'=>0,
+			'requested_user'=>0,
+			'relationship_type'=>'',
+			'relationship_status'=>0,
+			'date_created'=>'',
+			'date_modified'=>''
 		);
 		
 		return $defaults;
