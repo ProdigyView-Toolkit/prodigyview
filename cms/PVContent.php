@@ -2614,6 +2614,7 @@ class PVContent extends PVStaticObject {
 			$current_page=$order_by_clause['current_page'];
 			$results_per_page=$order_by_clause['results_per_page'];
 			$paged=$order_by_clause['paged'];
+			$prequery=$order_by_clause['prequery'];
 			$prefix_args=$order_by_clause['prefix_args'];
     		
     		$order_by_clause=$order_by_clause['order_by'];
@@ -2726,10 +2727,6 @@ class PVContent extends PVStaticObject {
 			$group_by=$order_by_clause['group_by'];
 			$having=$order_by_clause['having'];
 			$join_users=$order_by_clause['join_users'];
-			
-    		$file_src=$order_by_clause['file_src'];
-    		$file_type=$order_by_clause['file_type'];
-    		$file_size=$order_by_clause['file_size'];
 			
 			$current_page=$order_by_clause['current_page'];
 			$results_per_page=$order_by_clause['results_per_page'];
