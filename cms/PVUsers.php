@@ -207,6 +207,10 @@ class PVUsers extends PVStaticObject {
 	 * 			-'activation_code' _string_: The code that will be used for activating an account. Will be auto-generated if not defined
 	 * 			-'registration_date' _date/time_: Records the date/time a user has registerd. Will default to current timestamp of not defined
 	 * 			-'user_role' _mixed_: Can either be a role passed as a string(role name) or id(role_id) or an array of role_ids or role_names
+	 * 			-'is_active' _boolean_: Determines if the user is considered active or not
+	 * 			-'user_image' _string_: The locations of the user's image
+	 * 			-'user_image_thumb' _string_: The locations of the user's image thumbnail
+	 * 			-'receive_html_emails' _boolean_: A user defined option for html emails
 	 * @param boolean $password_encoded If set to false, password will be md5 hashed. Otherwise password is saved as passed.
 	 *  
 	 * @return int $user_id Returns the id of thew newly created user
@@ -284,9 +288,21 @@ class PVUsers extends PVStaticObject {
 	}
 	
 	/**
-	 * Updates a user's data based upoon the id of the user. The sam
+	 * Updates a user's data based upon the id of the user. Password and roles cannot
+	 * be updated through this function.
 	 * 
-	 * @see addUser. Same parameters can be passed 
+	 * @param array $args
+	 * 			-'user_email' _string_: The email address of the user. Can be used for logging in with password
+	 * 			-'username' _string_: The user's name. Can be used for logging in with password.
+	 * 			-'user_access_level' _int_: The user's level access that can be used with a security settings
+	 * 			-'registration_date' _date/time_: Records the date/time a user has registerd. Will default to current timestamp of not defined
+	 * 			-'is_active' _boolean_: Determines if the user is considered active or not
+	 * 			-'user_image' _string_: The locations of the user's image
+	 * 			-'user_image_thumb' _string_: The locations of the user's image thumbnail
+	 * 			-'receive_html_emails' _boolean_: A user defined option for html emails
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public static function updateUser($args=array()){
 		$args += self::getUserDefaults();
@@ -307,6 +323,17 @@ class PVUsers extends PVStaticObject {
 		PVDatabase::query($query);
 	}//end  update User
 	
+	/**
+	 * Updates that user's password based on their id.
+	 * 
+	 * @param array @args Arguements for updating the user's password.
+	 * 			-'user_id' _id_: The id of the user's password to updated
+	 * 			-'user_password' _string_: The password to set. Will be MD5 encoded
+	 * @param boolean $encrypted If set to true, the password will not be MD5 hashed and assumed the password is already encrypted
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function updateUserPassword($args=array(), $encrypted=FALSE){
 		
 		if(is_array($args) && !empty($args['user_id'])){
@@ -502,8 +529,17 @@ class PVUsers extends PVStaticObject {
 		}//end not empty
 	}//end deleteUser
 	
-	
-	
+	/**
+	 * Specifically update a user's field rather than the whole field. Can be used to update fields
+	 * when the table is expanded to new fields.
+	 * 
+	 * @param array $args The fields to update. The 'keys' in the array are the fields to update
+	 * 		  and the associates values is the information that will be put in that field. Make
+	 * 		  sure to include the key=>value , user_id=>xxx to specify which user.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function updateUserFields($args){
 		
 		if(!empty($args['user_id']) && is_array($args) ){
@@ -526,7 +562,6 @@ class PVUsers extends PVStaticObject {
 			$query="UPDATE ".PVDatabase::getUsersTableName()." SET $UPDATE_CLAUSE WHERE user_id='$user_id' ";
 			
 			PVDatabase::query($query);
-			
 		}//end if not empty
 		
 	}//end updateUserField
@@ -558,7 +593,6 @@ class PVUsers extends PVStaticObject {
 			return $role_id;
 			
 		}//end if
-		
 	}//end addUserRole
 	
 	/**
@@ -568,7 +602,13 @@ class PVUsers extends PVStaticObject {
 	 * 
 	 * @param array $args An array of arguements to pass when removeing roles
 	 * 		-'role_id' _id_: The role id
-	 * 		@see PVUsers::addUserRole : Same arguements and be passed here when searching.
+	 * 		-'role_name' _string_: The name of the role
+	 * 		-'role_type' _string_: The type of the role. Can be used to distinguish roles with the same name
+	 * 		-'role_description' _string_: Text that descriptions the role
+	 * 		-'is_editable' _boolean_: Determines if the role is editable
+	 * 
+	 * @return array $roles Returns an array of roles
+	 * @access public
 	 */
 	public static function getUserRolesList($args=array()){
 		$args += self::getUserRoleDefaults();
@@ -691,6 +731,7 @@ class PVUsers extends PVStaticObject {
 	 * @param id $role_id The id of the role to be retrieved
 	 * 
 	 * @return array $role The role information in an array
+	 * @access public
 	 */
 	public static function getUserRoleByID($role_id){
 		
@@ -786,7 +827,16 @@ class PVUsers extends PVStaticObject {
 		}//end role_id
 	}//end deleteUserRole
 	
-	
+	/**
+	 * Forcibly logs in a user without checking for password information.
+	 * 
+	 * @param mixed $username Can either be the user's name or the user's email
+	 * @param array $options Additonal options to pass when logging in
+	 * 			-'set_cookies' _boolean_: Set the cookies when logging in the user
+	 * 
+	 * @return boolean $success Returns true if the user was logged in
+	 * @access public
+	 */
 	public static function loginUser($username, $options=array() ){
 		$defaults=array(
 			'set_cookies'=>true,
@@ -842,24 +892,40 @@ class PVUsers extends PVStaticObject {
 		}
 		
 		return $loginSuccess;
-		
 	}//end pvLogin
 	
-	
-	
+	/**
+	 * Makes a comparision between two passwords to see if they match or not
+	 * 
+	 * @param string $password The password being passed in. Will be MD5 hashed
+	 * @param string $dbpassword The password from the database
+	 * @param boolean $password_encoded If set to true, the password will be assumed to be encoded and not MD5 hashed
+	 * 
+	 * @return boolean $success Will return true of the passwords match, otherwise false
+	 * @access private
+	 */
 	private static function comparePasswords($password, $dbpassword, $password_encoded=false){
 		if($password_encoded==false){
 			$password=md5($password);
 		}
 		
 		if($password==$dbpassword){
-			return 1;	
+			return TRUE;	
 		}
-		else{
-			return 0;	
-		}
+		
+		return FALSE;	
 	}//end comparePassword
 	
+	/**
+	 * Set all the values from the user's data from the database into session.
+	 * Sessions name will reflect the names in the database.
+	 * 
+	 * @param array $data The data which should be the user's information
+	 * @param array $roles The roles related to that user
+	 * 
+	 * @return void
+	 * @access private
+	 */
 	private static function setUserSession($data=array(), $roles ){
 			
 		foreach($data as $key=>$value) {
@@ -870,6 +936,16 @@ class PVUsers extends PVStaticObject {
 		PVSession::writeSession('user_roles', $roles);
 	}
 	
+	/**
+	 * Set all the values from the user's data from the database into cookies.
+	 * Cookies name will reflect the names in the database.
+	 * 
+	 * @param array $data The data which should be the user's information
+	 * @param array $roles The roles related to that user
+	 * 
+	 * @return void
+	 * @access private
+	 */
 	private static function setUserCookies($data=array(), $roles  ){
 		
 		foreach($data as $key=>$value) {
@@ -880,6 +956,9 @@ class PVUsers extends PVStaticObject {
 		PVSession::writeCookie('user_roles', $roles);
 	}
 	
+	/**
+	 * @todo Please fix me :)
+	 */
 	public static function getOnlineUsersSession(){
 		$MAX_IDLE_TIME=10;
 		
