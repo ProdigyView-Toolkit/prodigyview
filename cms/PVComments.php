@@ -67,6 +67,14 @@ class PVComments extends PVStaticObject {
 	}//end addComment
 	
 	
+	/**
+	 * Retrieve a comment's data based upon the comments id.
+	 * 
+	 * @param id $comment_id The if of the comment to be retrieved
+	 * 
+	 * @return array $comment An array with the comment data will be returned
+	 * @access public
+	 */
 	public static function getComment($comment_id){
 		$comment_id=PVDatabase::makeSafe($comment_id);
 		
@@ -80,6 +88,26 @@ class PVComments extends PVStaticObject {
 		}
 	}//end getComment
 	
+	/**
+	 * Searches for comment based on passed arguements and returns a list of comments based
+	 * on those arguements. Use the PV Standard Search Query.
+	 * 
+	 * @param array $args The arguements that can be used when performing a search
+	 * 			-'content_id' _id_: The id of the content this comment is associated with
+	 * 			-'owner_id' _id_: The id of the owner associated with this comment
+	 * 			-'owner_ip' _id_: The ip of the user that left the comment
+	 * 			-'comment_date' _date_: The data in string format that the comment was created. Default is the current date/time.
+	 * 			-'comment_approved' _boolean_ : Determines if the comment has been approved.
+	 * 			-'comment_title' _string_: The title of the comment,
+	 * 			-'comment_text' _string_: The text in the comment
+	 * 			-'comment_parent' _id_: The id of the parent comment
+	 * 			-'comment_author' _string_: The author of the comment
+	 * 			-'comment_author_email' _string: The email of the author of the comment
+	 * 			-'comment_author_website' _string_: _ website that is associed with the comments author
+	 * 			-'comment_type' _string_ : The type fo comment being created
+	 * 			-'join_users' _boolean_ : Join the the users table on the user's id
+	 * 			-'join_content' _boolean_: Join the content based on the content ids
+	 */
 	public static function getCommentList($args=array()){
 		$args += self::getCommentDefaults();
 		$args += self::_getSqlSearchDefaults();
@@ -164,7 +192,6 @@ class PVComments extends PVStaticObject {
 			
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($comment_date)){
 				
@@ -386,7 +413,6 @@ class PVComments extends PVStaticObject {
 		}
 		
     	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
-    	
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -405,6 +431,27 @@ class PVComments extends PVStaticObject {
 	
 	}//end
 	
+	/**
+	 * Updates a comment based on the id of the comment.
+	 * 
+	 * @param array $args The fields than can be updated and used to update a comment
+	 * 			-'content_id' _id_: The id of the content this comment is associated with
+	 * 			-'owner_id' _id_: The id of the owner associated with this comment
+	 * 			-'owner_ip' _id_: The ip of the user that left the comment
+	 * 			-'comment_date' _date_: The data in string format that the comment was created. Default is the current date/time.
+	 * 			-'comment_approved' _boolean_ : Determines if the comment has been approved.
+	 * 			-'comment_title' _string_: The title of the comment,
+	 * 			-'comment_text' _string_: The text in the comment
+	 * 			-'comment_parent' _id_: The id of the parent comment
+	 * 			-'comment_author' _string_: The author of the comment
+	 * 			-'comment_author_email' _string: The email of the author of the comment
+	 * 			-'comment_author_website' _string_: _ website that is associed with the comments author
+	 * 			-'comment_type' _string_ : The type fo comment being created
+	 * 			-'comment_id' _id_: The id that will be used to update the associated comment
+	 * 	
+	 * @return void
+	 * @access public
+	 */
 	public static function updateComment($args=array()){
 		$args += self::getCommentDefaults();
 		$args= PVDatabase::makeSafe($args);
@@ -418,6 +465,12 @@ class PVComments extends PVStaticObject {
 	
 	}//end updateComment
 	
+	/**
+	 * Deletes a comment based on the id of the comment. Also can delete children comments.
+	 * 
+	 * @param id $comment_id The id of the comment to be deleted
+	 * @param boolean $deleteChildrenComments Will remove any comments that this comment is a  parent off
+	 */
 	public static function deleteComment($comment_id, $deleteChildrenComments=false){
 		
 		if(!empty($comment_id)){
