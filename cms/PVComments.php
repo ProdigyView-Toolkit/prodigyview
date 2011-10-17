@@ -28,6 +28,26 @@
 */
 class PVComments extends PVStaticObject {
 	
+	/**
+	 * Add a comment to the database.
+	 * 
+	 * @param string $args Arguements that describe a comment that can be added to the database. All fields are optional.
+	 * 			-'content_id' _id_: The id of the content this comment is associated with
+	 * 			-'owner_id' _id_: The id of the owner associated with this comment
+	 * 			-'owner_ip' _id_: The ip of the user that left the comment
+	 * 			-'comment_date' _date_: The data in string format that the comment was created. Default is the current date/time.
+	 * 			-'comment_approved' _boolean_ : Determines if the comment has been approved.
+	 * 			-'comment_title' _string_: The title of the comment,
+	 * 			-'comment_text' _string_: The text in the comment
+	 * 			-'comment_parent' _id_: The id of the parent comment
+	 * 			-'comment_author' _string_: The author of the comment
+	 * 			-'comment_author_email' _string: The email of the author of the comment
+	 * 			-'comment_author_website' _string_: _ website that is associed with the comments author
+	 * 			-'comment_type' _string_ : The type fo comment being created
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function addComment($args=array()){
 		$args += self::getCommentDefaults();
 		$args= PVDatabase::makeSafe($args);
