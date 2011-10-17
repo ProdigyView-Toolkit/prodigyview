@@ -28,6 +28,23 @@
 */
 class PVSubscriptions extends PVStaticObject{
 	
+	/**
+	 * Adds a subscription to the database. Fields set are based upon the passed parameters.
+	 * 
+	 * @param array $args An array of arguements that is used to define the subscription.
+	 * 			-'content_id' _id_ : The id of the content this subscription is associated with
+	 * 			-'comment_id' _id_ : The id of the comment this subscription is assoicated with
+	 * 			-'user_id' _id_: The id of the user this subscription is associated with
+	 * 			-'app_id' _id_: The id of the application this subscription is associated with
+	 * 			-'subscription_type' _string_: The type of subscription this is considered
+	 * 			-'subscription_approved' _boolean_: If the subscription has been approved or not
+	 * 			-'subscription_start_date' _date/time_: The start date of the subscription
+	 * 			-'subscription_end_date' _date/time_: The end date of the subscription
+	 * 			-'subscription_active' _boolean_: If the subscription is active or not
+	 * 
+	 * @return id $subscription_id The id of the newly created subscription
+	 * @access public
+	 */
 	public static function addSubscription($args=array()){
 		$args += self::getSubscriptionDefaults();
 		$args= PVDatabase::makeSafe($args);
@@ -49,6 +66,24 @@ class PVSubscriptions extends PVStaticObject{
 		
 	}//end addContentSubscription
 	
+	/**
+	 * Adds a unique subscription to the database. Checks on the following fields to see if the subscription
+	 * exist or not: 'user_id', 'comment_id', 'content_id', 'app_id', 'subscription_type',
+	 * 
+	 * @param array $args An array of arguements that is used to define the subscription.
+	 * 			-'content_id' _id_ : The id of the content this subscription is associated with
+	 * 			-'comment_id' _id_ : The id of the comment this subscription is assoicated with
+	 * 			-'user_id' _id_: The id of the user this subscription is associated with
+	 * 			-'app_id' _id_: The id of the application this subscription is associated with
+	 * 			-'subscription_type' _string_: The type of subscription this is considered
+	 * 			-'subscription_approved' _boolean_: If the subscription has been approved or not
+	 * 			-'subscription_start_date' _date/time_: The start date of the subscription
+	 * 			-'subscription_end_date' _date/time_: The end date of the subscription
+	 * 			-'subscription_active' _boolean_: If the subscription is active or not
+	 * 
+	 * @return id $subscription_id The id of the subscription if no matches were found. Otherwise returns false
+	 * @access public
+	 */
 	public static function addUniqueSubscription($args=array()){
 		$args += self::getSubscriptionDefaults();
 		$args= PVDatabase::makeSafe($args);
@@ -65,21 +100,42 @@ class PVSubscriptions extends PVStaticObject{
 		$user_ip=$_SERVER['REMOTE_ADDR'];
 		
 		$query="SELECT subscription_id FROM ".PVDatabase::getSubscriptionTableName()." WHERE content_id='$content_id' AND comment_id='$comment_id' AND user_id='$user_id' AND app_id='$app_id' AND subscription_type='$subscription_type' ";
-		
 		$result=PVDatabase::query($query);
 		
 		if(PVDatabase::resultRowCount($result)<=0){
 		
 			$query="INSERT INTO ".PVDatabase::getSubscriptionTableName()."(content_id, comment_id, user_id , app_id, subscription_type, subscription_approved , subscription_start_date, subscription_end_date, user_ip, subscription_active) VALUES( '$content_id', '$comment_id', '$user_id' , '$app_id', '$subscription_type', '$subscription_approved' , '$subscription_start_date', '$subscription_end_date', '$user_ip', '$subscription_active')";
 			$subscription_id=PVDatabase::return_last_insert_query($query, 'subscription_id', PVDatabase::getSubscriptionTableName());
-		
 			return $subscription_id;
 		}
-		
+		return false;
 	}//end addContentSubscription
 	
 	
-	
+	/**
+	 * Searches through the subscriptions to find subscriptions that match the passed arguements. Uses ProdigyView
+	 * Standard Search Query.
+	 * 
+	 * @param array $args An array of arguements that is used to define the subscription.
+	 * 			-'content_id' _id_ : The id of the content this subscription is associated with
+	 * 			-'comment_id' _id_ : The id of the comment this subscription is assoicated with
+	 * 			-'user_id' _id_: The id of the user this subscription is associated with
+	 * 			-'app_id' _id_: The id of the application this subscription is associated with
+	 * 			-'subscription_type' _string_: The type of subscription this is considered
+	 * 			-'subscription_approved' _boolean_: If the subscription has been approved or not
+	 * 			-'subscription_start_date' _date/time_: The start date of the subscription
+	 * 			-'subscription_end_date' _date/time_: The end date of the subscription
+	 * 			-'subscription_active' _boolean_: If the subscription is active or not
+	 * 			-'subscription_id' _id_ The id of the subscription
+	 * 			-'user_ip' _string_: The ip of the user that created the subscritpion
+	 * 			-'join_users' _boolean_: Joins a user's data on ther user id
+	 * 			-'join_content' _boolean_: Joins content based the id of the content
+	 * 			-'join_comments' _boolean_: Join comments based on the id of the comment
+	 * 			-'join_apps' _booleans_: Join applications based on the application's id.
+	 * 
+	 * @return array $subscriptions Returns an array of subscriptions which are also arrays
+	 * @access public
+	 */
 	public static function getSubscriptionList($args=array()){
 		$args += self::getSubscriptionDefaults();
 		$args += self::_getSqlSearchDefaults();
@@ -346,6 +402,14 @@ class PVSubscriptions extends PVStaticObject{
 	
 	}//end getUserSubscriptionList
 	
+	/**
+	 * Retrieves a subscription's data based upon the id of the subscription.
+	 * 
+	 * @param id $subscription_id The id of the subscription to be retrieved
+	 * 
+	 * @return array $subscription The subscription's data
+	 * @access public
+	 */
 	public static function getSubscription($subscription_id){
 		
 		if(!empty($subscription_id)){
@@ -361,8 +425,24 @@ class PVSubscriptions extends PVStaticObject{
 		}
 	}//end getUserSubscribtion
 	
-	
-	
+	/**
+	 * Updates a subscription based on the subscription's id
+	 * 
+	 * @param array $args The arguements that will be used to define the subscription being updated.
+	 * 			-'content_id' _id_ : The id of the content this subscription is associated with
+	 * 			-'comment_id' _id_ : The id of the comment this subscription is assoicated with
+	 * 			-'user_id' _id_: The id of the user this subscription is associated with
+	 * 			-'app_id' _id_: The id of the application this subscription is associated with
+	 * 			-'subscription_type' _string_: The type of subscription this is considered
+	 * 			-'subscription_approved' _boolean_: If the subscription has been approved or not
+	 * 			-'subscription_start_date' _date/time_: The start date of the subscription
+	 * 			-'subscription_end_date' _date/time_: The end date of the subscription
+	 * 			-'subscription_active' _boolean_: If the subscription is active or not
+	 * 			-'subscription_id' _id_: The id of the subscriptionw which is used to determine which subscription to update.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function updateSubscription($args=array()){
 		$args += self::getSubscriptionDefaults();
 		$args= PVDatabase::makeSafe($args);
@@ -385,6 +465,14 @@ class PVSubscriptions extends PVStaticObject{
 		}//end if not empty
 	}//end updateUserSubscription
 	
+	/**
+	 * Removes a subscription from the database based upon the subscription's id.
+	 * 
+	 * @param id $subscription_id The id of the subscription to be deleted
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deleteSubscription($subscription_id){
 		
 		if(!empty($subscription_id)){
