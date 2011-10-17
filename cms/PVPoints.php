@@ -28,6 +28,21 @@
 */
 class PVPoints extends PVStaticObject {
 	
+	/**
+	 * Adds a point's value to the database.
+	 * 
+	 * @param array $args Arguements that define a point
+	 * 			-'user_id' _id_: The id of the user associated with this point
+	 * 			-'content_id' _id_: The id of the content associated with this point
+	 * 			-'comment_id' _id_: The id of the comment associated with this point
+	 * 			-'app_id' _id_: The id of the application associated this point
+	 * 			-'point_value' _double_: The value of this point. Can be a decimal or int.
+	 * 			-'point_type' _string_: The type of point this is
+	 * 			-'point_date' _date/time_: The date and time of this point
+	 * 
+	 * @return id $point_id The id of this point
+	 * @access public
+	 */
 	public static function addPoint($args=array()){
 		$args += self::getPointsDefaults();
 		$args=PVDatabase::makeSafe($args);
@@ -45,7 +60,22 @@ class PVPoints extends PVStaticObject {
 		return $point_id;
 	}//end addUserPoster
 	
-	
+	/**
+	 * Adds a unique point to the system by checking of a similiar point already exist. Similiarity of a point
+	 * is checked on the followingg fields: 'content_id', 'user_id', 'app_id', 'comment_id', 'point_type', user_ip.
+	 * 
+	 * @param array $args Arguements that define a point
+	 * 			-'user_id' _id_: The id of the user associated with this point
+	 * 			-'content_id' _id_: The id of the content associated with this point
+	 * 			-'comment_id' _id_: The id of the comment associated with this point
+	 * 			-'app_id' _id_: The id of the application associated this point
+	 * 			-'point_value' _double_: The value of this point. Can be a decimal or int.
+	 * 			-'point_type' _string_: The type of point this is
+	 * 			-'point_date' _date/time_: The date and time of this point
+	 * 
+	 * @return id $point_id The id of this point if the point is unique, otherwise return false
+	 * @access public
+	 */
 	public static function addUniquePoint($args=array() ){
 		$args += self::getPointsDefaults();
 		$args=PVDatabase::makeSafe($args);
@@ -86,13 +116,34 @@ class PVPoints extends PVStaticObject {
 				
 		if($allow_insert==true){	
 			$query="INSERT INTO ".PVDatabase::getPointsTableName()."(user_id, content_id, comment_id, app_id, point_value, point_type, user_ip, point_date)  VALUES( '$user_id', '$content_id', '$comment_id', '$app_id', '$point_value', '$point_type', '$user_ip', '$point_date' ) ";	
-			$point_id=PVDatabase::return_last_insert_query($query, 'point_id', PVDatabase::getPointsTableName());
+			return $point_id=PVDatabase::return_last_insert_query($query, 'point_id', PVDatabase::getPointsTableName());
 		}
-		return $point_id;
+		return FALSE;
 	}//end addUserPoster
 	
 	
-	
+	/**
+	 * Searches for points in the database based upon passed arguements. The method uses the PV Standars Query
+	 * as parameters passed.
+	 * 
+	 * @param array $args Arguements that can be used when searching for a point
+	 * 			-'user_id' _id_: The id of the user associated with this point
+	 * 			-'content_id' _id_: The id of the content associated with this point
+	 * 			-'comment_id' _id_: The id of the comment associated with this point
+	 * 			-'app_id' _id_: The id of the application associated this point
+	 * 			-'point_value' _double_: The value of this point. Can be a decimal or int.
+	 * 			-'point_type' _string_: The type of point this is
+	 * 			-'point_date' _date/time_: The date and time of this point
+	 * 			-'point_id' _id_: The id of the point
+	 * 			-'user_ip' _string_: The ip that was assigned when point was created
+	 * 			-'join_content' _boolean_: Join content related to this point on the content_id
+	 * 			-'join_comments' _boolean_: Join comments related to this point by the comment_id
+	 * 			-'join_users' _boolean_: Join users related to this point by the user_id
+	 * 			-'join_apps' _boolean_: Joins apps related to this point by the app_id
+	 * 
+	 * @return array $points An array of arrays that contain point data
+	 * @access public
+	 */
 	public static function getPointsList($args=array()){
 		$args += self::getPointsDefaults();
 		$args += self::_getSqlSearchDefaults();
@@ -352,12 +403,17 @@ class PVPoints extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-		
     	return $content_array;
-		
-		
 	}//end getUserPointsList
 	
+	/**
+	 * Retrieve a point's data by the point's id.
+	 * 
+	 * @param id $point_id The id of the points who data to retrieve
+	 * 
+	 * @return array $point Data about a point
+	 * @access public
+	 */
 	public static function getPoint($point_id){
 		
 		if(!empty($point_id)){
@@ -373,6 +429,22 @@ class PVPoints extends PVStaticObject {
 		
 	}//end getUserPoint
 	
+	/**
+	 * Updates a point based on the point's id.
+	 * 
+	 * @param arrays $args Contains the data to be updated. The data that will be updated is as follows:
+	 * 			-'user_id' _id_: The id of the user associated with this point
+	 * 			-'content_id' _id_: The id of the content associated with this point
+	 * 			-'comment_id' _id_: The id of the comment associated with this point
+	 * 			-'app_id' _id_: The id of the application associated this point
+	 * 			-'point_value' _double_: The value of this point. Can be a decimal or int.
+	 * 			-'point_type' _string_: The type of point this is
+	 * 			-'point_date' _date/time_: The date and time of this point
+	 * 			-'point_id' _id_: This field will be used in deciding which point to update
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function updatePoint($args=array()){
 		$args += self::getPointsDefaults();
 		$args=PVDatabase::makeSafe($args);
@@ -387,6 +459,14 @@ class PVPoints extends PVStaticObject {
 		
 	}//end updateUserPoint
 	
+	/**
+	 * The point to be deleted. Uses the ID of the point in deciding which point to delete.
+	 * 
+	 * @param id $point_id The id of the point to be deleted
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deletePoint($point_id){
 		
 		if(!empty($point_id)){
