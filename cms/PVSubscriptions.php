@@ -66,7 +66,7 @@ class PVSubscriptions extends PVStaticObject{
 		$user_ip=$_SERVER['REMOTE_ADDR'];
 		$query="INSERT INTO ".PVDatabase::getSubscriptionTableName()."(content_id, comment_id, user_id , app_id, subscription_type, subscription_approved , subscription_start_date, subscription_end_date, user_ip, subscription_active) VALUES( '$content_id', '$comment_id', '$user_id' , '$app_id', '$subscription_type', '$subscription_approved' , '$subscription_start_date', '$subscription_end_date', '$user_ip', '$subscription_active')";
 		$subscription_id=PVDatabase::return_last_insert_query($query, 'subscription_id' , PVDatabase::getSubscriptionTableName());
-		$this->_notify('PVSubscriptions::addSubscription', $subscription_id, $args);
+		self::_notify('PVSubscriptions::addSubscription', $subscription_id, $args);
 		
 		return $subscription_id;
 		
@@ -117,7 +117,7 @@ class PVSubscriptions extends PVStaticObject{
 		
 			$query="INSERT INTO ".PVDatabase::getSubscriptionTableName()."(content_id, comment_id, user_id , app_id, subscription_type, subscription_approved , subscription_start_date, subscription_end_date, user_ip, subscription_active) VALUES( '$content_id', '$comment_id', '$user_id' , '$app_id', '$subscription_type', '$subscription_approved' , '$subscription_start_date', '$subscription_end_date', '$user_ip', '$subscription_active')";
 			$subscription_id=PVDatabase::return_last_insert_query($query, 'subscription_id', PVDatabase::getSubscriptionTableName());
-			$this->_notify('PVSubscriptions::addUniqueSubscription', $subscription_id, $args);
+			self::_notify('PVSubscriptions::addUniqueSubscription', $subscription_id, $args);
 			
 			return $subscription_id;
 		}
@@ -415,7 +415,7 @@ class PVSubscriptions extends PVStaticObject{
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-		$this->_notify('PVSubscriptions::getSubscriptionList', $content_array, $args);
+		self::_notify('PVSubscriptions::getSubscriptionList', $content_array, $args);
 		
     	return $content_array;
 	
@@ -442,7 +442,7 @@ class PVSubscriptions extends PVStaticObject{
 			$query="SELECT * FROM ".PVDatabase::getSubscriptionTableName()." WHERE subscription_id='$subscription_id' ";
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$this->_notify('PVSubscriptions::getSubscription', $row);
+			self::_notify('PVSubscriptions::getSubscription', $row);
 			
 			return $row;
 		}
@@ -490,7 +490,7 @@ class PVSubscriptions extends PVStaticObject{
 			
 			$query="UPDATE ".PVDatabase::getSubscriptionTableName()." SET content_id='$content_id', comment_id='$comment_id', user_id='$user_id' , app_id='$app_id' , subscription_type='$subscription_type', subscription_approved='$subscription_approved' , subscription_active='$subscription_active', subscription_start_date='$subscription_start_date', subscription_end_date='$subscription_end_date' WHERE  subscription_id='$subscription_id'";
 			PVDatabase::query($query);
-			$this->_notify('PVSubscriptions::updateSubscription', $args);
+			self::_notify('PVSubscriptions::updateSubscription', $args);
 		}//end if not empty
 	}//end updateUserSubscription
 	
@@ -514,7 +514,7 @@ class PVSubscriptions extends PVStaticObject{
 			$query="DELETE FROM ".PVDatabase::getSubscriptionTableName()." WHERE subscription_id='$subscription_id'";
 			
 			PVDatabase::query($query);
-			$this->_notify('PVSubscriptions::deleteSubscription', $subscription_id);
+			self::_notify('PVSubscriptions::deleteSubscription', $subscription_id);
 		}//end if
 	}//end deleteUserSubscription
 	

@@ -66,7 +66,7 @@ class PVComments extends PVStaticObject {
 			
 		$query="INSERT INTO ".PVDatabase::getContentCommentsTableName()."( content_id, owner_id , owner_ip, comment_date , comment_approved , comment_title, comment_text, comment_parent, comment_author, comment_author_email, comment_author_website, comment_type) VALUES( '$content_id' , '$owner_id' , '$owner_ip', '$comment_date' , '$comment_approved' , '$comment_title', '$comment_text', '$comment_parent', '$comment_author', '$comment_author_email', '$comment_author_website', '$comment_type' )";
 		$comment_id=PVDatabase::return_last_insert_query($query, "comment_id", PVDatabase::getContentCommentsTableName() );
-		$this->_notify('PVComments::addComment', $comment_id, $args);
+		self::_notify('PVComments::addComment', $comment_id, $args);
 		
 		return $comment_id;
 	}//end addComment
@@ -93,7 +93,7 @@ class PVComments extends PVStaticObject {
 			$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
 			$row=PVDatabase::formatData($row);
-			$this->_notify('PVComments::getComment', $row);
+			self::_notify('PVComments::getComment', $row);
 			
 			return $row;
 		}
@@ -443,7 +443,7 @@ class PVComments extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-		$this->_notify('PVComments::getCommentList', $content_array, $args);
+		self::_notify('PVComments::getCommentList', $content_array, $args);
     	
     	return $content_array;
 	}//end
@@ -483,7 +483,7 @@ class PVComments extends PVStaticObject {
 			
 			$query="UPDATE ".PVDatabase::getContentCommentsTableName()." SET owner_id='$owner_id', comment_date='$comment_date', comment_approved='$comment_approved', comment_title='$comment_title', comment_parent='$comment_parent', comment_author='$comment_author', comment_author_email='$comment_author_email', comment_author_website='$comment_author_website', content_id='$content_id', comment_text='$comment_text' WHERE comment_id='$comment_id'  ";
 			PVDatabase::query($query);
-			$this->_notify('PVComments::updateComment', $args);
+			self::_notify('PVComments::updateComment', $args);
 			
 		}//end updateComment
 	
@@ -520,7 +520,7 @@ class PVComments extends PVStaticObject {
 				}//end while
 			}//endif deleteChildren
 			
-			$this->_notify('PVComments::deleteComment', $comment_id, $deleteChildrenComments);
+			self::_notify('PVComments::deleteComment', $comment_id, $deleteChildrenComments);
 			
 		}//end if not empty
 	

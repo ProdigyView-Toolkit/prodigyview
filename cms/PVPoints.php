@@ -61,7 +61,7 @@ class PVPoints extends PVStaticObject {
 			
 		$query="INSERT INTO ".PVDatabase::getPointsTableName()."(user_id, content_id, comment_id, app_id, point_value, point_type, user_ip, point_date) VALUES( '$user_id', '$content_id', '$comment_id', '$app_id', '$point_value', '$point_type', '$user_ip', '$point_date' ) ";
 		$point_id=PVDatabase::return_last_insert_query($query, 'point_id', PVDatabase::getPointsTableName());
-		$this->_notify(get_class().'::'.__FUNCTION__, $point_id, $args);
+		self::_notify(get_class().'::'.__FUNCTION__, $point_id, $args);
 		
 		return $point_id;
 	}//end addUserPoster
@@ -128,7 +128,7 @@ class PVPoints extends PVStaticObject {
 		if($allow_insert==true){	
 			$query="INSERT INTO ".PVDatabase::getPointsTableName()."(user_id, content_id, comment_id, app_id, point_value, point_type, user_ip, point_date)  VALUES( '$user_id', '$content_id', '$comment_id', '$app_id', '$point_value', '$point_type', '$user_ip', '$point_date' ) ";	
 			$point_id=PVDatabase::return_last_insert_query($query, 'point_id', PVDatabase::getPointsTableName());
-			$this->_notify(get_class().'::'.__FUNCTION__, $point_id, $args);
+			self::_notify(get_class().'::'.__FUNCTION__, $point_id, $args);
 			return $point_id;
 		}
 		return FALSE;
@@ -422,7 +422,7 @@ class PVPoints extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-		$this->_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
 		
     	return $content_array;
 	}//end getUserPointsList
@@ -448,7 +448,7 @@ class PVPoints extends PVStaticObject {
 			$query="SELECT * FROM ".PVDatabase::getPointsTableName()." WHERE point_id='$point_id'";
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$this->_notify(get_class().'::'.__FUNCTION__, $row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row);
 			
 			return $row;
 		}
@@ -487,7 +487,7 @@ class PVPoints extends PVStaticObject {
 		
 		$query="UPDATE ".PVDatabase::getPointsTableName()." SET point_value='$point_value', content_id='$content_id', comment_id='$comment_id', app_id='$app_id', point_type='$point_type', user_id='$user_id', point_date='$point_date' WHERE point_id='$point_id'";
 		PVDatabase::query($query);
-		$this->_notify(get_class().'::'.__FUNCTION__, $args);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end updateUserPoint
 	
 	/**
@@ -510,7 +510,7 @@ class PVPoints extends PVStaticObject {
 			$query="DELETE FROM ".PVDatabase::getPointsTableName()." WHERE point_id='$point_id' ";
 			
 			PVDatabase::query($query);
-			$this->_notify(get_class().'::'.__FUNCTION__, $point_id);
+			self::_notify(get_class().'::'.__FUNCTION__, $point_id);
 		}
 	}//end deleteUserPoint
 	
