@@ -174,6 +174,24 @@ class PVContent extends PVStaticObject {
 		return $content_id;
 	}//end createTextContent
 	
+	/**
+	 * Create content that extends the base content with additional fields for storing and
+	 * retrieving images.
+	 * 
+	 * @param $args The arguements acceepted will include those for creating base content and additional image content
+	 * 			-'image_type' _string_:The type of image being added
+	 * 			-'image_size' _int_: The size of the image
+	 * 			-'image_url' _string_: The location the image resides at
+	 * 			-'thumb_url' _string_: The location the thumb resides at
+	 * 			-'image_width' _int_ : The width of the image
+	 * 			-'image_height' _int_: The height of the image
+	 * 			-'thumb_width' _int_ : The width of the thumbnail
+	 * 			-'thumb_height' _int_: The height of the thumbnail
+	 * 			-'image_src' _string_ The source of the image
+	 * 
+	 * @return id $content_id The return of the newly created content
+	 * @access public
+	 */
 	public static function createImageContent($args=array()){
 		$defaults=self::getImageContentDefaults();
 		$args += $defaults;
@@ -192,8 +210,28 @@ class PVContent extends PVStaticObject {
 		return $content_id;
 	}//end createImageContent
 	
-	
-	
+	/**
+	 * Create an image but also have a file with that image. The file will be automatically be taken and place in an accessible location.
+	 * The location is defined int he PV_IMAGE define. A thumbnail and unique name will be automatically generated.
+	 * 
+	 * @param $args The arguements acceepted will include those for creating base content and additional image content
+	 * 			-'file_name' _string: The name of the file being uploaded
+	 * 			-'tmp_name' _string_: The temporary location of the file to be uploaded
+	 * 			-'file_size' _int_: The size of the file being uploaded
+	 * 			-'file_type' _string_: The type of file being uploaded
+	 * 			-'image_type' _string_:The type of image being added
+	 * 			-'image_size' _int_: The size of the image
+	 * 			-'image_url' _string_: The location the image resides at
+	 * 			-'thumb_url' _string_: The location the thumb resides at
+	 * 			-'image_width' _int_ : The width of the image
+	 * 			-'image_height' _int_: The height of the image
+	 * 			-'thumb_width' _int_ : The width of the thumbnail
+	 * 			-'thumb_height' _int_: The height of the thumbnail
+	 * 			-'image_src' _string_ The source of the image
+	 * 
+	 * @return id $content_id The return of the newly created content
+	 * @access public
+	 */
 	public static function createImageContentWithFile($args=array()){
 		$defaults=self::getImageContentDefaults();
 		$args += $defaults;
@@ -212,7 +250,34 @@ class PVContent extends PVStaticObject {
 	
 	}//end createImageContentWithFile
 	
-	
+	/**
+	 * Create content with additional parameters that relate to a video. Is an extension of the base content when using createContent.
+	 * 
+	 * @param array $args An array of arguements that defines that base content as well as video content.
+	 * 			-'file_name' _string: The name of the file being uploaded
+	 * 			-'tmp_name' _string_: The temporary location of the file to be uploaded
+	 * 			-'file_size' _int_: The size of the file being uploaded
+	 * 			-'file_type' _string_: The type of file being uploaded
+	 * 			-'video_type' _string_: The type of video
+	 * 			-'video_length' _string_: The length of the video
+	 * 			-'video_allow_embedding' _boolen_: If the video can be embedded or not
+	 * 			-'flv_file' _string_ : Location of an flv file for this video
+	 * 			-'mp4_file' _string_ : Location of the mp4 file for this video
+	 * 			-'wmv_file' _string_ : Location of the wmv file for this video
+	 * 			-'mpeg_file' _string_: Location of the mpeg file for this video
+	 * 			-'rm_file' _string_: Location of the rm file for this video
+	 * 			-'avi_file' _string_: Location of the avi file for this video
+	 * 			-'mov_file' _string_: Location of the mov file for this video
+	 * 			-'asf_file' _string_: Location of the asf file for this video
+	 * 			-'ogv_file' _string_: Location of the ogv file for this video
+	 * 			-'wmv_file' _string_: Location of the wmv file for this video
+	 * 			-'enable_hq' _boolean_: Enable high quality viewing of the file
+	 * 			-'video_src' _string_: Source of the video file
+	 * 			-'video_embedd' _string_: The video embedd url
+	 * 
+	 * @return id $content_id The id of the video content created
+	 * @access public
+	 */
 	public static function createVideoContent($args=array()){
 		$defaults=self::getVideoContentDefaults();
 		$args += $defaults;
@@ -231,6 +296,31 @@ class PVContent extends PVStaticObject {
 		return $content_id;
 	}//end createVideoContent
 	
+	/**
+	 * Create content with additional parameters with a video file. Is an extension of the base content when using createContent.
+	 * File can be converted using the options the PVVideoRenderer accepts.
+	 * 
+	 * @param array $args An array of arguements that defines that base content as well as video content.
+	 * 			-'video_type' _string_: The type of video
+	 * 			-'video_length' _string_: The length of the video
+	 * 			-'video_allow_embedding' _boolen_: If the video can be embedded or not
+	 * 			-'flv_file' _string_ : Location of an flv file for this video
+	 * 			-'mp4_file' _string_ : Location of the mp4 file for this video
+	 * 			-'wmv_file' _string_ : Location of the wmv file for this video
+	 * 			-'mpeg_file' _string_: Location of the mpeg file for this video
+	 * 			-'rm_file' _string_: Location of the rm file for this video
+	 * 			-'avi_file' _string_: Location of the avi file for this video
+	 * 			-'mov_file' _string_: Location of the mov file for this video
+	 * 			-'asf_file' _string_: Location of the asf file for this video
+	 * 			-'ogv_file' _string_: Location of the ogv file for this video
+	 * 			-'wmv_file' _string_: Location of the wmv file for this video
+	 * 			-'enable_hq' _boolean_: Enable high quality viewing of the file
+	 * 			-'video_src' _string_: Source of the video file
+	 * 			-'video_embedd' _string_: The video embedd url
+	 * 
+	 * @return id $content_id The id of the video content created
+	 * @access public
+	 */
 	public static function createVideoContentWithFile($args=array()){
 		$defaults=self::getVideoContentDefaults();
 		$args += $defaults;
@@ -245,7 +335,26 @@ class PVContent extends PVStaticObject {
 		return $content_id;
 	}//end createFileContent
 	
-	
+	/**
+	 * Creates content related to an event. Extends the base content
+	 * 
+	 * @param array @args Arguements that define an event and base collection
+	 * 			-'event_location' _string_: The location of the event
+	 * 			-'event_start_date' _date/time_: The start date of the event
+	 * 			-'event_end_date' _date/time_: The end date of the event
+	 * 			-'event_country' _string_: The country the event takes place in
+	 * 			-'event_address' _string_: The address the event is taking place in
+	 * 			-'event_city' _string_: The city the event is taking place in
+	 * 			-'event_state' _string_: The state the event resides in
+	 * 			-'event_zip' _string_: The zipcode of the event
+	 * 			-'event_map' _string_: A map of the event
+	 * 			-'event_src' _string_: A source of the event
+	 * 			-'event_contact' _string_: A person to contact about the event
+	 * 			-'undefined_endtime' _boolean_: If an event does not have set end time
+	 * 
+	 * @return id $content_id The id of the event and content
+	 * @access public
+	 */
 	public static function createEventContent($args=array()){
 		$defaults=self::getEventContentDefaults();
 		$args += $defaults;
@@ -279,7 +388,12 @@ class PVContent extends PVStaticObject {
 	}//end createVideoContent
 	
 	
-	
+	/**
+	 * Create audio content that exends the base content.
+	 * 
+	 * @param array @args Fields that define the audio content as well as the base content
+	 * 
+	 */
 	public static function createAudioContent($args=array()){
 		$defaults=self::getAudioContentDefaults();
 		$args += $defaults;
