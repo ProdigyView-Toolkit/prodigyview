@@ -46,7 +46,12 @@ class PVSubscriptions extends PVStaticObject{
 	 * @access public
 	 */
 	public static function addSubscription($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getSubscriptionDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -61,6 +66,7 @@ class PVSubscriptions extends PVStaticObject{
 		$user_ip=$_SERVER['REMOTE_ADDR'];
 		$query="INSERT INTO ".PVDatabase::getSubscriptionTableName()."(content_id, comment_id, user_id , app_id, subscription_type, subscription_approved , subscription_start_date, subscription_end_date, user_ip, subscription_active) VALUES( '$content_id', '$comment_id', '$user_id' , '$app_id', '$subscription_type', '$subscription_approved' , '$subscription_start_date', '$subscription_end_date', '$user_ip', '$subscription_active')";
 		$subscription_id=PVDatabase::return_last_insert_query($query, 'subscription_id' , PVDatabase::getSubscriptionTableName());
+		$this->_notify('PVSubscriptions::addSubscription', $subscription_id, $args);
 		
 		return $subscription_id;
 		
@@ -85,7 +91,12 @@ class PVSubscriptions extends PVStaticObject{
 	 * @access public
 	 */
 	public static function addUniqueSubscription($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getSubscriptionDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -106,6 +117,8 @@ class PVSubscriptions extends PVStaticObject{
 		
 			$query="INSERT INTO ".PVDatabase::getSubscriptionTableName()."(content_id, comment_id, user_id , app_id, subscription_type, subscription_approved , subscription_start_date, subscription_end_date, user_ip, subscription_active) VALUES( '$content_id', '$comment_id', '$user_id' , '$app_id', '$subscription_type', '$subscription_approved' , '$subscription_start_date', '$subscription_end_date', '$user_ip', '$subscription_active')";
 			$subscription_id=PVDatabase::return_last_insert_query($query, 'subscription_id', PVDatabase::getSubscriptionTableName());
+			$this->_notify('PVSubscriptions::addUniqueSubscription', $subscription_id, $args);
+			
 			return $subscription_id;
 		}
 		return false;
@@ -137,8 +150,13 @@ class PVSubscriptions extends PVStaticObject{
 	 * @access public
 	 */
 	public static function getSubscriptionList($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getSubscriptionDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
 		$custom_select=$args['custom_select'];
@@ -397,6 +415,7 @@ class PVSubscriptions extends PVStaticObject{
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		$this->_notify('PVSubscriptions::getSubscriptionList', $content_array, $args);
 		
     	return $content_array;
 	
@@ -412,14 +431,18 @@ class PVSubscriptions extends PVStaticObject{
 	 */
 	public static function getSubscription($subscription_id){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $subscription_id);
+		
+		$subscription_id = self::_applyFilter( get_class(), __FUNCTION__ , $subscription_id);
+		
 		if(!empty($subscription_id)){
-			$subscription_id=ceil($subscription_id);
+			$subscription_id=PVDatabase::makeSafe($subscription_id);
 			
 			$query="SELECT * FROM ".PVDatabase::getSubscriptionTableName()." WHERE subscription_id='$subscription_id' ";
-			
 			$result=PVDatabase::query($query);
-			
 			$row = PVDatabase::fetchArray($result);
+			$this->_notify('PVSubscriptions::getSubscription', $row);
 			
 			return $row;
 		}
@@ -444,7 +467,12 @@ class PVSubscriptions extends PVStaticObject{
 	 * @access public
 	 */
 	public static function updateSubscription($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getSubscriptionDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -462,6 +490,7 @@ class PVSubscriptions extends PVStaticObject{
 			
 			$query="UPDATE ".PVDatabase::getSubscriptionTableName()." SET content_id='$content_id', comment_id='$comment_id', user_id='$user_id' , app_id='$app_id' , subscription_type='$subscription_type', subscription_approved='$subscription_approved' , subscription_active='$subscription_active', subscription_start_date='$subscription_start_date', subscription_end_date='$subscription_end_date' WHERE  subscription_id='$subscription_id'";
 			PVDatabase::query($query);
+			$this->_notify('PVSubscriptions::updateSubscription', $args);
 		}//end if not empty
 	}//end updateUserSubscription
 	
@@ -475,11 +504,17 @@ class PVSubscriptions extends PVStaticObject{
 	 */
 	public static function deleteSubscription($subscription_id){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $subscription_id);
+		
+		$subscription_id = self::_applyFilter( get_class(), __FUNCTION__ , $subscription_id);
+		
 		if(!empty($subscription_id)){
 			$subscription_id=PVDatabase::makeSafe($subscription_id);
 			$query="DELETE FROM ".PVDatabase::getSubscriptionTableName()." WHERE subscription_id='$subscription_id'";
 			
 			PVDatabase::query($query);
+			$this->_notify('PVSubscriptions::deleteSubscription', $subscription_id);
 		}//end if
 	}//end deleteUserSubscription
 	
