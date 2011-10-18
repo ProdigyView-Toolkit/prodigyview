@@ -33,6 +33,7 @@ class PVUsers extends PVStaticObject {
 	 * Check if the user has a current active session
 	 * 
 	 * @return boolean logged_in: True if logged in, else false
+	 * @access public
 	 */
 	public static function checkLogin(){
 		if(PVSession::readCookie('user_id')){
@@ -45,9 +46,10 @@ class PVUsers extends PVStaticObject {
 	}//endcheckLogin
 	
 	/**
-	 * Check if the user has a current active session
+	 * Retrieves the id of the user who currently has either a cookie or session
 	 * 
-	 * @return boolean logged_in: True if logged in, else false
+	 * @return id $user_id: The id of the user currently logged in, or false.
+	 * @access public
 	 */
 	public static function getUserID(){
 		if(PVSession::readCookie('user_id')){
@@ -59,7 +61,12 @@ class PVUsers extends PVStaticObject {
 		return false;
 	}//end getUserID
 	
-	
+	/**
+	 * Retrieves the username of the user who currently has either a cookie or session
+	 * 
+	 * @return string $username The username of the user currently logged in or false
+	 * @access public
+	 */
 	public static function getUserName(){
 		if(PVSession::readCookie('username')){
 			return PVSession::readCookie('username');
@@ -70,6 +77,12 @@ class PVUsers extends PVStaticObject {
 		return false;
 	}//end getUserID
 	
+	/**
+	 * Retrieves the email of the user who currently has either a cookie or session
+	 * 
+	 * @return string $user_email The user's email of the user currently logged in or false
+	 * @access public
+	 */
 	public static function getUserEmail(){
 		if(PVSession::readCookie('user_email')) {
 			return PVSession::readCookie('user_email');	
@@ -80,6 +93,13 @@ class PVUsers extends PVStaticObject {
 		return false;
 	}//end getUserID
 	
+	
+	/**
+	 * Retrieves the roles for the user who currently has either a cookie or session
+	 * 
+	 * @return array $roles The roles of the user currently logged in or false
+	 * @access public
+	 */
 	public static function getUserRole(){
 		if(PVSession::readCookie('user_roles')){
 			return PVSession::readCookie('user_roles');
@@ -90,7 +110,12 @@ class PVUsers extends PVStaticObject {
 		return false;
 	}//end getUserRole
 	
-	
+	/**
+	 * Retrieves the access level of the user who currently has either a cookie or session
+	 * 
+	 * @return int $access_level The access level of the user currently logged in or false
+	 * @access public
+	 */
 	public static function getUserAccessLevel(){
 		if(PVSession::readCookie('user_access_level')){
 			return PVSession::readCookie('user_access_level');
@@ -351,6 +376,15 @@ class PVUsers extends PVStaticObject {
 		
 	}//end  update User
 	
+	/**
+	 * If a user forgets their password, a reset code can be generated for them which can be
+	 * sent to the user and a match be made.
+	 * 
+	 * @param id $user_id The id of the use that the reset code is being made for.
+	 * 
+	 * @return string $reset_code An auto generated string of random number and characters
+	 * @access public
+	 */
 	public static function generateResetCode($user_id){
 		
 		$user_info=self::getUserInfo($user_id);
@@ -367,7 +401,6 @@ class PVUsers extends PVStaticObject {
 		}
 		
 	}//end generateResetCode
-	
 	
 	/**
 	 * Adds a user to a role. The should be created first.
@@ -524,8 +557,7 @@ class PVUsers extends PVStaticObject {
 			PVDatabase::query($query);
 			
 			$query="DELETE FROM ".PVDatabase::getUserRolesRelationsTableName()." WHERE user_id='$user_id'";
-			PVDatabase::query($query);
-			
+			PVDatabase::query($query);	
 		}//end not empty
 	}//end deleteUser
 	
@@ -660,7 +692,6 @@ class PVUsers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($role_type)){
 					
 				$role_type=trim($role_type);
@@ -677,7 +708,6 @@ class PVUsers extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($is_editable)){
 					
@@ -713,7 +743,6 @@ class PVUsers extends PVStaticObject {
 		}
 	
 		$query="SELECT * FROM ".PVDatabase::getUserRolesTableName()." ".$WHERE_CLAUSE." $ORDER_BY $LIMIT ";
-		
 		$result=PVDatabase::query($query);
 	
 		while ($row = PVDatabase::fetchArray($result)){
@@ -1012,6 +1041,24 @@ class PVUsers extends PVStaticObject {
 		}
 	}//end logout
 	
+	/**
+	 * Retrieves a list of users from the database based up arguements passed. Uses the 
+	 * PV Standard Search Query.
+	 * 
+	 * @param array args A list of arguements that are used for finding users
+	 * 			-'user_email' _string_: The email address of the user. Can be used for logging in with password
+	 * 			-'username' _string_: The user's name. Can be used for logging in with password.
+	 * 			-'user_access_level' _int_: The user's level access that can be used with a security settings
+	 * 			-'registration_date' _date/time_: Records the date/time a user has registerd. Will default to current timestamp of not defined
+	 * 			-'is_active' _boolean_: Determines if the user is considered active or not
+	 * 			-'user_image' _string_: The locations of the user's image
+	 * 			-'user_image_thumb' _string_: The locations of the user's image thumbnail
+	 * 			-'receive_html_emails' _boolean_: A user defined option for html emails
+	 * 			-'user_id' _id_: The id(s) of the user to search for
+	 * 
+	 * @return array $users Returns a list of users
+	 * @access public
+	 */
 	public static function getUserList($args=array()){
 		$args += self::getUserDefaults();
 		$args += self::_getSqlSearchDefaults();
@@ -1272,7 +1319,6 @@ class PVUsers extends PVStaticObject {
 		}
 		
     	$query="$PREQUERY SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
-    	
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -1286,264 +1332,84 @@ class PVUsers extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-		
     	return $content_array;
 	}//getUserList
 	
-	public static function getUserListWithRoles($args=''){
-		
-		$user_array=array();
-		
-		if(is_array($args)){
-			$args=PVDatabase::makeSafe($args);
-			extract($args);
-		
-		
-			$first=1;
-			
-			$content_array=array();
-				
-			$WHERE_CLAUSE.='';
-			
-			if(!empty($is_active)){
-					
-				$is_active=trim($is_active);
-				
-				if($first==0 && ($is_active[0]!='+' && $is_active[0]!=',' ) ){
-						$WHERE_CLAUSE.=" AND ";
-					}
-					
-				else if( ($is_active[0]=='+' || $is_active[0]==',') && $first==1 ){
-					$is_active[0]='';
-				}
-				
-				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($is_active, 'is_active');
-				
-				$first=0;
-			}//end not empty app_id
-			
-			
-			if(!empty($username)){
-					
-				$username=trim($username);
-				
-				if($first==0 && ($username[0]!='+' && $username[0]!=',' ) ){
-						$WHERE_CLAUSE.=" AND ";
-					}
-					
-				else if( ($username[0]=='+' || $username[0]==',') && $first==1 ){
-					$username[0]='';
-				}
-				
-				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($username, 'username');
-				
-				$first=0;
-			}//end not empty app_id
-			
-			
-			
-			if(!empty($receive_html_emails)){
-					
-				$receive_html_emails=trim($receive_html_emails);
-				
-				if($first==0 && ($receive_html_emails[0]!='+' && $receive_html_emails[0]!=',' ) ){
-						$receive_html_emails.=" AND ";
-					}
-					
-				else if( ($receive_html_emails[0]=='+' || $receive_html_emails[0]==',') && $first==1 ){
-					$receive_html_emails[0]='';
-				}
-				
-				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($receive_html_emails, 'receive_html_emails');
-				
-				$first=0;
-			}//end not empty app_id
-			
-			
-			if(!empty($user_id)){
-					
-				$user_id=trim($user_id);
-				
-				if($first==0 && ($user_id[0]!='+' && $user_id[0]!=',' ) ){
-						$user_id.=" AND ";
-					}
-					
-				else if( ($user_id[0]=='+' || $user_id[0]==',') && $first==1 ){
-					$user_id[0]='';
-				}
-				
-				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($user_id, 'user_id');
-				
-				$first=0;
-			}//end not empty app_id
-			
-			
-			if(!empty($role_id)){
-					
-				$role_id=trim($role_id);
-				
-				if($first==0 && ($role_id[0]!='+' && $role_id[0]!=',' ) ){
-						$WHERE_CLAUSE.=" AND ";
-					}
-					
-				else if( ($role_id[0]=='+' || $role_id[0]==',') && $first==1 ){
-					$role_id[0]='';
-				}
-				
-				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($role_id, 'pv_user_roles.role_id');
-				
-				$first=0;
-			}//end not empty app_id
-			
-		}//end if is_array
-		
-			if(!empty($WHERE_CLAUSE)){
-				$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
-			}
-			
-			$ORDER_BY=$args['order_by'];
-			
-			$LIMIT=$args['limit'];
-			
-		
-			
-			if(!empty($LIMIT)){
-				$LIMIT=" limit $LIMIT ";
-			}
-			
-			if(!empty($ORDER_BY)){
-				$ORDER_BY="ORDER BY $ORDER_BY ";
-			}
-		
-		$query="SELECT * FROM ".$schema."pv_login 
-		JOIN ".$schema."pv_user_roles_relations ON pv_user_roles_relations.user_id=pv_login.user_id
-		JOIN ".$schema."pv_user_roles ON pv_user_roles.role_id=pv_user_roles_relations.role_id
-		".$WHERE_CLAUSE." $ORDER_BY $LIMIT ";
-		
-		$result=PVDatabase::query($query);
-		
-		while($row = PVDatabase::fetchArray($result)){
-			$user_array[$row['user_id']]=$row;
-		}
-	
-		return $user_array;
-	}//getUserList
-	
+	/**
+	 * Returns the data on user based on that user's email, id, or username.
+	 * 
+	 * @param mixed $user_id A user's data can be retrieved by their id, email or username.
+	 * @param boolean $join_activation Joins the user's activation code and reset code to the user's data
+	 * 
+	 * @return array $user Returns the data pertaining to that user
+	 * @access public
+	 */
 	public static function getUserInfo($userid, $join_activation=FALSE , $join_roles=FALSE){
 	
 		$JOINS='';
 		
 		if($join_roles==true){
 			$JOINS.=" JOIN  ".PVDatabase::getUserRolesRelationsTableName()." ON ".PVDatabase::getUserRolesRelationsTableName().".user_id=".PVDatabase::getUsersTableName().".user_id
-			JOIN  ".PVDatabase::getUserRolesTableName()." ON ".PVDatabase::getUserRolesTableName().".role_id=".PVDatabase::getUserRolesRelationsTableName().".role_id ";
-					
+			JOIN  ".PVDatabase::getUserRolesTableName()." ON ".PVDatabase::getUserRolesTableName().".role_id=".PVDatabase::getUserRolesRelationsTableName().".role_id ";	
 		}
 		
 		if($join_activation==true){
 			$JOINS.=" JOIN  ".PVDatabase::getUserActivationTableName()." ON ".PVDatabase::getUserActivationTableName().".user_id=".PVDatabase::getUsersTableName().".user_id";
 		}
 		
-		
 		if($userid!=0 && PVValidator::isID($userid) ){
 			
 			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".user_id='$userid' ";
-			$result=PVDatabase::query($query);
 			
-			$row = PVDatabase::fetchArray($result);
-   
-    		return $row;
-		}//end if
-		else if(!empty($userid) && PVValidator::isValidEmail($userid) ){
+		} else if (!empty($userid) && PVValidator::isValidEmail($userid) ){
 	
 			$userid=PVDatabase::makeSafe($userid);
-			
-			
-			
 			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".user_email='$userid' ";
-			
-			$result=PVDatabase::query($query);
-			
-			$row = PVDatabase::fetchArray($result);
-   
-    		return $row;									
-													
-		}
-		
-		else if(!empty($userid) ){
+											
+		} else if(!empty($userid) ){
 			
 			$userid=PVDatabase::makeSafe($userid);
-			
-			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".username='$userid' ";
-			
-			$result=PVDatabase::query($query);
-			
-			$row = PVDatabase::fetchArray($result);
-   
-    		return $row;									
-													
+			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".username='$userid' ";																			
+		} else {
+			return false;
 		}
- 	
+		
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+   
+    	return $row;
 	}//end getUserInfo
 	
-	
-	public static function getUserInfoWithRoles($userid, $userfield=''){
-			
-		if($userid!=0 && PVValidator::isID($userid) ){
-			
-			
-			$query="SELECT * FROM ".PVDatabase::getUsersTableName()."
-			JOIN  ".PVDatabase::getUserRolesRelationsTableName()." ON  ".PVDatabase::getUserRolesRelationsTableName().".user_id=".PVDatabase::getUsersTableName().".user_id
-			JOIN  ".PVDatabase::getUserRolesTableName()." ON ".PVDatabase::getUserRolesTableName().".role_id= ".PVDatabase::getUserRolesRelationsTableName().".role_id
-			WHERE ".PVDatabase::getUsersTableName().".user_id='$userid' ";
-			
-		}//end if
-		else if(!empty($userid) && PVValidator::isValidEmail($userid) ){
-			
-			$userid=PVDatabase::makeSafe($userid);
-			
-			$query="SELECT * FROM ".PVDatabase::getUsersTableName()."
-			JOIN  ".PVDatabase::getUserRolesRelationsTableName()." ON  ".PVDatabase::getUserRolesRelationsTableName().".user_id=".PVDatabase::getUsersTableName().".user_id
-			JOIN  ".PVDatabase::getUserRolesTableName()." ON ".PVDatabase::getUserRolesTableName().".role_id= ".PVDatabase::getUserRolesRelationsTableName().".role_id
-			WHERE user_email='$userid' ";				
-													
-		}
-		
-		else if(!empty($userid) ){
-			
-			$userid=PVDatabase::makeSafe($userid);
-			
-			$query="SELECT * FROM ".PVDatabase::getUsersTableName()."
-			JOIN  ".PVDatabase::getUserRolesRelationsTableName()." ON  ".PVDatabase::getUserRolesRelationsTableName().".user_id=".PVDatabase::getUsersTableName().".user_id
-			JOIN  ".PVDatabase::getUserRolesTableName()." ON ".PVDatabase::getUserRolesTableName().".role_id= ".PVDatabase::getUserRolesRelationsTableName().".role_id
-			WHERE username='$userid' ";			
-		}
-		
-		if(!empty($query)){
-			$result=PVDatabase::query($query);
-			
-			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
-   
-    		return $row;
-		}
- 	
-	}//end getUserInfo
-	
+	/**
+	 * Returns the user id by the name of the user.
+	 * 
+	 * @param string $username The name of the user being searched for
+	 * 
+	 * @return id $user_id The id the user associated with that name
+	 * @access public
+	 */
 	public static function getUserIDByName($username){
 			
-			$username=PVDatabase::makeSafe($username);
-			$query="SELECT user_id FROM ".PVDatabase::getUsersTableName()." WHERE username='$username' ";
+		$username=PVDatabase::makeSafe($username);
+		$query="SELECT user_id FROM ".PVDatabase::getUsersTableName()." WHERE username='$username' ";
 			
-			$result=PVDatabase::query($query);
-			if(PVDatabase::resultRowCount($result) >0){
-				$row = PVDatabase::fetchArray($result);
-				return $row['user_id'];
-			}
-			else{
-				return 0;
-			}
+		$result=PVDatabase::query($query);
+		if(PVDatabase::resultRowCount($result) >0){
+			$row = PVDatabase::fetchArray($result);
+			return $row['user_id'];
+		}
+			
+		return FALSE;
 	}//end getUserIDByName
 	
+	/**
+	 * Returns the user id by the email of the user.
+	 * 
+	 * @param string $username The name of the user being searched for
+	 * 
+	 * @return id $user_id The id the user associated with that name
+	 * @access public
+	 */
 	public static function getUserIDByEmail($useremail){
 		
 		$useremail=PVDatabase::makeSafe($useremail);	
@@ -1554,20 +1420,22 @@ class PVUsers extends PVStaticObject {
 			$row = PVDatabase::fetchArray($result);
 			return $row['user_id'];
 		}
-		else{
-			return 0;
-		}
+		
+		return FALSE;
 	}//end getUserIDByName
 	
+	/**
+	 * Adds a user relationship between two users.
+	 * 
+	 * @param id $requesting_user The id of the user requesting the relationship
+	 * @param id $requested_user The id of ths user being requested
+	 * @param string $relationship_type An optional parameter than can further distinguish a relationship
+	 * @param int $relationship_status The relationship status in a numeric value. (ex: accepted, blocked, etc)
+	 * 
+	 * @return id $relationship_id The id of the newly created relationship
+	 * @access public
+	 */
 	public static function addUserRelationship($requesting_user_id, $requested_user_id, $relationship_type='', $relationship_status=0 ){
-		
-		if(is_array($requesting_user_id)){
-	
-			$requested_user_id=$requesting_user_id['requested_user_id'];
-			$relationship_type=$requesting_user_id['relationship_type'];
-			$relationship_status=$requesting_user_id['relationship_status'];
-			$requesting_user_id=$requesting_user_id['requesting_user_id'];
-		}
 		
 		$requesting_user_id=PVDatabase::makeSafe($requesting_user_id);
 		$requested_user_id=PVDatabase::makeSafe($requested_user_id);
@@ -1580,17 +1448,19 @@ class PVUsers extends PVStaticObject {
 		return $relationship_id;
 	}//end addUserRelationship
 	
-	
+	/**
+	 * Adds a user relationship between two users if the relationship does not already exist. Checks the following fields
+	 * before attempting to add a new one: 'requesting_user', 'requested_user', 'relationship_type'.
+	 * 
+	 * @param id $requesting_user The id of the user requesting the relationship
+	 * @param id $requested_user The id of ths user being requested
+	 * @param string $relationship_type An optional parameter than can further distinguish a relationship
+	 * @param int $relationship_status The relationship status in a numeric value. (ex: accepted, blocked, etc)
+	 * 
+	 * @return id $relationship_id The id of the newly created relationship, or returns false
+	 * @access public
+	 */
 	public static function addUniqueUserRelationship($requesting_user_id, $requested_user_id, $relationship_type='', $relationship_status=0 ){
-		
-		if(is_array($requesting_user_id)){
-	
-			$requested_user_id=$requesting_user_id['requested_user_id'];
-			$relationship_type=$requesting_user_id['relationship_type'];
-			$relationship_status=$requesting_user_id['relationship_status'];
-			$requesting_user_id=$requesting_user_id['requesting_user_id'];
-			
-		}
 		
 		$requesting_user_id=PVDatabase::makeSafe($requesting_user_id);
 		$requested_user_id=PVDatabase::makeSafe($requested_user_id);
@@ -1606,37 +1476,45 @@ class PVUsers extends PVStaticObject {
 		$result=PVDatabase::query($query);
 		
 		if(PVDatabase::resultRowCount($result)<=0 ){
-		
 			$query="INSERT INTO ".PVDatabase::getUserRelationsTableName()."( requesting_user, requested_user, relationship_status, relationship_type) VALUES('$requesting_user_id', '$requested_user_id', '$relationship_status' , '$relationship_type' )";
-			
 			$relationship_id=PVDatabase::return_last_insert_query($query, 'relationship_id', PVDatabase::getUserRelationsTableName());
-		
+			
+			return $relationship_id;
 		}
 		
-		return $relationship_id;
+		return FALSE;
 	}//end addUserRelationship
 	
-	public static function getUserRelationshipList($requesting_user_id='', $requested_user_id='', $relationship_type='', $relationship_status=0){
+	/**
+	 * Retrieves a list of user relationships based upon passed values.
+	 * 
+	 * @param array $args Arguments that will be used when search for user relationships. The following fields are optional.
+	 * 			-'requesting_user' _id_: The id of the requesting user
+	 * 			-'requested_user' _id_: The id of the requested user
+	 * 			-'relationship_type' _string_: The type of relationship between the users
+	 * 			-'relationship_status _int_: The status of the relationship
+	 * 
+	 * @return array $relationships An array of relationships found based on the arguements passed
+	 * @access public
+	 */
+	public static function getUserRelationshipList($args=array()){
 		
+		$args += self::getUserRoleDefaults();
+		$args += self::_getSqlSearchDefaults();
 		
-		
-		if(is_array($requesting_user_id)){
-	
-			$contents=$requesting_user_id;
-			$requesting_user_id='';
-			extract($contents);
-		}
-		
-		$first=1;
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$prefix_args=$args['prefix_args'];
+		$PREQUERY=$args['prequery'];
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 		$content_array=array();
 		
 		$table_name=PVDatabase::getUserRelationsTableName();
 		$db_type=PVDatabase::getDatabaseType();
 			
-		$WHERE_CLAUSE.='';
-			
-			
+		$WHERE_CLAUSE='';
 			
 		if(!empty($requesting_user)){
 				
@@ -1655,8 +1533,6 @@ class PVUsers extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
-		
 		if(!empty($requested_user)){
 				
 			$requested_user=trim($requested_user);
@@ -1674,8 +1550,6 @@ class PVUsers extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
-		
 		if(!empty($relationship_type)){
 				
 			$relationship_type=trim($relationship_type);
@@ -1692,8 +1566,6 @@ class PVUsers extends PVStaticObject {
 			
 			$first=0;
 		}//end not empty app_id
-		
-		
 		
 		if(!empty($relationship_status)){
 				
@@ -1722,9 +1594,6 @@ class PVUsers extends PVStaticObject {
 			$JOINS.=" $custom_join ";
 		}
 		
-		
-		
-		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
@@ -1749,7 +1618,6 @@ class PVUsers extends PVStaticObject {
 			}
 		}
 		
-	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -1774,7 +1642,6 @@ class PVUsers extends PVStaticObject {
 			$custom_select='*';
 		}
     	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
-    	
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -1788,43 +1655,40 @@ class PVUsers extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-		
     	return $content_array;
-
-		
 	}//end getUserRelationshipList
 	
-	
-	public static function updateUserRelationship($relationship_id, $requesting_user_id=0, $requested_user_id=0, $relationship_type='', $relationship_status=0 ){
-		
-		if(is_array($relationship_id)){
-			$requesting_user=$relationship_id['requesting_user'];
-			$requested_user=$relationship_id['requested_user'];
-			$relationship_type=$relationship_id['relationship_type'];
-			$relationship_status=$relationship_id['relationship_status'];
-			$relationship_id=$relationship_id['relationship_id'];
-			
-			if(empty($requesting_user)){
-				$requesting_user=$relationship_id['requesting_user'];
-			}
-			
-			if(empty($requested_user)){
-				$requested_user=$relationship_id['requested_user'];
-			}
-			
-		}
-		
-		$requesting_user_id=PVDatabase::makeSafe($requesting_user_id);
-		$requested_user_id=PVDatabase::makeSafe($requested_user_id);
-		$relationship_status=ceil($relationship_status);
-		$relationship_type=PVDatabase::makeSafe($relationship_type);
+	/**
+	 * Updated an exisiting relationship based on the relationship's id
+	 * 
+	 * @param array $args Arguements that define the user relationship that is going to be updated
+	 * 			-'requesting_user' _id_: The id of the requesting user
+	 * 			-'requested_user' _id_: The id of the requested user
+	 * 			-'relationship_type' _string_: The type of relationship between the users
+	 * 			-'relationship_status _int_: The status of the relationship
+	 * 			-'relationship_id' _id_ : The id of the relationship
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function updateUserRelationship($args=array()){
+		$args += self::getUserRelationshipDefaults();
+		$args = PVDatabase::makeSafe($args);
+		extract($args);
 		
 		$query="UPDATE ".PVDatabase::getUserRelationsTableName()." SET requesting_user='$requesting_user_id',  requested_user='$requested_user_id', relationship_type='$relationship_type', relationship_status='$relationship_status' WHERE  relationship_id='$relationship_id' ";
-		
 		PVDatabase::query($query);
 		
 	}//end upateUserRelationship
 	
+	/**
+	 * Retrieves the data of a specific user relationship based up on the id of the relationship.
+	 * 
+	 * @param id $relationship_id The id fo the relationship
+	 * 
+	 * @return array $relationship The data contained in that relationship
+	 * @access public
+	 */
 	public static function getUserRelationship($relationship_id){
 		
 		if(!empty($relationship_id)){
@@ -1835,16 +1699,24 @@ class PVUsers extends PVStaticObject {
 			
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			
 			$row=PVDatabase::formatData($row);
 			
 			return $row;
-			
 		}//end if not empty
-		
 		
 	}//end getUserRelationship
 	
+	/**
+	 * Returns a user relationship if the connection exist, otherwise returns false.
+	 * 
+	 * @param id $first_user The id of the first user
+	 * @param id $second_user The id of the second user
+	 * @param string $relationship_type An optional parameters used to further distinguish a relationship by type.
+	 * @param int $relationship_status An optional parameters on the status of the relationship
+	 * 
+	 * @return array $relationship The data contained in that relationship or false if none was found
+	 * @access public
+	 */
 	public static function getUserRelationshipByConnection($first_user, $second_user, $relationship_type='', $relationship_status=''){
 		
 		if(!empty($first_user) && !empty($second_user)){
@@ -1859,14 +1731,23 @@ class PVUsers extends PVStaticObject {
 			$row = PVDatabase::fetchArray($result);
 			
 			$row=PVDatabase::formatData($row);
-			
 			return $row;
 		}
 		
 		return 0;
-		
 	}//end checkUserRelationshipStatus
 	
+	/**
+	 * Checks if a user relationship exist.
+	 * 
+	 * @param id $first_user The id of the first user
+	 * @param id $second_user The id of the second user
+	 * @param string $relationship_type An optional parameters used to further distinguish a relationship by type.
+	 * @param int $relationship_status An optional parameters on the status of the relationship
+	 * 
+	 * @return boolean $found Retunrs true if the relationship exist, otherwise returns false
+	 * @access public
+	 */
 	public static function checkUserRelationship($first_user, $second_user, $relationship_type='', $relationship_status=''){
 		
 		if(!empty($first_user) && !empty($second_user)){
@@ -1876,7 +1757,7 @@ class PVUsers extends PVStaticObject {
 			//Unused Possible Future Solution
 			//$query="SELECT a.* FROM USER_RELATIONSHIP a WHERE a.requesting_user_id = '1' AND a.requested_user_id = '2' UNION SELECT b.* FROM USER_RELATIONSHIP b WHERE b.requesting_user_id = '2'  AND b.requested_user_id = '1'";		
 			
-			$query="SELECT * FROM ".PVDatabase::getUserRelationsTableName()." WHERE requesting_user IN($first_user, $second_user) AND requested_user IN($first_user, $second_user) ";
+			$query="SELECT relationship_id FROM ".PVDatabase::getUserRelationsTableName()." WHERE requesting_user IN($first_user, $second_user) AND requested_user IN($first_user, $second_user) ";
 			
 			if(!empty($relationship_type)){
 				$relationship_type=PVDatabase::makeSafe($relationship_type);
@@ -1891,21 +1772,23 @@ class PVUsers extends PVStaticObject {
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
 			
-			if(empty($row)){
-				return 0;	
-			}
-			else{
-				return 1;	
+			if(!empty($row)){
+				return TRUE;	
 			}
 			
+			return FALSE;
 		}
-		
-		return 0;
-		
+		return FALSE;
 	}//end checkUserRelationshipStatus
 	
-	
-	
+	/**
+	 * Removes a relationship from the database based upon the relationships id.
+	 * 
+	 * @param id $relationship_id The id of the relationship to be removed
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deleteUserRelationship($relationship_id){
 		
 		if(!empty($relationship_id)){
@@ -1920,6 +1803,9 @@ class PVUsers extends PVStaticObject {
 		
 	}//end deleteUserRelationship
 	
+	/**
+	 * @todo this function might be useless. Do not use. Possibly up for deletion.
+	 */
 	public static function checkUserRole($user_id, $roles){
 		
 		if(PVValidator::isID($user_id) && !empty($user_id)){
