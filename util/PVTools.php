@@ -895,7 +895,7 @@ class PVTools extends PVStaticObject {
 				}
 			}
 			else if($string[$i]=='+'){
-				if( $string[$i+1]!='!'){
+				if( @$string[$i+1]!='!'){
 					$output.=' AND '.$content_term.'=\'';
 				}
 				else {
@@ -905,7 +905,7 @@ class PVTools extends PVStaticObject {
 				
 			}
 			else if($string[$i]==','){
-				if( $string[$i+1]!='!'){
+				if( @$string[$i+1]!='!'){
 					$output.=' OR '.$content_term.'=\'';
 					
 				} else {
