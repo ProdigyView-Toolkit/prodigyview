@@ -1509,6 +1509,7 @@ class PVUsers extends PVStaticObject {
 		$args = PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
 		
+		$first=1;
 		$content_array=array();
 		
 		$table_name=PVDatabase::getUserRelationsTableName();
