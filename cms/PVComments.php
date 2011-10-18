@@ -49,7 +49,12 @@ class PVComments extends PVStaticObject {
 	 * @access public
 	 */
 	public static function addComment($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getCommentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
 			
@@ -59,9 +64,9 @@ class PVComments extends PVStaticObject {
 			
 		$owner_ip=$_SERVER['REMOTE_ADDR'];
 			
-		
 		$query="INSERT INTO ".PVDatabase::getContentCommentsTableName()."( content_id, owner_id , owner_ip, comment_date , comment_approved , comment_title, comment_text, comment_parent, comment_author, comment_author_email, comment_author_website, comment_type) VALUES( '$content_id' , '$owner_id' , '$owner_ip', '$comment_date' , '$comment_approved' , '$comment_title', '$comment_text', '$comment_parent', '$comment_author', '$comment_author_email', '$comment_author_website', '$comment_type' )";
 		$comment_id=PVDatabase::return_last_insert_query($query, "comment_id", PVDatabase::getContentCommentsTableName() );
+		$this->_notify('PVComments::addComment', $comment_id, $args);
 		
 		return $comment_id;
 	}//end addComment
@@ -76,6 +81,11 @@ class PVComments extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getComment($comment_id){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $comment_id);
+			
+		$comment_id = self::_applyFilter( get_class(), __FUNCTION__ , $comment_id);
 		$comment_id=PVDatabase::makeSafe($comment_id);
 		
 		if(!empty($comment_id)){
@@ -83,6 +93,7 @@ class PVComments extends PVStaticObject {
 			$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
 			$row=PVDatabase::formatData($row);
+			$this->_notify('PVComments::getComment', $row);
 			
 			return $row;
 		}
@@ -109,8 +120,14 @@ class PVComments extends PVStaticObject {
 	 * 			-'join_content' _boolean_: Join the content based on the content ids
 	 */
 	public static function getCommentList($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getCommentDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
+		
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
 		$custom_select=$args['custom_select'];
@@ -426,9 +443,9 @@ class PVComments extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-		
+		$this->_notify('PVComments::getCommentList', $content_array, $args);
+    	
     	return $content_array;
-	
 	}//end
 	
 	/**
@@ -453,7 +470,12 @@ class PVComments extends PVStaticObject {
 	 * @access public
 	 */
 	public static function updateComment($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getCommentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -461,6 +483,8 @@ class PVComments extends PVStaticObject {
 			
 			$query="UPDATE ".PVDatabase::getContentCommentsTableName()." SET owner_id='$owner_id', comment_date='$comment_date', comment_approved='$comment_approved', comment_title='$comment_title', comment_parent='$comment_parent', comment_author='$comment_author', comment_author_email='$comment_author_email', comment_author_website='$comment_author_website', content_id='$content_id', comment_text='$comment_text' WHERE comment_id='$comment_id'  ";
 			PVDatabase::query($query);
+			$this->_notify('PVComments::updateComment', $args);
+			
 		}//end updateComment
 	
 	}//end updateComment
@@ -473,7 +497,16 @@ class PVComments extends PVStaticObject {
 	 */
 	public static function deleteComment($comment_id, $deleteChildrenComments=false){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $comment_id, $deleteChildrenComments);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('comment_id'=>$comment_id, 'deleteChildrenComments'=>$deleteChildrenComments));
+		$comment_id=$data['comment_id'];
+		$deleteChildrenComments=$data['deleteChildrenComments'];
+		
 		if(!empty($comment_id)){
+			
+			$comment_id=PVDatabase::makeSafe($comment_id);
 			$query="DELETE FROM ".PVDatabase::getContentCommentsTableName()." WHERE comment_id='$comment_id'";
 			PVDatabase::query($query);
 			
@@ -486,7 +519,9 @@ class PVComments extends PVStaticObject {
 					self::deleteComment($row['comment_id'], $deleteChildrenComments);
 				}//end while
 			}//endif deleteChildren
-		
+			
+			$this->_notify('PVComments::deleteComment', $comment_id, $deleteChildrenComments);
+			
 		}//end if not empty
 	
 	}//end deleteComenet
