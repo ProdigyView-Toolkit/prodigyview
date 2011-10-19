@@ -908,7 +908,7 @@ class PVUsers extends PVStaticObject {
 			
 			self::setUserSession($row,  $roles );
 			
-			if($options['set_cookie']){
+			if($options['set_cookies']){
 				self::setUserCookies($row,  $roles);
 			}
 		}
