@@ -1574,7 +1574,7 @@ class PVUsers extends PVStaticObject {
 		
 		$result=PVDatabase::query($query);
 		$row = PVDatabase::fetchArray($result);
-		$row = PVDatabase::formatData($result);
+		$row = PVDatabase::formatData($row);
 		
 		self::_notify(get_class().'::'.__FUNCTION__, $row);
 		$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
@@ -1602,7 +1602,7 @@ class PVUsers extends PVStaticObject {
 		$result=PVDatabase::query($query);
 		if(PVDatabase::resultRowCount($result) >0){
 			$row = PVDatabase::fetchArray($result);
-			$row = PVDatabase::formatData($result);
+			$row = PVDatabase::formatData($row);
 			
 			self::_notify(get_class().'::'.__FUNCTION__, $row);
 			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
@@ -1633,7 +1633,7 @@ class PVUsers extends PVStaticObject {
 			
 		if(PVDatabase::resultRowCount($result) >0){
 			$row = PVDatabase::fetchArray($result);
-			$row = PVDatabase::formatData($result);
+			$row = PVDatabase::formatData($row);
 			
 			self::_notify(get_class().'::'.__FUNCTION__, $row);
 			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
