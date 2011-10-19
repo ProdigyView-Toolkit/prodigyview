@@ -35,7 +35,11 @@ class PVUsers extends PVStaticObject {
 	 * @return boolean logged_in: True if logged in, else false
 	 * @access public
 	 */
-	public static function checkLogin(){
+	public static function checkLogin() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(PVSession::readCookie('user_id')){
 			return true;
 		}
@@ -51,7 +55,11 @@ class PVUsers extends PVStaticObject {
 	 * @return id $user_id: The id of the user currently logged in, or false.
 	 * @access public
 	 */
-	public static function getUserID(){
+	public static function getUserID() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(PVSession::readCookie('user_id')){
 			return PVSession::readCookie('user_id');	
 		}
@@ -67,7 +75,11 @@ class PVUsers extends PVStaticObject {
 	 * @return string $username The username of the user currently logged in or false
 	 * @access public
 	 */
-	public static function getUserName(){
+	public static function getUserName() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(PVSession::readCookie('username')){
 			return PVSession::readCookie('username');
 		}
@@ -83,7 +95,11 @@ class PVUsers extends PVStaticObject {
 	 * @return string $user_email The user's email of the user currently logged in or false
 	 * @access public
 	 */
-	public static function getUserEmail(){
+	public static function getUserEmail() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(PVSession::readCookie('user_email')) {
 			return PVSession::readCookie('user_email');	
 		}
@@ -100,7 +116,11 @@ class PVUsers extends PVStaticObject {
 	 * @return array $roles The roles of the user currently logged in or false
 	 * @access public
 	 */
-	public static function getUserRole(){
+	public static function getUserRole() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(PVSession::readCookie('user_roles')){
 			return PVSession::readCookie('user_roles');
 		}
@@ -116,7 +136,11 @@ class PVUsers extends PVStaticObject {
 	 * @return int $access_level The access level of the user currently logged in or false
 	 * @access public
 	 */
-	public static function getUserAccessLevel(){
+	public static function getUserAccessLevel() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(PVSession::readCookie('user_access_level')){
 			return PVSession::readCookie('user_access_level');
 		}
@@ -135,7 +159,12 @@ class PVUsers extends PVStaticObject {
 	 * @return array $roles The id and name of the roles
 	 * @access public
 	 */
-	public static function getAssignedUserRoles($user_id){
+	public static function getAssignedUserRoles($user_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id);
+		
+		$user_id = self::_applyFilter( get_class(), __FUNCTION__ , $user_id, array('event'=>'args'));
 		
 		$user_id=PVDatabase::makeSafe($user_id);
 		if(PVValidator::isID($user_id)){
@@ -151,6 +180,9 @@ class PVUsers extends PVStaticObject {
 		while($row=PVDatabase::fetchArray($result)){
 			$roles[]=$row;
 		}//end while
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $roles);
+		$roles = self::_applyFilter( get_class(), __FUNCTION__ , $roles, array('event'=>'return'));
 		
 		return $roles;
 	}//end getUserRoles
@@ -180,6 +212,13 @@ class PVUsers extends PVStaticObject {
 	 * @access public
 	 */
 	public static function attemptLogin($username, $password, $save_cookie=TRUE, $password_encoded=false) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $username, $password, $save_cookie, $password_encoded);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('username'=>$username, 'password'=>$password), array('event'=>'args'));
+		$username = $data['username'];
+		$password = $data['password'];
 		
 		$username=PVDatabase::makeSafe($username);
 		$password=PVDatabase::makeSafe($password);
@@ -214,6 +253,8 @@ class PVUsers extends PVStaticObject {
 				if($save_cookie) {
 					self::setUserCookies($row, $roles );
 				}
+				
+				self::_notify(get_class().'::'.__FUNCTION__, $username, $password, $save_cookie, $password_encoded);
 				return TRUE;
 			}
 		}
@@ -242,7 +283,15 @@ class PVUsers extends PVStaticObject {
 	 * @access public
 	 */
 	public static function addUser($args=array(), $password_encoded=false){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args, $password_encoded);
+		
 		$args += self::getUserDefaults();
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('args'=>$args, 'password_encoded'=>$password_encoded), array('event'=>'args'));
+		$args = $data['args'];
+		$password_encoded =  $data['password_encoded'];
+		
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
 		if(!empty($user_email)){
@@ -305,6 +354,7 @@ class PVUsers extends PVStaticObject {
 					PVDatabase::query($query);
 				}
 				
+				self::_notify(get_class().'::'.__FUNCTION__, $user_id, $args, $password_encoded);
 				return $user_id;
 			} 
 
@@ -329,8 +379,13 @@ class PVUsers extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function updateUser($args=array()){
+	public static function updateUser($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getUserDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -346,6 +401,7 @@ class PVUsers extends PVStaticObject {
 			
 		$query="UPDATE ".PVDatabase::getUsersTableName()." SET user_email='$user_email', is_active='$is_active', username='$username', receive_html_emails='$receive_html_emails', registration_date='$registration_date', activation_date='$activation_date', user_image='$user_image', user_image_thumb='$user_image_thumb', user_access_level='$user_access_level' WHERE user_id='$user_id' ";
 		PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end  update User
 	
 	/**
@@ -361,6 +417,13 @@ class PVUsers extends PVStaticObject {
 	 */
 	public static function updateUserPassword($args=array(), $encrypted=FALSE){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args,  $encrypted);
+			
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('args'=>$args, 'encrypted'=>$encrypted), array('event'=>'args'));
+		$args = $data['args'];
+		$encrypted =  $data['encrypted'];
+		
 		if(is_array($args) && !empty($args['user_id'])){
 			$args=PVDatabase::makeSafe($args);
 			extract($args);
@@ -372,6 +435,7 @@ class PVUsers extends PVStaticObject {
 			$query="UPDATE ".PVDatabase::getUsersTableName()." SET user_password='$user_password' WHERE user_id='$user_id' ";
 			
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args, $encrypted);
 		}
 		
 	}//end  update User
@@ -385,7 +449,12 @@ class PVUsers extends PVStaticObject {
 	 * @return string $reset_code An auto generated string of random number and characters
 	 * @access public
 	 */
-	public static function generateResetCode($user_id){
+	public static function generateResetCode($user_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id);
+		
+		$user_id = self::_applyFilter( get_class(), __FUNCTION__ , $user_id, array('event'=>'args'));
 		
 		$user_info=self::getUserInfo($user_id);
 		
@@ -397,6 +466,9 @@ class PVUsers extends PVStaticObject {
 			$query="UPDATE ".PVDatabase::getUserActivationTableName()." SET reset_code='$reset_code' WHERE user_id='$user_id'";
 			PVDatabase::query($query);
 			
+			$reset_code = self::_applyFilter( get_class(), __FUNCTION__ , $reset_code, array('event'=>'return'));
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $user_id, $reset_code);
 			return $reset_code;
 		}
 		
@@ -412,7 +484,14 @@ class PVUsers extends PVStaticObject {
 	 * @return boolean $success Returns true if the user was added, otherwise false.
 	 * @access public
 	 */
-	public static function addUserToRole($user_id, $role_id){
+	public static function addUserToRole($user_id, $role_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $role_id);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('user_id'=>$user_id, 'role_id'=>$role_id), array('event'=>'args'));
+		$user_id = $data['user_id'];
+		$role_id =  $data['role_id'];
 		
 		if(!PVValidator::isID($role_id) && !empty($role_id)){
 				$role=self::getUserRoleByName($role_id);
@@ -430,6 +509,8 @@ class PVUsers extends PVStaticObject {
 			if(PVDatabase::resultRowCount($result)<=0) {
 				$query="INSERT INTO ".PVDatabase::getUserRolesRelationsTableName()."(user_id, role_id) VALUES('$user_id', '$role_id')";
 				PVDatabase::query($query);	
+				self::_notify(get_class().'::'.__FUNCTION__, $user_id, $role_id);
+				
 				return true;
 			}
 		}//end
@@ -448,7 +529,14 @@ class PVUsers extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function removeUserFromeRole($user_id, $role_id){
+	public static function removeUserFromeRole($user_id, $role_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $role_id);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('user_id'=>$user_id, 'role_id'=>$role_id), array('event'=>'args'));
+		$user_id = $data['user_id'];
+		$role_id =  $data['role_id'];
 		
 		if(!PVValidator::isID($role_id) && !empty($role_id)){
 				$role=self::getUserRoleByName($role_id);
@@ -462,6 +550,7 @@ class PVUsers extends PVStaticObject {
 			
 			$query="DELETE FROM ".PVDatabase::getUserRolesRelationsTableName()." WHERE user_id='$user_id' AND role_id='$role_id'";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $user_id, $role_id);
 		}//end
 		
 	}//end removeUserFromRole
@@ -482,7 +571,11 @@ class PVUsers extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function deleteUser($user_id, $options=array()){
+	public static function deleteUser($user_id, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $options);
+		
 		$defaults=array(
 			'remove_user_content'=>TRUE,
 			'remove_user_comments'=>TRUE,
@@ -494,6 +587,11 @@ class PVUsers extends PVStaticObject {
 		);
 		
 		$options += $defaults;
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('user_id'=>$user_id, 'options'=>$options), array('event'=>'args'));
+		$user_id = $data['user_id'];
+		$options =  $data['options'];
+		
 		extract($options);
 		
 		if(!empty($user_id)){
@@ -557,7 +655,9 @@ class PVUsers extends PVStaticObject {
 			PVDatabase::query($query);
 			
 			$query="DELETE FROM ".PVDatabase::getUserRolesRelationsTableName()." WHERE user_id='$user_id'";
-			PVDatabase::query($query);	
+			PVDatabase::query($query);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $user_id, $options);
 		}//end not empty
 	}//end deleteUser
 	
@@ -572,7 +672,12 @@ class PVUsers extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function updateUserFields($args){
+	public static function updateUserFields($args) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
 		if(!empty($args['user_id']) && is_array($args) ){
 			
@@ -594,6 +699,7 @@ class PVUsers extends PVStaticObject {
 			$query="UPDATE ".PVDatabase::getUsersTableName()." SET $UPDATE_CLAUSE WHERE user_id='$user_id' ";
 			
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 		}//end if not empty
 		
 	}//end updateUserField
@@ -610,9 +716,14 @@ class PVUsers extends PVStaticObject {
 	 * @return int role_id: The id of the newly created role.
 	 * @access public
 	 */
-	public static function addUserRole($args=array()){
+	public static function addUserRole($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getUserRoleDefaults();
 		$args=PVDatabase::makeSafe($args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
 		if(is_array($args) && !empty($args)){
 			
@@ -621,6 +732,7 @@ class PVUsers extends PVStaticObject {
 			
 			$query="INSERT INTO ".PVDatabase::getUserRolesTableName()."( role_name, role_description, role_type, is_editable) VALUES('$role_name', '$role_description', '$role_type', '$is_editable')";
 			$role_id=PVDatabase::return_last_insert_query($query, 'role_id', PVDatabase::getUserRolesTableName());
+			self::_notify(get_class().'::'.__FUNCTION__, $role_id, $args);
 			
 			return $role_id;
 			
@@ -642,9 +754,14 @@ class PVUsers extends PVStaticObject {
 	 * @return array $roles Returns an array of roles
 	 * @access public
 	 */
-	public static function getUserRolesList($args=array()){
+	public static function getUserRolesList($args=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getUserRoleDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
@@ -750,7 +867,9 @@ class PVUsers extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
-    	
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array, array('event'=>'result'));
+		
 		return $content_array;	
 	}//end get user Role list
 	
@@ -764,6 +883,11 @@ class PVUsers extends PVStaticObject {
 	 */
 	public static function getUserRoleByID($role_id){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $role_id);
+		
+		$role_id = self::_applyFilter( get_class(), __FUNCTION__ , $role_id, array('event'=>'args'));
+		
 		if(!empty($role_id)){
 			
 			$role_id=PVDatabase::makeSafe($role_id);
@@ -773,6 +897,9 @@ class PVUsers extends PVStaticObject {
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
 			$row=PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'result'));
 			
 			return $row;
 			
@@ -791,15 +918,23 @@ class PVUsers extends PVStaticObject {
 	 */
 	public static function getUserRoleByName($role_id){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $role_id);
+		
+		$role_id = self::_applyFilter( get_class(), __FUNCTION__ , $role_id, array('event'=>'args'));
+		
 		if(!empty($role_id)){
 			
 			$role_id=PVDatabase::makeSafe($role_id);
 			
-			$query="SELECT * FROM ".PVDatabase::getUserRolesTableName()." WHERE role_name='$role_id'";
+			$query = "SELECT * FROM ".PVDatabase::getUserRolesTableName()." WHERE role_name='$role_id'";
 			
-			$result=PVDatabase::query($query);
+			$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			$row = PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'result'));
 			
 			return $row;
 			
@@ -821,7 +956,12 @@ class PVUsers extends PVStaticObject {
 	 * @access public
 	 */
 	public static function updateUserRole($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getUserRoleDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		
 		if(is_array($args) && !empty($args['role_id']) ){
@@ -832,6 +972,7 @@ class PVUsers extends PVStaticObject {
 			
 			$query="UPDATE ".PVDatabase::getUserRolesTableName()." SET role_name='$role_name' , role_description='$role_description' , role_type='$role_type' , is_editable='$is_editable' WHERE role_id='$role_id'";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 			
 		}//end if
 		
@@ -845,7 +986,12 @@ class PVUsers extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function deleteUserRole($role_id){
+	public static function deleteUserRole($role_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $role_id);
+		
+		$role_id = self::_applyFilter( get_class(), __FUNCTION__ , $role_id, array('event'=>'args'));
 		$role_id=PVDatabase::makeSafe($role_id);
 		
 		if(!empty($role_id)){
@@ -854,6 +1000,7 @@ class PVUsers extends PVStaticObject {
 			
 			$query="DELETE FROM ".PVDatabase::getUserRolesRelationsTableName()." WHERE role_id='$role_id' ";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $role_id);
 		}//end role_id
 	}//end deleteUserRole
 	
@@ -867,12 +1014,20 @@ class PVUsers extends PVStaticObject {
 	 * @return boolean $success Returns true if the user was logged in
 	 * @access public
 	 */
-	public static function loginUser($username, $options=array() ){
+	public static function loginUser($username, $options=array() ) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $username, $options);
+		
 		$defaults=array(
 			'set_cookies'=>true,
 		);
 		
 		$options += $defaults;
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('username'=>$username, 'options'=>$options), array('event'=>'args'));
+		$username = $data['username'];
+		$options =  $data['options'];
+		
 		extract($options);
 		
 		$loginSuccess=0;
@@ -914,6 +1069,8 @@ class PVUsers extends PVStaticObject {
 			}
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $loginSuccess, $username, $options);
+		
 		return $loginSuccess;
 	}//end pvLogin
 	
@@ -927,7 +1084,16 @@ class PVUsers extends PVStaticObject {
 	 * @return boolean $success Will return true of the passwords match, otherwise false
 	 * @access private
 	 */
-	private static function comparePasswords($password, $dbpassword, $password_encoded=false){
+	private static function comparePasswords($password, $dbpassword, $password_encoded=false) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $password, $dbpassword, $password_encoded);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('password'=>$password, 'dbpassword'=>$dbpassword, 'password_encoded'=>$password_encoded), array('event'=>'args'));
+		$password = $data['password'];
+		$dbpassword =  $data['dbpassword'];
+		$password_encoded =  $data['password_encoded'];
+		
 		if($password_encoded==false){
 			$password=md5($password);
 		}
@@ -949,7 +1115,14 @@ class PVUsers extends PVStaticObject {
 	 * @return void
 	 * @access private
 	 */
-	private static function setUserSession($data=array(), $roles ){
+	private static function setUserSession($data=array(), $roles) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $roles);
+		
+		$info = self::_applyFilter( get_class(), __FUNCTION__ , array('data'=>$data, 'roles'=>$roles ), array('event'=>'args'));
+		$data = $info['data'];
+		$roles =  $info['roles'];
 			
 		foreach($data as $key=>$value) {
 			if(!PVValidator::isInteger($key))
@@ -957,6 +1130,8 @@ class PVUsers extends PVStaticObject {
 		}	
 		
 		PVSession::writeSession('user_roles', $roles);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $data, $roles);
 	}
 	
 	/**
@@ -969,7 +1144,14 @@ class PVUsers extends PVStaticObject {
 	 * @return void
 	 * @access private
 	 */
-	private static function setUserCookies($data=array(), $roles  ){
+	private static function setUserCookies($data=array(), $roles) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $roles);
+		
+		$info = self::_applyFilter( get_class(), __FUNCTION__ , array('data'=>$data, 'roles'=>$roles ), array('event'=>'args'));
+		$data = $info['data'];
+		$roles =  $info['roles'];
 		
 		foreach($data as $key=>$value) {
 			if(!PVValidator::isInteger($key))
@@ -977,6 +1159,7 @@ class PVUsers extends PVStaticObject {
 		}	
 		
 		PVSession::writeCookie('user_roles', $roles);
+		self::_notify(get_class().'::'.__FUNCTION__, $data, $roles);
 	}
 	
 	/**
@@ -1017,6 +1200,9 @@ class PVUsers extends PVStaticObject {
 	 */
 	public static function logout(){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(PVSession::readSession('user_id')){
 			$session_exist=true;
 		}
@@ -1033,6 +1219,8 @@ class PVUsers extends PVStaticObject {
 		if($session_exist){
 			session_destroy();
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__);
 	}//end logout
 	
 	/**
@@ -1054,7 +1242,12 @@ class PVUsers extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getUserList($args=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getUserDefaults();
+		$args= self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args += self::_getSqlSearchDefaults();
 		
 		$custom_where=$args['custom_where'];
@@ -1326,6 +1519,9 @@ class PVUsers extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array, array('event'=>'return'));
+		
     	return $content_array;
 	}//getUserList
 	
@@ -1338,7 +1534,15 @@ class PVUsers extends PVStaticObject {
 	 * @return array $user Returns the data pertaining to that user
 	 * @access public
 	 */
-	public static function getUserInfo($userid, $join_activation=FALSE , $join_roles=FALSE){
+	public static function getUserInfo($user_id, $join_activation=FALSE , $join_roles=FALSE){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $join_activation , $join_roles);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('user_id'=>$user_id, 'join_activation'=>$join_activation, 'join_roles'=>$join_roles), array('event'=>'args'));
+		$user_id = $data['user_id'];
+		$join_activation =  $data['join_activation'];
+		$join_roles =  $data['join_roles'];
 	
 		$JOINS='';
 		
@@ -1351,26 +1555,30 @@ class PVUsers extends PVStaticObject {
 			$JOINS.=" JOIN  ".PVDatabase::getUserActivationTableName()." ON ".PVDatabase::getUserActivationTableName().".user_id=".PVDatabase::getUsersTableName().".user_id";
 		}
 		
-		if($userid!=0 && PVValidator::isID($userid) ){
+		if($user_id!=0 && PVValidator::isID($user_id) ){
 			
-			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".user_id='$userid' ";
+			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".user_id='$user_id' ";
 			
-		} else if (!empty($userid) && PVValidator::isValidEmail($userid) ){
+		} else if (!empty($user_id) && PVValidator::isValidEmail($user_id) ){
 	
-			$userid=PVDatabase::makeSafe($userid);
-			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".user_email='$userid' ";
+			$user_id=PVDatabase::makeSafe($user_id);
+			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".user_email='$user_id' ";
 											
-		} else if(!empty($userid) ){
+		} else if(!empty($user_id) ){
 			
-			$userid=PVDatabase::makeSafe($userid);
-			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".username='$userid' ";																			
+			$user_id=PVDatabase::makeSafe($user_id);
+			$query="SELECT * FROM ".PVDatabase::getUsersTableName()." $JOINS WHERE ".PVDatabase::getUsersTableName().".username='$user_id' ";																			
 		} else {
 			return false;
 		}
 		
 		$result=PVDatabase::query($query);
 		$row = PVDatabase::fetchArray($result);
-   
+		$row = PVDatabase::formatData($result);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $row);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
+		
     	return $row;
 	}//end getUserInfo
 	
@@ -1383,13 +1591,22 @@ class PVUsers extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getUserIDByName($username){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $username);
 			
-		$username=PVDatabase::makeSafe($username);
+		$username = self::_applyFilter( get_class(), __FUNCTION__ , $username, array('event'=>'args'));
+		$username = PVDatabase::makeSafe($username);
 		$query="SELECT user_id FROM ".PVDatabase::getUsersTableName()." WHERE username='$username' ";
 			
 		$result=PVDatabase::query($query);
 		if(PVDatabase::resultRowCount($result) >0){
 			$row = PVDatabase::fetchArray($result);
+			$row = PVDatabase::formatData($result);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
+			
 			return $row['user_id'];
 		}
 			
@@ -1406,12 +1623,20 @@ class PVUsers extends PVStaticObject {
 	 */
 	public static function getUserIDByEmail($useremail){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $useremail);
+		
+		$useremail = self::_applyFilter( get_class(), __FUNCTION__ , $useremail, array('event'=>'args'));
 		$useremail=PVDatabase::makeSafe($useremail);	
 		$query="SELECT user_id FROM ".PVDatabase::getUsersTableName()." WHERE user_email='$useremail' ";
 		$result=PVDatabase::query($query);
 			
 		if(PVDatabase::resultRowCount($result) >0){
 			$row = PVDatabase::fetchArray($result);
+			$row = PVDatabase::formatData($result);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
 			return $row['user_id'];
 		}
 		
@@ -1431,6 +1656,15 @@ class PVUsers extends PVStaticObject {
 	 */
 	public static function addUserRelationship($requesting_user_id, $requested_user_id, $relationship_type='', $relationship_status=0 ){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $requesting_user_id, $requested_user_id, $relationship_type, $relationship_status);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('requesting_user_id'=>$requesting_user_id, 'requested_user_id'=>$requested_user_id, 'relationship_type'=>$relationship_type, 'relationship_status'=>$relationship_status ), array('event'=>'args'));
+		$requesting_user_id = $data['requesting_user_id'];
+		$requested_user_id =  $data['requested_user_id'];
+		$relationship_type =  $data['relationship_type'];
+		$relationship_status =  $data['relationship_status'];
+		
 		$requesting_user_id=PVDatabase::makeSafe($requesting_user_id);
 		$requested_user_id=PVDatabase::makeSafe($requested_user_id);
 		$relationship_status=ceil($relationship_status);
@@ -1438,6 +1672,9 @@ class PVUsers extends PVStaticObject {
 		
 		$query="INSERT INTO ".PVDatabase::getUserRelationsTableName()."( requesting_user, requested_user, relationship_status, relationship_type) VALUES('$requesting_user_id', '$requested_user_id', '$relationship_status' , '$relationship_type' )";
 		$relationship_id=PVDatabase::return_last_insert_query($query, 'relationship_id', PVDatabase::getUserRelationsTableName());
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $relationship_id, $requesting_user_id, $requested_user_id, $relationship_type, $relationship_status );
+		$relationship_id = self::_applyFilter( get_class(), __FUNCTION__ , $relationship_id , array('event'=>'return'));
 		
 		return $relationship_id;
 	}//end addUserRelationship
@@ -1456,6 +1693,15 @@ class PVUsers extends PVStaticObject {
 	 */
 	public static function addUniqueUserRelationship($requesting_user_id, $requested_user_id, $relationship_type='', $relationship_status=0 ){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $requesting_user_id, $requested_user_id, $relationship_type, $relationship_status);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('requesting_user_id'=>$requesting_user_id, 'requested_user_id'=>$requested_user_id, 'relationship_type'=>$relationship_type, 'relationship_status'=>$relationship_status ), array('event'=>'args'));
+		$requesting_user_id = $data['requesting_user_id'];
+		$requested_user_id =  $data['requested_user_id'];
+		$relationship_type =  $data['relationship_type'];
+		$relationship_status =  $data['relationship_status'];
+		
 		$requesting_user_id=PVDatabase::makeSafe($requesting_user_id);
 		$requested_user_id=PVDatabase::makeSafe($requested_user_id);
 		$relationship_status=ceil($relationship_status);
@@ -1472,6 +1718,9 @@ class PVUsers extends PVStaticObject {
 		if(PVDatabase::resultRowCount($result)<=0 ){
 			$query="INSERT INTO ".PVDatabase::getUserRelationsTableName()."( requesting_user, requested_user, relationship_status, relationship_type) VALUES('$requesting_user_id', '$requested_user_id', '$relationship_status' , '$relationship_type' )";
 			$relationship_id=PVDatabase::return_last_insert_query($query, 'relationship_id', PVDatabase::getUserRelationsTableName());
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $relationship_id, $requesting_user_id, $requested_user_id, $relationship_type, $relationship_status );
+			$relationship_id= self::_applyFilter( get_class(), __FUNCTION__ , $relationship_id , array('event'=>'return'));
 			
 			return $relationship_id;
 		}
@@ -1492,9 +1741,13 @@ class PVUsers extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getUserRelationshipList($args=array()){
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$args += self::getUserRoleDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
@@ -1650,6 +1903,10 @@ class PVUsers extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getUserRelationshipList
 	
@@ -1666,13 +1923,19 @@ class PVUsers extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function updateUserRelationship($args=array()){
+	public static function updateUserRelationship($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getUserRelationshipDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
 		
 		$query="UPDATE ".PVDatabase::getUserRelationsTableName()." SET requesting_user='$requesting_user_id',  requested_user='$requested_user_id', relationship_type='$relationship_type', relationship_status='$relationship_status' WHERE  relationship_id='$relationship_id' ";
 		PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__,$args);
 		
 	}//end upateUserRelationship
 	
@@ -1684,7 +1947,12 @@ class PVUsers extends PVStaticObject {
 	 * @return array $relationship The data contained in that relationship
 	 * @access public
 	 */
-	public static function getUserRelationship($relationship_id){
+	public static function getUserRelationship($relationship_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $relationship_id);
+		
+		$relationship_id = self::_applyFilter( get_class(), __FUNCTION__ , $relationship_id , array('event'=>'args'));
 		
 		if(!empty($relationship_id)){
 			
@@ -1695,6 +1963,9 @@ class PVUsers extends PVStaticObject {
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
 			$row=PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__,$args);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if not empty
@@ -1714,6 +1985,15 @@ class PVUsers extends PVStaticObject {
 	 */
 	public static function getUserRelationshipByConnection($first_user, $second_user, $relationship_type='', $relationship_status=''){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $first_user, $second_user, $relationship_type, $relationship_status);
+		
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('first_user'=>$first_user, 'second_user'=>$second_user, 'relationship_type'=>$relationship_type, 'relationship_status'=>$relationship_status ), array('event'=>'args'));
+		$first_user = $data['first_user'];
+		$second_user =  $data['second_user'];
+		$relationship_type =  $data['relationship_type'];
+		$relationship_status =  $data['relationship_status'];
+		
 		if(!empty($first_user) && !empty($second_user)){
 			
 			$first_user=PVDatabase::makeSafe($first_user);
@@ -1726,9 +2006,13 @@ class PVUsers extends PVStaticObject {
 			
 			$query="SELECT * FROM ".PVDatabase::getUserRelationsTableName()." WHERE requesting_user IN($first_user, $second_user) AND requested_user IN($first_user, $second_user); ";
 			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
 			
-			$row=PVDatabase::formatData($row);
+			$row = PVDatabase::fetchArray($result);
+			$row = PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__,$row);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
+			
 			return $row;
 		}
 		
@@ -1747,6 +2031,15 @@ class PVUsers extends PVStaticObject {
 	 * @access public
 	 */
 	public static function checkUserRelationship($first_user, $second_user, $relationship_type='', $relationship_status=''){
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $first_user, $second_user, $relationship_type, $relationship_status);
+			
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('first_user'=>$first_user, 'second_user'=>$second_user, 'relationship_type'=>$relationship_type, 'relationship_status'=>$relationship_status ), array('event'=>'args'));
+		$first_user = $data['first_user'];
+		$second_user =  $data['second_user'];
+		$relationship_type =  $data['relationship_type'];
+		$relationship_status =  $data['relationship_status'];
 		
 		if(!empty($first_user) && !empty($second_user)){
 			
@@ -1773,7 +2066,9 @@ class PVUsers extends PVStaticObject {
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
 			
-			if(!empty($row)){
+			
+			if(!empty($row)) {
+				self::_notify(get_class().'::'.__FUNCTION__,$row);
 				return TRUE;	
 			}
 			
@@ -1791,14 +2086,20 @@ class PVUsers extends PVStaticObject {
 	 * @access public
 	 */
 	public static function deleteUserRelationship($relationship_id){
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $relationship_id);
+			
+		$relationship_id= self::_applyFilter( get_class(), __FUNCTION__ , $relationship_id , array('event'=>'args'));
 		
 		if(!empty($relationship_id)){
 			
 			$relationship_id=PVDatabase::makeSafe($relationship_id);
 			
 			$query="DELETE  FROM ".PVDatabase::getUserRelationsTableName()." WHERE relationship_id='$relationship_id' ";
-			
 			PVDatabase::query($query);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $relationship_id);
 			
 		}//end if not empty
 		
@@ -1808,6 +2109,9 @@ class PVUsers extends PVStaticObject {
 	 * @todo this function might be useless. Do not use. Possibly up for deletion.
 	 */
 	public static function checkUserRole($user_id, $roles){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $roles);
 		
 		if(PVValidator::isID($user_id) && !empty($user_id)){
 			$user_list=self::getUserList(array('user_id'=>$user_id, 'join_user_roles'=>true));
