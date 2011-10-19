@@ -825,6 +825,7 @@ class PVUsers extends PVStaticObject {
 		$args=PVDatabase::makeSafe($args);
 		
 		if(is_array($args) && !empty($args['role_id']) ){
+			extract($args);
 			$role_id=PVDatabase::makeSafe($role_id);
 			$role_type=$role_type;
 			$is_editable=ceil($is_editable);
