@@ -872,11 +872,11 @@ class PVUsers extends PVStaticObject {
 		);
 		
 		$options += $defaults;
+		extract($options);
 		
 		$loginSuccess=0;
 		$user_found=false;
 		$username=PVDatabase::makeSafe($username);
-		$password=PVDatabase::makeSafe($password);
 		
 		$query="SELECT ".PVDatabase::getUsersTableName().".user_id, username, user_email, user_password, ".PVDatabase::getUserRolesTableName().".role_id, role_type FROM ".PVDatabase::getUsersTableName()." 
 		LEFT JOIN ".PVDatabase::getUserRolesRelationsTableName()." ON ".PVDatabase::getUsersTableName().".user_id=".PVDatabase::getUserRolesRelationsTableName().".user_id
@@ -904,15 +904,8 @@ class PVUsers extends PVStaticObject {
 		
 		if($user_found){
 			$row=PVDatabase::fetchArray($result);
+			$roles=self::getAssignedUserRoles($row['user_id']);
 			
-			$user_id=$row['user_id'];
-			$email=$row['user_email'];
-			$username=$row['username'];
-			$dbpassword=$row['user_password'];
-			$role_id=$row['role_id'];
-			$role_type=$row['role_type'];
-			$user_access_level=$row['user_access_level'];
-			$roles=self::getAssignedUserRoles($user_id);
 			self::setUserSession($row,  $roles );
 			
 			if($options['set_cookie']){
@@ -1722,7 +1715,10 @@ class PVUsers extends PVStaticObject {
 		
 		if(!empty($first_user) && !empty($second_user)){
 			
-			$relationship_id=PVDatabase::makeSafe($relationship_id);
+			$first_user=PVDatabase::makeSafe($first_user);
+			$second_user=PVDatabase::makeSafe($second_user);
+			$relationship_type=PVDatabase::makeSafe($relationship_type);
+			$relationship_status=PVDatabase::makeSafe($relationship_status);
 			
 			//Unused Possible Future Solution
 			//$query="SELECT a.* FROM USER_RELATIONSHIP a WHERE a.requesting_user_id = '1' AND a.requested_user_id = '2' UNION SELECT b.* FROM USER_RELATIONSHIP b WHERE b.requesting_user_id = '2'  AND b.requested_user_id = '1'";		
@@ -1753,7 +1749,10 @@ class PVUsers extends PVStaticObject {
 		
 		if(!empty($first_user) && !empty($second_user)){
 			
-			$relationship_id=PVDatabase::makeSafe($relationship_id);
+			$first_user=PVDatabase::makeSafe($first_user);
+			$second_user=PVDatabase::makeSafe($second_user);
+			$relationship_type=PVDatabase::makeSafe($relationship_type);
+			$relationship_status=PVDatabase::makeSafe($relationship_status);
 			
 			//Unused Possible Future Solution
 			//$query="SELECT a.* FROM USER_RELATIONSHIP a WHERE a.requesting_user_id = '1' AND a.requested_user_id = '2' UNION SELECT b.* FROM USER_RELATIONSHIP b WHERE b.requesting_user_id = '2'  AND b.requested_user_id = '1'";		
