@@ -49,7 +49,7 @@ class PVPoints extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$args += self::getPointsDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -61,6 +61,8 @@ class PVPoints extends PVStaticObject {
 			
 		$query="INSERT INTO ".PVDatabase::getPointsTableName()."(user_id, content_id, comment_id, app_id, point_value, point_type, user_ip, point_date) VALUES( '$user_id', '$content_id', '$comment_id', '$app_id', '$point_value', '$point_type', '$user_ip', '$point_date' ) ";
 		$point_id=PVDatabase::return_last_insert_query($query, 'point_id', PVDatabase::getPointsTableName());
+		
+		$point_id = self::_applyFilter( get_class(), __FUNCTION__ , $point_id, array('event'=>'return'));
 		self::_notify(get_class().'::'.__FUNCTION__, $point_id, $args);
 		
 		return $point_id;
@@ -88,7 +90,7 @@ class PVPoints extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$args += self::getPointsDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -128,7 +130,10 @@ class PVPoints extends PVStaticObject {
 		if($allow_insert==true){	
 			$query="INSERT INTO ".PVDatabase::getPointsTableName()."(user_id, content_id, comment_id, app_id, point_value, point_type, user_ip, point_date)  VALUES( '$user_id', '$content_id', '$comment_id', '$app_id', '$point_value', '$point_type', '$user_ip', '$point_date' ) ";	
 			$point_id=PVDatabase::return_last_insert_query($query, 'point_id', PVDatabase::getPointsTableName());
+			
+			$point_id = self::_applyFilter( get_class(), __FUNCTION__ , $point_id, array('event'=>'return'));
 			self::_notify(get_class().'::'.__FUNCTION__, $point_id, $args);
+			
 			return $point_id;
 		}
 		return FALSE;
@@ -164,7 +169,7 @@ class PVPoints extends PVStaticObject {
 		
 		$args += self::getPointsDefaults();
 		$args += self::_getSqlSearchDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
@@ -423,6 +428,7 @@ class PVPoints extends PVStaticObject {
     	
     	$content_array=PVDatabase::formatData($content_array);
 		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array, array('event'=>'return'));
 		
     	return $content_array;
 	}//end getUserPointsList
@@ -440,7 +446,7 @@ class PVPoints extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $point_id);
 			
-			$point_id = self::_applyFilter( get_class(), __FUNCTION__ , $point_id);
+			$point_id = self::_applyFilter( get_class(), __FUNCTION__ , $point_id, array('event'=>'args'));
 		
 		if(!empty($point_id)){
 				
@@ -448,7 +454,9 @@ class PVPoints extends PVStaticObject {
 			$query="SELECT * FROM ".PVDatabase::getPointsTableName()." WHERE point_id='$point_id'";
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
+			
 			self::_notify(get_class().'::'.__FUNCTION__, $row);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
 			
 			return $row;
 		}
@@ -477,7 +485,7 @@ class PVPoints extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$args += self::getPointsDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -503,7 +511,7 @@ class PVPoints extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $point_id);
 		
-		$point_id = self::_applyFilter( get_class(), __FUNCTION__ , $point_id);
+		$point_id = self::_applyFilter( get_class(), __FUNCTION__ , $point_id, array('event'=>'args'));
 		
 		if(!empty($point_id)){
 			$point_id=PVDatabase::makeSafe($point_id);

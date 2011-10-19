@@ -54,7 +54,7 @@ class PVComments extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$args += self::getCommentDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
 			
@@ -66,7 +66,9 @@ class PVComments extends PVStaticObject {
 			
 		$query="INSERT INTO ".PVDatabase::getContentCommentsTableName()."( content_id, owner_id , owner_ip, comment_date , comment_approved , comment_title, comment_text, comment_parent, comment_author, comment_author_email, comment_author_website, comment_type) VALUES( '$content_id' , '$owner_id' , '$owner_ip', '$comment_date' , '$comment_approved' , '$comment_title', '$comment_text', '$comment_parent', '$comment_author', '$comment_author_email', '$comment_author_website', '$comment_type' )";
 		$comment_id=PVDatabase::return_last_insert_query($query, "comment_id", PVDatabase::getContentCommentsTableName() );
+		
 		self::_notify('PVComments::addComment', $comment_id, $args);
+		$comment_id = self::_applyFilter( get_class(), __FUNCTION__ , $comment_id, array('event'=>'return'));
 		
 		return $comment_id;
 	}//end addComment
@@ -85,7 +87,7 @@ class PVComments extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $comment_id);
 			
-		$comment_id = self::_applyFilter( get_class(), __FUNCTION__ , $comment_id);
+		$comment_id = self::_applyFilter( get_class(), __FUNCTION__ , $comment_id , array('event'=>'args'));
 		$comment_id=PVDatabase::makeSafe($comment_id);
 		
 		if(!empty($comment_id)){
@@ -93,7 +95,9 @@ class PVComments extends PVStaticObject {
 			$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
 			$row=PVDatabase::formatData($row);
+			
 			self::_notify('PVComments::getComment', $row);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
 			
 			return $row;
 		}
@@ -126,7 +130,7 @@ class PVComments extends PVStaticObject {
 		
 		$args += self::getCommentDefaults();
 		$args += self::_getSqlSearchDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
@@ -444,6 +448,7 @@ class PVComments extends PVStaticObject {
     	
     	$content_array=PVDatabase::formatData($content_array);
 		self::_notify('PVComments::getCommentList', $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array, array('event'=>'return'));
     	
     	return $content_array;
 	}//end
@@ -475,7 +480,7 @@ class PVComments extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$args += self::getCommentDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -500,7 +505,7 @@ class PVComments extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $comment_id, $deleteChildrenComments);
 		
-		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('comment_id'=>$comment_id, 'deleteChildrenComments'=>$deleteChildrenComments));
+		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('comment_id'=>$comment_id, 'deleteChildrenComments'=>$deleteChildrenComments), array('event'=>'args'));
 		$comment_id=$data['comment_id'];
 		$deleteChildrenComments=$data['deleteChildrenComments'];
 		
