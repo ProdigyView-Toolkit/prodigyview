@@ -100,6 +100,10 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 */
 	public static function addConnection($connection_name, $args) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $connection_name, $args);
+		
 			$defaults=array(
 				'dbhost'=>'',
 				'dbname'=>'',
@@ -112,6 +116,8 @@ class PVDatabase extends PVStaticObject {
 			);
 			$args += $defaults;
 			
+			$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
+			
 			self::$connections[$connection_name]['dbhost']=$args['dbhost'];
 			self::$connections[$connection_name]['dbname']=$args['dbname'];
 			self::$connections[$connection_name]['dbuser']=$args['dbuser'];
@@ -120,6 +126,8 @@ class PVDatabase extends PVStaticObject {
 			self::$connections[$connection_name]['dbschema']=$args['dbschema'];
 			self::$connections[$connection_name]['dbprefix']=$args['dbprefix'];
 			self::$connections[$connection_name]['dbport']=$args['dbport'];
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $connection_name, $args);
 	}
 	
 	/**
@@ -134,8 +142,14 @@ class PVDatabase extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function setDatabase($profile_id=0){
+	public static function setDatabase($profile_id=0) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $profile_id);
+		
 		self::closeDB();
+		
+		$profile_id = self::_applyFilter( get_class(), __FUNCTION__ , $profile_id , array('event'=>'args'));
 		
 		self::$dbhost = self::$connections[$profile_id]['dbhost'];
 		self::$dbuser = self::$connections[$profile_id]['dbuser'];
@@ -146,6 +160,8 @@ class PVDatabase extends PVStaticObject {
 		self::$dbschema = self::$connections[$profile_id]['dbschema'];
 		self::$dbprefix = self::$connections[$profile_id]['dbprefix'];
 		self::connect();
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $profile_id);
 	}
 	
 	/**
@@ -155,7 +171,11 @@ class PVDatabase extends PVStaticObject {
 	 * @return void
 	 * @access private
 	 */
-	private static function connect(){
+	private static function connect() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		// Connect to the database
 		if(self::$dbtype==self::$mySQLConnection){
 			mysqli_report (MYSQLI_REPORT_OFF);
@@ -170,6 +190,8 @@ class PVDatabase extends PVStaticObject {
 			self::$link = oci_connect($user, $pass, $host);
 			$d = new PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__);
 	}//end private
 	
 	/**
@@ -186,28 +208,37 @@ class PVDatabase extends PVStaticObject {
 	 */
 	public static function query($query) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $query);
+		
+		$query = self::_applyFilter( get_class(), __FUNCTION__ , $query , array('event'=>'args'));
+		
 		if(self::$dbtype==self::$mySQLConnection){
 			self::$theQuery = $query;
-			return self::$link->query($query);
+			$result = self::$link->query($query);
 		}
 		else if(self::$dbtype==self::$postgreSQLConnection){
 			self::$theQuery = $query;
-			return pg_exec($query);
+			$result = pg_exec($query);
 		}
 		else if(self::$dbtype==self::$msSQLConnection){
 			self::$theQuery = $query;
-			return sqlsrv_query(self::$link, $query, array(), array( "Scrollable" => SQLSRV_CURSOR_KEYSET ) );
+			$result =  sqlsrv_query(self::$link, $query, array(), array( "Scrollable" => SQLSRV_CURSOR_KEYSET ) );
 		}
 		else if(self::$dbtype==self::$sqLiteConnection){
 			self::$theQuery = $query;
-			return sqlite_query(self::$link , $query);
+			$result =  sqlite_query(self::$link , $query);
 		}
 		else if(self::$dbtype==self::$oracleConnection){
 			self::$theQuery = $query;
 			$stid = oci_parse(self::$link, $query);
-			return oci_execute($stid);
+			$result =  oci_execute($stid);
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $query, $result);
+		$result = self::_applyFilter( get_class(), __FUNCTION__ , $result , array('event'=>'return'));
+		
+		return $result;
 	}//end query
 	
 	
@@ -227,19 +258,25 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 */
 	public static function return_last_insert_query($query, $returnField='', $returnTable='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $query, $returnField, $returnTable);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('query'=>$query, 'returnField'=>$returnField, 'returnTable'=>$returnTable) , array('event'=>'args'));
+		$query = $filtered['query'];
+		$returnField = $filtered['returnField'];
+		$returnTable = $filtered['returnTable'];
 			
 		if(self::$dbtype==self::$mySQLConnection){
 			self::$theQuery = $query;
 			self::$link->query($query);
-			return self::$link->insert_id;
+			$id = self::$link->insert_id;
 		}
 		else if(self::$dbtype==self::$postgreSQLConnection){
 			self::$theQuery = $query." RETURNING $returnField ";
 			$result=pg_exec($query." RETURNING $returnField ");
-			
-			while($row =self::fetchArray($result)){
-				return $row[$returnField];
-			}
+			$row =self::fetchArray($result);
+			$id = $row[$returnField];
 		}
 		else if(self::$dbtype==self::$msSQLConnection){
 			self::$theQuery = $query;
@@ -248,14 +285,18 @@ class PVDatabase extends PVStaticObject {
 			$result = self::query($query);
 			$row = self::fetchArray($result);
 			$field_value=$row[$returnField];
-			return $field_value;
+			$id = $field_value;
 		}
 		else if(self::$dbtype==self::$oracleConnection){
 			self::$theQuery = $query;
 			$stid = oci_parse(self::$link, $query);
-			return oci_execute($stid);
+			$id = oci_execute($stid);
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $id, $query, $returnField, $returnTable);
+		$id = self::_applyFilter( get_class(), __FUNCTION__ , $id , array('event'=>'return'));
+		
+		return $id;
 	}//end return_last_insert_query
 	
 	/**
@@ -273,23 +314,33 @@ class PVDatabase extends PVStaticObject {
 	 */
 	public static function resultRowCount($result) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $result);
+			
+		$result = self::_applyFilter( get_class(), __FUNCTION__ , $result , array('event'=>'args'));
+		
 		if(self::$dbtype==self::$mySQLConnection){
-			return self::$link->affected_rows;
+			$count = self::$link->affected_rows;
 		}
 		else if(self::$dbtype==self::$postgreSQLConnection){
-			return pg_num_rows($result);
+			$count =  pg_num_rows($result);
 		}
 		else if(self::$dbtype==self::$msSQLConnection){
-			return sqlsrv_num_rows($result);
+			$count =  sqlsrv_num_rows($result);
 		}
 		else if(self::$dbtype==self::$sqLiteConnection){
-			return sqlite_num_rows($result);
+			$count =  sqlite_num_rows($result);
 		}
 		else if(self::$dbtype==self::$oracleConnection){
 			self::$theQuery = $query;
 			$stid = oci_parse(self::$link, $query);
-			return oci_execute($stid);
+			$count = oci_execute($stid);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $count, $result);
+		$count = self::_applyFilter( get_class(), __FUNCTION__ , $count , array('event'=>'return'));
+		
+		return $count;
 	}//end result row count
 	
 	/**
@@ -307,34 +358,41 @@ class PVDatabase extends PVStaticObject {
 	 */
 	public static function fetchArray($result) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $result);
+		
+		$result = self::_applyFilter( get_class(), __FUNCTION__ , $result , array('event'=>'args'));
+		
 		if(self::$dbtype==self::$mySQLConnection && get_class($result)=='mysqli_result'){
-			return $result->fetch_array();
+			$array = $result->fetch_array();
 		}
 		else if(self::$dbtype==self::$mySQLConnection && get_class($result)=='mysqli_stmt'){
 			$result->fetch();
-			return self::$row;
+			//return self::$row;
 			
 			$array=array();
 			foreach(self::$row as $key=>$value) {
 				$array[$key]=$value;
 			}
-			
-			return $array;
 		}
 		else if(self::$dbtype==self::$postgreSQLConnection){
-			return pg_fetch_array($result);
+			$array = pg_fetch_array($result);
 		}
 		else if(self::$dbtype==self::$msSQLConnection && !empty($result)){
-			return sqlsrv_fetch_array($result);
+			$array = sqlsrv_fetch_array($result);
 		}
 		else if(self::$dbtype==self::$sqLiteConnection){
-			return sqlite_fetch_array($result);
+			$array = sqlite_fetch_array($result);
 		}
 		else if(self::$dbtype==self::$oracleConnection){
 			$stid = oci_parse(self::$link, $result);
-			return oci_fetch_array($stid, OCI_ASSOC);
+			$array = oci_fetch_array($stid, OCI_ASSOC);
 		}
 	
+		self::_notify(get_class().'::'.__FUNCTION__, $array, $result);
+		$array = self::_applyFilter( get_class(), __FUNCTION__ , $array , array('event'=>'return'));
+		
+		return $array;
 	}//end fetchArray
 	
 	/**
@@ -353,8 +411,13 @@ class PVDatabase extends PVStaticObject {
 	 */
 	public static function fetchFields($result) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $result);
+		
+		$result = self::_applyFilter( get_class(), __FUNCTION__ , $result , array('event'=>'args'));
+		
 		if(self::$dbtype==self::$mySQLConnection && get_class($result)=='mysqli_result'){
-			return $result->fetch_fields();
+			$fields = $result->fetch_fields();
 		}
 		else if(self::$dbtype==self::$mySQLConnection && get_class($result)=='mysqli_stmt'){
 			$result_set=new PVCollection();
@@ -368,21 +431,26 @@ class PVDatabase extends PVStaticObject {
 				$result_set->add($object);
 			}
 			
-			return $result_set;
+			$fields =$result_set;
 		}
 		else if(self::$dbtype==self::$postgreSQLConnection){
-			return pg_fetch_array($result);
+			$fields = pg_fetch_array($result);
 		}
 		else if(self::$dbtype==self::$msSQLConnection && !empty($result)){
-			return sqlsrv_fetch_array($result);
+			$fields = sqlsrv_fetch_array($result);
 		}
 		else if(self::$dbtype==self::$sqLiteConnection){
-			return sqlite_fetch_array($result);
+			$fields = sqlite_fetch_array($result);
 		}
 		else if(self::$dbtype==self::$oracleConnection){
 			$stid = oci_parse(self::$link, $result);
-			return oci_fetch_array($stid, OCI_ASSOC);
+			$fields = oci_fetch_array($stid, OCI_ASSOC);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $fields, $result);
+		$fields = self::_applyFilter( get_class(), __FUNCTION__ , $fields , array('event'=>'return'));
+		
+		return $fields;
 	
 	}//end fetchArray
 
@@ -404,20 +472,24 @@ class PVDatabase extends PVStaticObject {
 	 */
 	public static function makeSafe($string) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		
+		$string = self::_applyFilter( get_class(), __FUNCTION__ , $string , array('event'=>'args'));
+		
 		if(is_array($string)){
 			$return_array=array();
 			
 			foreach($string as $key => $value){
 				$return_array[$key]=self::makeSafe($value);
 			}
-			return $return_array;
 			
 		} else {
 			if(self::$dbtype==self::$mySQLConnection){
-				return self::$link->real_escape_string($string);
+				$return_array =  self::$link->real_escape_string($string);
 			}
 			else if(self::$dbtype==self::$postgreSQLConnection){
-				return pg_escape_string($string);
+				$return_array =  pg_escape_string($string);
 			}
 			else if(self::$dbtype==self::$msSQLConnection){
 				
@@ -438,16 +510,20 @@ class PVDatabase extends PVStaticObject {
 					
 					$string = str_replace("'", "''", $string );
 					
-					return $string;
+					$return_array =  $string;
 			}
 			else if(self::$dbtype==self::$sqLiteConnection){
-				return sqlite_escape_string($string);
+				$return_array =  sqlite_escape_string($string);
 			}
 			else if(self::$dbtype==self::$oracleConnection){
 				$stid = oci_parse(self::$link, $result);
-				return oci_fetch_array($stid, OCI_ASSOC);
+				$return_array =  oci_fetch_array($stid, OCI_ASSOC);
 			}
 		}//end else
+		
+		$return_array = self::_applyFilter( get_class(), __FUNCTION__ , $return_array , array('event'=>'return'));
+		
+		return $return_array;
 	
 	}//end fetchArray
 	
@@ -459,6 +535,9 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 */
 	public static function closeDB() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		if(self::$dbtype==self::$mySQLConnection){
 			self::$link->close();
@@ -475,6 +554,8 @@ class PVDatabase extends PVStaticObject {
 		else if(self::$dbtype==self::$oracleConnection){
 			oci_close(self::$link);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__);
 	
 	}//end close()
 	
@@ -492,12 +573,20 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getSchema(){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(empty(self::$dbschema)){
-			return "";	
+			$schema =  '';	
+		} else {
+			$schema = self::$dbschema.".";
 		}
-		else{
-			return 	self::$dbschema.".";
-		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $schema);
+		$schema = self::_applyFilter( get_class(), __FUNCTION__ , $schema , array('event'=>'return'));
+		
+		return $schema;
 	}
 	
 	/**
@@ -509,9 +598,22 @@ class PVDatabase extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function clearTableData($tablename, $options=''){
+	public static function clearTableData($tablename, $options='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $tablename, $options);
+			
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('tablename'=>$tablename, 'options'=>$options ) , array('event'=>'args'));
+		$tablename = $filtered['tablename'];
+		$options = $filtered['options'];
+		
+		$tablename = self::makeSafe($tablename);
+		
 		$query="TRUNCATE TABLE $tablename $options";
 		self::query($query);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $query, $tablename, $options);
+		
 	}//end clearTableData
 	
 	
@@ -528,7 +630,13 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 */ 
 	public static function tableExist($tablename){
-		$query="";
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $tablename);
+		
+		$tablename = self::_applyFilter( get_class(), __FUNCTION__ , $tablename , array('event'=>'args'));
+		
+		$query='';
 		
 		if(self::$dbtype==self::$mySQLConnection){
 			$query="show tables like \"$tablename\";";
@@ -546,15 +654,15 @@ class PVDatabase extends PVStaticObject {
 			//To be Filed in
 		}
 		
-		$result=self::query($query);
+		$result = self::query($query);
+		$count = self::resultRowCount($result);
+		self::_notify(get_class().'::'.__FUNCTION__, $count, $result, $tablename);
 		
-		if(self::resultRowCount($result)<= 0){
-			return 0;
+		if($count<= 0){
+			return FALSE;
 		}
-		else{
-			return 1;
-		}
-	
+		
+		return TRUE;
 	}//end
 	
 	/**
@@ -572,6 +680,13 @@ class PVDatabase extends PVStaticObject {
 	 * @return boolean $exist Returns true if exist, otherwise return false
 	 */
 	public static function columnExist($table_name, $field_name){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $field_name);
+			
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table_name'=>$table_name, 'field_name'=>$field_name ) , array('event'=>'args'));
+		$table_name = $filtered['table_name'];
+		$field_name = $filtered['field_name'];
 	
 		if(self::$dbtype==self::$mySQLConnection){
 			$query="SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = '".self::$dbname."' AND table_name = '$table_name' AND column_name = '$field_name' ";
@@ -586,15 +701,15 @@ class PVDatabase extends PVStaticObject {
 			
 		}
 		
-		$result=self::query($query);
+		$result = self::query($query);
+		$count = self::resultRowCount($result);
+		self::_notify(get_class().'::'.__FUNCTION__, $count, $result, $table_name, $field_name);
 		
-		if(self::resultRowCount($result)<= 0){
-			return 0;
+		if($count<= 0){
+			return FALSE;
 		}
-		else{
-			return 1;
-		}
-	
+		
+		return TRUE;
 	}//end fieldexist
 	
 	
@@ -609,21 +724,28 @@ class PVDatabase extends PVStaticObject {
 	 * @return string $avg_function
 	 * @access public
 	 */
-	public static function getSQLRandomOperator(){
+	public static function getSQLRandomOperator() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		if(self::$dbtype==self::$mySQLConnection){
-			return 'RAND()';	
+			 $function = 'RAND()';	
 		}
 		else if(self::$dbtype==self::$postgreSQLConnection){
-			return 'RANDOM()';	
+			$function =  'RANDOM()';	
 		}
 		else if(self::$dbtype==self::$oracleConnection){
-			return 'RAND()';	
+			$function =  'RAND()';	
 		}
 		else if(self::$dbtype==self::$msSQLConnection){
-			return 'RAND()';	
+			$function =  'RAND()';	
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $function);
+		$function = self::_applyFilter( get_class(), __FUNCTION__ , $function , array('event'=>'return'));
+		
+		return $function;
 	}//end getSQLRandomOperator
 	
 	/**
@@ -638,23 +760,30 @@ class PVDatabase extends PVStaticObject {
 	 * @param mixed string: Either a string or array to format
 	 * @return mixed data: Data with database characters removed 
 	 */
-	public static function formatData($string){
+	public static function formatData($string) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		
+		$string = self::_applyFilter( get_class(), __FUNCTION__ , $string , array('event'=>'args'));
 		
 		if(is_array($string)){
 			$return_array=array();
 			foreach($string as $key => $value){
 				$return_array[$key]=self::formatData($value);
 			}
-			return $return_array;
 		}
 		else{
 			if(self::$dbtype==self::$mySQLConnection){
-				return stripslashes($string);
-			}
-			else{
-				return $string;	
+				$return_array = stripslashes($string);
+			} else {
+				$return_array = $string;	
 			}
 		}//end else
+		
+		$return_array = self::_applyFilter( get_class(), __FUNCTION__ , $return_array , array('event'=>'return'));
+		
+		return $return_array;
 	}//end formatRow
 	
 	/**
@@ -668,21 +797,30 @@ class PVDatabase extends PVStaticObject {
 	 * @param string field: The Field whose average value will be returned
 	 * @return: string average_function: The function needed to get the average value ina SQL string
 	 */
-	public static function dbAverageFunction($field){
+	public static function dbAverageFunction($field) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $field);
+		
+		$field = self::_applyFilter( get_class(), __FUNCTION__ , $field , array('event'=>'args'));
 		
 		if(self::$dbtype==self::$mySQLConnection){
-			return ' AVG('.$field.') ';	
+			$function = ' AVG('.$field.') ';	
 		}
 		else if(self::$dbtype==self::$postgreSQLConnection){
-			return ' AVG('.$field.') ';	
+			$function = ' AVG('.$field.') ';	
 		}
 		else if(self::$dbtype==self::$oracleConnection){
-			return ' AVG('.$field.') ';	
+			$function = ' AVG('.$field.') ';	
 		}
 		else if(self::$dbtype==self::$msSQLConnection){
-			return ' AVG('.$field.') ';	
+			$function = ' AVG('.$field.') ';	
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $function, $field);
+		$function = self::_applyFilter( get_class(), __FUNCTION__ , $function , array('event'=>'return'));
+		
+		return $function;
 	}//end getAverageDB
 	
 	/**
@@ -690,8 +828,15 @@ class PVDatabase extends PVStaticObject {
 	 * 
 	 * @return string database: The database being used
 	 */
-	public static function getDatabaseType(){
-		return self::$dbtype;
+	public static function getDatabaseType() {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$dbtype);
+		$dbtype = self::_applyFilter( get_class(), __FUNCTION__ , self::$dbtype , array('event'=>'return'));
+			
+		return $dbtype;
 	}
 	
 	/**
@@ -707,7 +852,18 @@ class PVDatabase extends PVStaticObject {
 	 * 
 	 * @return array results: Returns the
 	 */
-	public static function getPagininationOffset($table, $join_clause='', $where_clause='', $current_page=0, $results_per_page=20, $order_by=''){
+	public static function getPagininationOffset($table, $join_clause='', $where_clause='', $current_page=0, $results_per_page=20, $order_by='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table'=>$table, 'join_clause'=>$join_clause, 'where_clause'=>$where_clause, 'current_page'=>$current_page, 'results_per_page'=>$results_per_page, 'order_by'=>$order_by  ) , array('event'=>'args'));
+		$table = $filtered['table'];
+		$join_clause = $filtered['join_clause'];
+		$where_clause = $filtered['where_clause'];
+		$current_page = $filtered['current_page'];
+		$results_per_page = $filtered['results_per_page'];
+		$order_by = $filtered['order_by'];
 		
 		$query="SELECT COUNT(*) FROM $table $join_clause $where_clause";
 		
@@ -754,6 +910,9 @@ class PVDatabase extends PVStaticObject {
 			'from_clause'=>$from_clause
 		);
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $return_array, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
+		$return_array = self::_applyFilter( get_class(), __FUNCTION__ , $return_array , array('event'=>'return'));
+		
 		return $return_array;
 		
 	}//end
@@ -765,7 +924,14 @@ class PVDatabase extends PVStaticObject {
 	 * @return dbojbect link: Connection to the set database.
 	 */
 	public static function getDatabaseLink(){
-		return self::$link;
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $link);
+		$link = self::_applyFilter( get_class(), __FUNCTION__ , self::$link , array('event'=>'return'));
+		
+		return $link;
 	}//end getDatabaseLink
 	
 	/**
@@ -779,6 +945,14 @@ class PVDatabase extends PVStaticObject {
 	 * @return void
 	 */
 	public static function insertIntoDatabase($table_name, $data, $data_types=''){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $data, $data_types);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table_name'=>$table_name, 'data'=>$data, 'data_types'=>$data_types  ) , array('event'=>'args'));
+		$table_name = $filtered['table_name'];
+		$data = $filtered['data'];
+		$data_types = $filtered['data_types'];
 		
 		if(!empty($table_name)){
 			$data=self::makeSafe($data);
@@ -806,8 +980,13 @@ class PVDatabase extends PVStaticObject {
 	/**
 	 * Executes a prepared Query that will be inserted into the database. Function still needs
 	 * work before being used.
+	 * 
+	 * @todo fix
 	 */
 	public static function  preparedQuery($query, $data, $formats=''){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $query, $data, $formats);
 		
 		if(self::$dbtype==self::$mySQLConnection){
 			self::$link->prepare($query);
@@ -841,6 +1020,9 @@ class PVDatabase extends PVStaticObject {
 	 * @todo write better code
 	 */
 	public static function preparedInsert($table_name, $data, $formats=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $data, $formats);
 		
 		$query='INSERT INTO '.$table_name;
 		$values='';
@@ -921,6 +1103,16 @@ class PVDatabase extends PVStaticObject {
 	 */
 	public static function preparedReturnLastInsert($table_name, $returnField, $returnTable,  $data, $formats=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $returnField, $returnTable, $data, $formats);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table_name'=>$table_name, 'data'=>$data, 'returnFields'=>$returnField, 'returnTable'=>$returnTable, 'formats'=>$formats  ) , array('event'=>'args'));
+		$table_name = $filtered['table_name'];
+		$returnField = $filtered['returnField'];
+		$returnTable = $filtered['returnTable'];
+		$data = $filtered['data'];
+		$formats = $filtered['formats'];
+		
 		$query='INSERT INTO '.$table_name;
 		
 		$values='';
@@ -961,17 +1153,14 @@ class PVDatabase extends PVStaticObject {
 			foreach($data as $key=>$value){
 				$params[$key]=$value;
 			}
-			
 			$stmt->execute();
-			return self::$link->insert_id;
-		} else if (self::$dbtype==self::$postgreSQLConnection){
+			$id = self::$link->insert_id;
+			
+		} else if (self::$dbtype==self::$postgreSQLConnection) {
 			$result=pg_prepare(self::$link, '', $query." RETURNING $returnField ");
 			$result = pg_execute(self::$link , '', $data); 
-			
-			while($row =self::fetchArray($result)){
-				return $row[$returnField];
-			}//end while
-			
+			$row =self::fetchArray($result);
+			$id = $row[$returnField];
 		}
 		else if(self::$dbtype==self::$oracleConnection){
 			
@@ -986,8 +1175,12 @@ class PVDatabase extends PVStaticObject {
 			$result = self::query($query);
 			$row = self::fetchArray($result);
 			$field_value=$row[$returnField];
-			return $field_value;
+			$id = $field_value;
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $id, $table_name, $returnField, $returnTable, $data, $formats);
+		$id = self::_applyFilter( get_class(), __FUNCTION__ , $id , array('event'=>'return'));
+		return $id;
 	}//end preparedReturnLastInsert
 	
 	/**
@@ -1003,7 +1196,16 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 * @todo write better code
 	 */
-	public static function preparedSelect($query, $data, $formats=array()){
+	public static function preparedSelect($query, $data, $formats=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $query, $data, $formats);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('query'=>$query, 'data'=>$data, 'formats'=>$formats, ) , array('event'=>'args'));
+		$query = $filtered['query'];
+		$data = $filtered['data'];
+		$formats = $filtered['formats'];
+		
 		$params=array();
 		
 		$count=0;
@@ -1027,16 +1229,12 @@ class PVDatabase extends PVStaticObject {
 			$stmt->store_result();
 			self::$row = array();
 			self::stmt_bind_assoc($stmt, self::$row);
-			
-			return $stmt;	
+			$result = $stmt;	
 		}
 		else if(self::$dbtype==self::$postgreSQLConnection){
 			
-			$result=pg_prepare(self::$link, '', $query);
-			
+			$result=pg_prepare(self::$link, '', $query);	
 			$result = pg_execute(self::$link , '', $data); 
-			
-			return $result;
 		}
 		else if(self::$dbtype==self::$oracleConnection){
 			
@@ -1044,9 +1242,12 @@ class PVDatabase extends PVStaticObject {
 		else if(self::$dbtype==self::$msSQLConnection){
 			
 			$stmt = sqlsrv_prepare(self::$link, $query, $data);
-			
-			return sqlsrv_execute( $stmt);
+			$result = sqlsrv_execute( $stmt);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $result, $query, $data, $formats);
+		$result = self::_applyFilter( get_class(), __FUNCTION__ , $result , array('event'=>'return'));
+		return $result;
 		
 	}//end preparedSelect
 	
@@ -1061,7 +1262,17 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 * @todo write better code
 	 */
-	public static function preparedUpdate($table, $data, $wherelist, $formats=array(), $whereformats=array()){
+	public static function preparedUpdate($table, $data, $wherelist, $formats=array(), $whereformats=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table, $data, $wherelist, $formats, $whereformats);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table'=>$table, 'data'=>$data, 'wherelist'=>$wherelist, 'whereformats'=>$whereformats, 'formats'=>$formats ) , array('event'=>'args'));
+		$table = $filtered['table'];
+		$data = $filtered['data'];
+		$formats = $filtered['formats'];
+		$wherelist = $filtered['wherelist'];
+		$whereformats = $filtered['whereformats'];
 		
 		$query='UPDATE '.$table.' SET ';
 		$params=array();
@@ -1102,7 +1313,7 @@ class PVDatabase extends PVStaticObject {
 			}//end foreach
 		}//end if is_array and not emptys
 		
-		if(self::$dbtype==self::$mySQLConnection){
+		if(self::$dbtype==self::$mySQLConnection) {
 			
 			$stmt=self::$link->prepare($query);
 			self::bindParameters($stmt, $params);
@@ -1111,14 +1322,12 @@ class PVDatabase extends PVStaticObject {
 				$params[$key]=$value;
 			}
 			
-			return $stmt->execute();
+			$result =  $stmt->execute();
 		} else if (self::$dbtype==self::$postgreSQLConnection){
 			
 			$result=pg_prepare(self::$link, '', $query);
-			
 			$result = pg_execute(self::$link , '', $params_holder); 
 			
-			return $result;
 		}
 		else if(self::$dbtype==self::$oracleConnection){
 			
@@ -1127,8 +1336,13 @@ class PVDatabase extends PVStaticObject {
 			
 			$stmt = sqlsrv_prepare(self::$link, $query, $params);
 			
-			return sqlsrv_execute( $stmt);
+			$result = sqlsrv_execute( $stmt);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $result, $table, $data, $wherelist, $formats, $whereformats);
+		$result = self::_applyFilter( get_class(), __FUNCTION__ , $result , array('event'=>'return'));
+		
+		return $result;
 		
 	}//edn preparedUpdate
 	
@@ -1143,7 +1357,15 @@ class PVDatabase extends PVStaticObject {
 	 * 
 	 * @return void
 	 */
-	public static function preparedDelete($table, $wherelist=array(), $whereformats=array()){
+	public static function preparedDelete($table, $wherelist=array(), $whereformats=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table, $wherelist, $whereformats);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table'=>$table, 'wherelist'=>$wherelist, 'whereformats'=>$whereformats, ) , array('event'=>'args'));
+		$table = $filtered['table'];
+		$wherelist = $filtered['wherelist'];
+		$whereformats = $filtered['whereformats'];
 		
 		$query='DELETE FROM '.$table;
 		
@@ -1173,62 +1395,98 @@ class PVDatabase extends PVStaticObject {
 				$params[$key]=$value;
 			}
 			
-			$stmt->execute();
+			$resullt = $stmt->execute();
 			
 		} else if (self::$dbtype==self::$postgreSQLConnection){
 			
 			$result=pg_prepare(self::$link, '', $query);
 			$result = pg_execute(self::$link , '', $wherelist); 
-			return $result;
+			
 		} else if (self::$dbtype==self::$oracleConnection){
 			
 		} else if (self::$dbtype==self::$msSQLConnection){
 			
 			$stmt = sqlsrv_prepare(self::$link, $query, $wherelist);
-			return sqlsrv_execute( $stmt);
+			$result = sqlsrv_execute( $stmt);
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $result, $table, $data, $wherelist, $formats, $whereformats);
+		$result = self::_applyFilter( get_class(), __FUNCTION__ , $result , array('event'=>'return'));
+		
+		return $result;
 	}//end preparedDelete
 	
 	public static function getPreparedPlaceHolder($count=1) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $count);
+		
+		$count = self::_applyFilter( get_class(), __FUNCTION__ , $count , array('event'=>'args'));
+		
 		if(self::$dbtype==self::$mySQLConnection){
-			return '?';
+			$placeholder = '?';
 		} else if (self::$dbtype==self::$postgreSQLConnection){
-			return '$'.$count;
+			$placeholder = '$'.$count;
 		} else if (self::$dbtype==self::$oracleConnection){
-			return '?';
+			$placeholder = '?';
 		} else if (self::$dbtype==self::$msSQLConnection){
-			return '?';
+			$placeholder = '?';
 		} 
 		
-		return '?';
+		$placeholder = self::_applyFilter( get_class(), __FUNCTION__ , $placeholder , array('event'=>'return'));
+		return $placeholder;
+		
 	}//end getPreparedPlaceHolder
 	
+	/**
+	 * Formats a table to the names conventions used by the current database set up. If the table prefix
+	 * is set for the current connection, it will be appened to the name of the database. If the schema
+	 * is set, that will be appeneded also.
+	 * 
+	 * @param string $table_name The name of the table to be formated
+	 * 
+	 * @return string $table_name The name of the table with the values appened in front of it
+	 * @access public
+	 */
 	public static function formatTableName($table_name){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name);
+		
+		$table_name = self::_applyFilter( get_class(), __FUNCTION__ , $table_name , array('event'=>'args'));
 		$table_name=self::$dbprefix.$table_name;
 		
 		if(!empty(self::$dbschema)){
 			$table_name=self::$dbschema.'.'.$table_name;
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $table_name);
+		$table_name = self::_applyFilter( get_class(), __FUNCTION__ , $table_name , array('event'=>'return'));
+		
 		return $table_name;
 		
 	}//end  getApplicationPermissionsTable
 	
 	private static function bindParameters(&$statement, &$params){
-	  $args   = array();
-	  $args[] = implode('', array_values($params));
-	  foreach ($params as $paramName => $paramType)
-	  {
-		$args[] = &$params[$paramName];
-		$params[$paramName] = null;
-	  }
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $statement, $params);
+		
+	  	$args   = array();
+	 	$args[] = implode('', array_values($params));
+	  	foreach ($params as $paramName => $paramType) {
+			$args[] = &$params[$paramName];
+			$params[$paramName] = null;
+	  	}
 	
-	  call_user_func_array(array(&$statement, 'bind_param'), $args);
+	  	call_user_func_array(array(&$statement, 'bind_param'), $args);
 	}
 	
 	private function stmt_bind_assoc (&$stmt, &$out) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__,$stmt, $out);
+		
 	    $data = mysqli_stmt_result_metadata($stmt);
 	    $fields = array();
 	    $out = array();
@@ -1243,7 +1501,28 @@ class PVDatabase extends PVStaticObject {
 	   @call_user_func_array(mysqli_stmt_bind_result, $fields);
 	}
 	
+	/**
+	 * Create a table in the database in which the connection is currently set too.
+	 * 
+	 * @param string $table_name The name of the to be created
+	 * @param array $columns The columns that are to be created with the table.
+	 * 		  The syntax for creating the columns are from @see formatColumn. The
+	 * 		  column name is the key and parameters that create the column is the array that
+	 * 		  will be passed to formatColumns
+	 * @param array $options Options that control the creation of a table.
+	 * 			-'format_table' _boolean_: Formats the table by adding the table prefix set in the database configuration. Default is false.
+	 * 			-'execute' _boolean_: Execute the query to create the table. Default is true.
+	 * 			-'return_query' _boolean_: Returns the query that would create the table. Default is true
+	 * 			-'primary_key' _string_: The primary key(s) of the table
+	 * 
+	 * @return string $query The return query to create the table or false
+	 * @access public
+	 */
 	public static function createTable($table_name, $columns=array(), $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $columns, $options);
+		
 		$defaults=array(
 			'format_table'=>false,
 			'execute'=>true,
@@ -1251,6 +1530,11 @@ class PVDatabase extends PVStaticObject {
 			'primary_key'=>'',	
 		);
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table_name'=>$table_name, 'columns'=>$columns, 'options'=>$options ) , array('event'=>'args'));
+		$table_name = $filtered['table_name'];
+		$columns = $filtered['columns'];
+		$options = $filtered['options'];
 		
 		$column_query='';
 		if(!empty($columns) && is_array($columns)) {
@@ -1281,17 +1565,46 @@ class PVDatabase extends PVStaticObject {
 		
 		if($options['execute'])
 			PVDatabase::query($query);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $query, $table_name, $columns, $options);
+		$query= self::_applyFilter( get_class(), __FUNCTION__ , $query , array('event'=>'return'));
+		
 		if($options['return_query'])
 			return $query;
 	}
-
+	
+	/**
+	 * Adds a columns to a table that already exist.
+	 * 
+	 * @param string $table_name The name of the table that the column will be added too
+	 * @param string $column_name The name of the column to be adding to the table
+	 * @param array $column_data The data that will define the column to be created. The array should contain
+	 * 		  the same information would would be passed too formatColumn (@see formatColumn).
+	 * @param array $options Options that define how adding a column operates.
+	 * 			-'format_table' _boolean_: Formats the table name by adding the prefix set in the database config. Default is false.
+	 * 			-'execute' _boolean_: Execute the query to create the table. Default is true.
+	 * 			-'return_query' _bolean_: Return the generated query. Default is true;
+	 * 
+	 * @return string $query Returns the query for creating the table name
+	 * @access public
+	 */
 	public static function addColumn($table_name, $column_name, $column_data=array(), $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $column_name, $column_data, $options);
+		
 		$defaults=array(
 			'format_table'=>false,
 			'execute'=>true,
 			'return_query'=>true,	
 		);
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table_name'=>$table_name, 'column_name'=>$column_name, 'column_data'=>$column_data, 'options'=>$options ) , array('event'=>'args'));
+		$table_name = $filtered['table_name'];
+		$column_name = $filtered['column_name'];
+		$column_data = $filtered['column_data'];
+		$options = $filtered['options'];
 		
 		if($options['format_table']) 
 			$table_name=self::formatTableName($table_name);
@@ -1306,11 +1619,39 @@ class PVDatabase extends PVStaticObject {
 		
 		if($options['execute'])
 			PVDatabase::query($query);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $query, $table_name, $column_name, $column_data, $option);
+		$query= self::_applyFilter( get_class(), __FUNCTION__ , $query , array('event'=>'return'));
+		
 		if($options['return_query'])
 			return $query;
 	}
 	
+	/**
+	 * Formats a column based up passed parameters. The formated column will be ready to enter in a SQL
+	 * database.
+	 * 
+	 * @param string $name The name of the column to be formated
+	 * @param options Options that define the column being created
+	 * 			-'primary_key' _boolean_ : Is the passed option a primary key. Default is false.
+	 * 			-'unique' _boolean_: Is the passed column considered to be unique. Default is false.
+	 * 			-'not_null' _boolean_: Does the column have a not null set. Default is true.
+	 * 			-'type' _string_: The type of column this is. Default is string but there are many options
+	 * 			and the options are database dependent on what will be created. For a list of types that will
+	 * 			create a value, see function mapColumnType
+	 * 			-'precision' _int_: How price the column will be. For example if the type is varchar and the precision is 10,
+	 * 			then varchar(10) will be used.
+	 * 			-'default' _string_: The default value for the column
+	 * 			-'auto_increment' _boolean_: Is this column auto incremented. Default is false.
+	 * 
+	 * @return string $format The column will be returned with arguements formatted to the set database.
+	 * @access public
+	 */
 	public static function formatColumn($name, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		
 		$defaults=array(
 			'primary_key'=>false,
 			'unique'=>false,
@@ -1322,6 +1663,10 @@ class PVDatabase extends PVStaticObject {
 		);
 		
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('name'=>$name,  'options'=>$options ) , array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
 		
 		$precision = (!empty($options['precision'])) ? '('.$options['precision'].')' : '';
 		$null = ($options['not_null']==true) ? 'NOT NULL' : 'NULL';
@@ -1341,21 +1686,55 @@ class PVDatabase extends PVStaticObject {
 			$query=$name.' '.self::columnTypeMap($options['type']).$precision.' '.$null. ' '.$default.' '.$auto_increment.' '.$unique;
 		}
 
+		self::_notify(get_class().'::'.__FUNCTION__, $query);
+		$query = self::_applyFilter( get_class(), __FUNCTION__ , $query , array('event'=>'return'));
+		
 		return $query;
 	}
 	
+	/**
+	 * Returns the method auto incremented based on the database that is set.
+	 * 
+	 * @return string $increment The auto increment method with is database dependent
+	 * @access public
+	 */
 	private static function getAutoIncrement(){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if(self::$dbtype==self::$mySQLConnection){
-			return 'AUTO_INCREMENT';
+			$query= 'AUTO_INCREMENT';
 		} else if(self::$dbtype==self::$postgreSQLConnection){
 			$query='';
 		} else if(self::$dbtype==self::$msSQLConnection){
 			$query='IDENTITY (1,1)';
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $query);
+		$query= self::_applyFilter( get_class(), __FUNCTION__ , $query , array('event'=>'return'));
+		
+		return $query;
 	}
 	
+	/**
+	 * Maps the column type depending on which database is set. For example, is the database is mysql
+	 * and the type string is passed through, the return value is varchar. If the database is postgresql,
+	 * the return type would be character varying.
+	 * 
+	 * @param string $type The type of variabel to be matched
+	 * 
+	 * @return string $match The matched type found
+	 * @access public
+	 */
 	private static function columnTypeMap($type) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $type);
+		
 		$type=strtolower($type);
+		
+		$type = self::_applyFilter( get_class(), __FUNCTION__ , $type , array('event'=>'args'));
 		
 		$types=array(
 			'integers'=>array(
@@ -1398,7 +1777,9 @@ class PVDatabase extends PVStaticObject {
 		
 		foreach($types as $key=>$value){
 			if(in_array($type, $value['match'])){
-				return $value['database'][self::$dbtype];
+				$match = $value['database'][self::$dbtype];
+				$match= self::_applyFilter( get_class(), __FUNCTION__ , $match , array('event'=>'return'));
+				return $match;
 			}//end if
 		}//end for each
 		
