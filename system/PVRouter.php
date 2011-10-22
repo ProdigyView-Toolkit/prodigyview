@@ -33,20 +33,35 @@ class PVRouter extends PVStaticObject{
 	private static $route_parameters;
 	private static $route_options;
 	private static $seo_urls;
+	private static $default_rule_replace='/:([a-z]+)/';
+	private static $default_route_replace='(?P<\1>[^/]+)';
 	
 	/**
-	 * Initializes the router and sets up default parameters.
-	 * Called of method can be modified in the bootap.
+	 * Initializes the router and sets up default parameters and default rules
+	 * for using the router. Seo urls is the ability to create and use easily
+	 * readabable urls.
+	 * 
+	 * @param array $config The configuration to add to the router.
+	 * 			-'seo_urls' _boolean_: Defaulted to true, specifiy to always make the urls appear seo friendly
+	 * 			-'default_rule_replace' _string_: Specifies what to look for when defining a parameter in a router
+	 * 			-'default_route_replace' _string_ : When a rule is found, speficies what to replace it with before parsing
 	 * 
 	 * @return void
 	 * @access public
 	 */
-	public static function init($config=array()){
+	public static function init($config=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		
 		$defaults=array(
-			'seo_urls'=>true
+			'seo_urls'=>true,
+			'default_rule_replace'=>'/:([a-z]+)/',
+			'default_route_replace'=>'(?P<\1>[^/]+)'
 		);
 		
 		$config += $defaults;
+		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config, array('event'=>'args'));
 		
 		self::$routes=array();
 		self::$route_parameters=array();
@@ -56,18 +71,28 @@ class PVRouter extends PVStaticObject{
 		} else {
 			self::$seo_urls=0;
 		}
+		
+		self::$default_rule_replace = $config['default_rule_replace'];
+		self::$default_route_replace = $config['default_route_replace'];
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $config);
 	}//end init
 	
 	/**
 	 * Checks the HTTPS is currently on. If its not then nothiing
 	 * is done, else it will redirect to an SSL connection.
 	 * 
-	 * @param string url: An Optional parameter to be redirected to.
+	 * @param string $url An Optional parameter to be redirected to.
 	 * 
 	 * @return void
 	 * @access public
 	 */
-	public static function activateSSL($url=''){
+	public static function activateSSL($url='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		
+		$url = self::_applyFilter( get_class(), __FUNCTION__ , $url , array('event'=>'args'));
 		
 		if ($_SERVER["HTTPS"] != "on") {
 			$url='https://';
@@ -78,6 +103,7 @@ class PVRouter extends PVStaticObject{
 	  			$url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
 			}
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $url);
 			header('Location: '.$url );
 			
 		}//end https!=on
@@ -90,7 +116,12 @@ class PVRouter extends PVStaticObject{
 	 * 
 	 * @param string url: An option parameter of defing where to redirect too
 	 */
-	public static function deactivateSSL($url=''){
+	public static function deactivateSSL($url='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		
+		$url = self::_applyFilter( get_class(), __FUNCTION__ , $url, array('event'=>'args'));
 		
 		if ($_SERVER["HTTPS"] == "on") {
 			$url='http://';
@@ -101,6 +132,7 @@ class PVRouter extends PVStaticObject{
 	  			$url .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
 			}
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $url);
 			header("Location: $url ");
 		}//end https is on
 		
@@ -122,7 +154,11 @@ class PVRouter extends PVStaticObject{
 	 * 
 	 * @return void
 	 */
-	public static function addRouteRule($route){
+	public static function addRouteRule($route) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $route);
+			
 		$defaults = array(
 			'route'=>null,
 			'access_level'=>null,
@@ -132,14 +168,15 @@ class PVRouter extends PVStaticObject{
 			'rule'=>null
 		);
 		
-		if(is_array($route)){
-			$route += $defaults;
-			array_push(self::$routes, $route);
+		if(!is_array($route)){
+			$route=array('rule'=>$route);
 		}
-		else{
-			$defaults['rule']=$route;
-			array_push(self::$routes, $defaults);
-		}
+		
+		$route += $defaults;
+		$route = self::_applyFilter( get_class(), __FUNCTION__ , $route, array('event'=>'args'));
+		array_push(self::$routes, $route);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $route);
 	}
 	
 	/**
@@ -152,7 +189,13 @@ class PVRouter extends PVStaticObject{
 	 * @return void
 	 * @access public
 	 */
-	public static function setRoute($uri=''){
+	public static function setRoute($uri='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $uri);
+		
+		$uri = self::_applyFilter( get_class(), __FUNCTION__ , $uri, array('event'=>'args'));
+		
 		if(empty($uri)){
 			$uri=$_SERVER['REQUEST_URI'];
 		}
@@ -170,7 +213,7 @@ class PVRouter extends PVStaticObject{
 		$default_route_options=array();
 		
 		foreach (self::$routes as $route) {
-			$reRule = preg_replace('/:([a-z]+)/', '(?P<\1>[^/]+)',$route['rule']);
+			$reRule = preg_replace(self::$default_rule_replace, self::$default_route_replace ,$route['rule']);
 			$reRule = str_replace('/', '\/', $reRule);
 			
             if(preg_match('/' . $reRule .'/', $uri, $matches)){
@@ -213,6 +256,7 @@ class PVRouter extends PVStaticObject{
 		self::$route_parameters=$final_route;
 		self::$route_options=$route_options;
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $final_route, $route_options);
 		
 		if(!empty($route_options['access_level'])){
 			if(!PVSecurity::checkUserAccessLevel(PVUsers::getUserID(), $route_options['access_level']) && !empty($route_options['access_level_redirect'])){
@@ -247,10 +291,21 @@ class PVRouter extends PVStaticObject{
 	 * @param string $parameter A variable to retrieve that is in the url
 	 * 
 	 * @return string $variable Gets the variable, if it exist.
+	 * @access public
 	 */
 	public static function getRouteVariable($parameter){
-		if(isset(self::$route_parameters[$parameter]))
-			return self::$route_parameters[$parameter];
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $parameter);
+		
+		$parameter = self::_applyFilter( get_class(), __FUNCTION__ , $parameter, array('event'=>'args'));
+		
+		if(isset(self::$route_parameters[$parameter])) {
+			self::_notify(get_class().'::'.__FUNCTION__, $parameter, self::$route_parameters[$parameter]);
+			$found_parameter = self::_applyFilter( get_class(), __FUNCTION__ , self::$route_parameters[$parameter], array('event'=>'return'));
+			
+			return $found_parameter;
+		}
 	}
 	
 	public static function getRouteParameter($parameter){
@@ -261,10 +316,20 @@ class PVRouter extends PVStaticObject{
 	 * Returns the current options associated with the route,
 	 * if they have been set.
 	 * 
-	 * @param array options: The options associated with the set route
+	 * @return array options: The options associated with the set route
+	 * @access public
 	 */
-	public static function getRoute(){
-		return self::$route_options['route'];
+	public static function getRoute() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$route = self::$route_options['route'];
+		
+		self::_notify(get_class().'::'.__FUNCTION__ , $route);
+		$route = self::_applyFilter( get_class(), __FUNCTION__ , $route, array('event'=>'return'));
+		
+		return $route;
 	}
 	
 	/**
@@ -281,9 +346,17 @@ class PVRouter extends PVStaticObject{
 	 * @param string $url A url to be parsed
 	 * @param array $options
 	 * 
-	 * @return stinrg url: Returns the url
+	 * @return string $url Returns the url
+	 * @access public
 	 */
-	public static function url($url, $options=array()){
+	public static function url($url, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('url'=>$url, 'options'=>$options ), array('event'=>'args'));
+		$url = $filtered['url'];
+		$options = $filtered['options'];
 		
 		if(is_array($url)){
 			$temp=(self::$seo_urls) ? '' : '?';
@@ -310,6 +383,9 @@ class PVRouter extends PVStaticObject{
 			//$url=PVTools::getCurrentBaseUrl().$url;
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__ , $url);
+		$url= self::_applyFilter( get_class(), __FUNCTION__ , $url, array('event'=>'return'));
+		
 		return $url;
 	}//end url
 	
@@ -317,11 +393,19 @@ class PVRouter extends PVStaticObject{
 	 * If the url is a valid url, such as another site, the url will be point to that site.
 	 * Otherwise it is run through the router and actions are taken if needed.
 	 * 
-	 * @param string url: A url to be redirected too.
+	 * @param string $url A url to be redirected too.
 	 * 
 	 * @return void
+	 * @access public
 	 */
-	public static function redirect($url){
+	public static function redirect($url) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		
+		self::_notify(get_class().'::'.__FUNCTION__ , $url);
+		$url= self::_applyFilter( get_class(), __FUNCTION__ , $url, array('event'=>'args'));
+		
 		if(PVValidator::isValidUrl()){
 			header('Location: '.$url);
 		} else {
