@@ -66,6 +66,9 @@ class PVSession extends PVStaticObject {
 	 */
 	public static function init($session_vars=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $session_vars);
+		
 		$defaults=array(
 			'cookie_path'=>'/',
 			'cookie_domain'=>$_SERVER['HTTP_HOST'],
@@ -84,6 +87,8 @@ class PVSession extends PVStaticObject {
 		);
 		
 		$session_vars += $defaults;
+		
+		$session_vars = self::_applyFilter( get_class(), __FUNCTION__ , $session_vars, array('event'=>'args'));
 		
 		self::$cookie_path=$session_vars['cookie_path'];
 		self::$cookie_domain=$session_vars['cookie_domain'];
@@ -105,6 +110,8 @@ class PVSession extends PVStaticObject {
 		
 		if($session_vars['session_start'])
 			session_start();
+			
+		self::_notify(get_class().'::'.__FUNCTION__ , $session_vars);
 	}
 	
 	/**
@@ -126,7 +133,16 @@ class PVSession extends PVStaticObject {
 	 * @return void
 	 */
 	public static function writeCookie($name, $value, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
+		
 		$options += self::getCookieDefaults();
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('name'=>$name, 'value'=>$value, 'options'=>$options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$value = $filtered['value'];
+		$options = $filtered['options'];
+		
 		extract($options);
 		
 		if(is_array($value) || is_object($value)) {
@@ -138,6 +154,7 @@ class PVSession extends PVStaticObject {
 			$value=PVSecurity::encrypt($value);
 		}
 		setcookie($name, $value, time()+$cookie_lifetime, $cookie_path, $cookie_domain, $cookie_secure, $cookie_httponly );
+		self::_notify(get_class().'::'.__FUNCTION__ , $name, $value, $options);
 	}
 	
 	/**
@@ -149,7 +166,14 @@ class PVSession extends PVStaticObject {
 	 * @return mixed stored_value
 	 */
 	public static function readCookie($name, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name , $options);
+		
 		$options += self::getCookieDefaults();
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('name'=>$name, 'options'=>$options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
 		
 		if($options['hash_cookie'])
 			$name=PVSecurity::encrypt($name);
@@ -164,9 +188,12 @@ class PVSession extends PVStaticObject {
 		
 		$data = @unserialize($cookie_value);
 		if($data !== false || $cookie_value === 'b:0;')
-		    return $data;
-		else
-		   return $cookie_value;
+		   $cookie_value = $data;
+		
+		self::_notify(get_class().'::'.__FUNCTION__ , $cookie_value, $name, $options);
+		$cookie_value = self::_applyFilter( get_class(), __FUNCTION__ , $cookie_value , array('event'=>'return'));
+		
+		return $cookie_value;
 	}
 	
 	/**
@@ -181,7 +208,15 @@ class PVSession extends PVStaticObject {
 	 * 			-'cookie_httponly' _boolean_:
 	 */
 	public static function deleteCookie($name, $options=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		
 		$options += self::getCookieDefaults();
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('name'=>$name, 'options'=>$options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		
 		extract($options);
 		
 		if($options['hash_cookie'])
@@ -189,6 +224,7 @@ class PVSession extends PVStaticObject {
 		
 		setcookie($name, NULL, time()-4800,$cookie_path, $cookie_domain, $cookie_secure, $cookie_httponly);
 		unset($_COOKIE[$name]);
+		self::_notify(get_class().'::'.__FUNCTION__ , $name, $options);
 	}
 	/**
 	 * Write a cookie. Will use default options set in class. otherwise
@@ -205,7 +241,16 @@ class PVSession extends PVStaticObject {
 	 * @access public
 	 */
 	public static function writeSession($name, $value, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
+		
 		$options += self::getSessionDefaults();
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('name'=>$name, 'value'=>$value, 'options'=>$options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$value = $filtered['value'];
+		$options = $filtered['options'];
+		
 		extract($options);
 		
 		if(is_array($value) || is_object($value)) {
@@ -218,6 +263,7 @@ class PVSession extends PVStaticObject {
 		}
 		
 		$_SESSION[$name]=$value;
+		self::_notify(get_class().'::'.__FUNCTION__ , $name, $value, $options);
 	}
 	
 	/**
@@ -230,7 +276,14 @@ class PVSession extends PVStaticObject {
 	 * @access public
 	 */
 	public static function readSession($name,$options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		
 		$options += self::getSessionDefaults();
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('name'=>$name, 'options'=>$options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
 		
 		if($options['hash_session'])
 			$name=PVSecurity::encrypt($name);
@@ -246,9 +299,12 @@ class PVSession extends PVStaticObject {
 		$data = @unserialize($session_value);
 		
 		if($data !== false || $session_value === 'b:0;')
-		    return $data;
-		else
-		   return$session_value;
+		    $session_value = $data;
+		
+		self::_notify(get_class().'::'.__FUNCTION__ , $session_value, $name, $options);
+		$session_value = self::_applyFilter( get_class(), __FUNCTION__ , $session_value , array('event'=>'return'));
+		
+		return $session_value;
 	}
 	
 	/**Remove a session
@@ -258,7 +314,15 @@ class PVSession extends PVStaticObject {
 	 * @access public
 	 */
 	public static function deleteSession($name, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		
 		$options += self::getSessionDefaults();
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('name'=>$name, 'options'=>$options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		
 		extract($options);
 		
 		if($options['hash_session'])
@@ -266,6 +330,7 @@ class PVSession extends PVStaticObject {
 		
 		if(isset($_SESSION[$name] )){
 			unset($_SESSION[$name]);
+			self::_notify(get_class().'::'.__FUNCTION__ , $name, $options);
 		}
 	}
 	
