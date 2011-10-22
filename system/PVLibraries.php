@@ -35,6 +35,7 @@ class PVLibraries extends PVStaticObject{
 	private static $motools_libraries_array;
 	private static $css_files_array;
 	private static $open_javascript;
+	private static $libraries;
 	
 	function init($config=array()){
 		self::$javascript_libraries_array=array();
@@ -42,13 +43,17 @@ class PVLibraries extends PVStaticObject{
 		self::$prototype_libraries_array=array();
 		self::$motools_libraries_array=array();
 		self::$css_files_array=array();
+		self::$libraries=array();
 	}
 	
 	/**
 	 * Adds javascript files to a queue of javascript files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 * 
-	 * @param string script
+	 * @param string $script
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public static function enqueue_javascript($script){
 		self::$javascript_libraries_array[$script]=$script;
@@ -59,6 +64,9 @@ class PVLibraries extends PVStaticObject{
 	 * file should be unique and set the path of the file or the url of the file.
 	 * 
 	 * @param string script
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public static function enqueue_jquery($script){
 		self::$jquery_libraries_array[$script]=$script;
@@ -161,6 +169,34 @@ class PVLibraries extends PVStaticObject{
 	
 	public static function get_enqueue_openscript(){
 		return self::$open_javascript;
+	}
+	
+	public static function addLibrary($folder_name, $options = array()) {
+		$defaults = array(
+			'path'=>$folder_name.DS,
+			'autoload'=>true,
+			'extensions'=>'.php'
+		);
+		
+		$options += $defaults;
+		
+		self::$libraries[$folder_name]=$options;
+		
+	}
+	
+	public static function loadLibraries() {
+		
+		if(!empty(self::$libraries)) {
+			
+			foreach(self::$libraries as $key=>$value){
+				
+			}//end foreach
+		}
+		
+	}//end loadLibraries
+	
+	private static function _loadLibrary($options) {
+		
 	}
 	
 	
