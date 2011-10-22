@@ -162,6 +162,8 @@ class PVFileManager extends PVStaticObject {
 		return $file_array;
 	}//end getFilesInDirectory
 	
+	
+	
 	public static function loadFile($filePath, $charSet, $mode){
 	    
 		$returnData= "";
