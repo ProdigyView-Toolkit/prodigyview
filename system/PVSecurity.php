@@ -50,6 +50,10 @@ class PVSecurity extends PVStaticObject {
 	 * @access public
 	 */
 	public static function init($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$defaults=array(
 			'mcrypt_algorithm'=>MCRYPT_DES,
 			'mcrypt_algorithm_directory'=>'',
@@ -76,6 +80,9 @@ class PVSecurity extends PVStaticObject {
 	 * @access public
 	 */			
 	public static function getUserRoles() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 			
 		$role_array=array();
 			
@@ -97,6 +104,9 @@ class PVSecurity extends PVStaticObject {
 	 */
 	public static function checkUserAccessLevel($user_id, $required_level) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $required_level);
+		
 		if(!empty($user_id) ){
 			$user_info=PVUsers::getUserInfo($user_id);
 			
@@ -117,6 +127,9 @@ class PVSecurity extends PVStaticObject {
 	 * @param array allow_roles. Id
 	 */	
 	public static function checkUserPermission($user_role, $allowed_roles){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_role, $allowed_roles);
 		
 		if(empty($allowed_roles)){
 				return 1;
@@ -178,6 +191,9 @@ class PVSecurity extends PVStaticObject {
 	 */
 	public static function checkUserRole($user_id, $roles) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $roles);
+		
 		if(!empty($user_id) ){
 			$assigned_roles=PVUsers::getAssignedUserRoles($user_id);
 			if(PVTools::arraySearchRecursive($roles, $assigned_roles))
@@ -196,6 +212,9 @@ class PVSecurity extends PVStaticObject {
 	 * @return int role_id: The id of the role
 	 */	
 	private static function findRoleID($role, $role_array) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $role, $role_array);
 			
 		foreach($role_array as $roles) {
 			if(in_array($role, $roles)){
