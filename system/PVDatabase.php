@@ -1106,7 +1106,7 @@ class PVDatabase extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $returnField, $returnTable, $data, $formats);
 		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table_name'=>$table_name, 'data'=>$data, 'returnFields'=>$returnField, 'returnTable'=>$returnTable, 'formats'=>$formats  ) , array('event'=>'args'));
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('table_name'=>$table_name, 'data'=>$data, 'returnField'=>$returnField, 'returnTable'=>$returnTable, 'formats'=>$formats  ) , array('event'=>'args'));
 		$table_name = $filtered['table_name'];
 		$returnField = $filtered['returnField'];
 		$returnTable = $filtered['returnTable'];
@@ -1395,7 +1395,7 @@ class PVDatabase extends PVStaticObject {
 				$params[$key]=$value;
 			}
 			
-			$resullt = $stmt->execute();
+			$result = $stmt->execute();
 			
 		} else if (self::$dbtype==self::$postgreSQLConnection){
 			
@@ -1410,7 +1410,7 @@ class PVDatabase extends PVStaticObject {
 			$result = sqlsrv_execute( $stmt);
 		}
 		
-		self::_notify(get_class().'::'.__FUNCTION__, $result, $table, $data, $wherelist, $formats, $whereformats);
+		self::_notify(get_class().'::'.__FUNCTION__, $result, $table, $wherelist, $whereformats);
 		$result = self::_applyFilter( get_class(), __FUNCTION__ , $result , array('event'=>'return'));
 		
 		return $result;
