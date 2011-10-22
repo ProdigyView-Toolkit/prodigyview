@@ -47,6 +47,10 @@ class PVBootstrap extends PVStaticObject{
 	 * @todo Add ability to initialize other classes
 	 */
 	public static function bootSystem($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$defaults=array(
 			'initialize_database'=>true,
 			'initialize_libraries'=>true,
@@ -65,6 +69,8 @@ class PVBootstrap extends PVStaticObject{
 			$config=PVConfiguration::getSiteCompleteConfiguration() + $defaults['config'];
 		else
 			$config=$args['config']+$defaults['config'];
+		
+		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config, array('event'=>'args'));
 			
 		self::setErrorReporting($config['report_errors'],$config['log_errors'], $config['error_report_level'] );
 		
@@ -143,6 +149,7 @@ class PVBootstrap extends PVStaticObject{
 			self::unsetGlobalVariable("_SERVER");
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $config);
 	}//end bootSystem
 	
 	
@@ -167,7 +174,15 @@ class PVBootstrap extends PVStaticObject{
 	 * @access private
 	 */
 	private static function setErrorReporting($report_errors=FALSE, $log_errors=TRUE ,$error_report_level=E_ALL) {
-	
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $report_errors, $log_errors ,$error_report_level);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('report_errors'=>$report_errors, 'log_errors'=>$log_errors, 'error_report_level'=>$error_report_level ), array('event'=>'args'));
+		$report_errors = $filtered['report_errors'];
+		$log_errors = $filtered['log_errors'];
+		$error_report_level = $filtered['error_report_level'];
+		
 		if($error_report_level==0){
 			error_reporting(E_ERROR | E_WARNING | E_PARSE);
 		}
@@ -197,6 +212,8 @@ class PVBootstrap extends PVStaticObject{
 			ini_set('log_errors', 'On');
 			ini_set('error_log', PV_ERROR_LOG);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $report_errors, $log_errors ,$error_report_level);
 	}//end setReporting
 	
 	/**
@@ -210,6 +227,9 @@ class PVBootstrap extends PVStaticObject{
 	 */
 	public static function loadPlugins(){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		$query="SELECT plugin_function, plugin_file, plugin_directory FROM ".PVDatabase::getPluginsTableName()." WHERE plugin_enabled='1' AND plugin_language='php' ORDER BY plugin_order ";
 		$result = PVDatabase::query($query);
     	
@@ -219,6 +239,8 @@ class PVBootstrap extends PVStaticObject{
     			include_once(PV_PLUGINS.$plugin_file);
     		}
     	}//end while
+    	
+    	self::_notify(get_class().'::'.__FUNCTION__);
 	}//end load plugins
 	
 	
@@ -231,15 +253,22 @@ class PVBootstrap extends PVStaticObject{
 	 */
 	private static function unsetGlobalVariable($global){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $global);
+		
+		$global = self::_applyFilter( get_class(), __FUNCTION__ , $global, array('event'=>'args'));
+		
 		foreach ($GLOBALS[$global] as $key => $var) {
 			if ($var === $GLOBALS[$key]) {
 				unset($GLOBALS[$key]);
 			}
 		}//end for
 	
+		self::_notify(get_class().'::'.__FUNCTION__, $global);
 	}//end unsetGlobalVariable
 	
 	private static function stripSlashesRecursive($array) {
+		
 		$array = is_array($array) ? array_map(NULL, $array) : self::stripSlashesRecursive($array);
 		return $array;
 	}
@@ -252,12 +281,18 @@ class PVBootstrap extends PVStaticObject{
 	 * @access void
 	 */
 	private static function removeMagicQuotes() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if ( get_magic_quotes_gpc() ) {
 			array_walk_recursive($_GET, 'stripslashes_gpc');
     		array_walk_recursive($_POST, 'stripslashes_gpc');
             array_walk_recursive($_COOKIE, 'stripslashes_gpc');
             array_walk_recursive($_REQUEST, 'stripslashes_gpc');
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__);
 	}//end 
 	
 	/**
@@ -268,8 +303,16 @@ class PVBootstrap extends PVStaticObject{
 	 * @return void
 	 * @access private
 	 */
-	private static function setHeaderExpires($expirationMinutes) {  
- 		header(  'Expires: '.gmdate('D, d M Y H:i:s', time()+$expirationMinutes).'GMT');  
+	private static function setHeaderExpires($expirationMinutes) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $expirationMinutes);
+		
+		$expirationMinutes = self::_applyFilter( get_class(), __FUNCTION__ , $expirationMinutes, array('event'=>'args'));
+		  
+ 		header(  'Expires: '.gmdate('D, d M Y H:i:s', time()+$expirationMinutes).'GMT'); 
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $expirationMinutes); 
  	}//end setHeaderExpires
 	
 }//end class 
