@@ -143,7 +143,9 @@ class PVFileManager extends PVStaticObject {
 	}
 	
 	
-	public static function getFilesInDirectory($directory){
+	public static function getFilesInDirectory($directory, $options=array()){
+		$defaults=array('verbose'=>false);
+		$options += $defaults;
 		
 		if(!is_dir($directory)){
 			return NULL;
@@ -152,15 +154,56 @@ class PVFileManager extends PVStaticObject {
 		$file_array=array();
 		$dir = opendir($directory);
 		
-			
 		while(false != ($file = readdir($dir))){
 			if(($file != ".") and ($file != "..")){
-				$file_array["$file"]=$file;
+				
+				if(is_dir($directory.$file.DS) && !$options['verbose'] ) {
+					
+					$file_array[$directory.$file.DS]=self::getFilesInDirectory($directory.$file.DS, $options);
+					
+				} else if(is_dir($directory.$file.DS) && $options['verbose']) {
+					$file_array[$directory.$file.DS]=array('type'=>'folder', 'files'=>self::getFilesInDirectory($directory.$file.DS, $options)); 
+				} else if($options['verbose']) {
+					$info=array(
+						'type'=>'file',
+						'basename'=>pathinfo($file, PATHINFO_BASENAME),
+						'extension'=>pathinfo($file, PATHINFO_EXTENSION),
+						'mime_type'=>self::getFileMimeType($directory.$file, $options)
+					);
+					
+					$file_array[$directory.$file]=$info;
+				} else {
+					$file_array[$directory.$file]=$file;
+				}
 			}
 		}//end while
 		
 		return $file_array;
 	}//end getFilesInDirectory
+	
+	public static function getFileMimeType($file, $options=array()){
+		$defaults = array('magic_file'=>null);
+		
+		$options += $defaults;
+		$mime_type='application/unknown';
+		
+		if(function_exists('finfo_open')) {
+			$finfo = finfo_open(FILEINFO_MIME, $options['magic_file']);
+			$mime_type = finfo_file($finfo, $file);
+			finfo_close($finfo);
+		}else if(function_exists('finfo_open')) {
+			$mime_type = mime_content_type ( $file);
+		} else {
+			ob_start();
+    		system("file -i -b {$file}");
+    		$buffer = ob_get_clean();
+    		$buffer = explode(';',$buffer);
+    		if ( is_array($buffer) ) 
+        		$mime_type= $buffer[0];
+		}
+		
+		return $mime_type;
+	}//end getFileMimeType
 	
 	
 	
