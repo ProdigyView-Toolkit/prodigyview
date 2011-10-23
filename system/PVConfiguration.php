@@ -32,7 +32,7 @@ class PVConfiguration extends PVStaticObject{
 	/**
 	 * Initializes the configuration class by adding values to the collection
 	 * available in the static parent object. Because the variable is added statically,
-	 * the informatiol will be available anywhere on the site.
+	 * the information will be available anywhere on the site.
 	 * 
 	 * @param array $args Arguements to be added to the configuration
 	 * 
@@ -41,11 +41,18 @@ class PVConfiguration extends PVStaticObject{
 	 */
 	public static function init($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		
 		if(!empty($args)) {
 			foreach($args as $key=>$value) {
 				self::_addToCollectionWithName($key, $value);
 			}
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}
 	
 	/**
@@ -59,7 +66,16 @@ class PVConfiguration extends PVStaticObject{
 	 * @access public
 	 */
 	public static function addConfiguration($key, $value) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $key, $value);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('key'=>$key, 'value'=>$value), array('event'=>'args'));
+		$key = $filtered['key'];
+		$value = $filtered['value'];
+		
 		self::_addToCollectionWithName($key, $value);
+		self::_notify(get_class().'::'.__FUNCTION__, $key, $value);
 	}
 	
 	/**
@@ -72,7 +88,18 @@ class PVConfiguration extends PVStaticObject{
 	 * @access pulbic
 	 */
 	public static function getConfiguration($key) {
-		return  parent::get($key);
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $key);
+		
+		$key = self::_applyFilter( get_class(), __FUNCTION__ , $key, array('event'=>'args'));
+		
+		$value =  parent::get($key);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $key, $value);
+		$value = self::_applyFilter( get_class(), __FUNCTION__ , $value, array('event'=>'return'));
+		
+		return $value;
 	}
 	
 	/**
@@ -84,27 +111,36 @@ class PVConfiguration extends PVStaticObject{
 	 * @return void mixed $config Any infomration retrieved from that node
 	 * @access public
 	 */
-	public static function loadXMLConfigurationFromFile($nodes_name) {
+	public static function loadXMLConfigurationFromFile($node_name) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $node_name);
+		
+		$node_name = self::_applyFilter( get_class(), __FUNCTION__ , $node_name, array('event'=>'args'));
+		
 		$filename = PV_CONFIG; 
-		$paramater_array=array();
+		$parameter_array=array();
 		
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;
 		$doc->preserveWhiteSpace = false; 
 		$doc->load( $filename );
-		$node_array= $doc->getElementsByTagName( $nodes_name ); 
+		$node_array= $doc->getElementsByTagName( $node_name ); 
 		
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
 		}//end foreach
 		
-		return $paramater_array;
+		self::_notify(get_class().'::'.__FUNCTION__, $node_name, $parameter_array);
+		$parameter_array = self::_applyFilter( get_class(), __FUNCTION__ , $parameter_array, array('event'=>'return'));
+		
+		return $parameter_array;
 	}
 	
 	/**
@@ -115,10 +151,13 @@ class PVConfiguration extends PVStaticObject{
 	 * @return array email_options: Returns the email options in an array
 	 * @access public
 	 */
- 	public static function getSiteEmailConfiguration(){
+ 	public static function getSiteEmailConfiguration() {
+ 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		$filename = PV_CONFIG; 
-		$paramater_array=array();
+		$parameter_array=array();
 		
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;
@@ -129,14 +168,17 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
 		}//end foreach
 		
-		return $paramater_array;
+		self::_notify(get_class().'::'.__FUNCTION__, $parameter_array);
+		$parameter_array = self::_applyFilter( get_class(), __FUNCTION__ , $parameter_array, array('event'=>'return'));
+		
+		return $parameter_array;
 	}//end getSiteEmailConfiguration
 	
 	/**
@@ -147,10 +189,13 @@ class PVConfiguration extends PVStaticObject{
 	 * @return array $session_options Returns the session options in an array
 	 * @access public
 	 */
-	public static function getSiteSessionConfiguration(){
+	public static function getSiteSessionConfiguration() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		$filename = PV_CONFIG; 
-		$paramater_array=array();
+		$parameter_array=array();
 		
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;
@@ -161,14 +206,17 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
 		}//end foreach
 		
-		return $paramater_array;
+		self::_notify(get_class().'::'.__FUNCTION__, $parameter_array);
+		$parameter_array = self::_applyFilter( get_class(), __FUNCTION__ , $parameter_array, array('event'=>'return'));
+		
+		return $parameter_array;
 	}//end getSiteEmailConfiguration
 	
 	/**
@@ -179,10 +227,13 @@ class PVConfiguration extends PVStaticObject{
 	 * @return array options Returns all the options in an array
 	 * @access public
 	 */
-	public static function getSiteCompleteConfiguration(){
+	public static function getSiteCompleteConfiguration() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		$filename = PV_CONFIG; 
-		$paramater_array=array();
+		$parameter_array=array();
 		
 		$doc = new DOMDocument(); 
 		$doc->formatOutput = true;
@@ -190,22 +241,20 @@ class PVConfiguration extends PVStaticObject{
 		$doc->load( $filename );
 		$node_array= $doc->getElementsByTagName( 'general' ); 
 		
-		foreach( $node_array as $node ) 
-		{
+		foreach( $node_array as $node ) {
 			if($node->childNodes->length) {
             	foreach($node->childNodes as $i) {
-            		$paramater_array[$i->nodeName]=$i->nodeValue;
+            		$parameter_array[$i->nodeName]=$i->nodeValue;
             	}//end foreach
         	}//end if
 		}//end foreach
 		
 		$node_array= $doc->getElementsByTagName( 'email' ); 
 		
-		foreach( $node_array as $node ) 
-		{ 
+		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
@@ -217,7 +266,7 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
@@ -229,7 +278,7 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
@@ -240,13 +289,16 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 		}
 		
-		return $paramater_array;
+		self::_notify(get_class().'::'.__FUNCTION__, $parameter_array);
+		$parameter_array = self::_applyFilter( get_class(), __FUNCTION__ , $parameter_array, array('event'=>'return'));
+		
+		return $parameter_array;
 	}//end getSiteEmailConfiguration
 	
 	/**
@@ -257,10 +309,13 @@ class PVConfiguration extends PVStaticObject{
 	 * @return array $general_options Returns the general options in an array
 	 * @access public
 	 */
-	public static function getSiteGeneralConfiguration(){
+	public static function getSiteGeneralConfiguration() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		$filename = PV_CONFIG; 
-		$paramater_array=array();
+		$parameter_array=array();
 		
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;
@@ -271,7 +326,7 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
@@ -283,14 +338,17 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
 		}//end foreach
 		
-		return $paramater_array;
+		self::_notify(get_class().'::'.__FUNCTION__, $parameter_array);
+		$parameter_array = self::_applyFilter( get_class(), __FUNCTION__ , $parameter_array, array('event'=>'return'));
+		
+		return $parameter_array;
 	}//end getSiteEmailConfiguration
 	
 	/**
@@ -303,8 +361,11 @@ class PVConfiguration extends PVStaticObject{
 	 */
 	public static function getSystemConfiguration(){
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		$filename = PV_CONFIG; 
-		$paramater_array=array();
+		$parameter_array=array();
 		
 		$doc = new DOMDocument(); 
 		$doc->formatOutput = true;
@@ -315,14 +376,17 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
 		}//end foreach
 		
-		return $paramater_array;
+		self::_notify(get_class().'::'.__FUNCTION__, $parameter_array);
+		$parameter_array = self::_applyFilter( get_class(), __FUNCTION__ , $parameter_array, array('event'=>'return'));
+		
+		return $parameter_array;
 	}//end systemConfiguration
 	
 	/**
@@ -333,10 +397,13 @@ class PVConfiguration extends PVStaticObject{
 	 * @return array site_options: Returns the site options in an array
 	 * @access public
 	 */
-	public static function getSiteConfiguration(){
+	public static function getSiteConfiguration() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		$filename = PV_CONFIG; 
-		$paramater_array=array();
+		$parameter_array=array();
 		
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;
@@ -347,14 +414,17 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
 		}//end foreach
 		
-		return $paramater_array;
+		self::_notify(get_class().'::'.__FUNCTION__, $parameter_array);
+		$parameter_array = self::_applyFilter( get_class(), __FUNCTION__ , $parameter_array, array('event'=>'return'));
+		
+		return $parameter_array;
 	}//end getSiteEmailConfiguration
 	
 	/**
@@ -365,10 +435,13 @@ class PVConfiguration extends PVStaticObject{
 	 * @return array $sever_options Returns the site server in an array
 	 * @access public
 	 */
-	public static function getServerConfiguration(){
+	public static function getServerConfiguration() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		$filename = PV_CONFIG; 
-		$paramater_array=array();
+		$parameter_array=array();
 		
 		$doc = new DOMDocument();
 		$doc->formatOutput = true;
@@ -379,14 +452,17 @@ class PVConfiguration extends PVStaticObject{
 		foreach( $node_array as $node ) { 
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
-	            	$paramater_array[$i->nodeName]=$i->nodeValue;
+	            	$parameter_array[$i->nodeName]=$i->nodeValue;
 					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
 		}//end foreach
 		
-		return $paramater_array;
+		self::_notify(get_class().'::'.__FUNCTION__, $parameter_array);
+		$parameter_array = self::_applyFilter( get_class(), __FUNCTION__ , $parameter_array, array('event'=>'return'));
+		
+		return $parameter_array;
 	}//end getSiteEmailConfiguration
 	
 	
