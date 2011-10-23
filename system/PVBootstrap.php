@@ -41,6 +41,7 @@ class PVBootstrap extends PVStaticObject{
 	 * 			-'initialize_template' _boolean_:Initializes the template
 	 * 			-'initalize_validator' _boolean_: Initializes the validator
 	 * 			-'load_plugins' _booleans_: Loads the plug-ins at boot.
+	 *			-'load_libraries' _booleans_: Loads the libraries that have been added
 	 * 
 	 * @return void
 	 * @access public
@@ -60,6 +61,7 @@ class PVBootstrap extends PVStaticObject{
 			'initialize_security'=>true,
 			'initialize_session'=>true,
 			'load_plugins'=>true,
+			'load_libraries'=>true,
 			'load_configuration'=>true,
 			'config'=>array( 'report_errors'=>false, 'log_errors'=>true, 'error_report_level'=>E_ALL, 'enable_cache'=>true, 'unset_cookie'=>false,'unset_session'=>false,'unset_post'=>false,'unset_get'=>false,'unset_request'=>false,'unset_env'=>false,'unset_files'=>false,'unset_server'=>false,'cache_time'=>15)
 		);
@@ -84,6 +86,9 @@ class PVBootstrap extends PVStaticObject{
 		
 		if($args['initialize_libraries'])
 			PVLibraries::init();
+			
+		if($args['load_libraries'])
+			PVLibraries::loadLibraries();
 		
 		if($args['initialize_template'])
 			PVTemplate::init($config);
