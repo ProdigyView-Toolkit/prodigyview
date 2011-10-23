@@ -38,12 +38,20 @@ class PVLibraries extends PVStaticObject{
 	private static $libraries;
 	
 	function init($config=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		
+		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config, array('event'=>'args'));
+		
 		self::$javascript_libraries_array=array();
 		self::$jquery_libraries_array=array();
 		self::$prototype_libraries_array=array();
 		self::$motools_libraries_array=array();
 		self::$css_files_array=array();
 		self::$libraries=array();
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $config);
 	}
 	
 	/**
@@ -55,8 +63,14 @@ class PVLibraries extends PVStaticObject{
 	 * @return void
 	 * @access public
 	 */
-	public static function enqueue_javascript($script){
+	public static function enqueueJavascript($script) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , $script, array('event'=>'args'));
 		self::$javascript_libraries_array[$script]=$script;
+		self::_notify(get_class().'::'.__FUNCTION__, $script);
 	}
 	
 	/**
@@ -68,8 +82,14 @@ class PVLibraries extends PVStaticObject{
 	 * @return void
 	 * @access public
 	 */
-	public static function enqueue_jquery($script){
+	public static function enqueueJquery($script) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , $script, array('event'=>'args'));
 		self::$jquery_libraries_array[$script]=$script;
+		self::_notify(get_class().'::'.__FUNCTION__, $script);
 	}
 	
 	/**
@@ -78,8 +98,14 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @param string script
 	 */
-	public static function enqueue_prototype($script){
+	public static function enqueuePrototype($script) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , $script, array('event'=>'args'));
 		self::$prototype_libraries_array[$script]=$script;
+		self::_notify(get_class().'::'.__FUNCTION__, $script);
 	}
 	
 	/**
@@ -88,8 +114,14 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @param string script
 	 */
-	public static function enqueue_mootools($script){
+	public static function enqueueMootools($script) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , $script, array('event'=>'args'));
 		self::$motools_libraries_array[$script]=$script;
+		self::_notify(get_class().'::'.__FUNCTION__, $script);
 	}
 	
 	/**
@@ -98,8 +130,14 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @param string script
 	 */
-	public static function enqueue_css($script){
+	public static function enqueueCss($script) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , $script, array('event'=>'args'));
 		self::$css_files_array[$script]=$script;
+		self::_notify(get_class().'::'.__FUNCTION__, $script);
 	}
 	
 	/**
@@ -112,8 +150,14 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @param string $script
 	 */
-	public static function enqueue_openscript($script){
+	public static function enqueueOpenscript($script) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , $script, array('event'=>'args'));
 		self::$open_javascript.=$script;
+		self::_notify(get_class().'::'.__FUNCTION__, $script);
 	}
 	
 	/**
@@ -122,8 +166,15 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @return array script_array
 	 */
-	public static function get_enqueue_javascript(){
-		return self::$javascript_libraries_array;
+	public static function getJavascriptQueue() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$javascript_libraries_array);
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , self::$javascript_libraries_array, array('event'=>'return'));
+		
+		return $script;
 	}
 	
 	/**
@@ -132,8 +183,15 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @return array script_array
 	 */
-	public static function get_enqueue_jquery(){
-		return self::$jquery_libraries_array;
+	public static function getJqueryQueue() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, sself::$jquery_libraries_array);
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , self::$jquery_libraries_array, array('event'=>'return'));
+		
+		return $script;
 	}
 	
 	/**
@@ -142,8 +200,15 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @return array script_array
 	 */
-	public static function get_enqueue_prototype(){
-		return self::$prototype_libraries_array;
+	public static function getPrototypeQueue() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$prototype_libraries_array);
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , self::$prototype_libraries_array, array('event'=>'return'));
+		
+		return $script;
 	}
 	
 	/**
@@ -152,8 +217,15 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @return array script_array
 	 */
-	public static function get_enqueue_mootools(){
-		return self::$motools_libraries_array;
+	public static function getMootoolsQueue() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$motools_libraries_array);
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , self::$motools_libraries_array, array('event'=>'return'));
+		
+		return $script;
 	}
 	
 	/**
@@ -162,43 +234,146 @@ class PVLibraries extends PVStaticObject{
 	 * 
 	 * @return array script_array
 	 */
-	public static function get_enqueue_css(){
-		return self::$css_files_array;
+	public static function getCssQueue() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$css_files_array);
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , self::$css_files_array, array('event'=>'return'));
+		
+		return $script;
 	}
 	
 	
-	public static function get_enqueue_openscript(){
-		return self::$open_javascript;
+	public static function getOpenscriptQueue() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$open_javascript);
+		$script = self::_applyFilter( get_class(), __FUNCTION__ , self::$open_javascript, array('event'=>'return'));
+		
+		return $script;
 	}
 	
+	/**
+	 * Add a library that will be auto loaded when loadLibraries is called. The libraries
+	 * added will be available through the class.
+	 * 
+	 * @param folder_name The name of folder that contains the library. By default the folder should be in the PV_Libraries
+	 * 		  DEFINE location. Also acts as the library name when being referenced
+	 * @param array $options Options than can be used to configure the library that will be loaded
+	 * 			-'path' _string_: The path to the library. The default path is PV_LIBRARIES.$folder_name.DS
+	 * 			-'autoload' _boolean_: When true, library will be automatically loaded when loadLibraries is called. Default is true.
+	 * 			-'extensions' _array_: An array of allowed file extensions that will be included when the library loads. Default is .php
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function addLibrary($folder_name, $options = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $folder_name, $options);
+		
 		$defaults = array(
-			'path'=>$folder_name.DS,
+			'path'=>PV_LIBRARIES.$folder_name.DS,
 			'autoload'=>true,
-			'extensions'=>'.php'
+			'extensions'=>array('.php')
 		);
 		
 		$options += $defaults;
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('folder_name'=>$folder_name, 'options'=>$options), array('event'=>'args'));
+		$folder_name=$filtered['folder_name'];
+		$options=$filtered['options'];
 		
 		self::$libraries[$folder_name]=$options;
-		
+		self::_notify(get_class().'::'.__FUNCTION__, $folder_name, $options);
 	}
 	
+	/**
+	 * Looks through any libraries that have been added through addLibrary function. If there ae libraries
+	 * and their autoload is set to true, the libraries foiles or included.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function loadLibraries() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		if(!empty(self::$libraries)) {
 			
 			foreach(self::$libraries as $key=>$value){
-				
+				if($value['autoload']) {
+					$library = PVFileManager::getFilesInDirectory($value['path'], array('verbose'=>true));
+					self::_loadLibrary($library, $value['extensions']);
+				}
 			}//end foreach
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__);
 	}//end loadLibraries
 	
-	private static function _loadLibrary($options) {
+	/**
+	 * Explicity load a library, even if autoload is set to false. If the library is already loaded, the files will not be
+	 * re-included.
+	 * 
+	 * @param string $library_name The name of the library to be load. Will be the same name passed when addLibrary was used.
+	 * 
+	 * @return void
+	 * @access publix
+	 */
+	public static function loadLibrary($library_name) {
 		
-	}
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $library_name);
+		
+		$library_name = self::_applyFilter( get_class(), __FUNCTION__ , $library_name, array('event'=>'args'));
+		
+		if(isset(self::$libraries[$library_name])){
+			$library = PVFileManager::getFilesInDirectory(self::$libraries[$library_name]['path'], array('verbose'=>true));
+			self::_loadLibrary($library, self::$libraries[$library_name]['extensions']);
+			self::_notify(get_class().'::'.__FUNCTION__, $library_name);
+		}//end loadLibrary
+		
+	}//end 
 	
+	/**
+	 * Loads the library that is passed through.
+	 * 
+	 * @param array $library An array of the library that contains directores, files, and file information
+	 * @param array $allowed_extensions The allowed extensions
+	 * 
+	 * @return void
+	 * @access protected
+	 */
+	protected static function _loadLibrary($library, $allow_extensions) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $library, $allow_extensions);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('library'=>$library, 'allow_extensions'=>$allow_extensions), array('event'=>'args'));
+		$library = $filtered['library'];
+		$allow_extensions = $filtered['allow_extensions'];
+			
+		foreach($library as $key=>$value) {
+			if($value['type']=='folder') {
+				self::_loadLibrary($value['files'], $allow_extensions);
+			} else {
+				if(empty($allow_extensions)) {
+					include_once($key);
+				} else  {
+					$extensions_allowed = implode($allow_extensions,'|');
+					if(preg_match('/' .$extensions_allowed.'/', $value['basename'], $matches))
+						include_once($key);
+				}
+			}//end else
+		}//end foreach
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $library, $allow_extensions);
+	}//end _loadLibrary
 	
 	
 }//end class
