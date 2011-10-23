@@ -324,7 +324,7 @@ class PVRouter extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__);
 		
-		$route = self::$route_options['route'];
+		$route = (isset(self::$route_options['route'])) ? self::$route_options['route'] : null;
 		
 		self::_notify(get_class().'::'.__FUNCTION__ , $route);
 		$route = self::_applyFilter( get_class(), __FUNCTION__ , $route, array('event'=>'return'));
