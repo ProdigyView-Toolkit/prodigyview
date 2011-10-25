@@ -28,40 +28,10 @@
 */
 
 class PVFileManager extends PVStaticObject {
-
-	static $version=0.9;
-	static $uniqueName="pv_file_manager";
 	
-	//ERROR STATUS
-	
-	static $FILE_DOES_NOT_EXIST=-2;
-	static $FILE_EXIST=-3;
-	static $DIRECTORY_DOES_NOT_EXIST=-4;
-	static $DIRECTORY_EXIST=-5;
-	static $IS_DIRECTORY=-6;
-	static $IS__NOT_DIRECTORY=-7;
-	static $IS_FILE=-8;
-	static $IS_NOT_FILE=-9;
-	static $MKDIR_DENIED=-10;
-	
-	
-	function PVFileManager(){
-		
-	}//end class
-	
-	function commandInterpreter($command, $params){
-		
-		if($command="phpUploadFile"){
-			return $this->phpFileUpload($params);
-		}
-		else if($command="deleteDirectory"){
-			return $this->deleteDirectory($params);
-		}
-	
-	
-	}//end commandInterpreter
-	
-	
+	/**
+	 * @todo figure out a point for this function. So do not use inthe eantime.
+	 */
 	public static function phpFileUpload($params){
 
 		$allow_upload=1;
@@ -90,7 +60,6 @@ class PVFileManager extends PVStaticObject {
 			echo "Upload destination required";
 		 }
 	 
-	 
 		 if($allow_upload==1){
 			 
 		 	if(move_uploaded_file($file_location, $upload_destination)) {
@@ -104,19 +73,27 @@ class PVFileManager extends PVStaticObject {
 	 	return NULL;
 	}//end upload file
 	
+	/**
+	 * Deletes an enitre directory on the server.
+	 * 
+	 * @param mixed $directory Can either be an array of directories or a single directory.
+	 * 
+	 * @return boolean $deleted
+	 * @access public
+	 */
 	public static function deleteDirectory($directory) {
 		
 		if(is_array($directory)){
-			foreach ($directory as &$value) {
+			foreach ($directory as $value) {
 	    		self::deleteDirectory($value);
 			}
 		}
 		 
 	    if (!file_exists($directory)){ 
-	    	return true; 
+	    	return false; 
 	    }
     	
-   		 if (!is_dir($directory) || is_link($directory)) {
+   		if (!is_dir($directory) || is_link($directory)) {
    		 	return unlink($directory); 
    		 }
    		 
@@ -132,17 +109,44 @@ class PVFileManager extends PVStaticObject {
         return rmdir($directory); 
     }//end deleteDirectory 
     
-    
-	public static function getFileSize_NTFS($file_name) {
-	    return exec("for %v in (\"".$file_name."\") do @echo %~zv");
+    /**
+	 * Returns the file size based on an NFTS file system.
+	 * 
+	 * @param string $file The location of the file to get the size of
+	 * 
+	 * @return boolean $size Returns the size of the file
+	 * @access public
+	 */
+	public static function getFileSize_NTFS($file) {
+	    return exec("for %v in (\"".$file."\") do @echo %~zv");
 	}
 	
-	
+	/**
+	 * Returns the file size using perl
+	 * 
+	 * @param string $file The location of the file to get the size of
+	 * 
+	 * @return boolean $size Returns the size of the file
+	 * @access public
+	 */
 	public static function getFileSize_PERL($filename) {
     	return exec(" perl -e 'printf \"%d\n\",(stat(shift))[7];' ".$filename."");
 	}
 	
-	
+	/**
+	 * Scans a directory and geths all the folders, files and subfolder and files in that
+	 * directory. Has a verbose mode that can give detailed information about the directory.
+	 * 
+	 * @param string $directory The directory to be scanned
+	 * @param array $options Options that can alter how the directory is scanned
+	 * 			-'verbose' _boolean_: Enabling this mode will return everything in array of arrays. The array will contain
+	 * 			more detailed information such as mime_type, extension, base name, etc. Default is false.
+	 * 			-'magic_file' _string_: If finfo is installed and verbose is set to true, use this option to specifiy the magic
+	 * 			file to use when getting the mime type of the file. Default is null
+	 * 
+	 * @return array $files An array of subdirectories and fules
+	 * @access public
+	 */
 	public static function getFilesInDirectory($directory, $options=array()){
 		$defaults=array('verbose'=>false);
 		$options += $defaults;
@@ -181,6 +185,18 @@ class PVFileManager extends PVStaticObject {
 		return $file_array;
 	}//end getFilesInDirectory
 	
+	/**
+	 * Get the mime type of a file. Function is designed to degrade to other options if finfo_open or
+	 * mime_content_type functions are not available.
+	 * 
+	 * @param string $file The name and location of the file
+	 * @param array $options Options that can alter how the mime type is found
+	 * 			-'magic_file' _string_: If finfo_open is installed, the magic file can be set for
+	 * 			retreiving the mime type. Default is null
+	 * 
+	 * @return string $mime_type The mime type of the file.
+	 * @access public
+	 */
 	public static function getFileMimeType($file, $options=array()){
 		$defaults = array('magic_file'=>null);
 		
@@ -191,7 +207,7 @@ class PVFileManager extends PVStaticObject {
 			$finfo = finfo_open(FILEINFO_MIME, $options['magic_file']);
 			$mime_type = finfo_file($finfo, $file);
 			finfo_close($finfo);
-		}else if(function_exists('finfo_open')) {
+		}else if(function_exists('mime_content_type')) {
 			$mime_type = mime_content_type ( $file);
 		} else {
 			ob_start();
@@ -205,25 +221,33 @@ class PVFileManager extends PVStaticObject {
 		return $mime_type;
 	}//end getFileMimeType
 	
-	
-	
-	public static function loadFile($filePath, $charSet, $mode){
+	/**
+	 * Loads a file's contents on disk into memory for reading.
+	 * 
+	 * @param string $file_path The location of the file
+	 * @param string $mode The mode to be used reading the file
+	 * @param string $encoding The encoding to convert the file to. Optional.
+	 * 
+	 * @return string $contents The contents read from the file
+	 * @access public
+	 */
+	public static function loadFile($filePath, $mode='r', $encoding=''){
 	    
-		$returnData= "";
+		$returnData= '';
 	
 		if (floatval(phpversion()) >= 4.3) {
 	        $returnData= file_get_contents($filePath);
 	    } else {
 	        if (!file_exists($filePath)){ 
-	        	return -3;
+	        	return false;
 	        }
 	        
 	        $handler = fopen($filePath, $mode);
 	        if (!$handler){ 
-	        	return -2;
+	        	return false;
 	        }
 	
-	        $returnData= "";
+	        $returnData= '';
 	        while(!feof($handler)){
 	            $returnData.= fread($handler, filesize($filePath));
 	        }//end  while
@@ -231,82 +255,92 @@ class PVFileManager extends PVStaticObject {
 	        fclose($handler);
 	    }//end else
 	    
-	   // if ($sEncoding = mb_detect_encoding($sData, 'auto', true) != $sCharset){
-	       // $returnData= mb_convert_encoding($sData, $sCharset, $sEncoding);
-	    //}
+	    if (!empty($encoding) && $current_encoding = mb_detect_encoding($returnData, 'auto', true) != $encoding){
+	       $returnData= mb_convert_encoding($returnData, $encoding, $current_encoding);
+	    }
 	    
-	        return $returnData;
+	    return $returnData;
 	}//end load file
 	
-	public static function writeFile($filePath, $mode, $content, $encoding){
+	/**
+	 * Write contents to a file on the server.
+	 * 
+	 * @param string $file_path The path to the file that will be writteen out too
+	 * @param string $content The content to be written to the file
+	 * @param string $mode The mode to be used when writing the file. Default is 'w'.
+	 * @param string $encoding An encoding to be used when writing the file. Optional.
+	 * 
+	 * @return boolean $written Returns true if the file was written, otherwise false
+	 * @access public
+	 */
+	public static function writeFile($filePath, $content, $mode='w', $encoding=''){
+		
+		if (!empty($encoding) && $current_encoding = mb_detect_encoding($content, 'auto', true) != $encoding){
+			$content= mb_convert_encoding($content, $encoding, $current_encoding);
+	    }
 	
-			 if (!$handle = fopen($filePath, $mode)) {
-		         return -2;
-		    }
-		
-		    // Write $somecontent to our opened file.
-		    if (fwrite($handle, $content) === FALSE) {
-		      	return -3;
-		    }
-		
-		    fclose($handle);
-		    
-		    return 1;
-		
-		
-	
-	
-	}//end writeFile
-	
-	
-	public static function writeNewFile($filePath, $mode, $content, $encoding){
-	
-		if(!file_exists($filePath)) {
-		
-		    if (!$handle = fopen($filePath, $mode)) {
-		         return -2;
-		    }
-		
-		    // Write $somecontent to our opened file.
-		    if (fwrite($handle, $content) === FALSE) {
-		      	return -3;
-		    }
-		
-		    fclose($handle);
-		    
-		    return 1;
-		
-		} else {
-		    return -4;
+		if (!$handle = fopen($filePath, $mode)) {
+			return FALSE;
 		}
 	
-	
-	}//end writeFile
-	
-	public static function rewriteNewFile($filePath, $mode, $content, $encoding){
-	
-		if(file_exists($filePath)) {
-		
-		    if (!$handle = fopen($filePath, $mode)) {
-		         return -2;
-		    }
-		
-		    // Write $somecontent to our opened file.
-		    if (fwrite($handle, $content) === FALSE) {
-		      	return -3;
-		    }
-		
-		    fclose($handle);
-		    
-		    return 1;
-		
-		} else {
-		    return -4;
+		if (fwrite($handle, $content) === FALSE) {
+			return FALSE;
 		}
-	
-	
+		
+		fclose($handle);
+		return TRUE;
 	}//end writeFile
 	
+	
+	/**
+	 * Write contents to a file on the server only if the file does NOT already exist
+	 * 
+	 * @param string $file_path The path to the file that will be writteen out too
+	 * @param string $content The content to be written to the file
+	 * @param string $mode The mode to be used when writing the file. Default is 'w'.
+	 * @param string $encoding An encoding to be used when writing the file. Optional.
+	 * 
+	 * @return boolean $written Returns true if the file was written, otherwise false
+	 * @access public
+	 * @todo Defaults for mode, content and encoding, Add a way for encoding file.
+	 */
+	public static function writeNewFile($filePath, $content, $mode='w', $encoding=''){
+	
+		if(file_exists($filePath))
+			return false;
+		
+		return self::writeFile($filePath, $mode, $content, $encoding);
+	}//end writeFile
+	
+	/**
+	 * Write contents to a file on the server only if the file does exist
+	 * 
+	 * @param string $file_path The path to the file that will be writteen out too
+	 * @param string $content The content to be written to the file
+	 * @param string $mode The mode to be used when writing the file. Default is 'w'.
+	 * @param string $encoding An encoding to be used when writing the file. Optional.
+	 * 
+	 * @return boolean $written Returns true if the file was written, otherwise false
+	 * @access public
+	 * @todo Defaults for mode, content and encoding, Add a way for encoding file.
+	 */
+	public static function rewriteNewFile($filePath, $content, $mode='w', $encoding=''){
+	
+		if(!file_exists($filePath))
+			return false;
+		
+		return self::writeFile($filePath, $mode, $content, $encoding); 
+	}//end writeFile
+	
+	/**
+	 * Copy a file to another location
+	 * 
+	 * @param string $current_file The location of the current file to be copied
+	 * @param string $new_file The location of the new file to be copied
+	 * 
+	 * @return boolean $copied Returns true if the file was succesfully copied
+	 * @access public
+	 */
 	public static function copyFile($currentFile, $newFile){
 		if(is_dir($currentFile)){
 			return false;
@@ -319,30 +353,26 @@ class PVFileManager extends PVStaticObject {
 		if( copy ( $currentFile  , $newFile )){
 			return true;
 		}
-		else{
-			return false;
-		}
+		
+		return false;
+		
 	}//end copyFile
 	
+	/**
+	 * Copy a file to another location only if the file DOES NOT exist
+	 * 
+	 * @param string $current_file The location of the current file to be copied
+	 * @param string $new_file The location of the new file to be copied
+	 * 
+	 * @return boolean $copied Returns true if the file was succesfully copied
+	 * @access public
+	 */
 	public static function copyNewFile($currentFile, $newFile){
-		if(is_dir($currentFile)){
-			return false;
-		}
 		
-		if(!file_exists($currentFile)){
+		if(file_exists($currentFile))
 			return false;
-		}
 		
-		if(file_exists($newFile)){
-			return false;
-		}
-		
-		if( copy ( $currentFile  , $newFile )){
-			return true;
-		}
-		else{
-			return false;
-		}
+		return self::copyFile($currentFile, $newFile);
 	}//end copyFile
 	
 	public static function copyDirectory($currentDirectory, $newDirectory){
@@ -394,6 +424,9 @@ class PVFileManager extends PVStaticObject {
 		}//end else
 	}//end copyEnity
 	
+	/**
+	 * Copies a file from a url.
+	 */
 	public static function copyFileFromUrl($url, $destination, $filename=''){
 		@$file = fopen ($url, "rb");
 		
@@ -471,6 +504,14 @@ class PVFileManager extends PVStaticObject {
 	
 	}// end upload Image
 	
+	/**
+	 * Returns the file that was last modified with a directory.
+	 * 
+	 * @param string $directory The directory to search through when looking for the file
+	 * 
+	 * @return string $file The file that was modified in that directory
+	 * @access public
+	 */
 	public static function getLastestFileInDirectory($dir){
 		
 		$lastMod = 0;
@@ -480,14 +521,20 @@ class PVFileManager extends PVStaticObject {
 			if (is_file($dir.$entry) && filectime($dir.$entry) > $lastmod) {
 				$lastMod = filectime($dir.$entry);
 				$lastModFile = $entry;
-				
 			}
-		}
+		}//end foreach
 		
 		return $lastModFile;
-		
 	}//end get_lastest_file_in_directory
 	
+	/**
+	 * Delete's a file if the file exist.
+	 * 
+	 * @param string $file The location of the file to be deleted
+	 * 
+	 * @return boolean $deleted Returns true if the file was successfully deleted. Otherwise false.
+	 * @access public
+	 */
 	public static function deleteFile($file){
 		if(file_exists($file) && !is_dir($file)){
 			return unlink($file);
@@ -496,6 +543,9 @@ class PVFileManager extends PVStaticObject {
 		return false;
 	}
 	
+	/**
+	 * 
+	 */
 	public static function copyNewEntity($source, $target, $chmod=0777, $recursive=false){
 		copy ( $currentDirectory  , $newDirectory  );
 	}
@@ -505,15 +555,5 @@ class PVFileManager extends PVStaticObject {
 
 		return $path;
 	}
-	
-	public static function getVersion(){
-		return self::$version;
-	}
-	
-	public static function getUniqueName(){
-		return self::$uniqueName;
-	}//end get
-	
-
 }//end class
 ?>
