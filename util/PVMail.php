@@ -28,50 +28,65 @@
 */
 class PVMail extends PVStaticObject {
 	
-	var $version=0.8;
-	var $uniqueName="pv_mail_system";
-	
-	function PVMailingSystem(){
-		
-	}//end constuctor
-	
-	//Call This Function directly
-	//Will interpret how to correctly send emails
-	public static function sendEmail($reciever, $sender,$subject, $message, $carboncopy, $blindcopy, $html_email, $file='' ){
+	/**
+	 * Sends an email to a location. The is function uses the optionsset in the configuration file for determing how the
+	 * email will be sent.
+	 * 
+	 * @param array $args Arguements that define how the email be will be sent
+	 * 		-'receiver' _string_: The email address of the user that will recieve the email
+	 * 		-'sender' _string_: The email address of the user that sent the email
+	 * 		-'subject' _string_: The subject of the email that is being sent
+	 * 		-'message' _string_: The message in the email
+	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too
+	 * 		-'blindcopy' _string_: Email address to send a blind copy too
+	 * 		-'file' _string_: The location of a file to be attached to the email
+	 * 
+	 * @return void
+	 * @access public		
+	 */
+	public static function sendEmail($args=array() ){
 		
 		$config=pv_getSiteEmailConfiguration();
 		if($config['mailer']=='smtp'){
-			self::sendEMailSMTP($reciever);
+			self::sendEMailSMTP($args);
 		}
 		else{
-			self::sendEmailPHP($reciever, $sender,$subject, $message, $carboncopy, $blindcopy, $html_email, $file='');
+			self::sendEmailPHP($args );
 		}
 	}
 	
 	
-	//Do not call directly
-	public static function sendEmailPHP($reciever, $sender,$subject, $message, $carboncopy, $blindcopy, $html_email, $file=''){
+	/**
+	 * Sends an email to a location. The is function uses the optionsset in the configuration file for determing how the
+	 * email will be sent.
+	 * 
+	 * @param array $args Arguements that define how the email be will be sent
+	 * 		-'receiver' _string_: The email address of the user that will recieve the email
+	 * 		-'sender' _string_: The email address of the user that sent the email
+	 * 		-'subject' _string_: The subject of the email that is being sent
+	 * 		-'message' _string_: The message in the email
+	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too
+	 * 		-'blindcopy' _string_: Email address to send a blind copy too
+	 * 		-'file' _string_: The location of a file to be attached to the email
+	 * 
+	 * @return void
+	 * @access public		
+	 */
+	public static function sendEmailPHP($args=array()){
 		
-		if(is_array($reciever)){
-			$to=$reciever['receiver'];
-			$subject=$reciever['subject'];
-			$sender=$reciever['sender'];
-			$message=$reciever['message'];
-			$carboncopy=$reciever['carboncopy'];
-			$blindcopy=$reciever['blindcopy'];
-			$file=$reciever['file'];
-			$text_message=$reciever['text_message'];
-			$html_message=$reciever['html_message'];
+		$args += self::getEmailDefaults();
+		
+		$to = $args['receiver'];
+		$subject = $args['subject'];
+		$sender = $args['sender'];
+		$message = $args['message'];
+		$carboncopy = $args['carboncopy'];
+		$blindcopy = $args['blindcopy'];
+		$file = $args['file'];
+		$text_message = $args['text_message'];
+		$html_message = $args['html_message'];
 			
-		}
-		else{
-			$to = $reciever;		
-		}
-		
-
-
 		$section_seperator = md5(date('r', time()));
-		
 		$headers = "From: $sender\r\nReply-To: $sender";
 		
 		if(!empty($carboncopy)){
@@ -81,13 +96,11 @@ class PVMail extends PVStaticObject {
 			$headers .= "\r\nBcc: $blindcopy";
 		}
 		
-		
-		
 		$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$section_seperator."\"";
 		
-		if(!empty($file)){
-			$attachment = chunk_split(base64_encode(file_get_contents($file)));
-			$filename=basename($file);
+		if(!empty($attachment)){
+			$attach = chunk_split(base64_encode(file_get_contents($attachment)));
+			$filename=basename($attachment);
 		}
 		
 		ob_start(); 
@@ -102,10 +115,9 @@ Content-Transfer-Encoding: 7bit
 <?php 
 
 if(empty($text_message)){
-		echo strip_tags($message);
-}
-else{
-		echo $text_message;
+	echo strip_tags($message);
+} else {
+	echo $text_message;
 }
 ?>
 
@@ -115,10 +127,9 @@ Content-Transfer-Encoding: 7bit
 
 <?php
 if(empty($html_message)){
-		echo $message;
-}
-else{
-		echo $html_message;
+	echo $message;
+} else {
+	echo $html_message;
 }
 
 ?>
@@ -139,17 +150,37 @@ Content-Disposition: attachment
 <?php
 
 		$message = ob_get_clean();
-		
-		
 		mail( $to, $subject, $message, $headers );
 
-
-	
 	}//end mailSingleUser
 	
-	public static function sendEMailSMTP($args){
+	/**
+	 * Sends an email to a location. The is function uses the optionsset in the configuration file for determing how the
+	 * email will be sent.
+	 * 
+	 * @param array $args Arguements that define how the email be will be sent
+	 * 		-'receiver' _string_: The email address of the user that will recieve the email
+	 * 		-'sender' _string_: The email address of the user that sent the email
+	 * 		-'subject' _string_: The subject of the email that is being sent
+	 * 		-'message' _string_: The message in the email
+	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too
+	 * 		-'blindcopy' _string_: Email address to send a blind copy too
+	 * 		-'attachment' _string_: The location of a file to be attached to the email
+	 * 		-'smtp_username' _string_: The user name for the host
+	 * 		-'smtp_password' _string_: The password for the smtp user
+	 * 		-'smtp_host' _string_: The hast the SMTP resides at
+	 * 		-'smtp_port' _string_: The port used to access the SMTP.
+	 * 
+	 * @return void
+	 * @access public
+	 * @todo allow for multiple attachments		
+	 */
+	public static function sendEMailSMTP($args = array()){
 	 	
+		$args += self::getEmailDefaults();
+		
 		if(is_array($args)){
+			
 			extract($args);
 			
 			$config=pv_getSiteEmailConfiguration();
@@ -211,36 +242,39 @@ Content-Disposition: attachment
 			else{
 				$html= $html_message;
 			}
-		
-			
-			$html = $message;
 			
 			$mime = new Mail_mime("\n");
 			$mime->setTXTBody($text);
 			$mime->setHTMLBody($html);
-			if(!empty($file)){
-				$mime->addAttachment($file, 'application/zip');
+			if(!empty($attachment)){
+				$mime->addAttachment($attachment, PVFileManager::getFileMimeType($attachment));
 			}
 			
 			$body = $mime->get();
 			$headers = $mime->headers($headers);
 			
 			$smtp = Mail::factory('smtp', $stmp_info);
-			
-			
-	
 			$mail = $smtp->send($receiver, $headers, $body);
 		}
 	
 	}//end sendEmailPHPSMTP
 	
-	function getVersion(){
-		return $this->version;
+	private static function getEmailDefaults() {
+		$defaults=array(
+			'receiver'=>'',
+			'sender'=>'',
+			'carboncopy'=>'',
+			'blindcopy'=>'',
+			'reply_to'=>'',
+			'attachment'=>'',
+			'attachment_name'=>'',
+			'message'=>'',
+			'html_message'=>'',
+			'text_message'=>''
+		);
+		
+		return $defaults;
 	}
-	
-	function getUniqueName(){
-		return $this->uniqueName;
-	}//end get
 	
 	
 	
