@@ -30,10 +30,14 @@ class PVValidator extends PVStaticObject {
 	
 	private static $rules;
 	
-	function PVValidator(){
 	
-	}
-	
+	/**
+	 * Initializes PVValidators and sets the default for checking rules. The defaults allows the function
+	 * PVValidator::check() to function propery.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	function init(){
 		self::$rules=array();
 		
@@ -110,10 +114,26 @@ class PVValidator extends PVStaticObject {
 
 	}
 	
-	public static function addRule($rule, $option){
-			self::$rules[$rule]=$option;	
+	/**
+	 * Add a rule to the validator or modify a current one with the name name. Checks can either be closures(PHP 5.3)
+	 * or preg_match, or calls to other function.
+	 * 
+	 * @param string $rule The name of the rule
+	 * @param array $options Options that define the rule
+	 */
+	public static function addRule($rule, $options=array()){
+			self::$rules[$rule]=$options;	
 	}
 	
+	/**
+	 * Checks a value passed to a rule if the rule exist. If there is no rule, true will be returned.
+	 * 
+	 * @param string $rule The name of the rule to check against
+	 * @param array $value The value to check against the rule
+	 * 
+	 * @return The return value of the rule
+	 * @access public
+	 */
 	public static function check($rule, $value){
 		if(!isset(self::$rules[$rule])){
 			return true;
@@ -129,7 +149,14 @@ class PVValidator extends PVStaticObject {
 		
 	}//end check
 	
-	
+	/**
+	 * Checks if a value passed is of type int or an integer.
+	 * 
+	 * @param mixed $int The value to check if it is an integer
+	 * 
+	 * @return boolean $valid Returns true if the value is an integer, otherwise false
+	 * @access public
+	 */
 	public static function isInteger($int){
 	 
         if(is_numeric($int) === TRUE){
@@ -140,7 +167,14 @@ class PVValidator extends PVStaticObject {
         return 0;
     }//end isInteger
     
-    
+    /**
+	 * Checks if a value passed is of type int or an integer.
+	 * 
+	 * @param mixed $int The value to check if it is an integer
+	 * 
+	 * @return boolean $valid Returns true if the value is an integer, otherwise false
+	 * @access public
+	 */
     public static function isDouble($double){
 	 
         if(is_numeric($double) === TRUE){
@@ -151,6 +185,14 @@ class PVValidator extends PVStaticObject {
         return 0;
     }//end isInteger
     
+    /**
+	 * Checks if a value passed is of type an ID. ID's are numeric are in the format of a MongoID
+	 * 
+	 * @param mixed $id The value to check if it is an id
+	 * 
+	 * @return boolean $valid Returns true if the value is an id, otherwise false
+	 * @access public
+	 */
     public static function isID($id){
     	if(self::isInteger($id) || preg_match ( '{[0-9a-f]{24}}' ,$id )){
     		return 1;
@@ -159,6 +201,14 @@ class PVValidator extends PVStaticObject {
 		return 0;
     }
     
+	/**
+	 * Checks if a value passed has an audio mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is an audio mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is an audio mime type, otherwise false
+	 * @access public
+	 */
     public static function isAudioFile($mimetype){
     	$audio_types = array ('audio/basic', 'audio/midi', 'audio/mpeg', 'audio/x-aiff', 'audio/x-mpegurl', 'audio/x-pn-realaudio', 'audio/x-realaudio', 'audio/x-wav');
 		
@@ -168,6 +218,14 @@ class PVValidator extends PVStaticObject {
     	return 0;
     }//end isAudioFile
     
+    /**
+	 * Checks if a value passed has a midi mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a midi mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a midi mime type, otherwise false
+	 * @access public
+	 */
     public static function isMidiFile($mimetype){
     	if($mimetype=='audio/midi'){
     		return 1;
@@ -175,6 +233,14 @@ class PVValidator extends PVStaticObject {
     	return 0;
     }//end isMidiFile
     
+    /**
+	 * Checks if a value passed has a mpeg audio mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a mpeg audio mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a mpeg audio mime type, otherwise false
+	 * @access public
+	 */
     public static function isMpegAudioFile($mimetype){
     	if($mimetype=='audio/mpeg' || $mimetype=='audio/mp3'){
     		return 1;
@@ -182,13 +248,29 @@ class PVValidator extends PVStaticObject {
     	return 0;
     }//end isMidiFile
     
-     public static function isAiffFile($mimetype){
+    /**
+	 * Checks if a value passed has a aiff audio mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a aiff audio mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a aiff audio mime type, otherwise false
+	 * @access public
+	 */
+    public static function isAiffFile($mimetype){
     	if($mimetype=='audio/x-aiff'){
     		return 1;
     	}
     	return 0;
     }//end isMidiFile
     
+    /**
+	 * Checks if a value passed has a wav audio mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a wav audio mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a wav audio mime type, otherwise false
+	 * @access public
+	 */
     public static function isWavFile($mimetype){
     	if($mimetype=='audio/x-wav'){
     		return 1;
@@ -196,6 +278,14 @@ class PVValidator extends PVStaticObject {
     	return 0;
     }//end isMidiFile
     
+     /**
+	 * Checks if a value passed has a real audio mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a real audio mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a real audio mime type, otherwise false
+	 * @access public
+	 */
     public static function isRealAudioFile($mimetype){
     	if($mimetype=='audio/x-realaudio'){
     		return 1;
@@ -203,6 +293,14 @@ class PVValidator extends PVStaticObject {
     	return 0;
     }//end isMidiFile
     
+     /**
+	 * Checks if a value passed has a ogg audio mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a ogg audio mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a ogg audio mime type, otherwise false
+	 * @access public
+	 */
     public static function isOGGAudioFile($mimetype){
     	if($mimetype=='audio/ogg' || $mimetype=='application/ogg' ){
     		return 1;
@@ -211,11 +309,14 @@ class PVValidator extends PVStaticObject {
     }//end isMidiFile
     
     
-    /*Image Types Section
-     * 
-     * 
-     */
-    
+     /**
+	 * Checks if a value passed has an imagemime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is an image mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is an image mime type, otherwise false
+	 * @access public
+	 */
     public static function isImageFile($mimetype){
 		$mimetype=trim($mimetype);
 		
@@ -227,6 +328,14 @@ class PVValidator extends PVStaticObject {
 		return 0;
     }//end isMidiFile
     
+    /**
+	 * Checks if a value passed has a bmp image mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a bmp image mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a bmp image mime type, otherwise false
+	 * @access public
+	 */
     public static function isBmpFile($mimetype){
     	if($mimetype=='image/bmp'){
     		return 1;
@@ -234,20 +343,44 @@ class PVValidator extends PVStaticObject {
 		return 0;
     }//end isMidiFile
     
-     public static function isGifFile($mimetype){
+    /**
+	 * Checks if a value passed has a gif image mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a gif image mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a gif image mime type, otherwise false
+	 * @access public
+	 */
+    public static function isGifFile($mimetype){
     	if($mimetype=='image/gif'){
     		return 1;
     	}
 		return 0;
     }//end isMidiFile
     
-     public static function isIefFile($mimetype){
+    /**
+	 * Checks if a value passed has a ief image mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a ief image mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a ief image mime type, otherwise false
+	 * @access public
+	 */
+    public static function isIefFile($mimetype){
     	if($mimetype=='image/ief'){
     		return 1;
     	}
 		return 0;
     }//end isMidiFile
     
+    /**
+	 * Checks if a value passed has a jpeg image mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a jpeg image mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a jpeg image mime type, otherwise false
+	 * @access public
+	 */
     public static function isJpegFile($mimetype){
     	if($mimetype=='image/jpeg' || $mimetype=='image/pjpeg' ){
     		return 1;
@@ -255,6 +388,14 @@ class PVValidator extends PVStaticObject {
 		return 0;
     }//end isMidiFile
     
+    /**
+	 * Checks if a value passed has a png image mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a png image mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a png image mime type, otherwise false
+	 * @access public
+	 */
     public static function isPngFile($mimetype){
     	if($mimetype=='image/png' || $mimetype=='image/x-png' ){
     		return 1;
@@ -262,6 +403,14 @@ class PVValidator extends PVStaticObject {
 		return 0;
     }//end isMidiFile
     
+    /**
+	 * Checks if a value passed has a tiff image mime type. 
+	 * 
+	 * @param mixed $mimetype The value to check if it is a tiff image mime type
+	 * 
+	 * @return boolean $valid Returns true if the value is a tiff image mime type, otherwise false
+	 * @access public
+	 */
     public static function isTiffFile($mimetype){
     	if($mimetype=='image/tiff'){
     		return 1;
