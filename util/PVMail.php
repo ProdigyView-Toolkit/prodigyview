@@ -44,7 +44,12 @@ class PVMail extends PVStaticObject {
 	 * @return void
 	 * @access public		
 	 */
-	public static function sendEmail($args=array() ){
+	public static function sendEmail($args=array() ) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
 		$config=pv_getSiteEmailConfiguration();
 		if($config['mailer']=='smtp'){
@@ -53,6 +58,8 @@ class PVMail extends PVStaticObject {
 		else{
 			self::sendEmailPHP($args );
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}
 	
 	
@@ -72,9 +79,13 @@ class PVMail extends PVStaticObject {
 	 * @return void
 	 * @access public		
 	 */
-	public static function sendEmailPHP($args=array()){
+	public static function sendEmailPHP($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$args += self::getEmailDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
 		$to = $args['receiver'];
 		$subject = $args['subject'];
@@ -151,6 +162,7 @@ Content-Disposition: attachment
 
 		$message = ob_get_clean();
 		mail( $to, $subject, $message, $headers );
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 
 	}//end mailSingleUser
 	
@@ -175,9 +187,13 @@ Content-Disposition: attachment
 	 * @access public
 	 * @todo allow for multiple attachments		
 	 */
-	public static function sendEMailSMTP($args = array()){
+	public static function sendEMailSMTP($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 	 	
 		$args += self::getEmailDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
 		if(is_array($args)){
 			
@@ -212,11 +228,11 @@ Content-Disposition: attachment
             	'password' => $smtp_password
 			);
 			
-			  $headers = array (
+			$headers = array (
 				'From' => $sender,
           		'To' => $receiver,
           		'Subject' => $subject
-				);
+			);
 			  
 			
 			if(!empty($args['carboncopy'])){
@@ -230,16 +246,13 @@ Content-Disposition: attachment
 		
 			if(empty($text_message)){
 				$text = strip_tags($message);
-			}
-			else{
+			} else {
 				$text = $text_message;
 			}
 			
-			
 			if(empty($html_message)){
 				$html = $message;
-			}
-			else{
+			} else {
 				$html= $html_message;
 			}
 			
@@ -247,7 +260,14 @@ Content-Disposition: attachment
 			$mime->setTXTBody($text);
 			$mime->setHTMLBody($html);
 			if(!empty($attachment)){
-				$mime->addAttachment($attachment, PVFileManager::getFileMimeType($attachment));
+				if(is_array($attachment)) {
+					foreach($attachment as $file) {
+						if(file_exists($file))
+							$mime->addAttachment($file , PVFileManager::getFileMimeType($file));
+					}//end foreach
+				} else {
+					$mime->addAttachment($attachment, PVFileManager::getFileMimeType($attachment));
+				}
 			}
 			
 			$body = $mime->get();
@@ -255,6 +275,7 @@ Content-Disposition: attachment
 			
 			$smtp = Mail::factory('smtp', $stmp_info);
 			$mail = $smtp->send($receiver, $headers, $body);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 		}
 	
 	}//end sendEmailPHPSMTP
@@ -276,9 +297,5 @@ Content-Disposition: attachment
 		return $defaults;
 	}
 	
-	
-	
 }//end class
-
-//sendEmailPHP("devin.dixon22@gmail.com", "contact@prtrack.net", "Test Email", "Just testing", 'dsd7872@uncw.edu', 'devin.dixon@my-lan.us');
 ?>
