@@ -83,6 +83,11 @@ class PVFileManager extends PVStaticObject {
 	 */
 	public static function deleteDirectory($directory) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $directory);
+		
+		$directory = self::_applyFilter( get_class(), __FUNCTION__ , $directory, array('event'=>'args'));
+		
 		if(is_array($directory)){
 			foreach ($directory as $value) {
 	    		self::deleteDirectory($value);
@@ -118,7 +123,15 @@ class PVFileManager extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getFileSize_NTFS($file) {
-	    return exec("for %v in (\"".$file."\") do @echo %~zv");
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $file);
+		
+		$file = self::_applyFilter( get_class(), __FUNCTION__ , $file, array('event'=>'args'));
+	    $size = exec("for %v in (\"".$file."\") do @echo %~zv");
+		$size = self::_applyFilter( get_class(), __FUNCTION__ , $size, array('event'=>'return'));
+		
+		return $size;
 	}
 	
 	/**
@@ -129,8 +142,16 @@ class PVFileManager extends PVStaticObject {
 	 * @return boolean $size Returns the size of the file
 	 * @access public
 	 */
-	public static function getFileSize_PERL($filename) {
-    	return exec(" perl -e 'printf \"%d\n\",(stat(shift))[7];' ".$filename."");
+	public static function getFileSize_PERL($file) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $file);
+		
+		$file = self::_applyFilter( get_class(), __FUNCTION__ , $file, array('event'=>'args'));
+    	$size = exec(" perl -e 'printf \"%d\n\",(stat(shift))[7];' ".$file."");
+		$size = self::_applyFilter( get_class(), __FUNCTION__ , $size, array('event'=>'return'));
+		
+		return $size;
 	}
 	
 	/**
@@ -148,8 +169,16 @@ class PVFileManager extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getFilesInDirectory($directory, $options=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $directory, $options);
+		
 		$defaults=array('verbose'=>false);
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('directory'=>$directory, 'options'=>$options), array('event'=>'args'));
+		$directory = $filtered['directory'];
+		$options = $filtered['options'];
 		
 		if(!is_dir($directory)){
 			return NULL;
@@ -182,6 +211,8 @@ class PVFileManager extends PVStaticObject {
 			}
 		}//end while
 		
+		$file_array = self::_applyFilter( get_class(), __FUNCTION__ , $file_array, array('event'=>'return'));
+		
 		return $file_array;
 	}//end getFilesInDirectory
 	
@@ -197,14 +228,22 @@ class PVFileManager extends PVStaticObject {
 	 * @return string $mime_type The mime type of the file.
 	 * @access public
 	 */
-	public static function getFileMimeType($file, $options=array()){
+	public static function getFileMimeType($file, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $file, $options);
+		
 		$defaults = array('magic_file'=>null);
 		
 		$options += $defaults;
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('file'=>$file, 'options'=>$options), array('event'=>'args'));
+		$file = $filtered['file'];
+		$options = $filtered['options'];
+		
 		$mime_type='application/unknown';
 		
 		if(function_exists('finfo_open')) {
-			$finfo = finfo_open(FILEINFO_MIME, $options['magic_file']);
+			$finfo = finfo_open(FILEINFO_MIME_TYPE, $options['magic_file']);
 			$mime_type = finfo_file($finfo, $file);
 			finfo_close($finfo);
 		}else if(function_exists('mime_content_type')) {
@@ -218,38 +257,48 @@ class PVFileManager extends PVStaticObject {
         		$mime_type= $buffer[0];
 		}
 		
+		$mime_type = self::_applyFilter( get_class(), __FUNCTION__ , $mime_type, array('event'=>'return'));
+		
 		return $mime_type;
 	}//end getFileMimeType
 	
 	/**
-	 * Loads a file's contents on disk into memory for reading.
+	 * Read a file's contents on disk into a string.
 	 * 
-	 * @param string $file_path The location of the file
+	 * @param string $file The location of the file
 	 * @param string $mode The mode to be used reading the file
 	 * @param string $encoding The encoding to convert the file to. Optional.
 	 * 
 	 * @return string $contents The contents read from the file
 	 * @access public
 	 */
-	public static function loadFile($filePath, $mode='r', $encoding=''){
+	public static function readFile($file, $mode='r', $encoding='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $file, $mode, $encoding);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('file'=>$file, 'mode'=>$mode, 'encoding'=>$encoding), array('event'=>'args'));
+		$file = $filtered['file'];
+		$mode = $filtered['mode'];
+		$encoding = $filtered['encoding'];
 	    
 		$returnData= '';
 	
 		if (floatval(phpversion()) >= 4.3) {
-	        $returnData= file_get_contents($filePath);
+	        $returnData= file_get_contents($file);
 	    } else {
-	        if (!file_exists($filePath)){ 
+	        if (!file_exists($file)){ 
 	        	return false;
 	        }
 	        
-	        $handler = fopen($filePath, $mode);
+	        $handler = fopen($file, $mode);
 	        if (!$handler){ 
 	        	return false;
 	        }
 	
 	        $returnData= '';
 	        while(!feof($handler)){
-	            $returnData.= fread($handler, filesize($filePath));
+	            $returnData.= fread($handler, filesize($file));
 	        }//end  while
 	        
 	        fclose($handler);
@@ -265,7 +314,7 @@ class PVFileManager extends PVStaticObject {
 	/**
 	 * Write contents to a file on the server.
 	 * 
-	 * @param string $file_path The path to the file that will be writteen out too
+	 * @param string $file The path to the file that will be writteen out too
 	 * @param string $content The content to be written to the file
 	 * @param string $mode The mode to be used when writing the file. Default is 'w'.
 	 * @param string $encoding An encoding to be used when writing the file. Optional.
@@ -273,13 +322,22 @@ class PVFileManager extends PVStaticObject {
 	 * @return boolean $written Returns true if the file was written, otherwise false
 	 * @access public
 	 */
-	public static function writeFile($filePath, $content, $mode='w', $encoding=''){
+	public static function writeFile($file, $content, $mode='w', $encoding='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('file'=>$file, 'mode'=>$mode, 'encoding'=>$encoding, 'content'=>$content), array('event'=>'args'));
+		$file = $filtered['file'];
+		$mode = $filtered['mode'];
+		$encoding = $filtered['encoding'];
+		$content = $filtered['content'];
 		
 		if (!empty($encoding) && $current_encoding = mb_detect_encoding($content, 'auto', true) != $encoding){
 			$content= mb_convert_encoding($content, $encoding, $current_encoding);
 	    }
 	
-		if (!$handle = fopen($filePath, $mode)) {
+		if (!$handle = fopen($file, $mode)) {
 			return FALSE;
 		}
 	
@@ -304,12 +362,22 @@ class PVFileManager extends PVStaticObject {
 	 * @access public
 	 * @todo Defaults for mode, content and encoding, Add a way for encoding file.
 	 */
-	public static function writeNewFile($filePath, $content, $mode='w', $encoding=''){
-	
-		if(file_exists($filePath))
-			return false;
+	public static function writeNewFile($file, $content, $mode='w', $encoding='') {
 		
-		return self::writeFile($filePath, $mode, $content, $encoding);
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('file'=>$file, 'mode'=>$mode, 'encoding'=>$encoding, 'content'=>$content), array('event'=>'args'));
+		$file = $filtered['file'];
+		$mode = $filtered['mode'];
+		$encoding = $filtered['encoding'];
+		$content = $filtered['content'];
+		
+	
+		if(file_exists($file))
+			return false;
+				
+		return self::writeFile($file, $mode, $content, $encoding);
 	}//end writeFile
 	
 	/**
@@ -322,14 +390,22 @@ class PVFileManager extends PVStaticObject {
 	 * 
 	 * @return boolean $written Returns true if the file was written, otherwise false
 	 * @access public
-	 * @todo Defaults for mode, content and encoding, Add a way for encoding file.
 	 */
-	public static function rewriteNewFile($filePath, $content, $mode='w', $encoding=''){
+	public static function rewriteNewFile($file, $content, $mode='w', $encoding=''){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('file'=>$file, 'mode'=>$mode, 'encoding'=>$encoding, 'content'=>$content), array('event'=>'args'));
+		$file = $filtered['file'];
+		$mode = $filtered['mode'];
+		$encoding = $filtered['encoding'];
+		$content = $filtered['content'];
 	
-		if(!file_exists($filePath))
+		if(!file_exists($file))
 			return false;
 		
-		return self::writeFile($filePath, $mode, $content, $encoding); 
+		return self::writeFile($file, $mode, $content, $encoding); 
 	}//end writeFile
 	
 	/**
@@ -341,7 +417,15 @@ class PVFileManager extends PVStaticObject {
 	 * @return boolean $copied Returns true if the file was succesfully copied
 	 * @access public
 	 */
-	public static function copyFile($currentFile, $newFile){
+	public static function copyFile($currentFile, $newFile) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $currentFile, $newFile);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('currentFile'=>$currentFile, 'newFile'=>$newFile), array('event'=>'args'));
+		$currentFile = $filtered['currentFile'];
+		$newFile = $filtered['newFile'];
+		
 		if(is_dir($currentFile)){
 			return false;
 		}
@@ -367,7 +451,14 @@ class PVFileManager extends PVStaticObject {
 	 * @return boolean $copied Returns true if the file was succesfully copied
 	 * @access public
 	 */
-	public static function copyNewFile($currentFile, $newFile){
+	public static function copyNewFile($currentFile, $newFile) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $currentFile, $newFile);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('currentFile'=>$currentFile, 'newFile'=>$newFile), array('event'=>'args'));
+		$currentFile = $filtered['currentFile'];
+		$newFile = $filtered['newFile'];
 		
 		if(file_exists($currentFile))
 			return false;
@@ -375,84 +466,127 @@ class PVFileManager extends PVStaticObject {
 		return self::copyFile($currentFile, $newFile);
 	}//end copyFile
 	
-	public static function copyDirectory($currentDirectory, $newDirectory){
-		copy ( $currentDirectory  , $newDirectory  );
-	}
-	
-	public static function copyNewDirectory($currentDirectory, $newDirectory){
-		copy ( $currentDirectory  , $newDirectory  );
-	}
-	
-	public static function copyEntity($source, $target, $chmod=0777, $recursive=false){
+	/**
+	 * Copy an entire directory from one location to another location.
+	 * 
+	 * @param string $oldDirectory The location of the old directory
+	 * @param string $newDirectory The location of the new directory
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function copyDirectory($oldDirectory, $newDirectory) {
 		
-		if ( is_dir( $source ) ) {
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $oldDirectory, $newDirectory);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('oldDirectory'=>$oldDirectory, 'newDirectory'=>$newDirectory), array('event'=>'args'));
+		$oldDirectory = $filtered['oldDirectory'];
+		$newDirectory = $filtered['newDirectory'];
+		
+		if ( is_dir( $oldDirectory ) ) {
 			
-			if(!file_exists($target)){
-				if(!mkdir( $target, $chmod, $recursive )){
-					return self::MKDIR_DENIED;
+			if(!file_exists($newDirectory)){
+				if(!mkdir( $newDirectory )){
+					return FALSE;
 				}//end if !mkdir
 			}
 			
-			$directory = dir( $source );
+			$directory = dir( $oldDirectory );
 			
 			while ( FALSE !== ( $entry = $directory->read() ) ) {
 				
 				if ( $entry == '.' || $entry == '..' ) {
 					continue;
-				}//end if ..
+				}//end if
 				
-				$subfolder = $source.DS.$entry; 
+				$subfolder = $oldDirectory.DS.$entry; 
 				
 				if ( is_dir( $subfolder ) ) {
-					self::copyEntity( $subfolder, $target.DS.$entry, $chmod,$recursive  );
+					self::copyDirectory( $subfolder, $newDirectory.DS.$entry );
 					continue;
 				}//end if subfolder is dir
 				
-				copy( $subfolder, $target .DS. $entry );
+				copy( $subfolder, $newDirectory .DS. $entry );
 			
 			}//end while
 	 
 			$directory->close();
 			
-		}else {
-			$target_dir=dirname($target);
+		} else {
+			$target_dir=dirname($newDirectory);
 			
 			if(!file_exists($target_dir)){
 				mkdir($target_dir);
 			}
-			copy( $source, $target );
+			copy( $oldDirectory , $newDirectory );
 		}//end else
-	}//end copyEnity
+	}
+	
+	public static function copyNewDirectory($oldDirectory, $newDirectory) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $oldDirectory, $newDirectory);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('oldDirectory'=>$oldDirectory, 'newDirectory'=>$newDirectory), array('event'=>'args'));
+		$oldDirectory = $filtered['oldDirectory'];
+		$newDirectory = $filtered['newDirectory'];
+		
+		if ( !is_dir( $oldDirectory ) || file_exists($oldDirectory) )
+			return false;
+		
+		self::copyDirectory($oldDirectory, $newDirectory);
+	}
 	
 	/**
-	 * Copies a file from a url.
+	 * Copy a file from a url to a destination on the server.
+	 * 
+	 * @param string $url The url in which the file to copy exist
+	 * @param string $destination The location the server to copy the file to
+	 * @param string $filename An optional name to assign the file
+	 * 
+	 * @return boolean $success Returns true if the file was succesfully copied
 	 */
-	public static function copyFileFromUrl($url, $destination, $filename=''){
-		@$file = fopen ($url, "rb");
+	public static function copyFileFromUrl($url, $destination, $filename='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url, $destination, $filename);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('url'=>$url, 'destination'=>$destination, 'filename'=>$filename), array('event'=>'args'));
+		$url = $filtered['url'];
+		$destination = $filtered['destination'];
+		$filename = $filtered['filename'];
+		
+		@$file = fopen ($url, 'rb');
 		
 		if (!$file || empty($destination)) {
-			return 0;
-		}
-		else {
+			return false;
+		} else {
 			
 			if(empty($filename)){
 				$filename = basename($url);
-			}//end if not empty
+			}
 			
 			$fc = fopen($destination."$filename", "wb");
 			
 			while (!feof ($file)) {
 			   $line=fread ($file, 1028);
 			   fwrite($fc,$line);
-			}//end while
+			}
 			
 			fclose($fc);
 			
-			return 1;
+			return true;
 		} //end else		
 	}//end copyfile From URL
 	
-	public static function uploadFileFromContent($content_id,  $file_name, $tmp_name, $file_size, $file_type){
+	/**
+	 * A function used in conjunction with the CMS too upload a file.
+	 */
+	public static function uploadFileFromContent($content_id, $file_name, $tmp_name, $file_size, $file_type) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $file_name, $tmp_name, $file_size, $file_type);
 		
 		$file_folder_url=PV_FILE;
 		$save_name="";
@@ -512,14 +646,17 @@ class PVFileManager extends PVStaticObject {
 	 * @return string $file The file that was modified in that directory
 	 * @access public
 	 */
-	public static function getLastestFileInDirectory($dir){
+	public static function getLastestFileInDirectory($directory) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $directory);
 		
 		$lastMod = 0;
 		$lastModFile = '';
 		
-		foreach (scandir($dir) as $entry) {
-			if (is_file($dir.$entry) && filectime($dir.$entry) > $lastmod) {
-				$lastMod = filectime($dir.$entry);
+		foreach (scandir($directory) as $entry) {
+			if (is_file($directory.$entry) && filectime($directory.$entry) > $lastmod) {
+				$lastMod = filectime($directory.$entry);
 				$lastModFile = $entry;
 			}
 		}//end foreach
@@ -535,7 +672,11 @@ class PVFileManager extends PVStaticObject {
 	 * @return boolean $deleted Returns true if the file was successfully deleted. Otherwise false.
 	 * @access public
 	 */
-	public static function deleteFile($file){
+	public static function deleteFile($file) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $file);
+		
 		if(file_exists($file) && !is_dir($file)){
 			return unlink($file);
 		}
@@ -543,17 +684,5 @@ class PVFileManager extends PVStaticObject {
 		return false;
 	}
 	
-	/**
-	 * 
-	 */
-	public static function copyNewEntity($source, $target, $chmod=0777, $recursive=false){
-		copy ( $currentDirectory  , $newDirectory  );
-	}
-	
-	public static function setDirectorySeperator($path){
-		$path=str_replace("/", DS, $path);
-
-		return $path;
-	}
 }//end class
 ?>
