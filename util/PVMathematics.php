@@ -29,14 +29,17 @@
 
 class PVMathematics extends PVStaticObject {
 	
-	
-	function PVMathematics(){
-		
-	}
-	
-	
-	/*****Time Functions*****/
-	
+	/**
+	 * Converts a given time into seconds.
+	 * 
+	 * @param int $days The number of days to convert
+	 * @param int $hours The number of hours to convert
+	 * @param int $minutes The number of minutes to convert
+	 * @param int $seconds The number of seconds to converts
+	 * 
+	 * @return int $seconds Returns the total number of seconds based upon passed arguements
+	 * @access public  
+	 */
 	public static function convertTimeIntoSeconds($days=0, $hours=0, $minutes=0, $seconds=0){
 		  
 		  $total_seconds=0;
@@ -46,15 +49,13 @@ class PVMathematics extends PVStaticObject {
 		  }
 		  else{
 			  $days=86400*$days;
-			 
 		  }
 		  
 		  if(empty($hours) || !PVValidator::isInteger($hours)){
 			  $hours=0;
 		  }
 		  else{
-			  $hours=3600*$hours;
-			 
+			  $hours=3600*$hours; 
 		  }
 		  
 		  if(empty($minutes) || !PVValidator::isInteger($minutes)){
@@ -64,8 +65,6 @@ class PVMathematics extends PVStaticObject {
 			  $minutes=60*$minutes;
 			 
 		  }
-		  
-		  
 		  
 		  if(empty($seconds) || !PVValidator::isInteger($seconds)){
 			  $seconds=0;
@@ -111,7 +110,6 @@ class PVMathematics extends PVStaticObject {
 		else if(strlen($hours)==1){
 			$hours='0'.$hours;	
 		}
-		
 		
 		if(empty($minutes)){
 			$minutes='00';	
