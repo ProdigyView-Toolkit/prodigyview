@@ -27,104 +27,23 @@
 *or implied, of ProdigyView LLC.
 */
 class PVTools extends PVStaticObject {
-	
-	public static function includeDirectory($path_to_directory){
-	
-		// Loop through directory, strip out . and ..
-		if ( $handle = opendir ( $path_to_directory ) ) {
-  			 while ( false !== ( $file = readdir ( $handle ) ) ) {
-       			if ( $file != "." && $file != ".." ) {
-           			// Include or require file here
-           			include_once( $path_to_directory.$file );
-       		}
-   		}
-   			closedir($handle);
-		}
-	}//end includeDirectory
-	
-	
-	/*
-	Converts a boolean, such as 1 to the number true
-	*/
-	public static function convertNumbericBoolean($boolean){
-		if($boolean==1){
-			return true;	
-		}
-		else if($boolean==0){
-			return false;	
-		}
-		
-	}//end convertNumbericBoolean
-	
-	
-	
-	/*
-	Converts the text true to 1 and
-	false to 0
-	*/
-	public static function convertTextBoolean($boolean){
-		if($boolean=="true"){
-			return 1;	
-		}
-		else if($boolean=="false"){
-			return "0";	
-		}
-		
-		return $boolean;
-	}//end convertTextBoolean
-	
-	
-	public static function createParameterArray($params){
-		$array=split("[:\n]", $params);
-		$count = count($array);
-		$paramarray=array();
-		
-		for ($i = 0; $i < $count; $i++) {
-			$name=$array[$i];
-			$paramarray[$name]=$array[$i+1];
-			$i=$i+1;
-			
-		}//end for
-		
-		return $paramarray;
-	
-	}//end createrParamterArray
-	
-	public static function xmlToArray($params){
-		$xml = simplexml_load_string($params);
-		return get_object_vars($xml);
-		
-	}
-	
-	/* Accepts a string with , and seperates it into an array*/
-	public static function splitCommaToArray($delimeter ,$string){
-		return split ($delimeter ,$string);
-	
-	}
-	
-	
-	public static function htmlEntitify($string){
-		return htmlentities($string, ENT_QUOTES, 'UTF-8');
-	}
-	
-	public static function urlEncode(){
-	
-		
-	}//end urlEncode
-	
-	
-	
     
-    //Change on final release
-	public static function generateRandomString($numOfChars = 15, $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'){
+    /**
+	 * Generates a random string of lettters and numbers. String can be customized on the length
+	 * and the characters used to generate the string.
+	 * 
+	 * @param int $char_count The length of characters the string will be. Default is 15 chars
+	 * @param string $chars The characters that will be used to make up the string. Default is 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+	 * 
+	 * @return string $string The auto generated string
+	 * @access public
+	 */
+	public static function generateRandomString($char_count = 15, $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'){
 	   
 	    $charLength = (strlen($chars) - 1);
-	
-	   
 	    $returnString = $chars{rand(0, $charLength)};
 	    
-	   
-	    for ($i = 1; $i < $numOfChars; $i = strlen($returnString)){
+	    for ($i = 1; $i < $char_count; $i = strlen($returnString)){
 	        
 	        $newchar = $chars{rand(0, $charLength)};
 
@@ -133,44 +52,47 @@ class PVTools extends PVStaticObject {
 	        }
 	    }//end for
 	    
-	   
 	    return $returnString;
 	}
 	
-	
-	
-	  
+	/**
+	 * Truncates a strings of text to a certain length and applies trailing characters. Generally used for
+	 * creating 'Read More...' text descrptions.
+	 * 
+	 * @param string $str The string to truncate
+	 * @param int $length The length to truncate the string too. Default is 10 characters.
+	 * @param string $trailing Trailing text to add at the end of string once it is truncated. Default text is '...'
+	 * @param boolean $strip_tags Strips out any html tags. Default is true.
+	 * @param string $allowed_tags Tags to allow if strip_tags is set to true.
+	 * 
+	 * @return string $truncated A The string when truncated
+	 * @access public
+	 */
     function truncateText ($str, $length=10, $trailing='...', $strip_tags=TRUE, $allowed_tags=''){
  
    			if($strip_tags==TRUE && !empty($str)){
-				$str=strip_tags($str);
+				$str=strip_tags($str, $allowed_tags);
 			}
-            // take off chars for the trailing
   
             $length-=mb_strlen($trailing);
+			$truncated='';
   
-            if (mb_strlen($str)> $length)
-  
-            {
-  
-               // string exceeded length, truncate and add trailing dots
-  
-               return mb_substr($str,0,$length).$trailing;
-  
-            }
-  
-            else {
-  
-               // string was already short enough, return the string
-  
-              $res = $str;
-  
+            if (mb_strlen($str)> $length) {
+  				$truncated = mb_substr($str,0,$length).$trailing;
+            } else {
+             $truncated= $str.$trailin;
             }
 			
-            return $res;
+            return $truncated;
       }//end truncateText
 	  
-	  
+	/**
+	 * Returns the full url of the current page. Inclded in the return will be if the page is being https connect,
+	 * a port if any, and the uri.	
+	 * 
+	 * @return string $url Url of the current page.
+	 * @access public
+	 */
 	public static function getCurrentUrl() {
 		$current_page_url = 'http';
 		 
@@ -187,10 +109,15 @@ class PVTools extends PVStaticObject {
 		}
 		
 		return $current_page_url;
- 
 	}//end getCurrentCurl
 	
-	  
+	/**
+	 * Returns the current url with the uri. The url at max will only be
+	 * www.example.com
+	 * 
+	 * @return string $url The current url without the uri
+	 * @access public
+	 */
 	public static function getCurrentBaseUrl() {
 		$current_page_url = 'http';
 		 
@@ -204,14 +131,17 @@ class PVTools extends PVStaticObject {
 		}
 
 		return  $current_page_url;
- 
 	}//end getCurrentCurl
 	  
-	public static function getSiteUrl(){
-		  return 'http://'.SITE_ADDRESS;
-	  }//end get site URL
-	  
-	  
+	/**
+	 * Takes in an array and forms that array into a query string with ? & =. Passing in array such as
+	 * array('arg1'='doo', 'arg2'=>'sec''rae', 'arg3'=>'me') with return '?$arg1=doo&arg2=rae&arg3=me'
+	 * 
+	 * @param array variables A string of variables to turn into a query string
+	 * 
+	 * @return string The array uri into string format
+	 * @access public
+	 */  
 	public static function formUrlParameters($variables){
 		
 		$appendix='?';
@@ -231,7 +161,15 @@ class PVTools extends PVStaticObject {
 		
 	}//end form url
 	
-	
+	/**
+	 * Takes in an array and forms that array into a query string with /'s. Passing in array such as
+	 * array('arg1'='doo', 'arg2'=>'sec''rae', 'arg3'=>'me') with return 'doo/rae/me'
+	 * 
+	 * @param array variables A string of variables to turn into a query string
+	 * 
+	 * @return string The array uri into string format
+	 * @access public
+	 */  
 	public static function formUrlPath($variables){
 		
 		$appendix='';
@@ -877,8 +815,6 @@ class PVTools extends PVStaticObject {
 		$string=str_replace('+', ' AND '.$content_term.'=', $string );
 		$string=str_replace(',', ' OR '.$content_term.'=', $string );*/
 		
-	
-		
 		$length=strlen($string);
 		
 		$ADD_PREFIX=true;
@@ -901,8 +837,6 @@ class PVTools extends PVStaticObject {
 				else {
 					$output.=' AND ';
 				}
-				
-				
 			}
 			else if($string[$i]==','){
 				if( @$string[$i+1]!='!'){
@@ -914,7 +848,6 @@ class PVTools extends PVStaticObject {
 				
 			}
 			
-			
 			if($string[$i]!='!' && $string[$i]!='+' && $string[$i]!=',' ){
 				
 				$output.=$string[$i];
@@ -923,11 +856,7 @@ class PVTools extends PVStaticObject {
 					$output.='\'';
 					}
 			}
-			
-			
-		
 		}//end for
-		
 		
 		if($ADD_PREFIX==true){
 				$output=$content_term.'=\''.$output;
@@ -938,8 +867,64 @@ class PVTools extends PVStaticObject {
 		}
 		
 		return $output;
-		
 	}//end parseSQLOperator
+	
+	/**
+	 * @todo Get rid of this function
+	 * @deprecated now
+	 */
+	public static function convertNumbericBoolean($boolean){
+		if($boolean==1){
+			return true;	
+		}
+		else if($boolean==0){
+			return false;	
+		}
+		
+	}//end convertNumbericBoolean
+	
+	
+	/**
+	 * Converts a boolean that is passed a string to the boolean type true or false.
+	 */
+	public static function convertTextBoolean($boolean){
+		if($boolean=='true'){
+			return true;	
+		}
+		else if($boolean=='false'){
+			return false;	
+		}
+		
+		return $boolean;
+	}//end convertTextBoolean
+	
+	/**
+	 * @todo most likely get ride of
+	 */
+	public static function createParameterArray($params){
+		$array=split("[:\n]", $params);
+		$count = count($array);
+		$paramarray=array();
+		
+		for ($i = 0; $i < $count; $i++) {
+			$name=$array[$i];
+			$paramarray[$name]=$array[$i+1];
+			$i=$i+1;
+			
+		}//end for
+		
+		return $paramarray;
+	
+	}//end createrParamterArray
+	
+	/**
+	 * @todo move to conversions
+	 */
+	public static function xmlToArray($params){
+		$xml = simplexml_load_string($params);
+		return get_object_vars($xml);
+		
+	}
 
 	private static function getOptionDefaults() {
 		$defaults=array(
