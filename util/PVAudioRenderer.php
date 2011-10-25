@@ -311,6 +311,25 @@ class PVAudioRenderer extends PVStaticObject {
 		 }
 	}// end upload Image
 	
+	/**
+	 * Converts a sound file from one format to a different one or one with different attribute. The convert is
+	 * executed on the command line and by default is set to use ffmpeg.
+	 * 
+	 * @param string $current_file_location The location of the current file to be converted.
+	 * @param string $new_file_location The location to output the new file once converted.
+	 * @param array $options Options that can control how the conversion takes place.
+	 * 			'conveter' _string_: The convert to be used and the location. Default is ffmpeg. To further define
+	 * 			either added the path to the converter +ffmpeg or path to another converter besides ffmpeg.
+	 * 			'input_' array: Should be an array that of options for how to treat the input file. The options
+	 * 			should be the same options passed through the setEncodingOptions except the prefix should have 'input_'.
+	 * 			For example if the option is 'ar' as in setEncodingOptions, add 'input_ar' as the option key.
+	 * 			'output_' array: Should be an array that of options for how to treat the output file. The options
+	 * 			should be the same options passed through the setEncodingOptions except the prefix should have 'output_'.
+	 * 			For example if the option is 'ar' as in setEncodingOptions, add 'input_ar' as the option key.
+	 * 
+	 * @return void The output is not returned but a new file will be created if the conversion succedded
+	 * @access public
+	 */
 	public static function convertSoundFile($current_file_location, $new_file_location, $options=array()){
 		if(!is_array($options)){
 			$options=array();
@@ -326,6 +345,20 @@ class PVAudioRenderer extends PVStaticObject {
 		exec( "$converter -i $current_file_location $input_options $new_file_location $output_options" );
 	}//end convertSoundFile
 	
+	/**
+	 * The encoding options on how to encode a file using FFMPPEG. The options should be run in a command line
+	 * formated.
+	 * 
+	 * @param array $options Defined options to be used in the conversion. Options relate to those passed in a normal
+	 * 		  FFMPEG command line fashion.The key of the array corresponds the command and the value responds to the command
+	 * 		  value.
+	 * @param string $input_type If the options have a prefix in front of the key, the prefix should be defined either.
+	 * 
+	 * @return string $options A string of options that should be used on the command line with ffmpeg
+	 * @access public
+	 * 		
+	 * @todo find ffmpeg documentation and use isset to remove notices
+	 */
 	public static function setEncodingOptions($options=array(), $input_type=''){
 		
 		$input_options='';
