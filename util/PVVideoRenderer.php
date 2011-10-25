@@ -27,13 +27,38 @@
 *or implied, of ProdigyView LLC.
 */
 class PVVideoRenderer extends PVStaticObject {
-
-	function PVVideoRenderer(){
 	
+	protected static $converter='ffmpeg';
 	
-	}//end constructor
+	/**
+	 * Initialize the static class. Currently can be used for modifying the default converter
+	 * tool and its location, which is simply ffmpeg.
+	 * 
+	 * @param array $config An array of configurations
+	 *			-'converter' _string_: The converter tool and its location. Default is ffmpeg
+	 * 
+	 * @return void
+	 * @access public 
+	 */
+	public static function init($config = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		
+		$defaults = array('converter'=>'ffmpeg');
+		
+		$config += $defaults;
+		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config, array('event'=>'args'));
+		
+		self::$converter=$config['converter'];
+		self::_notify(get_class().'::'.__FUNCTION__, $config);
+	}
 	
-	public static function updateVideoContent($args=array()){
+	public static function updateVideoContent($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$defaults=array(
 			'convert_to_flv'=>false,
 			'convert_to_mpeg'=>false,
@@ -47,8 +72,9 @@ class PVVideoRenderer extends PVStaticObject {
 			'convert_to_webm'=>false
 		);
 		
-		$args+=$defaults;
-		$args=PVDatabase::makeSafe*($args);
+		$args += $defaults;
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
 		$video_folder_location=PV_VIDEO;
@@ -239,24 +265,72 @@ class PVVideoRenderer extends PVStaticObject {
 		 }
 	}// end upload Image
 	
+	/**
+	 * Convert the video file using a converter to another format or a different settings of the same format.
+	 * 
+	 * @param string $current_file_location The location of the file that is going to be converted
+	 * @param string $new_file_location The location of the new file
+	 * @param array $options Options that can control how the conversion takes place.
+	 * 			'conveter' _string_: The convert to be used and the location. Default is ffmpeg. To further define
+	 * 			either added the path to the converter + ffmpeg or path to another converter besides ffmpeg.
+	 * 			'input_' array: Should be an array that of options for how to treat the input file. The options
+	 * 			should be the same options passed through the setEncodingOptions except the prefix should have 'input_'.
+	 * 			For example if the option is 'ar' as in setEncodingOptions, add 'input_ar' as the option key.
+	 * 			'output_' array: Should be an array that of options for how to treat the output file. The options
+	 * 			should be the same options passed through the setEncodingOptions except the prefix should have 'output_'.
+	 * 			For example if the option is 'ar' as in setEncodingOptions, add 'input_ar' as the option key.
+	 * 
+	 * @return void The output is not returned but a new file will be created if the conversion succeeded
+	 * @access public 
+	 */
 	function convertVideoFile($current_file_location, $new_file_location, $options=array()){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $current_file_location, $new_file_location, $options);
+		
 		if(!is_array($options)){
 			$options=array();
 		}
 		
-		$defaults=array('converter'=>'ffmpeg');
+		$defaults=array('converter'=>self::$converter);
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('current_file_location'=>$current_file_location, 'new_file_location'=>$new_file_location, 'options'=>$options ), array('event'=>'args'));
+		$current_file_location=$filtered['current_file_location'];
+		$new_file_location=$filtered['new_file_location'];
+		$options=$filtered['options'];
+		
 		$converter=$options['converter'];
 		
 		$input_options=self::setEncodingOptions($options, 'input_');
 		$output_options=self::setEncodingOptions($options, 'output_');
 		
 		exec( "$converter -i $current_file_location $input_options $new_file_location $output_options" );
-		
-		
+		self::_notify(get_class().'::'.__FUNCTION__, $current_file_location, $new_file_location, $options, $input_options, $output_options );
 	}//end convertVideoFile
 	
-	public static function setEncodingOptions($options=array(), $input_type=''){
+	/**
+	 * The encoding options on how to encode a file using FFMPPEG. The options should be run in a command line
+	 * formated. The current formmating will only handle options passed through that deal with video manipulation
+	 * 
+	 * @param array $options Defined options to be used in the conversion. Options relate to those passed in a normal
+	 * 		  FFMPEG command line fashion.The key of the array corresponds the command and the value responds to the command
+	 * 		  value.
+	 * @param string $input_type If the options have a prefix in front of the key, the prefix should be defined either.
+	 * 
+	 * @return string $options A string of options that should be used on the command line with ffmpeg
+	 * @access public
+	 * 		
+	 * @todo find ffmpeg documentation and use isset to remove notices
+	 */
+	public static function setEncodingOptions($options=array(), $input_type='') {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options, $input_type);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('input_type'=>$input_type, 'options'=>$options ), array('event'=>'args'));
+		$input_type=$filtered['input_type'];
+		$options=$filtered['options'];
 		
 		$input_options='';
 		
@@ -535,6 +609,9 @@ class PVVideoRenderer extends PVStaticObject {
 		if($options[$input_type.'force_key_frames']){
 			$input_options.=' -force_key_frames '.$options[$input_type.'force_key_frames'];
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $input_options,$options, $input_type);
+		$input_options = self::_applyFilter( get_class(), __FUNCTION__ , $input_options , array('event'=>'return'));
 		
 		return $input_options;
 	}//end setEncodingOptions
