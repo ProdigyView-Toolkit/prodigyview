@@ -29,15 +29,41 @@
 
 class PVAudioRenderer extends PVStaticObject {
 
-	function PVAudioRenderer(){
+	protected static $converter='ffmpeg';
 	
-	}//end constructor
+	/**
+	 * Initialize the static class. Currently can be used for modifying the default converter
+	 * tool and its location, which is simply ffmpeg.
+	 * 
+	 * @param array $config An array of configurations
+	 *			-'converter' _string_: The converter tool and its location. Default is ffmpeg
+	 * 
+	 * @return void
+	 * @access public 
+	 */
+	public static function init($config = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		
+		$defaults = array('converter'=>'ffmpeg');
+		
+		$config += $defaults;
+		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config, array('event'=>'args'));
+		
+		self::$converter=$config['converter'];
+		self::_notify(get_class().'::'.__FUNCTION__, $config);
+	}
 	
 	/**
 	 * Upload and convert new audio files. This functionw will soon be deprecated
 	 * and only and update will be allowed.
 	 */
 	public static function uploadAudioFileToContent($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$defaults=array(
 			'convert_to_midi'=>false,
 			'convert_to_mp3'=>false,
@@ -48,6 +74,7 @@ class PVAudioRenderer extends PVStaticObject {
 		);
 		
 		$args += $defaults;
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
 			
@@ -109,32 +136,32 @@ class PVAudioRenderer extends PVStaticObject {
 				if(move_uploaded_file($tmp_name, PV_ROOT.$save_name) || PVFileManager::copyNewFile($tmp_name, PV_ROOT.$save_name)) {
 					
 					if($args['convert_to_midi']){
-						self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mid', $args['convert_to_midi_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mid', $args['convert_to_midi_options']);
 						$mid_file=$randomFileName.'.mid';
 					}
 					
 					if($args['convert_to_mp3']){
-						self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mp3', $args['convert_to_mp3_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mp3', $args['convert_to_mp3_options']);
 						$mp3_file=$randomFileName.'.mp3';
 					}
 					
 					if($args['convert_to_wav']){
-						self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.wav', $args['convert_to_wav_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.wav', $args['convert_to_wav_options']);
 						$wav_file=$randomFileName.'.wav';
 					}
 					
 					if($args['convert_to_aiff']){
-						self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.aiff', $args['convert_to_aiff_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.aiff', $args['convert_to_aiff_options']);
 						$aif_file=$randomFileName.'.aif';
 					}
 					
 					if($args['convert_to_realaudio']){
-						self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.ra', $args['convert_to_ra_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.ra', $args['convert_to_ra_options']);
 						$ra_file=$randomFileName.'.rm';
 					}
 					
 					if($args['convert_to_oga']){
-						self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.oga', $args['convert_to_oga_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.oga', $args['convert_to_oga_options']);
 						$oga_file=$randomFileName.'.oga';
 					}
 					
@@ -270,32 +297,32 @@ class PVAudioRenderer extends PVStaticObject {
 			if(move_uploaded_file($tmp_name, PV_ROOT.$save_name) || PVFileManager::copyFile($tmp_name, PV_ROOT.$save_name)) {
 				
 				if($args['convert_to_midi']){
-					self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mid', $args['convert_to_midi_options']);
+					self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mid', $args['convert_to_midi_options']);
 					$mid_file=$randomFileName.'.mid';
 				}
 					
 				if($args['convert_to_mp3']){
-					self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mp3', $args['convert_to_mp3_options']);
+					self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mp3', $args['convert_to_mp3_options']);
 					$mp3_file=$randomFileName.'.mp3';
 				}
 					
 				if($args['convert_to_wav']){
-					self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.wav', $args['convert_to_wav_options']);
+					self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.wav', $args['convert_to_wav_options']);
 					$wav_file=$randomFileName.'.wav';
 				}
 					
 				if($args['convert_to_aiff']){
-					self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.aiff', $args['convert_to_aiff_options']);
+					self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.aiff', $args['convert_to_aiff_options']);
 					$aif_file=$randomFileName.'.aiff';
 				}
 					
 				if($args['convert_to_realaudio']){
-					self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.ra', $args['convert_to_ra_options']);
+					self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.ra', $args['convert_to_ra_options']);
 					$ra_file=$randomFileName.'.ra';
 				}
 					
 				if($args['convert_to_oga']){
-					self::convertSoundFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.oga', $args['convert_to_oga_options']);
+					self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.oga', $args['convert_to_oga_options']);
 					$oga_file=$randomFileName.'.oga';
 				}
 					
@@ -327,23 +354,34 @@ class PVAudioRenderer extends PVStaticObject {
 	 * 			should be the same options passed through the setEncodingOptions except the prefix should have 'output_'.
 	 * 			For example if the option is 'ar' as in setEncodingOptions, add 'input_ar' as the option key.
 	 * 
-	 * @return void The output is not returned but a new file will be created if the conversion succedded
+	 * @return void The output is not returned but a new file will be created if the conversion succeeded
 	 * @access public
 	 */
-	public static function convertSoundFile($current_file_location, $new_file_location, $options=array()){
+	public static function convertAudioFile($current_file_location, $new_file_location, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $current_file_location, $new_file_location, $options);
+		
 		if(!is_array($options)){
 			$options=array();
 		}
 			
-		$defaults=array('converter'=>'ffmpeg');
+		$defaults=array('converter'=>self::$converter);
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('current_file_location'=>$current_file_location, 'new_file_location'=>$new_file_location, 'options'=>$options ), array('event'=>'args'));
+		$current_file_location=$filtered['current_file_location'];
+		$new_file_location=$filtered['new_file_location'];
+		$options=$filtered['options'];
+		
 		$converter=$options['converter'];
 			
 		$input_options=self::setEncodingOptions($options, 'input_');
 		$output_options=self::setEncodingOptions($options, 'output_');
 			
 		exec( "$converter -i $current_file_location $input_options $new_file_location $output_options" );
-	}//end convertSoundFile
+		self::_notify(get_class().'::'.__FUNCTION__, $current_file_location, $new_file_location, $options, $input_options, $output_options );
+	}//end convertAudioFile
 	
 	/**
 	 * The encoding options on how to encode a file using FFMPPEG. The options should be run in a command line
@@ -359,7 +397,14 @@ class PVAudioRenderer extends PVStaticObject {
 	 * 		
 	 * @todo find ffmpeg documentation and use isset to remove notices
 	 */
-	public static function setEncodingOptions($options=array(), $input_type=''){
+	public static function setEncodingOptions($options=array(), $input_type='') {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options, $input_type);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('input_type'=>$input_type, 'options'=>$options ), array('event'=>'args'));
+		$input_type=$filtered['input_type'];
+		$options=$filtered['options'];
 		
 		$input_options='';
 		
@@ -411,9 +456,21 @@ class PVAudioRenderer extends PVStaticObject {
 			$input_options.=' -absf '.$options[$input_type.'absf'];
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $input_options,$options, $input_type);
+		$input_options = self::_applyFilter( get_class(), __FUNCTION__ , $input_options , array('event'=>'return'));
+		
 		return $input_options;
 	}//end setEncodingOptions
 	
+	/**
+	 * Get the duration of an audio file.
+	 * 
+	 * @param string $file The location of the audio file to calculate the duration of
+	 * 
+	 * @return string $duration The duration of the audio file
+	 * @access public
+	 * @todo Add in options of choosing the converter
+	 */
 	public static function getDuration($file){
 		
 		ob_start();
