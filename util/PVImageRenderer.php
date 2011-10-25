@@ -43,8 +43,6 @@ class PVImageRenderer extends PVStaticObject {
 		$image_folder_url=PV_IMAGE;
 		$save_name="";
 
-		
-	
 		$image_types = array ("image/bmp", "image/jpeg", "image/pjpeg", "image/gif", "image/x-png", "image/png", "image/pjpeg");
 		
 		if (pv_isImageFile($file_type)){
@@ -81,8 +79,6 @@ class PVImageRenderer extends PVStaticObject {
 			$file_size=PVDatabase::makeSafe($file_size);
 			$save_name=PVDatabase::makeSafe($save_name);
 		
-		
-	
 			if(empty($app_id)){
 				$app_id=0;
 			}
@@ -138,12 +134,9 @@ class PVImageRenderer extends PVStaticObject {
 			} else{
 				return self::$UPLOAD_FAILED;
 			}
-		 	
-		 
-		 	
 		 }
 		 else{
-		 	return self::$INVALID_TYPE;
+		 	return false;
 		 }
 	}// end upload Image
 	
@@ -152,8 +145,6 @@ class PVImageRenderer extends PVStaticObject {
 		$image_folder_url=PV_IMAGE;
 		$save_name="";
 
-		
-	
 		$image_types = array ("image/bmp", "image/jpeg", "image/pjpeg", "image/gif", "image/x-png", "image/png", "image/pjpeg");
 		
 		if (pv_isImageFile($file_type)){
@@ -185,14 +176,12 @@ class PVImageRenderer extends PVStaticObject {
 			$file_type=PVDatabase::makeSafe($file_type);
 			$file_size=PVDatabase::makeSafe($file_size);
 			$save_name=PVDatabase::makeSafe($save_name);
-		
-		
-	
+
 			if(empty($app_id)){
 				$app_id=0;
 			}
 			
-			 if(empty($file_size)){
+			if(empty($file_size)){
 				$file_size=0;
 			}
 		
@@ -225,12 +214,10 @@ class PVImageRenderer extends PVStaticObject {
 			} else{
 				return self::$UPLOAD_FAILED;
 			}
-		 	
-		 
-		 	
+
 		 }
 		 else{
-		 	return self::$INVALID_TYPE;
+		 	return false;
 		 }
 	}// end upload Image
 	
