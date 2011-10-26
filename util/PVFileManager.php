@@ -377,7 +377,7 @@ class PVFileManager extends PVStaticObject {
 		if(file_exists($file))
 			return false;
 				
-		return self::writeFile($file, $mode, $content, $encoding);
+		return self::writeFile($file, $content, $mode, $encoding); 
 	}//end writeFile
 	
 	/**
@@ -405,7 +405,7 @@ class PVFileManager extends PVStaticObject {
 		if(!file_exists($file))
 			return false;
 		
-		return self::writeFile($file, $mode, $content, $encoding); 
+		return self::writeFile($file, $content, $mode, $encoding); 
 	}//end writeFile
 	
 	/**
@@ -655,7 +655,7 @@ class PVFileManager extends PVStaticObject {
 		$lastModFile = '';
 		
 		foreach (scandir($directory) as $entry) {
-			if (is_file($directory.$entry) && filectime($directory.$entry) > $lastmod) {
+			if (is_file($directory.$entry) && filectime($directory.$entry) > $lastMod) {
 				$lastMod = filectime($directory.$entry);
 				$lastModFile = $entry;
 			}
