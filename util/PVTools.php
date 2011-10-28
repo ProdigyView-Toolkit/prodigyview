@@ -38,7 +38,14 @@ class PVTools extends PVStaticObject {
 	 * @return string $string The auto generated string
 	 * @access public
 	 */
-	public static function generateRandomString($char_count = 15, $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'){
+	public static function generateRandomString($char_count = 15, $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $char_count, $chars);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('char_count'=>$char_count, 'chars'=>$chars) , array('event'=>'args'));
+		$char_count = $filtered['char_count'];
+		$chars = $filtered['chars'];
 	   
 	    $charLength = (strlen($chars) - 1);
 	    $returnString = $chars{rand(0, $charLength)};
@@ -52,6 +59,9 @@ class PVTools extends PVStaticObject {
 	        }
 	    }//end for
 	    
+	    self::_notify(get_class().'::'.__FUNCTION__, $returnString, $char_count, $chars);
+	    $returnString = self::_applyFilter( get_class(), __FUNCTION__ , $returnString , array('event'=>'return'));
+		
 	    return $returnString;
 	}
 	
@@ -68,21 +78,34 @@ class PVTools extends PVStaticObject {
 	 * @return string $truncated A The string when truncated
 	 * @access public
 	 */
-    function truncateText ($str, $length=10, $trailing='...', $strip_tags=TRUE, $allowed_tags=''){
+    function truncateText ($string, $length=10, $trailing='...', $strip_tags=TRUE, $allowed_tags=''){
+    	
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string, $length, $trailing, $strip_tags, $allowed_tags);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('string'=>$string, 'length'=>$length, 'trailing'=>$trailing, 'strip_tags'=>$strip_tags, 'allowed_tags'=>$allowed_tags) , array('event'=>'args'));
+		$string = $filtered['string'];
+		$length = $filtered['length'];
+		$trailing = $filtered['trailing'];
+		$strip_tags = $filtered['strip_tags'];
+		$allowed_tags = $filtered['allowed_tags'];
  
-   			if($strip_tags==TRUE && !empty($str)){
-				$str=strip_tags($str, $allowed_tags);
+   			if($strip_tags==TRUE && !empty($string)){
+				$string = strip_tags($string, $allowed_tags);
 			}
   
             $length-=mb_strlen($trailing);
 			$truncated='';
   
-            if (mb_strlen($str)> $length) {
-  				$truncated = mb_substr($str,0,$length).$trailing;
+            if (mb_strlen($string)> $length) {
+  				$truncated = mb_substr($string,0,$length).$trailing;
             } else {
-             $truncated= $str.$trailin;
+             $truncated = $string.$trailing;
             }
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $truncated, $string , $length, $trailing, $strip_tags, $allowed_tag);
+	    	$truncated = self::_applyFilter( get_class(), __FUNCTION__ , $truncated , array('event'=>'return'));
+		
             return $truncated;
       }//end truncateText
 	  
@@ -94,6 +117,10 @@ class PVTools extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getCurrentUrl() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		$current_page_url = 'http';
 		 
 		if ($_SERVER['HTTPS'] == 'on') { 
@@ -108,6 +135,9 @@ class PVTools extends PVStaticObject {
 			$current_page_url .= $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $current_page_url);
+	    $current_page_url = self::_applyFilter( get_class(), __FUNCTION__ , $current_page_url , array('event'=>'return'));
+		
 		return $current_page_url;
 	}//end getCurrentCurl
 	
@@ -119,6 +149,10 @@ class PVTools extends PVStaticObject {
 	 * @access public
 	 */
 	public static function getCurrentBaseUrl() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		$current_page_url = 'http';
 		 
 		if (@$_SERVER['HTTPS'] == 'on') { $current_page_url .= 's';}
@@ -129,6 +163,9 @@ class PVTools extends PVStaticObject {
 		} else {
 			$current_page_url.= $_SERVER['SERVER_NAME'];
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $current_page_url);
+	    $current_page_url = self::_applyFilter( get_class(), __FUNCTION__ , $current_page_url , array('event'=>'return'));
 
 		return  $current_page_url;
 	}//end getCurrentCurl
@@ -142,7 +179,12 @@ class PVTools extends PVStaticObject {
 	 * @return string The array uri into string format
 	 * @access public
 	 */  
-	public static function formUrlParameters($variables){
+	public static function formUrlParameters($variables) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $variables);
+		
+		$variables = self::_applyFilter( get_class(), __FUNCTION__ , $variables , array('event'=>'args'));
 		
 		$appendix='?';
 		
@@ -157,6 +199,9 @@ class PVTools extends PVStaticObject {
 			$first=0;
 		}//end foreach
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $appendix ,$variables);
+	    $appendix = self::_applyFilter( get_class(), __FUNCTION__ , $appendix , array('event'=>'return'));
+		
 		return $appendix;
 		
 	}//end form url
@@ -170,7 +215,12 @@ class PVTools extends PVStaticObject {
 	 * @return string The array uri into string format
 	 * @access public
 	 */  
-	public static function formUrlPath($variables){
+	public static function formUrlPath($variables) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $variables);
+		
+		$variables = self::_applyFilter( get_class(), __FUNCTION__ , $variables , array('event'=>'args'));
 		
 		$appendix='';
 		
@@ -184,6 +234,9 @@ class PVTools extends PVStaticObject {
 			}
 			$first=0;
 		}//end foreach
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $appendix, $variables);
+	    $appendix = self::_applyFilter( get_class(), __FUNCTION__ , $appendix , array('event'=>'return'));
 		
 		return $appendix;
 		
@@ -201,6 +254,16 @@ class PVTools extends PVStaticObject {
 	 * @access public
 	 */
 	function arraySearchRecursive( $needle, $haystack, $strict=false, $path=array() ) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $needle, $haystack, $strict, $path);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('needle'=>$needle, 'haystack'=>$haystack, 'strict'=>$strict , 'path'=>$path) , array('event'=>'args'));
+		$needle = $filtered['needle'];
+		$haystack = $filtered['haystack'];
+		$strict = $filtered['strict'];
+		$path = $filtered['path'];
+		
     	if( !is_array($haystack) ) {
 	        return false;
 	    }
@@ -245,14 +308,22 @@ class PVTools extends PVStaticObject {
 	 * @return id $option_id The id of the new option
 	 * @access public
 	 */
-	public static function addOption($args=array()){
+	public static function addOption($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getOptionDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
 			
 		$query="INSERT INTO ".pv_getOptionsTableName()."( app_id, user_id , content_id, option_name, option_value , option_type) VALUES(  '$app_id' , '$user_id' , '$content_id' , '$option_name', '$option_value' , '$option_type' )";
 		$option_id=PVDatabase::return_last_insert_query($query, "option_id", pv_getOptionsTableName() );
-			
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $option_id, $args);
+	    $option_id = self::_applyFilter( get_class(), __FUNCTION__ , $option_id , array('event'=>'return'));
+		
 		return $option_id;
 	}//end addOption
 	
@@ -271,9 +342,15 @@ class PVTools extends PVStaticObject {
 	 * @return array $options A list of options retrieved based on the passed parameters
 	 * @access public
 	 */
-	public static function getOptionList($args=array()){
+	public static function getOptionList($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getOptionDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
+		
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
 		$custom_select=$args['custom_select'];
@@ -508,6 +585,9 @@ class PVTools extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+	    $content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+    	
     	return $content_array;
 	}//end getOptionList
 	
@@ -519,13 +599,22 @@ class PVTools extends PVStaticObject {
 	 * @return array $option The data associated with the option
 	 * @access public
 	 */
-	public static function getOptionByID($option_id){
+	public static function getOptionByID($option_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $option_id);
 	
+		$option_id = self::_applyFilter( get_class(), __FUNCTION__ , $option_id , array('event'=>'args'));
+		
 		if(!empty($option_id)){
 			$query="SELECT option_id, app_id, user_id , content_id, option_name, option_value , option_type FROM ".pv_getOptionsTableName()." WHERE option_id= '$option_id' ";	
 			$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
 			$row= PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $option_id);
+	    	$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
+		
 			return $row;
 		}//end
 	
@@ -546,14 +635,20 @@ class PVTools extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function updateOption($args=array()){
+	public static function updateOption($args=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
 		$args += self::getOptionDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
 		
 		if(!empty($option_id)){
 			$query="UPDATE  ".pv_getOptionsTableName()." SET app_id='$app_id', user_id='$user_id' , content_id='$content_id', option_name='$option_name', option_value='$option_value' , option_type='$option_type' WHERE option_id='$option_id'";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 			return 	$option_id;
 		}
 		
@@ -575,8 +670,13 @@ class PVTools extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function setOption($args=array()){
+	public static function setOption($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getOptionDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$search_args = PVDatabase::makeSafe($args);
 		extract($search_args);
 		
@@ -666,8 +766,13 @@ class PVTools extends PVStaticObject {
 	 * @return array $data The data associated with the search parameters
 	 * @access public
 	 */
-	public static function getOption($args=array()){
+	public static function getOption($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getOptionDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -735,11 +840,14 @@ class PVTools extends PVStaticObject {
 		if(PVDatabase::resultRowCount($result) > 0){
 			$row=PVDatabase::fetchArray($result);
 			$row=PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $args);
+	    	$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
+		
 			return $row;
 		}
 		
 		return array();
-	
 	}//setOption
 	
 	/**
@@ -756,10 +864,19 @@ class PVTools extends PVStaticObject {
 	 * @return mixed $value The value of the retrieved option
 	 * @access public
 	 */
-	public static function getOptionValue($args=array()){
+	public static function getOptionValue($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$row=self::getOption($args);
 		
 		if(isset($row['option_value'])){
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $args);
+	    	$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
+			
 			return $row['option_value'];
 		}
 	}//end getOption
@@ -772,18 +889,31 @@ class PVTools extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function deleteOption($option_id, $deleteChildrenOptions=false){
+	public static function deleteOption($option_id) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $option_id);
+		
+		$option_id = self::_applyFilter( get_class(), __FUNCTION__ , $option_id , array('event'=>'args'));
 		$option_id=PVDatabase::makeSafe($option_id);
 		
 		if(!empty($option_id)){
 			$query="DELETE FROM ".pv_getOptionsTableName()." WHERE option_id='$option_id' ";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $option_id);
 		}//end if
 	
 	}//end getOption
 	
-	private static function parseSQLArrayOperators($args, $content_term){
+	private static function parseSQLArrayOperators($args, $content_term) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args, $content_term);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('args'=>$args , 'content_term'=>$content_term) , array('event'=>'args'));
+		$args = $filtered['args'];
+		$content_term = $filtered['content_term'];
+			
 		$operator=$args['operator'];
 		
 		if(empty($operator)){
@@ -803,7 +933,16 @@ class PVTools extends PVStaticObject {
 		return $SQL;
 	}//end parseSQLArrayOperators
 	
-	public static function parseSQLOperators($string, $content_term, $encapsulate=TRUE){
+	public static function parseSQLOperators($string, $content_term, $encapsulate=TRUE) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string, $content_term, $encapsulate);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('string'=>$string , 'content_term'=>$content_term, 'encapsulate'=>$encapsulate ) , array('event'=>'args'));
+		$string = $filtered['string'];
+		$content_term = $filtered['content_term'];
+		$encapsulate = $filtered['encapsulate'];
+		
 		$string=trim($string);
 		$string=PVDatabase::makeSafe($string);
 		
@@ -865,6 +1004,9 @@ class PVTools extends PVStaticObject {
 		if($encapsulate){
 			$output='('.$output.')';
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $output, $string, $content_term, $encapsulate);
+	    $output = self::_applyFilter( get_class(), __FUNCTION__ , $output , array('event'=>'return'));
 		
 		return $output;
 	}//end parseSQLOperator
