@@ -204,52 +204,52 @@ class PVVideoRenderer extends PVStaticObject {
 			if(move_uploaded_file($tmp_name, PV_ROOT.$save_name) || PVFileManager::copyFile($tmp_name, PV_ROOT.$save_name)) {
 				
 				if($args['convert_to_flv']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.flv', $args['convert_to_flv_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.flv', @$args['convert_to_flv_options']);
 					$flv_file=$randomFileName.'.flv';
 				}
 					
 				if($args['convert_to_mpeg']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.mpeg', $args['convert_to_mpeg_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.mpeg', @$args['convert_to_mpeg_options']);
 					$mpeg_file=$randomFileName.'.mpeg';
 				}
 					
 				if($args['convert_to_mp4']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.mp4', $args['convert_to_mp4_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.mp4', @$args['convert_to_mp4_options']);
 					$mp4_file=$randomFileName.'.mp4';
 				}
 					
 				if($args['convert_to_wmv']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.wmv', $args['convert_to_wmv_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.wmv', @$args['convert_to_wmv_options']);
 					$wmv_file=$randomFileName.'.wmv';
 				}
 					
 				if($args['convert_to_realmedia']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.rm', $args['convert_to_rm_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.rm', @$args['convert_to_rm_options']);
 					$rm_file=$randomFileName.'.rm';
 				}
 					
 				if($args['convert_to_avi']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.avi', $args['convert_to_avi_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.avi', @$args['convert_to_avi_options']);
 					$avi_file=$randomFileName.'.avi';
 				}
 				
 				if($args['convert_to_mov']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.mov', $args['convert_to_mov_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.mov', @$args['convert_to_mov_options']);
 					$mov_file=$randomFileName.'.mov';
 				}
 				
 				if($args['convert_to_asf']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.asf', $args['convert_to_asf_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.asf', @$args['convert_to_asf_options']);
 					$asf_file=$randomFileName.'.asf';
 				}
 				
 				if($args['convert_to_ogv']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.ogv', $args['convert_to_ogv_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.ogv', @$args['convert_to_ogv_options']);
 					$ogv_file=$randomFileName.'.ogv';
 				}
 
 				if($args['convert_to_webm']){
-					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.webm', $args['convert_to_webm_options']);
+					self::convertVideoFile(PV_ROOT.$save_name, PV_ROOT.PV_VIDEO.$randomFileName.'.webm', @$args['convert_to_webm_options']);
 					$webm_file=$randomFileName.'.webm';
 				}
 					
@@ -312,6 +312,9 @@ class PVVideoRenderer extends PVStaticObject {
 	/**
 	 * The encoding options on how to encode a file using FFMPPEG. The options should be run in a command line
 	 * formated. The current formmating will only handle options passed through that deal with video manipulation
+	 * @see http://www.ffmpeg.org/ffmpeg.html
+	 * @see http://www.ffmpeg.org/ffmpeg.html#Video-Options
+	 * @see http://www.ffmpeg.org/ffmpeg.html#Advanced-Video-Options
 	 * 
 	 * @param array $options Defined options to be used in the conversion. Options relate to those passed in a normal
 	 * 		  FFMPEG command line fashion.The key of the array corresponds the command and the value responds to the command
@@ -334,279 +337,279 @@ class PVVideoRenderer extends PVStaticObject {
 		
 		$input_options='';
 		
-		if($options[$input_type.'vframes'] ){
+		if(isset($options[$input_type.'vframes']) ){
 			$input_options.=' -vframes '.$options[$input_type.'vframes'];	
 		}
 		
-		if($options[$input_type.'r']){
+		if(isset($options[$input_type.'r'])){
 			$input_options.=' -r '.$options[$input_type.'r'];	
 		}
 		
-		if($options[$input_type.'s']){
+		if(isset($options[$input_type.'s'])){
 			$input_options.=' -s '.$options[$input_type.'s'];
 		}	
 		
-		if($options[$input_type.'aspect']){
+		if(isset($options[$input_type.'aspect'])){
 			$input_options.=' -aspect '.$options[$input_type.'aspect'];	
 		}
 		
-		if($options[$input_type.'croptop']){
+		if(isset($options[$input_type.'croptop'])){
 			$input_options.=' -croptop '.$options[$input_type.'croptop'];	
 		}
 		
-		if($options[$input_type.'cropbottom']){
+		if(isset($options[$input_type.'cropbottom'])){
 			$input_options.=' -cropbottom '.$options[$input_type.'cropbottom'];
 		}
 		
-		if($options[$input_type.'cropleft']){
+		if(isset($options[$input_type.'cropleft'])){
 			$input_options.=' -cropleft '.$options[$input_type.'cropleft'];
 		}
 		
-		if($options[$input_type.'cropright']){
+		if(isset($options[$input_type.'cropright'])){
 			$input_options.=' -cropright '.$options[$input_type.'cropright'];
 		}
 		
-		if($options[$input_type.'padtop']){
+		if(isset($options[$input_type.'padtop'])){
 			$input_options.=' -padtop '.$options[$input_type.'padtop'];
 		}
 		
-		if($options[$input_type.'padbottom']){
+		if(isset($options[$input_type.'padbottom'])){
 			$input_options.=' -padbottom '.$options[$input_type.'padbottom'];
 		}
 		
-		if($options[$input_type.'padleft']){
+		if(isset($options[$input_type.'padleft'])){
 			$input_options.=' -padleft '.$options[$input_type.'padleft'];
 		}
 		
-		if($options[$input_type.'padright']){
+		if(isset($options[$input_type.'padright'])){
 			$input_options.=' -padright '.$options[$input_type.'padright'];
 		}
 		
-		if($options[$input_type.'padcolor']){
+		if(isset($options[$input_type.'padcolor'])){
 			$input_options.=' -padcolor '.$options[$input_type.'padcolor'];
 		}
 		
-		if($options[$input_type.'bt']){
+		if(isset($options[$input_type.'bt'])){
 			$input_options.=' -bt '.$options[$input_type.'bt'];
 		}
 		
-		if($options[$input_type.'maxrate']){
+		if(isset($options[$input_type.'maxrate'])){
 			$input_options.=' -maxrate '.$options[$input_type.'maxrate'];
 		}
 		
-		if($options[$input_type.'minrate']){
+		if(isset($options[$input_type.'minrate'])){
 			$input_options.=' -minrate '.$options[$input_type.'minrate'];
 		}
 		
-		if($options[$input_type.'bufsize']){
+		if(isset($options[$input_type.'bufsize'])){
 			$input_options.=' -bufsize '.$options[$input_type.'bufsize'];
 		}
 		
-		if($options[$input_type.'vcodec']){
+		if(isset($options[$input_type.'vcodec'])){
 			$input_options.=' -vcodec '.$options[$input_type.'vcodec'];
 		}
 		
-		if($options[$input_type.'pass']){
+		if(isset($options[$input_type.'pass'])){
 			$input_options.=' -pass '.$options[$input_type.'pass'];
 		}
 
-		if($options[$input_type.'same_quant']){
+		if(isset($options[$input_type.'same_quant'])){
 			$input_options.=' -same_quant ';	
 		}
 		
-		if($options[$input_type.'intra']){
+		if(isset($options[$input_type.'intra'])){
 			$input_options.=' -intra ';
 		}
 		
-		if($options[$input_type.'passlogfile']){
+		if(isset($options[$input_type.'passlogfile'])){
 			$input_options.=' -passlogfile '.$options[$input_type.'passlogfile'];
 		}
 		
-		if($options[$input_type.'atag']){
+		if(isset($options[$input_type.'atag'])){
 			$input_options.=' -atag '.$options[$input_type.'atag'];
 		}
 		
-		if($options[$input_type.'vlang']){
+		if(isset($options[$input_type.'vlang'])){
 			$input_options.=' -vlang '.$options[$input_type.'vlang'];
 		}
 		
-		if($options[$input_type.'vf']){
+		if(isset($options[$input_type.'vf'])){
 			$input_options.=' -vf '.$options[$input_type.'vf'];
 		}
 		
-		if($options[$input_type.'pix_fmt']){
+		if(isset($options[$input_type.'pix_fmt'])){
 			$input_options.=' -pix_fmt '.$options[$input_type.'pix_fmt'];
 		}
 		
-		if($options[$input_type.'sws_flags']){
+		if(isset($options[$input_type.'sws_flags'])){
 			$input_options.=' -sws_flags '.$options[$input_type.'sws_flags'];
 		}
 
-		if($options[$input_type.'g']){
+		if(isset($options[$input_type.'g'])){
 			$input_options.=' -g '.$options[$input_type.'g'];
 		}
 
-		if($options[$input_type.'vdt']){
+		if(isset($options[$input_type.'vdt'])){
 			$input_options.=' -vdt '.$options[$input_type.'vdt'];
 		}
 
-		if($options[$input_type.'qmin']){
+		if(isset($options[$input_type.'qmin'])){
 			$input_options.=' -qmin '.$options[$input_type.'qmin'];
 		}
 		
-		if($options[$input_type.'qmax']){
+		if(isset($options[$input_type.'qmax'])){
 			$input_options.=' -qmax '.$options[$input_type.'qmax'];
 		}
 		
-		if($options[$input_type.'qdiff']){
+		if(isset($options[$input_type.'qdiff'])){
 			$input_options.=' -qdiff '.$options[$input_type.'qdiff'];
 		}
 		
-		if($options[$input_type.'qblur']){
+		if(isset($options[$input_type.'qblur'])){
 			$input_options.=' -qblur '.$options[$input_type.'qblur'];
 		}
 
-		if($options[$input_type.'qcomp']){
+		if(isset($options[$input_type.'qcomp'])){
 			$input_options.=' -qcomp '.$options[$input_type.'qcomp'];
 		}
 		
-		if($options[$input_type.'lmin']){
+		if(isset($options[$input_type.'lmin'])){
 			$input_options.=' -lmin '.$options[$input_type.'lmin'];
 		}
 		
-		if($options[$input_type.'lmax']){
+		if(isset($options[$input_type.'lmax'])){
 			$input_options.=' -lmax '.$options[$input_type.'lmax'];
 		}
 		
-		if($options[$input_type.'mblmin']){
+		if(isset($options[$input_type.'mblmin'])){
 			$input_options.=' -mblmin '.$options[$input_type.'mblmin'];
 		}
 		
-		if($options[$input_type.'mblmax']){
+		if(isset($options[$input_type.'mblmax'])){
 			$input_options.=' -mblmax '.$options[$input_type.'mblmax'];
 		}
 		
-		if($options[$input_type.'rc_init_cplx']){
+		if(isset($options[$input_type.'rc_init_cplx'])){
 			$input_options.=' -rc_init_cplx '.$options[$input_type.'rc_init_cplx'];
 		}
 		
-		if($options[$input_type.'b_qfactor']){
+		if(isset($options[$input_type.'b_qfactor'])){
 			$input_options.=' -b_qfactor '.$options[$input_type.'b_qfactor'];
 		}
 		
-		if($options[$input_type.'i_qfactor']){
+		if(isset($options[$input_type.'i_qfactor'])){
 			$input_options.=' -i_qfactor '.$options[$input_type.'i_qfactor'];
 		}
 		
-		if($options[$input_type.'b_qoffset']){
+		if(isset($options[$input_type.'b_qoffset'])){
 			$input_options.=' -b_qoffset '.$options[$input_type.'b_qoffset'];
 		}
 		
-		if($options[$input_type.'i_qoffset']){
+		if(isset($options[$input_type.'i_qoffset'])){
 			$input_options.=' -i_qoffset '.$options[$input_type.'i_qoffset'];
 		}
 
-		if($options[$input_type.'rc_eq']){
+		if(isset($options[$input_type.'rc_eq'])){
 			$input_options.=' -rc_eq '.$options[$input_type.'rc_eq'];
 		}
 		
-		if($options[$input_type.'rc_override']){
+		if(isset($options[$input_type.'rc_override'])){
 			$input_options.=' -rc_override '.$options[$input_type.'rc_override'];
 		}
 		
-		if($options[$input_type.'me_method']){
+		if(isset($options[$input_type.'me_method'])){
 			$input_options.=' -me_method '.$options[$input_type.'me_method'];
 		}
 		
-		if($options[$input_type.'dct_algo']){
+		if(isset($options[$input_type.'dct_algo'])){
 			$input_options.=' -dct_algo'.$options[$input_type.'dct_algo'];
 		}
 
-		if($options[$input_type.'idct_algo']){
+		if(isset($options[$input_type.'idct_algo'])){
 			$input_options.=' -idct_algo '.$options[$input_type.'idct_algo'];
 		}
 		
-		if($options[$input_type.'er']){
+		if(isset($options[$input_type.'er'])){
 			$input_options.=' -er '.$options[$input_type.'er'];
 		}
 		
-		if($options[$input_type.'ec']){
+		if(isset($options[$input_type.'ec'])){
 			$input_options.=' -ec '.$options[$input_type.'ec'];
 		}
 		
-		if($options[$input_type.'bf']){
+		if(isset($options[$input_type.'bf'])){
 			$input_options.=' -bf '.$options[$input_type.'bf'];
 		}
 		
-		if($options[$input_type.'mbd']){
+		if(isset($options[$input_type.'mbd'])){
 			$input_options.=' -mbd '.$options[$input_type.'mbd'];
 		}
 
-		if($options[$input_type.'4mv']){
+		if(isset($options[$input_type.'4mv'])){
 			$input_options.=' -4mv '.$options[$input_type.'4mv'];
 		}
 		
-		if($options[$input_type.'part']){
+		if(isset($options[$input_type.'part'])){
 			$input_options.=' -part ';
 		}
 		
-		if($options[$input_type.'bug']){
+		if(isset($options[$input_type.'bug'])){
 			$input_options.=' -bug '.$options[$input_type.'bug'];
 		}
 		
-		if($options[$input_type.'strict']){
+		if(isset($options[$input_type.'strict'])){
 			$input_options.=' -strict '.$options[$input_type.'strict'];
 		}
 		
-		if($options[$input_type.'aic']){
+		if(isset($options[$input_type.'aic'])){
 			$input_options.=' -aic '.$options[$input_type.'aic'];
 		}
 		
-		if($options[$input_type.'umv']){
+		if(isset($options[$input_type.'umv'])){
 			$input_options.=' -umv';
 		}
 		
-		if($options[$input_type.'deinterlace']){
+		if(isset($options[$input_type.'deinterlace'])){
 			$input_options.=' -deinterlace ';
 		}
 
-		if($options[$input_type.'ilme']){
+		if(isset($options[$input_type.'ilme'])){
 			$input_options.=' -ilme ';
 		}
 
-		if($options[$input_type.'psnr']){
+		if(isset($options[$input_type.'psnr'])){
 			$input_options.=' -psnr ';
 		}
 		
-		if($options[$input_type.'vstats']){
+		if(isset($options[$input_type.'vstats'])){
 			$input_options.=' -vstats ';
 		}
 		
-		if($options[$input_type.'vstats_file']){
+		if(isset($options[$input_type.'vstats_file'])){
 			$input_options.=' -vstats_file '.$options[$input_type.'vstats_file'];
 		}
 		
-		if($options[$input_type.'top']){
+		if(isset($options[$input_type.'top'])){
 			$input_options.=' -top '.$options[$input_type.'top'];
 		}
 		
-		if($options[$input_type.'dc']){
+		if(isset($options[$input_type.'dc'])){
 			$input_options.=' -dc '.$options[$input_type.'dc'];
 		}
 		
-		if($options[$input_type.'vtag']){
+		if(isset($options[$input_type.'vtag'])){
 			$input_options.=' -vtag '.$options[$input_type.'vtag'];
 		}
 		
-		if($options[$input_type.'qphist']){
+		if(isset($options[$input_type.'qphist'])){
 			$input_options.=' -qphist '.$options[$input_type.'qphist'];
 		}
 		
-		if($options[$input_type.'vbsf']){
+		if(isset($options[$input_type.'vbsf'])){
 			$input_options.=' -vbsf '.$options[$input_type.'vbsf'];
 		}
 		
-		if($options[$input_type.'force_key_frames']){
+		if(isset($options[$input_type.'force_key_frames'])){
 			$input_options.=' -force_key_frames '.$options[$input_type.'force_key_frames'];
 		}
 		
