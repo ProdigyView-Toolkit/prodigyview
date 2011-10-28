@@ -37,9 +37,13 @@ class PVMail extends PVStaticObject {
 	 * 		-'sender' _string_: The email address of the user that sent the email
 	 * 		-'subject' _string_: The subject of the email that is being sent
 	 * 		-'message' _string_: The message in the email
-	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too
-	 * 		-'blindcopy' _string_: Email address to send a blind copy too
-	 * 		-'file' _string_: The location of a file to be attached to the email
+	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too. Optional.
+	 * 		-'blindcopy' _string_: Email address to send a blind copy too. Optional.
+	 * 		-'attachment' _string_: The location of a file to be attached to the email. Optional.
+	 * 		-'reply_to' _string_: The email to send a reply too. Optional
+	 * 		-'message_id' _string_: The header for the message id. Optional.
+	 * 		-'errors_to' _string_: The email addrss to send errors to. Optional.
+	 * 		-'return_path': _string_: Set the return path. Optional.
 	 * 
 	 * @return void
 	 * @access public		
@@ -72,9 +76,13 @@ class PVMail extends PVStaticObject {
 	 * 		-'sender' _string_: The email address of the user that sent the email
 	 * 		-'subject' _string_: The subject of the email that is being sent
 	 * 		-'message' _string_: The message in the email
-	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too
-	 * 		-'blindcopy' _string_: Email address to send a blind copy too
-	 * 		-'file' _string_: The location of a file to be attached to the email
+	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too. Optional.
+	 * 		-'blindcopy' _string_: Email address to send a blind copy too. Optional.
+	 * 		-'attachment' _string_: The location of a file to be attached to the email. Optional.
+	 * 		-'reply_to' _string_: The email to send a reply too. Optional
+	 * 		-'message_id' _string_: The header for the message id. Optional.
+	 * 		-'errors_to' _string_: The email addrss to send errors to. Optional.
+	 * 		-'return_path': _string_: Set the return path. Optional.
 	 * 
 	 * @return void
 	 * @access public		
@@ -87,24 +95,44 @@ class PVMail extends PVStaticObject {
 		$args += self::getEmailDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
+		$eol = $args['eol'];
 		$to = $args['receiver'];
 		$subject = $args['subject'];
 		$sender = $args['sender'];
 		$message = $args['message'];
 		$carboncopy = $args['carboncopy'];
 		$blindcopy = $args['blindcopy'];
-		$file = $args['file'];
+		$attachment= $args['attachment'];
 		$text_message = $args['text_message'];
 		$html_message = $args['html_message'];
 			
 		$section_seperator = md5(date('r', time()));
-		$headers = "From: $sender\r\nReply-To: $sender";
+		$headers = "From: $sender\r\n";
+		
+		if(!empty($reply_to)){
+			$headers .= "Reply-To: $reply_to";
+		} else {
+			$headers .= "Reply-To: $sender";
+		}
 		
 		if(!empty($carboncopy)){
 			$headers .= "\r\nCc: $carboncopy" ;
 		}
+		
 		if(!empty($blindcopy)){
 			$headers .= "\r\nBcc: $blindcopy";
+		}
+		
+		if(!empty($errors_to)){
+			$headers .= "\r\nErrors-To: $errors_to";
+		}
+		
+		if(!empty($return_path)){
+			$headers .= "\r\nReturn-Path: $return_path";
+		}
+		
+		if(!empty($message_id)){
+			$headers .= "\r\nMessage-ID: $message_id";
 		}
 		
 		$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$section_seperator."\"";
@@ -175,9 +203,13 @@ Content-Disposition: attachment
 	 * 		-'sender' _string_: The email address of the user that sent the email
 	 * 		-'subject' _string_: The subject of the email that is being sent
 	 * 		-'message' _string_: The message in the email
-	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too
-	 * 		-'blindcopy' _string_: Email address to send a blind copy too
-	 * 		-'attachment' _string_: The location of a file to be attached to the email
+	 * 		-'carboncopy' _string_: Email addresses to send a carbon copy too. Optional.
+	 * 		-'blindcopy' _string_: Email address to send a blind copy too. Optional.
+	 * 		-'attachment' _string_: The location of a file to be attached to the email. Optional.
+	 * 		-'reply_to' _string_: The email to send a reply too. Optional
+	 * 		-'message_id' _string_: The header for the message id. Optional.
+	 * 		-'errors_to' _string_: The email addrss to send errors to. Optional.
+	 * 		-'return_path': _string_: Set the return path. Optional.
 	 * 		-'smtp_username' _string_: The user name for the host
 	 * 		-'smtp_password' _string_: The password for the smtp user
 	 * 		-'smtp_host' _string_: The hast the SMTP resides at
@@ -239,9 +271,26 @@ Content-Disposition: attachment
 				$headers['Cc']=$args['carboncopy'];
 				$receiver.=','.$args['carboncopy'];
 			}
+			
 			if(!empty($args['blindcopy'])){
 				$headers['Bcc']=$args['blindcopy'];
 				$receiver.=','.$args['blindcopy'];
+			}
+			
+			if(!empty($args['reply_to'])){
+				$headers['Reply-To']=$args['reply_to'];
+			}
+			
+			if(!empty($args['return_path'])){
+				$headers['Return-Path']=$args['return_path'];
+			}
+			
+			if(!empty($args['errors_to'])){
+				$headers['Errors-To']=$args['errors_to'];
+			}
+
+			if(!empty($args['message_id'])){
+				$headers['Message-ID']=$args['message_id'];
 			}
 		
 			if(empty($text_message)){
@@ -291,7 +340,11 @@ Content-Disposition: attachment
 			'attachment_name'=>'',
 			'message'=>'',
 			'html_message'=>'',
-			'text_message'=>''
+			'text_message'=>'',
+			'errors_to'=>'',
+			'return_path'=>'',
+			'message_id'=>'',
+			'eol'=>"\r\n"
 		);
 		
 		return $defaults;
