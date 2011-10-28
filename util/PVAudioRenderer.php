@@ -136,32 +136,32 @@ class PVAudioRenderer extends PVStaticObject {
 				if(move_uploaded_file($tmp_name, PV_ROOT.$save_name) || PVFileManager::copyNewFile($tmp_name, PV_ROOT.$save_name)) {
 					
 					if($args['convert_to_midi']){
-						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mid', $args['convert_to_midi_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mid', @$args['convert_to_midi_options']);
 						$mid_file=$randomFileName.'.mid';
 					}
 					
 					if($args['convert_to_mp3']){
-						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mp3', $args['convert_to_mp3_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.mp3', @$args['convert_to_mp3_options']);
 						$mp3_file=$randomFileName.'.mp3';
 					}
 					
 					if($args['convert_to_wav']){
-						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.wav', $args['convert_to_wav_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.wav', @$args['convert_to_wav_options']);
 						$wav_file=$randomFileName.'.wav';
 					}
 					
 					if($args['convert_to_aiff']){
-						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.aiff', $args['convert_to_aiff_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.aiff', @$args['convert_to_aiff_options']);
 						$aif_file=$randomFileName.'.aif';
 					}
 					
 					if($args['convert_to_realaudio']){
-						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.ra', $args['convert_to_ra_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.ra', @$args['convert_to_ra_options']);
 						$ra_file=$randomFileName.'.rm';
 					}
 					
 					if($args['convert_to_oga']){
-						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.oga', $args['convert_to_oga_options']);
+						self::convertAudioFile(PV_ROOT.$save_name, PV_ROOT.PV_AUDIO.$randomFileName.'.oga', @$args['convert_to_oga_options']);
 						$oga_file=$randomFileName.'.oga';
 					}
 					
@@ -386,6 +386,9 @@ class PVAudioRenderer extends PVStaticObject {
 	/**
 	 * The encoding options on how to encode a file using FFMPPEG. The options should be run in a command line
 	 * formated.
+	 * @see http://www.ffmpeg.org/ffmpeg.html
+	 * @see http://www.ffmpeg.org/ffmpeg.html#Audio-Options
+	 * @see http://www.ffmpeg.org/ffmpeg.html#Advanced-Audio-options_003a
 	 * 
 	 * @param array $options Defined options to be used in the conversion. Options relate to those passed in a normal
 	 * 		  FFMPEG command line fashion.The key of the array corresponds the command and the value responds to the command
@@ -408,51 +411,51 @@ class PVAudioRenderer extends PVStaticObject {
 		
 		$input_options='';
 		
-		if($options[$input_type.'aframes'] ){
+		if(isset($options[$input_type.'aframes'] )){
 			$input_options.=' -aframes '.$options[$input_type.'aframes'];	
 		}
 		
-		if($options[$input_type.'ar']){
+		if(isset($options[$input_type.'ar'])){
 			$input_options.=' -ar '.$options[$input_type.'ar'];	
 		}
 		
-		if($options[$input_type.'ab']){
+		if(isset($options[$input_type.'ab'])){
 			$input_options.=' -ab '.$options[$input_type.'ab'];
 		}	
 		
-		if($options[$input_type.'aq']){
+		if(isset($options[$input_type.'aq'])){
 			$input_options.=' -aq '.$options[$input_type.'aq'];	
 		}
 		
-		if($options[$input_type.'ac']){
+		if(isset($options[$input_type.'ac'])){
 			$input_options.=' -ac '.$options[$input_type.'ac'];	
 		}
 		
-		if($options[$input_type.'an']){
+		if(isset($options[$input_type.'an'])){
 			$input_options.=' -an ';	
 		}
 		
-		if($options[$input_type.'acodec']){
+		if(isset($options[$input_type.'acodec'])){
 			$input_options.=' -acodec '.$options[$input_type.'acodec'];
 		}
 		
-		if($options[$input_type.'newaudio']){
+		if(isset($options[$input_type.'newaudio'])){
 			$input_options.=' -newaudio ';
 		}
 		
-		if($options[$input_type.'alang']){
+		if(isset($options[$input_type.'alang'])){
 			$input_options.=' -alang '.$options[$input_type.'alang'];
 		}
 		
-		if($options[$input_type.'atag']){
+		if(isset($options[$input_type.'atag'])){
 			$input_options.=' -atag '.$options[$input_type.'atag'];
 		}
 		
-		if($options[$input_type.'audio_service_type']){
+		if(isset($options[$input_type.'audio_service_type'])){
 			$input_options.=' -audio_service_type '.$options[$input_type.'audio_service_type'];
 		}
 		
-		if($options[$input_type.'absf']){
+		if(isset($options[$input_type.'absf'])){
 			$input_options.=' -absf '.$options[$input_type.'absf'];
 		}
 		
