@@ -5868,6 +5868,7 @@ class PVContent extends PVStaticObject {
 			'aif_file'=>'',
 			'mp3_file'=>'',
 			'ra_file'=>'',
+			'oga_file'=>'',
 			'sample_length'=>'',
 			'audio_src'=>'',
 			'audio_type'=>''
