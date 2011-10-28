@@ -107,7 +107,7 @@ class PVValidator extends PVStaticObject {
 	 * 			-'type' _string_: The type of validation to perform. There are currently 4 supported types.
 	 * 			1. 'closures' If you are in php 5.3, a closure function can be passed and validated against
 	 * 			2. 'preg_match' Validation will be peformoned using a preg_match. Rule must be passed in.
-	 * 			3. 'function' A php function that is stores in a string and called.
+	 * 			3. 'function' A php function that is stores in a string and called. Create the function using 'create_function' method
 	 * 			4. 'validator' Calls a function in the validator to be exectued
 	 * 			-'rule' _string_: A rule to be checked against if the type is a preg_match
 	 * 			-'function' _mixed_: Either a string that is a function or an annoymous function.
@@ -172,7 +172,8 @@ class PVValidator extends PVStaticObject {
 		} else if(self::$rules[$rule]['type']=='preg_match'){
 			$validation = preg_match(self::$rules[$rule]['rule'], $passasbe_args[0]);
 		} else if(self::$rules[$rule]['type']=='function'){
-			$validation = self::$rules[$rule]['function'];
+			$function =self::$rules[$rule]['function'];
+			$validation = call_user_func_array($function, $passasbe_args);
 		} else if(self::$rules[$rule]['type']=='closure'){
 			$function =self::$rules[$rule]['function'];
 			$validation = call_user_func_array($function, $passasbe_args);
@@ -206,7 +207,7 @@ class PVValidator extends PVStaticObject {
             }
         }
         
-		self::_notify(get_class().'::'.__FUNCTION__, $validation, $double);
+		self::_notify(get_class().'::'.__FUNCTION__, $validation, $int);
 		$validation = self::_applyFilter( get_class(), __FUNCTION__ , $validation , array('event'=>'return'));
 		
 		return $validation;
