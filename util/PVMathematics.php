@@ -72,8 +72,15 @@ class PVMathematics extends PVStaticObject {
 		  
 		  return $total_seconds=$days+$hours+$minutes+$seconds;
 		  
-	  }//end convertTimeIntoSeconds
-	  
+	}//end convertTimeIntoSeconds
+	
+	/**
+	 * Converts the number of seconds page into hours
+	 * 
+	 * @param int $seconds The amount of seconds
+	 * 
+	 * @return double $hours The number of hours converted by the past seconds
+	 */  
 	public static function convertSecondsToHours($seconds){
 		 
 		return $seconds/3600;
