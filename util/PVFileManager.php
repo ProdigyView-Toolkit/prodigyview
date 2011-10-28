@@ -460,7 +460,7 @@ class PVFileManager extends PVStaticObject {
 		$currentFile = $filtered['currentFile'];
 		$newFile = $filtered['newFile'];
 		
-		if(file_exists($currentFile))
+		if(file_exists($newFile))
 			return false;
 		
 		return self::copyFile($currentFile, $newFile);
