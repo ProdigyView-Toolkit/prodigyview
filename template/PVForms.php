@@ -28,7 +28,36 @@
 */
 class PVForms extends PVStaticObject {
 	
-	public static function input($name, $type, $options=array(), $css_options=array()){
+	/**
+	 * Creates an input that would correspond to any field that is an <input>.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param sring $type The type of input being generated
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function input($name, $type, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $type, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'type'=>$type, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$type = $filtered['type'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
 		
 		$input='<input name="'.$name.'" type="'.$type.'" ';
 		
@@ -42,149 +71,783 @@ class PVForms extends PVStaticObject {
 			return PVHtml::div($input, $css_options);
 		}
 		
-		return	$input;
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $type, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
 		
+		return	$input;
 	}
 	
-	public static function button($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a button input element with options passed to.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function button($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-button');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'button', $options, $css_options);
+		$input = self::input($name, 'button', $options, $css_options);;
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function checkbox($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a checkbox input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function checkbox($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-checkbox');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'checkbox', $options, $css_options);
+		$input = self::input($name, 'checkbox', $options, $css_options);;
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function text($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a text input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function text($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-text');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'text', $options, $css_options);
+		$input = self::input($name, 'text', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function file($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a file input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function file($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-file');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'file', $options, $css_options);
+		$input = self::input($name, 'file', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	
-	public static function date($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a date input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function date($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-date');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'date', $options, $css_options);
+		$input = self::input($name, 'date', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	
-	public static function hidden($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a hidden input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function hidden($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-hidden');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'hidden', $options, $css_options);
+		$input = self::input($name, 'hidden', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function image($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a image input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function image($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-image');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'image', $options, $css_options);
+		$input = self::input($name, 'image', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	
-	public static function search($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a search input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function search($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-search');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'search', $options, $css_options);
+		$input = self::input($name, 'search', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function submit($name, $value='Submit', $options=array(), $css_options=array()){
+	/**
+	 * Creates a submit input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function submit($name, $value='Submit', $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-submit');
 		$css_options += $css_defaults;
 		$options['value']=$value;
 		
-		return self::input($name, 'submit', $options, $css_options);
+		$input = self::input($name, 'submit', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	
-	public static function textfield($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a textfield input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function textfield($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-textfield');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'text', $options, $css_options);
+		$input = self::input($name, 'text', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function radiobutton($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a radio button input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function radiobutton($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-radio');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'radio', $options, $css_options);
+		$input = self::input($name, 'radio', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function time($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a time input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function time($name, $options=array(), $css_options=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-time');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'time', $options, $css_options);
+		$input = self::input($name, 'time', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function url($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a url input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function url($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-url');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'url', $options, $css_options);
+		$input = self::input($name, 'url', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function range($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a range input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function range($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-range');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'range', $options, $css_options);
+		$input = self::input($name, 'range', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function reset($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a reset input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function reset($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-reset');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'reset', $options, $css_options);
+		$input = self::input($name, 'reset', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function color($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a color input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function color($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-color');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'color', $options, $css_options);
+		$input = self::input($name, 'color', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function password($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a password input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function password($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-password');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'password', $options, $css_options);
+		$input = self::input($name, 'password', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 	
-	public static function number($name, $options=array(), $css_options=array()){
+	/**
+	 * Creates a number input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function number($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-number');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'number', $options, $css_options);
+		$input = self::input($name, 'number', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
-	public static function email($name, $options=array(), $css_options=array()){
+
+	/**
+	 * Creates a number input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function email($name, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-email');
 		$css_options += $css_defaults;
 		
-		return self::input($name, 'email', $options, $css_options);
+		$input = self::input($name, 'email', $options, $css_options);
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));	
+		
+		return $input;
 	}
 
-	
-	public static function label($text, $options=array(), $css_options=array()){
+	/**
+	 * Creates a label input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $text The text to appear in the label
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function label($text, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-label');
 		$css_options += $css_defaults;
 		
@@ -204,10 +867,44 @@ class PVForms extends PVStaticObject {
 			return PVHtml::div($label, $css_options);
 		}
 		
-		return	$label;
+		self::_notify(get_class().'::'.__FUNCTION__, $label, $name, $options, $css_options);
+		$label = self::_applyFilter( get_class(), __FUNCTION__ , $label , array('event'=>'return'));	
+		
+		return $label;
 	}
 	
-	public static function select($name, $data, $options=array(), $css_options=array()){
+	/**
+	 * Creates a checkbox input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the select fields name.
+	 * @param array $data The data that will create the options. The key in the array will be the options value and the value
+	 * 				in the array will be the options display.
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function select($name, $data, $options=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $data, $options, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'data'=>$data, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('name'=>'form-select');
 		$css_options += $css_defaults;	
 			
@@ -252,10 +949,45 @@ class PVForms extends PVStaticObject {
 			return PVHtml::div($tag, $css_options);
 		}
 		
-		return	$tag;
+		self::_notify(get_class().'::'.__FUNCTION__, $tag, $name, $data, $options, $css_options);
+		$tag = self::_applyFilter( get_class(), __FUNCTION__ , $tag , array('event'=>'return'));	
+		
+		return $tag;
 	}
 	
-	public static function getFormAttributes($attributes=array()){
+	/**
+	 * Form attributes that are present in many form elements. This functionisused for assigning those attribute by passing
+	 * them in as an array and returning them as a string. Contains both html and html5 elements
+	 * 
+	 * @param array $attributes Attribues that will be assigned if they match
+	 * 			-'accept' _string_: The class attribute
+	 * 			-'autocomplete' _string_: The class attribute
+	 * 			-'autofocus' _string_: The class attribute
+	 * 			-'chcked' _string_: The class attribute
+	 *  		-'disabled' _string_: The class attribute
+	 *  		-'form' _string_: The class attribute
+	 *  		-'formaction' _string_: The class attribute
+	 *  		-'formenctype' _string_: The class attribute
+	 *  		-'formmethod' _string_: The class attribute
+	 *  		-'formnovalidation' _string_: The class attribute
+	 *  		-'formtarget' _string_: The class attribute
+	 *  		-'height' _string_: The class attribute
+	 *  		-'list' _string_: The class attribute
+	 *  		-'max' _string_: The class attribute
+	 *  		-'maxlength' _string_: The class attribute
+	 * 			-'min' _string_: The class attribute
+	 * 
+	 * @return string $attributes Returns the matched attributes as a string
+	 * @access public
+	 * @todo complete documentation
+	 */
+	public static function getFormAttributes($attributes=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		
+		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
+		
 		$return_attributes='';
 		$accepted_attributes=array('accept', 'autocomplete', 'autofocus', 'checked', 'disabled', 'form', 'formaction','formenctype', 'formmethod', 'formnovalidate', 'formtarget', 'height', 'list', 'max', 'maxlength', 'min', 'multiple', 'pattern', 'placeholder', 'readonly', 'required', 'size', 'step', 'type', 'value', 'width', 'novalidate', 'dirname');
 		
@@ -265,10 +997,43 @@ class PVForms extends PVStaticObject {
 			}
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));	
+		
 		return $return_attributes;
 	}
 	
-	public static function textarea($name, $value, $attributes=array(), $css_options=array()){
+	/**
+	 * Creates a checkbox input element with options passed too it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param string $value The value in the textarea
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
+	 * 				Options will be passed to PVHTML::getStandardAttributes() and PVHTML::getEventAttributes(). Have the option
+	 * 				'disable_css' will disable the div surrouding the element.
+	 * 
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function textarea($name, $value, $attributes=array(), $css_options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $attributes, $css_options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'value'=>$value, 'attributes'=>$attributes, 'css_options'=>$css_options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$value = $filtered['value'];
+		$attributes = $filtered['attributes'];
+		$css_options = $filtered['css_options'];
+		
 		$css_defaults=array('class'=>'form-textarea');
 		$css_options += $css_defaults;
 		
@@ -286,20 +1051,44 @@ class PVForms extends PVStaticObject {
 			return PVHtml::div($textarea, $css_options);
 		}
 		
-		return	$textarea;
+		self::_notify(get_class().'::'.__FUNCTION__, $textarea, $name, $value, $attributes, $css_options);
+		$textarea = self::_applyFilter( get_class(), __FUNCTION__ , $textarea , array('event'=>'return'));	
 		
+		return	$textarea;
 	}//end getTextArea
 	
-	public static function form($name, $data, $options=array()){
+	/**
+	 * Gets the tags for display s form with the data inside of it.
+	 */
+	public static function form($name, $data, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $data, $options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'data'=>$data ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		$data = $filtered['data'];
+		
 		$tag=self::formBegin($name, $options);
 		$tag.=$data;
 		$tag.=self::formClose();
 		
-		return $tags;
+		self::_notify(get_class().'::'.__FUNCTION__, $tag, $name, $data, $options);
+		$tag = self::_applyFilter( get_class(), __FUNCTION__ , $tag , array('event'=>'return'));
 		
+		return $tag;
 	}
 	
-	public static function formBegin($name, $options=array()){
+	public static function formBegin($name, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options ), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
+		
 		$defaults=array('method'=>'POST');
 		$options += $defaults;
 		
@@ -331,10 +1120,19 @@ class PVForms extends PVStaticObject {
 		
 		$input.='>';
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $input, $name, $options);
+		$input = self::_applyFilter( get_class(), __FUNCTION__ , $input , array('event'=>'return'));
+		
 		return	$input;
 	}
 
-	public static function formEnd($options=array()){
+	public static function formEnd($options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
+		$options = self::_applyFilter( get_class(), __FUNCTION__ ,  $options, array('event'=>'args'));
+		
 		$input='</form>';
 		
 		return	$input;
