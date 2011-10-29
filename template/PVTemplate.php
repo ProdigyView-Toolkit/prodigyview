@@ -33,7 +33,22 @@ class PVTemplate extends PVStaticObject {
 	private static $siteMetaTags;
 	private static $siteMetaDescription;
 	
+	/**
+	 * Initilize the class and set the variables for the template.
+	 * 
+	 * @param array $config The configuration variables for the template
+	 * 			-'site_name' _string_: The name of the site
+	 * 			-'meta_keywords' _string_: The meta keywords for the site
+	 * 			-'meta_description' _string_: The meta descriptiong for the site
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	function init($config=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		
 		$defaults = array(
 			'site_name'=>'',
 			'meta_keywords'=>'',
@@ -41,44 +56,32 @@ class PVTemplate extends PVStaticObject {
 		);
 			
 		$config += $defaults;
+		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config, array('event'=>'args'));
 		
 		self::$siteTitle=$config['site_name'];
 		self::$siteMetaTags=$config['meta_keywords'];
 		self::$siteMetaDescription=$config['meta_description'];
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $config);
 	}
 	
-	/**
-	 * Prints the site title set in the xml configuration file.
-	 * Modify the tags in <site_name></site_name> to change the site title.
-	 */
-	public static function printSiteTitle(){
-		echo self::$siteTitle;
-	}
-	
-	/**
-	 * Prints the site meta description set in the xml configuration file.
-	 * Modify the tags in <meta_description></meta_description> to change the meta description.
-	 */
-	public static function printSiteMetaDescription(){
-		echo self::$siteMetaDescription;
-	}
-	
-	/**
-	 * Prints the site meta tags set in the xml configuration file.
-	 * Modify the tags in <meta_keywords></meta_keywords> to change the meta tags.
-	 */
-	public static function printSiteMetaTags(){
-		echo self::$siteMetaTags;
-	}
 	
 	/**
 	 * Returns the title set for the site
 	 * Modify the tags in <site_name></site_name> to change the site title.
 	 *
 	 * @return string siteTitle: The sets title.
+	 * @access public
 	 */
-	public static function getSiteTitle(){
-		return self::$siteTitle;
+	public static function getSiteTitle() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$siteTitle);
+		$value = self::_applyFilter( get_class(), __FUNCTION__ , self::$siteTitle, array('event'=>'return'));
+		
+		return $value;
 	}
 	
 	/**
@@ -86,9 +89,17 @@ class PVTemplate extends PVStaticObject {
 	 * Modify the tags in <site_name></site_name> to change the site title.
 	 *
 	 * @return string siteTitle: The sets title.
+	 * @access public
 	 */
-	public static function getSiteMetaDescription(){
-		return self::$siteMetaDescription;
+	public static function getSiteMetaDescription() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$siteMetaDescription);
+		$value = self::_applyFilter( get_class(), __FUNCTION__ , self::$siteMetaDescription, array('event'=>'return'));
+		
+		return $value;
 	}
 	
 	/**
@@ -96,71 +107,204 @@ class PVTemplate extends PVStaticObject {
 	 * Modify the tags in <meta_description></meta_description> to change the meta description.
 	 *
 	 * @return string meta_tags: The sets title.
+	 * @access public
 	 */
-	public static function getSiteMetaTags(){
-		return self::$siteMetaTags;
+	public static function getSiteMetaTags() {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, self::$siteMetaTags);
+		$value = self::_applyFilter( get_class(), __FUNCTION__ ,  self::$siteMetaTags, array('event'=>'return'));
+		
+		return $value;
 	}
 	
 	/**
 	 * Ovveride the title of the site.
 	 * 
 	 * @param string title: Site title
+	 * @access public
 	 */
-	public static function setSiteTitle($string){
+	public static function setSiteTitle($string) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		
+		$string = self::_applyFilter( get_class(), __FUNCTION__ ,  $string, array('event'=>'args'));
 		self::$siteTitle=$string;
+		self::_notify(get_class().'::'.__FUNCTION__, $string);
 	}
 	
 	/**
 	 * Append to the site title
 	 * 
 	 * @param string title: Site title
+	 * 
+	 * @return void
+	 * @access public
 	 */
-	public static function appendSiteTitle($string){
+	public static function appendSiteTitle($string) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		
+		$string = self::_applyFilter( get_class(), __FUNCTION__ ,  $string, array('event'=>'args'));
 		self::$siteTitle.=$string;
+		self::_notify(get_class().'::'.__FUNCTION__, $string);
 	}
 	
 	/**
 	 * Ovveride the meta tags of the site.
 	 * 
 	 * @param string meta_tags: Set the meta tags
+	 * 
+	 * @return void
+	 * @access public
 	 */
-	public static function setSiteMetaTags($string){
+	public static function setSiteMetaTags($string) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		
+		$string = self::_applyFilter( get_class(), __FUNCTION__ ,  $string, array('event'=>'args'));
 		self::$siteMetaTags=$string;
+		self::_notify(get_class().'::'.__FUNCTION__, $string);
 	}
 	
-	public static function appendSiteMetaTags($string){
+	public static function appendSiteMetaTags($string) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		
+		$string = self::_applyFilter( get_class(), __FUNCTION__ ,  $string, array('event'=>'args'));
 		self::$siteMetaTags.=$string;
+		self::_notify(get_class().'::'.__FUNCTION__, $string);
 	}
 	
 	/**
 	 * Ovveride the meta description of the site.
 	 * 
-	 * @param string title: Site title
+	 * @param string $text The string that will be set as the site meta description
+	 * 
+	 * @return void
+	 * @access public
 	 */
-	public static function setSiteMetaDescription($string){
+	public static function setSiteMetaDescription($string) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		
+		$string = self::_applyFilter( get_class(), __FUNCTION__ ,  $string, array('event'=>'args'));
 		self::$siteMetaDescription=$string;
+		self::_notify(get_class().'::'.__FUNCTION__, $string);
 	}
-	
-	public static function appendSiteMetaDescription($string){
+	/**
+	 * Append text to the site meta description
+	 * 
+	 * @param string $text The text to be appened to the site meta description
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function appendSiteMetaDescription($string) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		
+		$string = self::_applyFilter( get_class(), __FUNCTION__ ,  $string, array('event'=>'args'));
 		self::$siteMetaDescription.=$string;
+		self::_notify(get_class().'::'.__FUNCTION__, $string);
 	}
 	
-	public static function errorMessage($message, $options=array()){
-			$defaults=array('class'=>'error-message');
-			$options += $defaults;
+	/**
+	 * Displays a message that alerts the user when a error action has taken place.
+	 * @see PVHtml::div()
+	 * 
+	 * @param string $message The message to be displayed
+	 * @param array $options Options that define the parameters. The options will form
+	 * 				a div and will be the same options used in PVHtml::div()
+	 * 
+	 * @return string $div Returns a div with the error message inside.
+	 * @access public
+	 */
+	public static function errorMessage($message, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $message, $options);
+		
+		$defaults=array('class'=>'error-message');
+		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('message'=>$message, 'options'=>$options ), array('event'=>'args'));
+		$message = $filtered['message'];
+		$options = $filtered['options'];
 			
-			return PVHtml::div($message, $options);
+		$div = PVHtml::div($message, $options);
+		self::_notify(get_class().'::'.__FUNCTION__, $div, $message, $options);
+		$div = self::_applyFilter( get_class(), __FUNCTION__ ,  $div , array('event'=>'return'));
+		
+		return $div;
 	}
 	
-	public static function successMessage($message, $options=array()){
-			$defaults=array('class'=>'success-message');
-			$options += $defaults;
-			
-			return PVHtml::div($message, $options);
+	/**
+	 * Displays a message that alerts the user when a succesful action has taken place.
+	 * @see PVHtml::div()
+	 * 
+	 * @param string $message The message to be displayed
+	 * @param array $options Options that define the parameters. The options will form
+	 * 				a div and will be the same options used in PVHtml::div()
+	 * 
+	 * @return string $div Returns a div with the success message inside.
+	 * @access public
+	 */
+	public static function successMessage($message, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $message, $options);
+		
+		$defaults=array('class'=>'success-message');
+		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('message'=>$message, 'options'=>$options ), array('event'=>'args'));
+		$message = $filtered['message'];
+		$options = $filtered['options'];
+		
+		$div = PVHtml::div($message, $options);
+		self::_notify(get_class().'::'.__FUNCTION__, $div, $message, $options);
+		$div = self::_applyFilter( get_class(), __FUNCTION__ ,  $div , array('event'=>'return'));
+		
+		return $div;
 	}
 	
-	public static function installTemplate($args){
+	/**
+	 * The function used for installing or updating a template into the templating system.
+	 * 
+	 * @param array $args The arguements that define the template in the database.
+	 * 			-'template_name' _string_: The name of the template
+	 * 			-'template_version' _double_: The version of the template
+	 * 			-'template_author' _string_: The author of the template
+	 * 			-'template_license' _string_: The license used wit the template
+	 * 			-'is_default' _boolean_: Is this the default template
+	 * 			-'main_file' _string_: The location of the main file for the template
+	 * 			-'xml_file' _string: The location of the xml file for the template
+	 * 			-'template_directory' _string_: The directory the template resides in
+	 * 			-'template_unique_id' _string_: A uniquie identier for the template
+	 * 			-'template_domain' _string_: A domain the template resides at
+	 * 			-'template_page' _id_: A page the template is assoicated wtih
+	 * 			-'template_site_id' _id_: A site the template is assoicated with
+	 * 			-'template_options' _string: Storage for the template options
+	 * 
+	 * @return id $template_id The id of the template
+	 * @access public
+	 */
+	public static function installTemplate($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getTemplateDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		
 		if(!empty($args) && is_array($args)){
 			
@@ -177,7 +321,6 @@ class PVTemplate extends PVStaticObject {
 			
 			$result=PVDatabase::query($query);
 			
-			
 			if(PVDatabase::resultRowCount($result) <= 0){
 	  			
 	  			$query="INSERT INTO ".PVDatabase::getTemplatesTableName()."(template_name , template_version , template_author , template_license , main_file , xml_file , template_directory , template_image , template_unique_id, template_domain, template_page, template_site_id, template_options ) VALUES( '$template_name' , '$template_version' , '$template_author' , '$template_license' , '$main_file' , '$xml_file' , '$template_directory' , '$template_image' , '$template_unique_id', '$template_domain' , '$template_page' , '$template_site_id', '$template_options' ) " ;
@@ -191,36 +334,54 @@ class PVTemplate extends PVStaticObject {
 
 	  				PVDatabase::query($query);
 	  			}
-	  			return $template_id;
+	  			
+				self::_notify(get_class().'::'.__FUNCTION__, $template_id, $args);
+				$template_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $template_id , array('event'=>'return'));
+				
+				return $template_id;
 	  		}//end if result  < 0
 			else{
 				
 				$query="UPDATE ".PVDatabase::getTemplatesTableName()." SET template_name='$template_name' , template_version='$template_version' , template_author='$template_author' , template_license='$template_license' , main_file='$main_file' , xml_file='$xml_file' , template_directory='$template_directory' , template_image='$template_image' , template_unique_id='$template_unique_id' , template_domain='$template_domain', template_page='$template_page', template_site_id='$template_site_id', template_options='$template_options' WHERE template_unique_id='$template_unique_id' ";
-					PVDatabase::query($query);
-				
+				PVDatabase::query($query);
+				self::_notify(get_class().'::'.__FUNCTION__, $template_id, $args);
 			}//end else 
 			
 		}//end if not empty and is array
 		
 	}//end installTemplate
 	
-	public static function getTemplate($template_id){
+	/**
+	 * Retrieves the data on the template based on the template's id or the template's unique id.
+	 * 
+	 * @param mixed $template_id Either the id of the template or the unique identifer of the template
+	 * 
+	 * @return array $data The template's data
+	 * @access public
+	 */
+	public static function getTemplate($template_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $template_id);
+			
+		$template_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $template_id, array('event'=>'args'));
 		
 		if(!empty($template_id)){
 			
 			if(PVValidator::isInteger($template_id)){
 				$template_id=ceil($template_id);
 				$query="SELECT * FROM ".PVDatabase::getTemplatesTableName()." WHERE template_id='$template_id' ";
-			}
-			else{
+			} else {
 				$template_id=PVDatabase::makeSafe($template_id);
 				$query="SELECT * FROM ".PVDatabase::getTemplatesTableName()." WHERE template_unique_id='$template_id' ";
 			}
 			
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			
 			$row=PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $template_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
 			
 			return $row;
 									
@@ -229,12 +390,38 @@ class PVTemplate extends PVStaticObject {
 	}//end getTemplate
 	
 	
-	
-	public static function getTemplateList($args){
+	/**
+	 * Search for templates based on passed parameters. Utilizes the PV Standard Search Query.
+	 * 
+	 * @param array $args Arguements passed that can be used to find a list of templates.
+	 * 			-'template_id' _id_: The id of a template being searched for
+	 * 			-'template_name' _string_: The name of the template
+	 * 			-'template_version' _double_: The version of the template
+	 * 			-'template_author' _string_: The author of the template
+	 * 			-'template_license' _string_: The license used wit the template
+	 * 			-'is_default' _boolean_: Is this the default template
+	 * 			-'main_file' _string_: The location of the main file for the template
+	 * 			-'xml_file' _string: The location of the xml file for the template
+	 * 			-'template_directory' _string_: The directory the template resides in
+	 * 			-'template_unique_id' _string_: A uniquie identier for the template
+	 * 			-'template_domain' _string_: A domain the template resides at
+	 * 			-'template_page' _id_: A page the template is assoicated wtih
+	 * 			-'template_site_id' _id_: A site the template is assoicated with
+	 * 			-'template_options' _string: Storage for the template options
+	 * 
+	 * @return array $templates Returns an array of templates found
+	 * @access public
+	 */
+	public static function getTemplateList($args = array()) {
 		
-		if(is_array($args)){
-			extract($args);
-		}
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getTemplateDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$args = PVDatabase::makeSafe($args);
+		extract($args);
 		
 		$first=1;
 		
@@ -242,7 +429,7 @@ class PVTemplate extends PVStaticObject {
 		$table_name=PVDatabase::getTemplatesTableName();
 		$db_type=PVDatabase::getDatabaseType();
 			
-		$WHERE_CLAUSE.='';
+		$WHERE_CLAUSE='';
 		
 		if(!empty($template_id)){
 				
@@ -508,7 +695,6 @@ class PVTemplate extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		$JOINS='';
 		
 		if(!empty($custom_where)){
@@ -519,8 +705,6 @@ class PVTemplate extends PVStaticObject {
 		if(!empty($custom_join)){
 			$JOINS.=' '.$custom_join.' ';
 		}
-		
-		
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
@@ -585,12 +769,27 @@ class PVTemplate extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ ,  $content_array , array('event'=>'return'));
 		
     	return $content_array;
-		
 	}//end getTemplateList
 	
-	public static function removeTemplate($template_id){
+	/**
+	 * Removes a template based on the id of the template. The files assoicated with the template
+	 * will also be deleted.
+	 * 
+	 * @param id $template_id The id of the template to be deleted
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function removeTemplate($template_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $template_id);
+		
+		$template_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $template_id, array('event'=>'args'));
 		
 		$template_info=self::getTemplate($template_id);
 		
@@ -608,12 +807,43 @@ class PVTemplate extends PVStaticObject {
 			
 			$query="DELETE FROM ".PVDatabase::getTemplatePositionsTableName()." WHERE template_id='$template_id'";
 			PVDatabase::query($query);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $template_id);
 		}
 		
 	}//end removeTemplate
 	
-	
-	public static function selectTemplate($args){
+	/**
+	 * Selects a template the cloesely matches the arguments passed to it and returns the first
+	 * one found.
+	 * 
+	 * @param array $args Arguements passed that can be used to find a single template.
+	 * 			-'template_id' _id_: The id of a template being searched for
+	 * 			-'template_name' _string_: The name of the template
+	 * 			-'template_version' _double_: The version of the template
+	 * 			-'template_author' _string_: The author of the template
+	 * 			-'template_license' _string_: The license used wit the template
+	 * 			-'is_default' _boolean_: Is this the default template
+	 * 			-'main_file' _string_: The location of the main file for the template
+	 * 			-'xml_file' _string: The location of the xml file for the template
+	 * 			-'template_directory' _string_: The directory the template resides in
+	 * 			-'template_unique_id' _string_: A uniquie identier for the template
+	 * 			-'template_domain' _string_: A domain the template resides at
+	 * 			-'template_page' _id_: A page the template is assoicated wtih
+	 * 			-'template_site_id' _id_: A site the template is assoicated with
+	 * 			-'template_options' _string: Storage for the template options
+	 * 
+	 * @return array $templates Returns the found template, if any
+	 * @access public
+	 */
+	public static function selectTemplate($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getTemplateDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$args = PVDatabase::makeSafe($args);
 		
 		if(!empty($args) && is_array($args)){
 			
@@ -686,43 +916,79 @@ class PVTemplate extends PVStaticObject {
 			$result = PVDatabase::query($query);
 			$row= PVDatabase::fetchArray($result);
 			
-			return $row;
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $args);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
 			
+			return $row;
 		}//end
-		
 		
 	}//end getDefaultTemplate
 	
-	public static function addTemplatePosition($template_id, $position){
+	/**
+	 * Add a template position to a template.
+	 * 
+	 * @param array $args An array of arguements that define the template position
+	 * 				-'template_id' _id_: The id of the template that contains the position
+	 * 				-'position_name' _string_: The name of the position
+	 * 				-'position_width' _double_: The width the position
+	 * 				-'position_height' _double_ The height of the position
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function addTemplatePosition($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getTemplatePositionDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$args = PVDatabase::makeSafe($args);
+		
+		extract($args);
 		
 		if(!empty($template_id) && !empty($position) ){
 			
-			$template_id=ceil($template_id);
-			$position=PVDatabase::makeSafe($position);
-			
-			$query="SELECT template_id, position_name FROM ".PVDatabase::getTemplatePositionsTableName()." WHERE template_id='$template_id' AND position_name='$position' ";
+			$query="SELECT template_id, position_name FROM ".PVDatabase::getTemplatePositionsTableName()." WHERE template_id='$template_id' AND position_name='$position_name' ";
 	   	 	$result = PVDatabase::query($query);
 			
 	   	 	if(PVDatabase::resultRowCount($result)<=0 && !empty($position)){
-	   	 		$query="INSERT INTO ".PVDatabase::getTemplatePositionsTableName()."(template_id, position_name) VALUES('$template_id', '$position')";
+	   	 		$query="INSERT INTO ".PVDatabase::getTemplatePositionsTableName()."(template_id, position_name) VALUES('$template_id', '$position_name')";
 	   	 		PVDatabase::query($query);
+				self::_notify(get_class().'::'.__FUNCTION__, $args);
 			}
 			
 		}//end if !emoty
 		
 	}//end addTemplatePosition
 	
-	public static function getTemplatePositionList($args){
+	/**
+	 * Returns a list of template positions based on passed arguements. Used ProdigyView standard search query.
+	 * 
+	 * @param array $args An array of arguements that define how the template positions are found
+	 * 				-'template_id' _id_: The id of the template that contains the position
+	 * 				-'position_name' _string_: The name of the position
+	 * 				-'position_width' _double_: The width the position
+	 * 				-'position_height' _double_ The height of the position
+	 * 
+	 * @return array $positions Returns an array of template positons
+	 * @access public
+	 */
+	public static function getTemplatePositionList($args = array()) {
 		
-		if(is_array($args)){
-			extract($args);
-		}
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getTemplatePositionDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$args = PVDatabase::makeSafe($args);
+		extract($args);
 		
 		$first=1;
-		
 		$content_array=array();
 			
-		$WHERE_CLAUSE.='';
+		$WHERE_CLAUSE='';
 		
 		if(!empty($template_id)){
 				
@@ -759,7 +1025,6 @@ class PVTemplate extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		$JOINS='';
 		
 		if($join_templates){
@@ -775,16 +1040,12 @@ class PVTemplate extends PVStaticObject {
 			$JOINS.=' '.$custom_join.' ';
 		}
 		
-		
-		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
 		
 		$ORDER_BY=$args['order_by'];
-		
 		$LIMIT=$args['limit'];
-		
 		
 		if(!empty($LIMIT)){
 			$LIMIT=" limit $LIMIT ";
@@ -802,7 +1063,6 @@ class PVTemplate extends PVStaticObject {
 			$custom_select='*';
 		}
 		
-		
 		$query="SELECT $custom_select FROM ".PVDatabase::getTemplatePositionsTableName()." $JOINS ".$WHERE_CLAUSE." $ORDER_BY $LIMIT ";
 		
 		$result=PVDatabase::query($query);
@@ -812,132 +1072,149 @@ class PVTemplate extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ ,  $content_array , array('event'=>'return'));
     	
 		return $content_array;
-		
-		
-		
 	}//end getTemplatePositionList
 	
-	public static function getTemplatePosition($template_id, $position_name){
+	/**
+	 * Returns the data assoicated with a template position.
+	 * 
+	 * @param id $template_id The id of the template
+	 * @param string $position_name The name of the position
+	 * 
+	 * @return array $position Returns an array of data about that position
+	 * @access public
+	 */
+	public static function getTemplatePosition($template_id, $position_name) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $template_id, $position_name);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('template_id'=>$template_id, 'position_name'=>$position_name), array('event'=>'args'));
+		$template_id = $filtered['template_id'];
+		$position_name = $filtered['position_name'];
+		
+		$template_id=PVDatabase::makeSafe($template_id);
+		$position_name=PVDatabase::makeSafe($position_name);
 		
 		if(!empty($template_id) && !empty($position_name )){
 			
 			$query="SELECT * FROM ".PVDatabase::getTemplatePositionsTableName()." WHERE template_id='$template_id' AND position_name='$position_name' ";
-			
 	   	 	$result = PVDatabase::query($query);
-			
 			$row = PVDatabase::fetchArray($result);
-			
 			$row=PVDatabase::formatData($row);
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $template_id, $position_name);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
+				
 			return $row;
-			
 		}//end not empty
 		
 	}//end getTemplatePosition
 	
-	public static function removeTemplatePosition($template_id, $position_name){
+	/**
+	 * Removes and template position based up on the id of the template and position name.
+	 * 
+	 * @param id $template_id The id of the template
+	 * @param string $position_name The name of the position
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function removeTemplatePosition($template_id, $position_name) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $template_id, $position_name);
+			
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('template_id'=>$template_id, 'position_name'=>$position_name), array('event'=>'args'));
+		$template_id = $filtered['template_id'];
+		$position_name = $filtered['position_name'];
+		
+		$template_id=PVDatabase::makeSafe($template_id);
+		$position_name=PVDatabase::makeSafe($position_name);
 		
 		if(!empty($template_id) && !empty($position_name )){
 			
 			$query="DELETE FROM ".PVDatabase::getTemplatePositionsTableName()." WHERE template_id='$template_id' AND position_name='$position_name' ";
 	   	 	
 			PVDatabase::query($query);
-			
+			self::_notify(get_class().'::'.__FUNCTION__, $template_id, $position_name);
 		}//end not empty
 		
 	}//end getTemplatePosition
 	
-	
 	/**
-	 * Display the CSS for the template that is set to default. Uses the xml for the template
-	 * and searches the xml for css tags. The files in the <css></css> tags will be displayed
-	 * as an <link></link>. Best used in the header.
-	 */
-	public static function printCurrentTemplateCss(){
-		$query="SELECT template_directory, xml_file FROM ".PVDatabase::getTemplatesTableName()." WHERE is_default='1'";
-		
-		$result=PVDatabase::query($query);
-		
-		$row=PVDatabase::fetchArray($result);
-
-		if(!empty($row)){
-			
-			$template_dir=ROOT.DS.'templates'.DS.$row['template_directory'];
-			$xmlFile=$template_dir.$row['xml_file'];
-			
-			if(file_exists($xmlFile) && !empty($xmlFile)){
-					$xml = simplexml_load_file($xmlFile);
-					
-					foreach($xml->children() as $child){
-						if($child->getName()=='css'){
-							?>
-                            <link rel="stylesheet" href="<?php echo PV_TEMPLATES.DS.$row['template_directory'].basename($child);?>" type="text/css" charset="utf-8" />
-                            <?php
-							
-						}
-						
-					}//end for each
-					
-			}//xml file not empty
-		}
-		
-	}//end function
-	
-	/**
-	 * Used for updating a string, generally a header that an ob_flushed
-	 * has ouputted.
+	 * Used for updating a string/bufer, generally a header that ob_flush returns. Inputs the libraries
+	 * and meta description into the header based upon the dates passed
 	 * 
-	 * @param string buffer
-	 * @param array options
+	 * @param string $buffer The string/buffer that will contain the tags to be replaced
+	 * @param array $options The options that define how the header will output
+	 * 			-'site_title' _string_: The text will be searched for in the passed string and replaced with the title of the site. 
+	 * 			-'site_keywords' _string_: The text will be searched for in the passed string and replaced with the keywords of the site. 
+	 * 			-'site_description' _string_: The text will be searched for in the passed string and replaced with the description of the site. 
+	 * 			-'header_addition' _string_: The text will be searched for in the passed string and replaced with the libraries found. 
+	 * 			-'version' _double_: A version for the file to differinate versions of the same file
+	 * 			-'append_url' _boolean_: Append the sites url the location of the script
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'url' _string_: A url to speficy the location of the libraries
 	 * 
-	 * @return string buffer_demimentated
+	 * @return string $buffer The buffer with the tags replaced
+	 * @access public
 	 */
 	public static function updateHeader($buffer, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $buffer, $options);
+		
 		$defaults=array(
 			'site_title'=>'{SITE_TITLE}',
 			'site_keywords'=>'{SITE_KEYWORDS}',
 			'site_description'=>'{SITE_DESCRIPTION}',
-			'header_description' => '{HEADER_ADDITION}'
+			'header_addition' => '{HEADER_ADDITION}'
 		);
 		
 		$options += $defaults;
-		$libraries='';
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('buffer'=>$buffer, 'options'=>$options), array('event'=>'args'));
+		$buffer = $filtered['buffer'];
+		$options = $filtered['options'];
+		
+		$libraries = self::getHeader($options);
+		
+		$buffer = str_replace($options['site_title'], pv_getSiteTitle() , $buffer);
+		
+		$buffer = str_replace($options['site_keywords'], pv_getSiteMetaTags(), $buffer);
+		
+		$buffer = str_replace($options['site_description'], pv_getSiteMetaDescription() , $buffer);
 	
-	
-		foreach (PVLibraries::$jquery_libraries_array as $value) {
-			$libraries.='<script type="text/javascript" src="'.PV_JQUERY.trim($value).'"></script>';
-		} 
+	  	$buffer = str_replace($options['header_addition'], $libraries , $buffer);
 		
-		foreach (PVLibraries::$motools_libraries_array as $value) {
-			 $libraries.='<script type="text/javascript" src="'.PV_MOOTOOLS.trim($value).'"></script>';
-		}
+		self::_notify(get_class().'::'.__FUNCTION__, $buffer, $options);
+		$buffer = self::_applyFilter( get_class(), __FUNCTION__ , $buffer , array('event'=>'return'));
 		
-		foreach (PVLibraries::$prototype_libraries_array as $value) {
-			 $libraries.='<script type="text/javascript" src="'.PV_PROTOTYPE.trim($value).'"></script>';
-		}
-		
-		foreach (PVLibraries::$css_files_array as $value) {
-			 $libraries.='<link rel="stylesheet"  type="text/css" href="'.PV_CSS.trim($value).'">';
-		}
-		
-		foreach (PVLibraries::$javascript_libraries_array as $value) {
-			 $libraries.='<script type="text/javascript" src="'.PV_JAVASCRIPT.trim($value).'"></script>';
-		}
-	
-		$libraries.=PVLibraries::$open_javascript;
-		
-		$buffer=str_replace($options['site_title'], pv_getSiteTitle() , $buffer);
-		
-		$buffer=str_replace($options['site_keywords'], pv_getSiteMetaTags(), $buffer);
-		
-		$buffer=str_replace($options['site_description'], pv_getSiteMetaDescription() , $buffer);
-	
-	  	return str_replace($options['header_addition'], $libraries , $buffer);
+		return $buffer;
 	}//end  updateHeader
 
+	/**
+	 * Retrieves information that would typically be present in a header. Includes all the libraries(javascript, prototype, etc)
+	 * and css.
+	 * 
+	 * @param array $options Options that can determine how the site files are displayed
+	 * 			-'version' _double_: A version for the file to differinate versions of the same file
+	 * 			-'append_url' _boolean_: Append the sites url the location of the script
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'url' _string_: A url to speficy the location of the libraries
+	 * 
+	 * @return string $libraries <script /> string with the libraries found
+	 * @access public
+	 */
 	public static function getHeader($options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
 		$defaults=array(
 			'version'=> false,
 			'append_url' =>true,
@@ -945,6 +1222,7 @@ class PVTemplate extends PVStaticObject {
 			'url'=>''
 		);
 		$options += $defaults;
+		$options = self::_applyFilter( get_class(), __FUNCTION__ ,  $options, array('event'=>'args'));
 		extract($options);
 		
 		$siteConfiguration=pv_getSiteCompleteConfiguration();
@@ -956,7 +1234,7 @@ class PVTemplate extends PVStaticObject {
 		$css = (PV_IS_ADMIN) ? PV_ADMIN_CSS : PV_CSS;
 			
 		if($options['append_url']){
-			$url=pv_getSiteUrl();
+			$url=PVTools::getCurrentBaseUrl();
 		}
 			
 		if($options['version']){
@@ -979,31 +1257,52 @@ class PVTemplate extends PVStaticObject {
 			$libraries.'<script type="text/javascript" src="'.$url.$prototype.DS.$siteConfiguration['prototype_library'].'"></script>';
 		}
 			
-		foreach (PVLibraries::$jquery_libraries_array as $value) {
+		foreach (PVLibraries::getJqueryQueue() as $value) {
 			$libraries.='<script type="text/javascript" src="'.$url.$jquery.DS.trim($value).$version.'"></script>';
 		} 
 			
-		foreach (PVLibraries::$motools_libraries_array as $value) {
+		foreach (PVLibraries::getMootoolsQueue() as $value) {
 			 $libraries.='<script type="text/javascript" src="'.$url.$mootools.DS.trim($value).$version.'"></script>';
 		}
 			
-		foreach (PVLibraries::$prototype_libraries_array as $value) {
+		foreach (PVLibraries::getPrototypeQueue() as $value) {
 			 $libraries.='<script type="text/javascript" src="'.$url.$prototype.DS.trim($value).$version.'"></script>';
 		}
 			
-		foreach (PVLibraries::$css_files_array as $value) {
+		foreach (PVLibraries::getCssQueue() as $value) {
 			 $libraries.='<link rel="stylesheet"  type="text/css" href="'.$url.$css.DS.trim($value).$version.'">';
 		}
 			
-		foreach (PVLibraries::$javascript_libraries_array as $value) {
+		foreach (PVLibraries::getJavascriptQueue() as $value) {
 			 $libraries.='<script type="text/javascript" src="'.$url.DS.$javascript.DS.trim($value).$version.'"></script>';
 		}
 		
-		$libraries.=PVLibraries::$open_javascript;
+		$libraries.=PVLibraries::getOpenscriptQueue();
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter( get_class(), __FUNCTION__ , $libraries , array('event'=>'return'));
+		
 		return $libraries;
 	}//end  updateHeader
-	
-	public static function getJavaScriptHeader($options=array()){
+
+	/**
+	 * Retrieves the queued javascript libraries in PVLibaries and adds them to a script take to be placed in
+	 * a template.
+	 * 
+	 * @param array $options Options that can determine how the site files are displayed
+	 * 			-'version' _double_: A version for the file to differinate versions of the same file
+	 * 			-'append_url' _boolean_: Append the sites url the location of the script
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'url' _string_: A url to speficy the location of the libraries
+	 * 
+	 * @return string $libraries <script /> string with the libraries found
+	 * @access public
+	 */
+	public static function getJavaScriptHeader($options = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
 		$defaults=array(
 			'version'=> false,
 			'append_url' =>true,
@@ -1011,29 +1310,47 @@ class PVTemplate extends PVStaticObject {
 			'url'=>''
 		);
 		$options += $defaults;
+		$options = self::_applyFilter( get_class(), __FUNCTION__ ,  $options, array('event'=>'args'));
 		extract($options);
-		
-		$siteConfiguration=pv_getSiteCompleteConfiguration();
 			
 		$javascript = (PV_IS_ADMIN) ? PV_ADMIN_JAVASCRIPT: PV_JAVASCRIPT;
 		
 		if($options['append_url']){
-			$url=pv_getSiteUrl();
+			$url=PVTools::getCurrentBaseUrl();
 		}
 			
 		if($options['version']){
 			$version='?pvversion='.$options['version'];	
 		}
 		
-		foreach (PVLibraries::$javascript_libraries_array as $value) {
-				
+		foreach (PVLibraries::getJavascriptQueue() as $value) {
 			$libraries.='<script type="text/javascript" src="'.$url.$javascript.DS.trim($value).$version.'"></script>';
 		}
 		
-		 return $libraries;
+		self::_notify(get_class().'::'.__FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter( get_class(), __FUNCTION__ , $libraries , array('event'=>'return'));
+		
+		return $libraries;
 	}//end printJavaScriptHeader
 	
-	public static function getMooToolsHeader($version='', $use_url=FALSE){
+	/**
+	 * Retrieves the queued mootools libraries in PVLibaries and adds them to a script take to be placed in
+	 * a template.
+	 * 
+	 * @param array $options Options that can determine how the site files are displayed
+	 * 			-'version' _double_: A version for the file to differinate versions of the same file
+	 * 			-'append_url' _boolean_: Append the sites url the location of the script
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'url' _string_: A url to speficy the location of the libraries
+	 * 
+	 * @return string $libraries <script /> string with the libraries found
+	 * @access public
+	 */
+	public static function getMootoolsHeader($options = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
 		$defaults=array(
 			'version'=> false,
 			'append_url' =>true,
@@ -1041,30 +1358,48 @@ class PVTemplate extends PVStaticObject {
 			'url'=>''
 		);
 		$options += $defaults;
+		$options = self::_applyFilter( get_class(), __FUNCTION__ ,  $options, array('event'=>'args'));
 		extract($options);
-		
-		$siteConfiguration=pv_getSiteCompleteConfiguration();
 			
 		$mootools = (PV_IS_ADMIN) ? PV_ADMIN_MOOTOOLS : PV_MOOTOOLS;
 		
 		if($options['append_url']){
-			$url=pv_getSiteUrl();
+			$url=PVTools::getCurrentBaseUrl();
 		}
 			
 		if($options['version']){
 			$version='?pvversion='.$options['version'];	
 		}
 			
-		foreach (PVLibraries::$motools_libraries_array as $value) {
+		foreach (PVLibraries::getMootoolsQueue() as $value) {
 			 $libraries.='<script type="text/javascript" src="'.$url.$mootools.DS.trim($value).$version.'"></script>';
 		}
-			
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter( get_class(), __FUNCTION__ , $libraries , array('event'=>'return'));
+		
 		return $libraries;
 		
 	}//end printJavaScriptHeader
 	
-	
-	public static function getPrototypeHeader($version='', $use_url=FALSE){
+	/**
+	 * Retrieves the queued prototype libraries in PVLibaries and adds them to a script take to be placed in
+	 * a template.
+	 * 
+	 * @param array $options Options that can determine how the site files are displayed
+	 * 			-'version' _double_: A version for the file to differinate versions of the same file
+	 * 			-'append_url' _boolean_: Append the sites url the location of the script
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'url' _string_: A url to speficy the location of the libraries
+	 * 
+	 * @return string $libraries <script /> string with the libraries found
+	 * @access public
+	 */
+	public static function getPrototypeHeader($options = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			
 		$defaults=array(
 			'version'=> false,
 			'append_url' =>true,
@@ -1072,29 +1407,47 @@ class PVTemplate extends PVStaticObject {
 			'url'=>''
 		);
 		$options += $defaults;
+		$options = self::_applyFilter( get_class(), __FUNCTION__ ,  $options, array('event'=>'args'));
 		extract($options);
-		
-		$siteConfiguration=pv_getSiteCompleteConfiguration();
 			
 		$prototype = (PV_IS_ADMIN) ? PV_ADMIN_PROTOTYPE: PV_PROTOTYPE;
 		
 		if($options['append_url']){
-			$url=pv_getSiteUrl();
+			$url=PVTools::getCurrentBaseUrl();
 		}
 			
 		if($options['version']){
 			$version='?pvversion='.$options['version'];	
 		}
 			
-		foreach (PVLibraries::$prototype_libraries_array as $value) {
+		foreach (PVLibraries::getPrototypeQueue() as $value) {
 			 $libraries.='<script type="text/javascript" src="'.$url.$prototype.DS.trim($value).$version.'"></script>';
 		}
-			
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter( get_class(), __FUNCTION__ , $libraries , array('event'=>'return'));
+		
 		return $libraries;
 	}//end printJavaScriptHeader
 	
-	
-	public static function getJQueryHeader($version='', $use_url=FALSE){
+	/**
+	 * Retrieves the queued prototype libraries in PVLibaries and adds them to a script take to be placed in
+	 * a template.
+	 * 
+	 * @param array $options Options that can determine how the site files are displayed
+	 * 			-'version' _double_: A version for the file to differinate versions of the same file
+	 * 			-'append_url' _boolean_: Append the sites url the location of the script
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'url' _string_: A url to speficy the location of the libraries
+	 * 
+	 * @return string $libraries <script /> string with the libraries found
+	 * @access public
+	 */
+	public static function getJQueryHeade($options = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
 		$defaults=array(
 			'version'=> false,
 			'append_url' =>true,
@@ -1102,29 +1455,48 @@ class PVTemplate extends PVStaticObject {
 			'url'=>false
 		);
 		$options += $defaults;
+		$options = self::_applyFilter( get_class(), __FUNCTION__ ,  $options, array('event'=>'args'));
 		extract($options);
-		
-		$siteConfiguration=pv_getSiteCompleteConfiguration();
 			
 		$jquery = (PV_IS_ADMIN) ? PV_ADMIN_JQUERY : PV_JQUERY;
 		
 		if($options['append_url']){
-			$url=pv_getSiteUrl();
+			$url=PVTools::getCurrentBaseUrl();
 		}
 			
 		if($options['version']){
 			$version='?pvversion='.$options['version'];	
 		}
 			
-		foreach (PVLibraries::$jquery_libraries_array as $value) {
+		foreach (PVLibraries::getJqueryQueue() as $value) {
 			$libraries.='<script type="text/javascript" src="'.$url.$jquery.DS.trim($value).$version.'"></script>';
 		} 
-			
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter( get_class(), __FUNCTION__ , $libraries , array('event'=>'return'));	
+
 		return $libraries;
 		
 	}//end printJavaScriptHeader
 	
-	public static function getCSSHeader($version='', $use_url=FALSE){
+	/**
+	 * Retrieves the queued css libraries in PVLibaries and adds them to a script take to be placed in
+	 * a template.
+	 * 
+	 * @param array $options Options that can determine how the site files are displayed
+	 * 			-'version' _double_: A version for the file to differinate versions of the same file
+	 * 			-'append_url' _boolean_: Append the sites url the location of the script
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'url' _string_: A url to speficy the location of the libraries
+	 * 
+	 * @return string $libraries <script /> string with the libraries found
+	 * @access public
+	 */
+	public static function getCSSHeader($options = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
 		$defaults=array(
 			'version'=> false,
 			'append_url' =>true,
@@ -1132,27 +1504,63 @@ class PVTemplate extends PVStaticObject {
 			'url'=>false
 		);
 		$options += $defaults;
+		$options = self::_applyFilter( get_class(), __FUNCTION__ ,  $options, array('event'=>'args'));
 		extract($options);
-		
-		$siteConfiguration=pv_getSiteCompleteConfiguration();
 			
 		$css = (PV_IS_ADMIN) ? PV_ADMIN_CSS : PV_CSS;
 		
 		if($options['append_url']){
-			$url=pv_getSiteUrl();
+			$url=PVTools::getCurrentBaseUrl();
 		}
 			
 		if($options['version']){
 			$version='?pvversion='.$options['version'];	
 		}
 			
-		foreach (PVLibraries::$css_files_array as $value) {
+		foreach (PVLibraries::getCssQueue() as $value) {
 			 $libraries.='<link rel="stylesheet"  type="text/css" href="'.$url.$css.DS.trim($value).$version.'">';
 		}
-			
-		return $libraries;
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter( get_class(), __FUNCTION__ , $libraries , array('event'=>'return'));	
+
+		return $libraries;
 	}//end printJavaScriptHeader
+	
+	private static function getTemplateDefaults() {
+			
+		$defaults = array(
+			'template_id'=>0,
+			'template_name'=>'',
+			'template_version'=>'',
+			'template_author'=>'',
+			'template_license'=>'',
+			'is_default'=>0,
+			'main_file'=>'',
+			'xml_file'=>'',
+			'template_directory'=>'',
+			'template_image'=>'',
+			'template_unique_id'=>'',
+			'template_domain'=>'',
+			'template_page'=>0,
+			'template_site_id'=>0,
+			'template_options'=>''
+		);
+		
+		return $defaults;
+	}
+	
+	private static function getTemplatePositionDefaults() {
+		
+		$defaults = array(
+			'template_id'=>0,
+			'position_name'=>'',
+			'position_width'=>0,
+			'position_height'=>0
+		);
+		
+		return $defaults;
+	}
 	
 	
 }//end class
