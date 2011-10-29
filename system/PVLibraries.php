@@ -188,7 +188,7 @@ class PVLibraries extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__);
 		
-		self::_notify(get_class().'::'.__FUNCTION__, sself::$jquery_libraries_array);
+		self::_notify(get_class().'::'.__FUNCTION__, self::$jquery_libraries_array);
 		$script = self::_applyFilter( get_class(), __FUNCTION__ , self::$jquery_libraries_array, array('event'=>'return'));
 		
 		return $script;
