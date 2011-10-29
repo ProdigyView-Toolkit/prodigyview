@@ -236,14 +236,13 @@ class PVContent extends PVStaticObject {
 		$defaults=self::getImageContentDefaults();
 		$args += $defaults;
 		
-		$args['adjacent_table']='pv_content_images';
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
 		if(!empty($content_id)){
-			$return=PVImageRenderer::uploadImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width , $image_height , $thumbnailwidth, $thumbnailheight, $image_src );	
+			$return=PVImageRenderer::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width , $image_height , $thumb_width, $thumb_height, $image_src );
 		}
 		
 		return $content_id;
@@ -3164,12 +3163,15 @@ class PVContent extends PVStaticObject {
 	}//end getContentList
 	
 	
-	public static function getUniversalContentList($order_by_clause='', $limit='', $app_id='', $owner_id='', $content_type='', $parent_id='', $category_id=''){
+	public static function getUniversalContentList($order_by_clause = array(), $limit='', $app_id='', $owner_id='', $content_type='', $parent_id='', $category_id=''){
 			
     		$content_array=array();
     		$db_type=PVDatabase::getDatabaseType();
 			$table_name=PVDatabase::getContentTableName();
     	
+    		$order_by_clause += self::getAudioContentDefaults();
+			$order_by_clause += self::getContentDefaults();
+			$order_by_clause += self::getVideoContentDefaults();
     		$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
 			
 			$WHERE_CLAUSE=self::generateEventContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
@@ -3200,13 +3202,11 @@ class PVContent extends PVStaticObject {
 				$results_per_page=$order_by_clause['results_per_page'];
 				$paged=$order_by_clause['paged'];
 				$prequery=$order_by_clause['prequery'];
-			
+				$prefix_args=$order_by_clause['prefix_args'];
 				$order_by_clause=$order_by_clause['order_by'];
 				
 			}
     	
-		
-		
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getAudioContentTableName().' ON '.PVDatabase::getAudioContentTableName().'.audio_id='.PVDatabase::getContentTableName().'.content_id 
 		JOIN '.PVDatabase::getEventContentTableName().' ON '.PVDatabase::getEventContentTableName().'.event_id='.PVDatabase::getContentTableName().'.content_id 
 		JOIN '.PVDatabase::getImageContentTableName().' ON '.PVDatabase::getImageContentTableName().'.image_id='.PVDatabase::getContentTableName().'.content_id 
@@ -3894,8 +3894,7 @@ class PVContent extends PVStaticObject {
 		extract($args);
 		
 		if(!empty($content_id)){
-			$image=new PVImageRenderer();
-			$return=$image->updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width , $image_height , $thumbnailwidth, $thumbnailheight, $image_src );
+			$return=PVImageRenderer::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width , $image_height , $thumbnailwidth, $thumbnailheight, $image_src );
 		}
 		
 		return $content_id;
@@ -4749,9 +4748,10 @@ class PVContent extends PVStaticObject {
 		
 	}//get content views
 	
-	public static function getContentViewsList($args=''){
+	public static function getContentViewsList($args = array()){
 		
 		$content_array=array();
+		$args += self::_getSqlSearchDefaults();
 		$table_name=PVDatabase::getContentViewsTableName();
 		$db_type=PVDatabase::getDatabaseType();
 		
@@ -4760,10 +4760,9 @@ class PVContent extends PVStaticObject {
 			extract($args, EXTR_SKIP);
 		}
 		
-		
 			$first=1;
 				
-			$WHERE_CLAUSE.='';
+			$WHERE_CLAUSE='';
 			
 			if(!empty($view_id)){
 					
@@ -5375,10 +5374,9 @@ class PVContent extends PVStaticObject {
 	
 	
 	public static function getContentMutliAuthorList($args=array()){
-		
-		if(is_array($args)){
-			extract($args);
-		}
+			
+		$args += self::getContentMultiAuthorDefaults();
+		extract($args);
 		
 		$first=1;
 		
@@ -5386,9 +5384,7 @@ class PVContent extends PVStaticObject {
 		$table_name=PVDatabase::getContentMultiAuthorTableName();
 		$db_type=PVDatabase::getDatabaseType();
 				
-		$WHERE_CLAUSE.='';
-				
-				
+		$WHERE_CLAUSE='';
 				
 		if(!empty($author_id)){
 					
@@ -5547,7 +5543,6 @@ class PVContent extends PVStaticObject {
     	$content_array=PVDatabase::formatData($content_array);
 		
     	return $content_array;
-		
 	}//end
 	
 	
@@ -5566,7 +5561,6 @@ class PVContent extends PVStaticObject {
 			
 			PVDatabase::query($query);
 		}
-		
 		
 	}//end removeContentMultiAuthor
 	
@@ -5589,11 +5583,9 @@ class PVContent extends PVStaticObject {
 	}//end addContentRelationship
 	
 	
-	public static function getContentRelationshipList($args){
+	public static function getContentRelationshipList($args = array()){
 		
-		if(is_array($args)){
-			extract($args);
-		}
+		extract($args);
 		
 		$first=1;
 		
@@ -5601,9 +5593,7 @@ class PVContent extends PVStaticObject {
 		$table_name=PVDatabase::getContentRelationsTableName();
 		$db_type=PVDatabase::getDatabaseType();
 				
-		$WHERE_CLAUSE.='';
-				
-				
+		$WHERE_CLAUSE='';
 				
 		if(!empty($related_content_id)){
 					
@@ -5986,6 +5976,17 @@ class PVContent extends PVStaticObject {
 			'video_src'=>'',
 			'video_embed'=>''
 		);
+		return $defaults += self::_getSqlSearchDefaults();
+	}
+	
+	private static function getContentMultiAuthorDefaults() {
+		$defaults = array(
+			'content_id'=>0,
+			'author_id'=>0,
+			'author_status'=>'',
+			'owner_added_date'=>''
+		);
+		
 		return $defaults += self::_getSqlSearchDefaults();
 	}
 	
