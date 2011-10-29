@@ -1432,52 +1432,42 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	}//end createContente()
 	
 	function pv_createTextContent($parameters ){
-		$parameters['adjacent_table']='pv_content_text';
 		return PVContent::createTextContent($parameters);
 	}// pv_createCreateTextContent
 	
 	function pv_createEventContent($parameters){
-		$parameters['adjacent_table']='pv_content_events';
 		return PVContent::createEventContent($parameters);
 	}// pv_createCreateTextContent
 	
 	function pv_createVideoContent($parameters){
-		$parameters['adjacent_table']='pv_content_video';
 		return PVContent::createVideoContent($parameters);
 	}// pv_createCreateTextContent
 	
 	function pv_createImageContent($parameters){
-		$parameters['adjacent_table']='pv_content_images';
 		return PVContent::createImageContent($parameters);
 	}//end pv_createImageContent
 	
 	function pv_createImageContentWithFile($parameters){
-		$parameters['adjacent_table']='pv_content_images';
 		return PVContent::createImageContentWithFile($parameters);
 	}//end pv_createImageContentWithFile
 	
 	function pv_createAudioContent($parameters){
-		$parameters['adjacent_table']='pv_content_audio';
 		return PVContent::createAudioContent($parameters);
 	}// pv_createCreateTextContent
 	
 	function pv_createAudioContentWithFile($parameters){
-		$parameters['adjacent_table']='pv_content_audio';
 		return PVContent::createAudioContentWithFile($parameters);
 	}// pv_createCreateTextContent
 	
 	function pv_createFileContent($parameters){
-		$parameters['adjacent_table']='pv_content_files';
 		return PVContent::createFileContent($parameters);
 	}// pv_createCreateTextContent
 	
 	function pv_createFileContentWithFile($parameters){
-		$parameters['adjacent_table']='pv_content_files';
 		return PVContent::createFileContentWithFile($parameters);
 	}//pv_createFileContentWithFileFromArray($args)
 	
 	function pv_createProductContent($parameters){
-		$parameters['adjacent_table']='pv_content_product';
 		return PVContent::createProductContent($parameters);
 	}//pv_createFileContentWithFileFromArray($args)
 	
