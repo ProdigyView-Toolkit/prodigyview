@@ -870,6 +870,7 @@ class PVDatabase extends PVStaticObject {
 		$result= self::query($query);
 		$total_pages = self::fetchArray($result);
 		$total_pages = $total_pages['COUNT(*)'];
+		$from_clause='';
 		
 		//Get The Start Page
 		if($current_page){ 
