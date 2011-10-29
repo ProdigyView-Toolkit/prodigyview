@@ -38,108 +38,6 @@ class PVImageRenderer extends PVStaticObject {
 	
 	}
 	
-	public static function uploadImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width=300 , $image_height=300 , $thumbnailwidth=150, $thumbnailheight=150, $image_src=''){
-		
-		$image_folder_url=PV_IMAGE;
-		$save_name="";
-
-		$image_types = array ("image/bmp", "image/jpeg", "image/pjpeg", "image/gif", "image/x-png", "image/png", "image/pjpeg");
-		
-		if (pv_isImageFile($file_type)){
-		 	
-		 	$image_exist=true;
-		 	
-		 	while($image_exist){
-		 		$randomFileName=pv_generateRandomString(20 , 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890');
-		 		
-		 		if(!file_exists(PV_ROOT."$image_folder_url$randomFileName.jpg") || !file_exists(PV_ROOT."$image_folder_url$randomFileName.png") || !file_exists(PV_ROOT."$image_folder_url$randomFileName.gif")){
-		 			$image_exist=false;
-		 		}
-		 	}//end while
-		 	
-		 	if($file_type=='image/bmp'){
-		 		$save_name="$image_folder_url$randomFileName.bmp";
-				$save_location=$randomFileName.'.bmp';
-		 	}
-		 	else if(pv_isJpegFile($file_type)){
-		 		$save_name="$image_folder_url$randomFileName.jpg";
-				$save_location=$randomFileName.'.jpg';
-		 	}
-		 	else if($file_type=='image/gif'){
-		 		$save_name="$image_folder_url$randomFileName.gif";
-				$save_location=$randomFileName.'.gif';
-			 }
-			 else if(pv_isPngFile($file_type)){
-			 	$save_name="$image_folder_url$randomFileName.png";
-			 	$save_location=$randomFileName.'.png';
-			 }			
-		 	
-			$file_name=PVDatabase::makeSafe($file_name); 
-			$file_type=PVDatabase::makeSafe($file_type);
-			$file_size=PVDatabase::makeSafe($file_size);
-			$save_name=PVDatabase::makeSafe($save_name);
-		
-			if(empty($app_id)){
-				$app_id=0;
-			}
-			
-			 if(empty($file_size)){
-				$file_size=0;
-			}
-			
-			if(move_uploaded_file($tmp_name, PV_ROOT.$save_name) || PVFileManager::copyNewFile($tmp_name, PV_ROOT.$save_name)) {
-				$thumb_url="";
-				
-				if($file_type=='image/bmp'){
-					$thumb_url="$image_folder_url$randomFileName-tn.bmp";
-					$thumb_name=$randomFileName.'-tn.bmp';
-				}
-				else if(pv_isJpegFile($file_type)){
-					$thumb_url="$image_folder_url$randomFileName-tn.jpg";
-					$thumb_name=$randomFileName.'-tn.jpg';
-				}
-				else if($file_type=='image/gif'){
-					$thumb_url="$image_folder_url$randomFileName-tn.gif";
-					$thumb_name=$randomFileName.'-tn.gif';
-				}
-				else if(pv_isPngFile($file_type)){
-					$thumb_url="$image_folder_url$randomFileName-tn.png";
-					$thumb_name=$randomFileName.'-tn.png';
-				}			
-					
-				self::resizeImageGD(PV_ROOT.$save_name,PV_ROOT.DS.$thumb_url,$thumbnailwidth,$thumbnailheight);
-					
-				list($width, $height, $type, $attr)=getimagesize(PV_ROOT.$save_name); 
-				
-				if(empty($image_width)){
-						$image_width=$width;
-				}
-				
-				if(empty($image_height)){
-						$image_height=$height;
-				}
-				
-				if(empty($thumbnailwidth)){
-						$thumbnailwidth=150;
-				}
-				
-				if(empty($thumbnailheight)){
-						$thumbnailheight=150;
-				}
-			
-				$query="INSERT INTO ".pv_getImageContentTableName()."(image_id, image_type, image_size, image_url, thumb_url, image_width, image_height, thumb_width, thumb_height , image_src ) VALUES('$content_id', '$file_type', '$file_size', '$save_location', '$thumb_name', '$image_width', '$image_height', '$thumbnailwidth', '$thumbnailheight', '$image_src' )";
-				PVDatabase::query($query);
-				
-				return 1;
-			} else{
-				return self::$UPLOAD_FAILED;
-			}
-		 }
-		 else{
-		 	return false;
-		 }
-	}// end upload Image
-	
 	public static function uploadImage($file_name, $tmp_name, $file_size, $file_type, $image_width=300 , $image_height=300 , $thumbnailwidth=150, $thumbnailheight=150){
 		
 		$image_folder_url=PV_IMAGE;
@@ -452,10 +350,10 @@ class PVImageRenderer extends PVStaticObject {
 	
 		$system=explode('.',$name);
 		
-		if ( pv_checkFileMimeType($name , '/jpg|jpeg/', $search_method='PREG_MATCH') ){
+		if ( pv_checkFileMimeType($name , '/jpg|jpeg/', array('search_method'=>'PREG_MATCH') ) ){
 			$src_img=imagecreatefromjpeg($name);
 		}
-		else if ( pv_checkFileMimeType($name , '/png/', $search_method='PREG_MATCH')  ){
+		else if ( pv_checkFileMimeType($name , '/png/', array('search_method'=>'PREG_MATCH')) ){
 			$src_img=imagecreatefrompng($name);
 		}
 		else{
@@ -481,7 +379,7 @@ class PVImageRenderer extends PVStaticObject {
 		$dst_img=ImageCreateTrueColor($thumb_w,$thumb_h);
 		imagecopyresampled($dst_img,$src_img,0,0,0,0,$thumb_w,$thumb_h,$old_x,$old_y); 
 		
-		if ( pv_checkFileMimeType($name , '/png/', $search_method='PREG_MATCH') ){
+		if ( pv_checkFileMimeType($name , '/png/', array('search_method'=>'PREG_MATCH')) ){
 			imagepng($dst_img,$filename); 
 		} else {
 			imagejpeg($dst_img,$filename); 
@@ -504,15 +402,6 @@ class PVImageRenderer extends PVStaticObject {
 		}
 		
 	}
-
-	
-	function getVersion(){
-		return $this->version;
-	}
-	
-	function getUniqueName(){
-		return $this->uniqueName;
-	}//end get
 	
 }//end class
 
