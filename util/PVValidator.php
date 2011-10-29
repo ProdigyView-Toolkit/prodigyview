@@ -1635,7 +1635,7 @@ class PVValidator extends PVStaticObject {
 		$validation = false;
 		
 		extract($options);
-		$mime_type=getFileMimeType($file, $options);
+		$mime_type=PVFileManager::getFileMimeType($file, $options);
 		
 		if($search_method=='STRING_POSITION'){
 			$pos = strpos($mime_type, $mime_text);
@@ -1657,7 +1657,6 @@ class PVValidator extends PVStaticObject {
 		$validation = self::_applyFilter( get_class(), __FUNCTION__ , $validation , array('event'=>'return'));
 		
 		return $validation;
-		
 	}//end
     
 }//end class
