@@ -28,11 +28,37 @@
 */
 class PVHtml extends PVStaticObject {
 	
-	
-	public static function image($location, $options=array()){
+	/**
+	 * Displays an image in the <img /> tags. By default the location can be either an image
+	 * in an url or the image location referenced will be from the PV_IMAGE define set.
+	 * 
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 * 
+	 * @param string $location Either a url of the image or the path to the image in the PV_IMAGE define location
+	 * @param array $options Attributes that can be added to the image. includes self::getStandardAttributes and self::getEventAttributes
+	 * 				-'image_width' _double_: The width of the image
+	 * 				-'image_height' _double_: The height of the image
+	 * 				-'width' _double_: The width of the image
+	 * 				-'height' _double_: The height of the image
+	 * 				-'alt' _string_: Value to go in the alt tag of the image
+	 * 				-'longdesc' _string_: Value to go in the longdesc tag of the image
+	 * 				-'usemap' _string_: Value to go in the usemap tag of an image
+	 * 
+	 * @return string $image The image tag returned as a string
+	 * @access public
+	 */
+	public static function image($location, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $location, $options);
 		
 		$defaults=array('alt'=>'');
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('location'=>$location, 'options'=>$options), array('event'=>'args'));
+		$location = $filtered['location'];
+		$options = $filtered['options'];
 		
 		$image='<img ';
 		
@@ -58,7 +84,7 @@ class PVHtml extends PVStaticObject {
 			$image.='width="'.$options['height'].'" ';
 		}
 		
-		if(!empty($options['alt'])){
+		if(isset($options['alt'])){
 			$image.='alt="'.$options['alt'].'" ';
 		}
 		
@@ -75,12 +101,34 @@ class PVHtml extends PVStaticObject {
 		
 		$image.='/>';
 		
-		return $image;
+		self::_notify(get_class().'::'.__FUNCTION__, $image, $location, $options);
+		$image = self::_applyFilter( get_class(), __FUNCTION__ , $image , array('event'=>'return'));	
 		
+		return $image;
 	}//end getImageDisplay
 	
-	
-	public static function time($time, $options=array()){
+	/**
+	 * Display a time passed in the HTML5 time field.
+	 * 
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 * 
+	 * @param string $time A time value
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * 				-'datetime' _string_: Tags to go in the datetime tags
+	 * 				-'pubdate' _string_: Tags to go in the pubdate
+	 * 
+	 * @return string $time The time taged returned a time
+	 * @access public
+	 */
+	public static function time($time, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $time, $options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('time'=>$time, 'options'=>$options), array('event'=>'args'));
+		$time = $filtered['time'];
+		$options = $filtered['options'];
 		
 		$tag='<time ';
 		
@@ -97,12 +145,42 @@ class PVHtml extends PVStaticObject {
 		
 		$tag.='>'.$time.'</time>';
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $tag, $time, $options);
+		$tag = self::_applyFilter( get_class(), __FUNCTION__ , $tag , array('event'=>'return'));
+		
 		return $tag;
 		
 	}//end getImageDisplay
 	
-	
-	public static function alink($title, $url, $options=array()){
+	/**
+	 * Display an ahref links
+	 * 
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 * @see PVRouter::url()
+	 * 
+	 * @param string $title The title of link that the user will see
+	 * @param mixed $url A url that the link will point too. If the url is an array or not a valid url, it will be passed to PVRouter::url.
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * 				-'charset' _string_: Value to go in the charset tag.
+	 * 				-'hreflang' _string_: Value to go in the hreflang tag.
+	 * 				-'name' _string_: Value tog go in the name attribute
+	 * 				-'rel' _string_: Value to go in the rel attribute
+	 * 				-'shape' _string_: Value to o in the shape attribute
+	 * 				-'target' _string_: Value to in the target attribute
+	 * 
+	 * @return string $link The link tag returned as a string
+	 * @access public
+	 */
+	public static function alink($title, $url, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $title, $url, $options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('title'=>$title, 'url'=>$url, 'options'=>$options), array('event'=>'args'));
+		$title = $filtered['title'];
+		$url = $filtered['url'];
+		$options = $filtered['options'];
 		
 		$link='<a ';
 		
@@ -144,12 +222,39 @@ class PVHtml extends PVStaticObject {
 		
 		$link.='>'.$title.'</a>';
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $link, $title, $url, $options);
+		$link = self::_applyFilter( get_class(), __FUNCTION__ , $link , array('event'=>'return'));
+		
 		return $link;
 		
 	}//end getImageDisplay
 	
-	
-	public static function link($url, $options=array()){
+	/**
+	 * Display a link
+	 * 
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 * @see PVRouter::url()
+	 * 
+	 * @param mixed $url A url that the link will point too. If the url is an array or not a valid url, it will be passed to PVRouter::url.
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * 				-'hreflang' _string_: Value to go in the hreflang tag.
+	 * 				-'name' _string_: Value tog go in the name attribute
+	 * 				-'rel' _string_: Value to go in the rel attribute
+	 * 				-'media' _string_: Value to go in the media attribute.
+	 * 				-'sizes' _string_: Value to in the sizes attribute
+	 * 
+	 * @return string $link The link tag returned as a string
+	 * @access public
+	 */
+	public static function link($url, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url, $options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'url'=>$url, 'options'=>$options), array('event'=>'args'));
+		$url = $filtered['url'];
+		$options = $filtered['options'];
 		
 		$link='<link ';
 		
@@ -182,11 +287,36 @@ class PVHtml extends PVStaticObject {
 		
 		$link.='/>';
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $link, $url, $options);
+		$link = self::_applyFilter( get_class(), __FUNCTION__ , $link , array('event'=>'return'));
+		
 		return $link;
 		
 	}//end getImageDisplay
 	
-	public static function meta($name='', $options=array()){
+	/**
+	 * Generate a meta tag.
+	 *
+	 * @see self::getStandardAttributes()
+	 * 
+	 * @param string $name The name of the meta tag being generated
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * 				-'charset' _string_: Value to go in the charset tag.
+	 * 				-'content' _string_: Value to go in the content attribute.
+	 * 				-'name' _string_: Value tog go in the name attribute
+	 * 				-'http-equiv' _string_: Value to go in the http-equiv attribute
+	 * 
+	 * @return string $meta The meta tag returned as a string
+	 * @access public
+	 */
+	public static function meta($name='', $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'name'=>$name, 'options'=>$options), array('event'=>'args'));
+		$name = $filtered['name'];
+		$options = $filtered['options'];
 		
 		$link='<meta ';
 		
@@ -210,12 +340,43 @@ class PVHtml extends PVStaticObject {
 		
 		$link.='/>';
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $link, $name, $options);
+		$link = self::_applyFilter( get_class(), __FUNCTION__ , $link , array('event'=>'return'));
+		
 		return $link;
 	}//end meta
 	
-	public static function video($src='', $options=array()){
+	/**
+	 * Displays a video using the HTML5 video component. For best usage, pass through a mp4, ogv and webm file.
+	 * 
+	 * @param string $src The location of the video file to be played. Will be rendered by self::videoContentURL() function
+	 * @param array $options Options that can be used to define attributes in the elements tag
+	 * 				-'height' _double_: The height of the video
+	 * 				-'width' _width_: The width of the video
+	 * 				-'controls' _string_: The controls attributes.
+	 * 				-'audio' '_string_: THe audio attribute
+	 * 				-'autoplay' _string_: Automatically play the video
+	 * 				-'loop' _string_ : Loop to play automatically
+	 * 				-'poster' _string_ : Poster attribute
+	 * 				-'preload' _string_: Preload attribute
+	 * 				-'mp4_file' _string_: Location of the mp4 file
+	 * 				-'webm_file' _string_: The location of the webm file
+	 * 				-'ogv_file' _string_: Location of the ogv file
+	 * 
+	 * @return string $video Returns the video tag
+	 * @access public
+	 */
+	public static function video($src='', $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $src , $options);
+		
 		$defaults=array('controls'=>'controls', 'error'=>'Sorry but your browser cannot play this HTML5 Element');
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'src'=>$src, 'options'=>$options), array('event'=>'args'));
+		$src = $filtered['src'];
+		$options = $filtered['options'];
 		
 		$video='<video ';
 		
@@ -223,8 +384,8 @@ class PVHtml extends PVStaticObject {
 			$video.='src="'.self::videoContentURL($src).'" ';
 		}
 		
-		if(!empty($options['width'])){
-			$video.='width="'.$options['width'].'" ';
+		if(!empty($options['height'])){
+			$video.='height="'.$options['height'].'" ';
 		}
 		
 		if(!empty($options['width'])){
@@ -272,12 +433,41 @@ class PVHtml extends PVStaticObject {
 		$video.=$options['error'];
 		$video.='</video>';
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $video, $src, $options);
+		$video = self::_applyFilter( get_class(), __FUNCTION__ , $video , array('event'=>'return'));
+		
 		return $video;
 	}//end getVideoDisplay
+	
+	/**
+	 * Displays an audio clip using the HTML5 audio component. For best usage, pass through a wav, mp3 and oga file.
+	 * 
+	 * @param string $src The location of the audio file to be played. Will be rendered by self::audioContentURL() function
+	 * @param array $options Options that can be used to define attributes in the elements tag
+	 * 				-'controls' _string_: The controls attributes.
+	 * 				-'audio' '_string_: THe audio attribute
+	 * 				-'autoplay' _string_: Automatically play the video
+	 * 				-'loop' _string_ : Loop to play automatically
+	 * 				-'poster' _string_ : Poster attribute
+	 * 				-'preload' _string_: Preload attribute
+	 * 				-'wav_file' _string_: Location of the wav file
+	 * 				-'mp3_file' _string_: The location of the mp3 file
+	 * 				-'oga_file' _string_: Location of the oga file
+	 * 
+	 * @return string $audio Returns the audio tag
+	 * @access public
+	 */
+	public static function audio($src='', $options=array()) {
 		
-	public static function audio($src='', $options=array()){
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
+		
 		$defaults=array('controls'=>'controls', 'error'=>'Sorry but your browser cannot play this HTML5 Element');
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'src'=>$src, 'options'=>$options), array('event'=>'args'));
+		$src = $filtered['src'];
+		$options = $filtered['options'];
 		
 		$audio='<audio ';
 		
@@ -305,7 +495,7 @@ class PVHtml extends PVStaticObject {
 			$audio.='preload="'.$options['preload'].'" ';
 		}
 		
-		//$audio.=self::getMediaEventAttributes($options);
+		$audio.=self::getMediaEventAttributes($options);
 		$audio.='>';
 		
 		if(!empty($options['wav_file'])){
@@ -316,25 +506,82 @@ class PVHtml extends PVStaticObject {
 			$audio.='<source src="'.self::audioContentURL($options['mp3_file']).'" type="audio/mpeg" >';
 		}
 		
-		if(!empty($options['ogv_file'])){
-			$audio.='<source src="'.self::audioContentURL($options['ogv_file']).'" type="audio/ogg" >';
+		if(!empty($options['oga_file'])){
+			$audio.='<source src="'.self::audioContentURL($options['oga_file']).'" type="audio/ogg" >';
 		}
 		$audio.=$options['error'];
 		$audio.='</audio>';
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $audio, $src, $options);
+		$audio = self::_applyFilter( get_class(), __FUNCTION__ , $audio , array('event'=>'return'));
+		
 		return $audio;
 	}//end getVideoDisplay
 	
+	/**
+	 * Creates a div to display.
+	 * 
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 * 
+	 * @param string $data The information thatwill be displayed inside the div
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * 
+	 * @return string $div The div element that was generated
+	 * @access public
+	 */
 	public static function div($data, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'data'=>$data, 'options'=>$options), array('event'=>'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+			
 		$tag='<div ';
 		$tag.=self::getStandardAttributes($options);
 		$tag.=self::getEventAttributes($options);
 		$tag.='>'.$data.'</div>';
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $tag, $data , $options);
+		$tag = self::_applyFilter( get_class(), __FUNCTION__ , $tag , array('event'=>'return'));
+		
 		return $tag;
 	}
 	
-	public static function getStandardAttributes($attributes=array()){
+	/**
+	 * Standard attributes that are present in many html tags. This functionisused for assigning those attribute by passing
+	 * them in as an array and returning them as a string. Contains both html and html5 elements
+	 * 
+	 * @param array $attributes Attribues that will be assigned if they match
+	 * 			-'class' _string_: The class attribute
+	 * 			-'id' _string_: The class attribute
+	 * 			-'dir' _string_: The class attribute
+	 * 			-'lang' _string_: The class attribute
+	 *  		-'style' _string_: The class attribute
+	 *  		-'title' _string_: The class attribute
+	 *  		-'title' _string_: The class attribute
+	 *  		-'xml:lang' _string_: The class attribute
+	 *  		-'accesskey' _string_: The class attribute
+	 *  		-'contenteditable' _string_: The class attribute
+	 *  		-'contextmenu' _string_: The class attribute
+	 *  		-'draggable' _string_: The class attribute
+	 *  		-'dropzone' _string_: The class attribute
+	 *  		-'hidden' _string_: The class attribute
+	 *  		-'spellcheck' _string_: The class attribute
+	 * 			-'title' _string_: The class attribute
+	 * 
+	 * @return string $attributes Returns the matched attributes as a string
+	 * @access public
+	 */
+	public static function getStandardAttributes($attributes=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		
+		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
+		
 		$return_attributes='';
 		$accepted_attributes=array('class', 'id', 'dir', 'lang', 'style', 'title', 'xml:lang','accesskey', 'contenteditable', 'contextmenu', 'draggable', 'dropzone', 'hidden', 'spellcheck', 'title');
 		
@@ -344,10 +591,19 @@ class PVHtml extends PVStaticObject {
 			}
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));
+		
 		return $return_attributes;
 	}
 	
-	public static function getEventAttributes($attributes=array()){
+	public static function getEventAttributes($attributes=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		
+		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
+		
 		$return_attributes='';
 		$accepted_attributes=array('onabort', 'onclick', 'ondblclick', 'onmousedown', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onkeydown', 'onkeypress', 'onkeyup', 'onblur', 'onfocus', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onmousewheel', 'onscroll');
 		
@@ -357,10 +613,19 @@ class PVHtml extends PVStaticObject {
 			}
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));
+		
 		return $return_attributes;
 	}
 
-	public static function getMediaEventAttributes($attributes=array()){
+	public static function getMediaEventAttributes($attributes=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		
+		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
+
 		$return_attributes='';
 		$accepted_attributes=array( 'oncanplay', 'oncanplaythrough', 'ondurationchange', 'onemptied', 'onended', 'onerror', 'onloadeddata', 'onloadedmetadata', 'onloadstart', 'onpause', 'onplay', 'onplaying', 'onprogress', 'onratechange', 'onreadystatechange', 'onseeked', 'onseeking', 'onstalled', 'onsuspend', 'ontimeupdate', 'onvolumechange', 'onwaiting');
 		
@@ -370,10 +635,19 @@ class PVHtml extends PVStaticObject {
 			}
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));
+		
 		return $return_attributes;
 	}
 
-	public static function getWindowAttributes($attibutes){
+	public static function getWindowAttributes($attributes = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		
+		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
+		
 		$accepted_attributes=array( 'onafterprint', 'onbeforeprint', 'ondurationchange', 'onbeforeonload', 'onblur', 'onerror', 'onfocus', 'onhaschange', 'onload', 'onmessage', 'onoffline', 'ononline', 'onpageshow', 'onpopstate', 'onredo', 'onresize', 'onstorage', 'onundo', 'onunload');
 		
 		foreach($attributes as $key => $attribute){
@@ -382,17 +656,32 @@ class PVHtml extends PVStaticObject {
 			}
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));
+		
 		return $return_attributes;
 	}
 
-	private static function audioContentURL($url){
+	private static function audioContentURL($url) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		
+		$url = self::_applyFilter( get_class(), __FUNCTION__ ,  $url, array('event'=>'args'));
+		
 		if(!PVValidator::isValidURL($url)){
 			$url=PV_AUDIO.$url;
 		}
 		return PVRouter::url($url);
 	}
 	
-	private static function videoContentURL($url){
+	private static function videoContentURL($url) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		
+		$url = self::_applyFilter( get_class(), __FUNCTION__ ,  $url, array('event'=>'args'));
+		
 		if(!PVValidator::isValidURL($url)){
 			$url=PV_VIDEO.$url;
 		}
