@@ -29,7 +29,10 @@
 
 class PVModules extends PVStaticObject {
 	
-	public static function installModule($args){
+	public static function installModule($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		if(!empty($args) && is_array($args)){
 			
@@ -43,36 +46,25 @@ class PVModules extends PVStaticObject {
 				$plugin_version=0;
 			}
 			
-			
 			$query="SELECT * FROM ".PVDatabase::getModuleAdminTableName()." WHERE module_unique_id='$module_unique_id' AND module_app_identifier='$module_app_identifier'";
-			
 			$result = PVDatabase::query($query);
 			
 			if(PVDatabase::resultRowCount($result) <= 0){
 				$query="INSERT INTO ".PVDatabase::getModuleAdminTableName()."(module_name, module_unique_id, module_app_identifier , module_directory, module_file, module_function, module_description, module_author, module_site, module_license, module_version, is_module_editable) VALUES('$module_name', '$module_unique_id', '$module_app_identifier' , '$module_directory' , '$module_file', '$module_function', '$module_description', '$module_author', '$module_site', '$module_license', '$module_version', '$is_module_editable')";
-				
 				PVDatabase::query($query);
-				
-				
-			}//end no result count
-			else{
-				
+			} else {
 				$query="UPDATE ".PVDatabase::getModuleAdminTableName()." SET module_name='$module_name', module_directory='$module_directory', module_file='$module_file', module_function='$module_function', module_description='$module_description', module_author='$module_author', module_site='$module_site', module_license='$module_license', module_version='$module_version', is_module_editable='$is_module_editable' WHERE  module_unique_id='$module_unique_id' AND module_app_identifier='$module_app_identifier' ";
-				
 				PVDatabase::query($query);
-				
 			}
 			
 		}//end if not empty and is array
 		
 	}//end installModule
 	
-
-	
-		
-	
-	
-	public static function getModuleAdmin($module_unique_id, $module_app_identifier){
+	public static function getModuleAdmin($module_unique_id, $module_app_identifier) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $module_unique_id, $module_app_identifier);
 		
 		if(!empty($module_unique_id) && !empty($module_app_identifier)){
 			
@@ -91,22 +83,22 @@ class PVModules extends PVStaticObject {
 		
 	}//getModuleAdmin
 	
-	public static function getModuleAdminList($args){
+	public static function getModuleAdminList($args = array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		if(is_array($args)){
+		$args += self::_getSqlSearchDefaults();
+		
+		if(is_array($args)) {
 			$custom_where=$args['custom_where'];
 			$custom_join=$args['custom_join'];
 			$args=PVDatabase::makeSafe($args);
 			extract($args, EXTR_SKIP);
 		
-		
 			$first=1;
-			
-			
-			
-				
-			$WHERE_CLAUSE.='';
+
+			$WHERE_CLAUSE='';
 			
 			if(!empty($module_name)){
 					
@@ -197,8 +189,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
-			
 			if(!empty($module_function)){
 					
 				$module_function=trim($module_function);
@@ -216,8 +206,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
-			
 			
 			if(!empty($module_params)){
 					
@@ -374,8 +362,6 @@ class PVModules extends PVStaticObject {
 		
 		$LIMIT=$args['limit'];
 		
-		
-		
 		if(!empty($LIMIT)){
 			$LIMIT=" limit $LIMIT ";
 		}
@@ -384,11 +370,8 @@ class PVModules extends PVStaticObject {
 			$ORDER_BY="ORDER BY $ORDER_BY ";
 		}
 		
-	
 		$query="SELECT * FROM ".PVDatabase::getModuleAdminTableName()." $JOINS ".$WHERE_CLAUSE." $ORDER_BY $LIMIT ";
-		
 		$result=PVDatabase::query($query);
-		
 		$content_array=array();
 	
 		while ($row = PVDatabase::fetchArray($result)){
@@ -401,7 +384,10 @@ class PVModules extends PVStaticObject {
 		
 	}//end getModuleList
 	
-	public static function deleteModuleAdmin($module_unique_id, $module_app_identifier, $remove_modules=FALSE){
+	public static function deleteModuleAdmin($module_unique_id, $module_app_identifier, $remove_modules=FALSE) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $module_unique_id, $module_app_identifier, $remove_modules);
 		
 		$module_info=self::getModuleAdmin($module_unique_id, $module_app_identifier);
 		
@@ -433,7 +419,10 @@ class PVModules extends PVStaticObject {
 		
 	}//end 
 	
-	public static function createModule($args){
+	public static function createModule($args) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		if(is_array($args) && !empty($args)){
 			
@@ -458,15 +447,13 @@ class PVModules extends PVStaticObject {
 		
 	}//end createModule
 	
-	public static function getModuleList($args){
+	public static function getModuleList($args = array()){
 		
-		if(is_array($args)){
-			$custom_where=$args['custom_where'];
-			$custom_join=$args['custom_join'];
-			$args=PVDatabase::makeSafe($args);
-			extract($args, EXTR_SKIP);
-		}
-		
+		$args += self::_getSqlSearchDefaults();
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$args=PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 			$first=1;
 			
@@ -474,7 +461,7 @@ class PVModules extends PVStaticObject {
 			$table_name=PVDatabase::getModulesTableName();
 			$db_type=PVDatabase::getDatabaseType();
 				
-			$WHERE_CLAUSE.='';
+			$WHERE_CLAUSE='';
 			
 			if(!empty($module_id)){
 					
@@ -492,7 +479,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_id)){
 					
@@ -1053,17 +1039,13 @@ class PVModules extends PVStaticObject {
 			
 		$JOINS='';
 			
-		if($join_container_modules || $join_containers ){
+		if(@$join_container_modules || $join_containers ){
 			$JOINS.=" JOIN ".PVDatabase::getContainerModulesTableName()." ON ".PVDatabase::getModulesTableName().".module_id = ".PVDatabase::getContainerModulesTableName().".module_id ";	
 		}
 		
 		if( $join_containers){
 			$JOINS.=" JOIN ".PVDatabase::getContainersTableName()." ON ".PVDatabase::getContainerModulesTableName().".container_id = ".PVDatabase::getContainersTableName().".container_id ";	
 		}
-		
-		
-		
-		
 		
 		if(!empty($custom_where)){
 			$WHERE_CLAUSE.=' '.$custom_where.' ';
@@ -1073,11 +1055,11 @@ class PVModules extends PVStaticObject {
 			$JOINS.=' JOIN '.PVDatabase::getApplicationsTableName().' ON '.PVDatabase::getModulesTableName().'.module_app='.PVDatabase::getApplicationsTableName().'.app_id ';
 		}
 		
-		if($join_module_admin==true){
+		if(@$join_module_admin==true){
 			$JOINS.=' JOIN '.PVDatabase::getModuleAdminTableName().' ON '.PVDatabase::getModulesTableName().'.module_identifier='.PVDatabase::getModuleAdminTableName().'.module_unique_id ';
 		}
 		
-		if($join_page_modules==true){
+		if(@$join_page_modules==true){
 			$JOINS.=' JOIN '.PVDatabase::getPageModuleRelationshipTableName().' ON '.PVDatabase::getPageModuleRelationshipTableName().'.module_id='.PVDatabase::getModulesTableName().'.module_id ';
 		}
 		
@@ -1134,7 +1116,7 @@ class PVModules extends PVStaticObject {
 			$custom_select='*';
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
