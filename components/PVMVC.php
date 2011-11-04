@@ -29,8 +29,16 @@
 
 class PVMVC extends PVStaticObject{
 	
-	public static function installMVC($args){
+	/**
+	 * Install a module view controller with the assigned fields.
+	 */
+	public static function installMVC($args = array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getMVCDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -53,52 +61,61 @@ class PVMVC extends PVStaticObject{
 				$query="UPDATE ".PVDatabase::getMVCTableName()." SET  mvc_name='$mvc_name', mvc_description='$mvc_description' , mvc_author='$mvc_author',  mvc_website='$mvc_website', mvc_license='$mvc_license', mvc_version='$mvc_version', mvc_directory='$mvc_directory', mvc_file='$mvc_file', mvc_object='$mvc_object', is_current_mvc='$is_current_mvc', autoload_mvc='$autoload_mvc' WHERE mvc_unique_id='$mvc_unique_id' ";
 			}
 			
-			
-			PVDatabase::query($query);	
-			
+			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 		}
 	}//end installMVC
 	
 	
-	public static function initiliazeMVC($mvc_unique_id){
+	public static function initiliazeMVC($mvc_unique_id) {
 		
-		if(!empty($mvc_unique_id)){
-			$mvc_info=self::getMVCInfo($mvc_unique_id);
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $mvc_unique_id);
+		 
+		$mvc_unique_id = self::_applyFilter( get_class(), __FUNCTION__ , $mvc_unique_id, array('event'=>'args'));
+		$mvc_info=self::getMVCInfo($mvc_unique_id);
 			
-			$mvc_file=PV_MVC.$mvc_info['mvc_directory'].$mvc_info['mvc_file'];
+		$mvc_file=PV_MVC.$mvc_info['mvc_directory'].$mvc_info['mvc_file'];
 			
-			if(file_exists($mvc_file)){
-				include($mvc_file);
-			}
+		if(file_exists($mvc_file)){
+			include($mvc_file);
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $mvc_unique_id);
 	}//end initiliazeMVC
 	
-	public static function getMVCInfo($mvc_unique_id){
+	public static function getMVCInfo($mvc_unique_id) {
 		
-		if(!empty($mvc_unique_id)){
-			
-			$mvc_unique_id=PVDatabase::makeSafe($mvc_unique_id);
-			
-			$query="SELECT * FROM ".PVDatabase::getMVCTableName()." WHERE mvc_unique_id='$mvc_unique_id'";
-			$result=PVDatabase::query($query);
-			
-			$row=PVDatabase::fetchArray($result);
-			
-			return $row;
-		}
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $mvc_unique_id);
 		
+		$mvc_unique_id = self::_applyFilter( get_class(), __FUNCTION__ , $mvc_unique_id, array('event'=>'args'));
+		$mvc_unique_id=PVDatabase::makeSafe($mvc_unique_id);
+			
+		$query="SELECT * FROM ".PVDatabase::getMVCTableName()." WHERE mvc_unique_id='$mvc_unique_id'";
+		$result=PVDatabase::query($query);
+		$row=PVDatabase::fetchArray($result);
+		
+		$row = PVDatabase::formatData($row);
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $mvc_unique_id);
+		$row  = self::_applyFilter( get_class(), __FUNCTION__ , $row  , array('event'=>'return'));
+			
+		return $row;
 	}//end getMVCInfo
 	
 	
-	public static function getMVCList($args){
+	public static function getMVCList($args = array()) {
 		
-		if(is_array($args)){
-			$custom_where=$args['custom_where'];
-			$custom_join=$args['custom_join'];
-			extract($args, EXTR_SKIP);
-		}
-		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getMVCDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 		$first=1;
 			
@@ -106,7 +123,7 @@ class PVMVC extends PVStaticObject{
 		$table_name=PVDatabase::getMVCTableName();
 		$db_type=PVDatabase::getDatabaseType();
 				
-		$WHERE_CLAUSE.='';
+		$WHERE_CLAUSE='';
 			
 		if(!empty($mvc_unique_id) || $mvc_unique_id==='0'){
 					
@@ -141,7 +158,6 @@ class PVMVC extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($mvc_description) || $mvc_description==='0' ){
 					
@@ -321,10 +337,7 @@ class PVMVC extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		$JOINS='';
-		
-	
 		
 		if(!empty($custom_where)){
 			$WHERE_CLAUSE.=' '.$custom_where.' ';
@@ -383,7 +396,7 @@ class PVMVC extends PVStaticObject{
 			$custom_select='*';	
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -398,12 +411,18 @@ class PVMVC extends PVStaticObject{
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array, array('event'=>'return'));
 		
     	return $content_array;
-		
 	}//end getMeniUtemList
 	
 	public static function deleteMVC($mvc_unique_id){
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $mvc_unique_id);
+		
+		$mvc_unique_id = self::_applyFilter( get_class(), __FUNCTION__ , $mvc_unique_id, array('event'=>'args'));
 		
 		if(!empty($mvc_unique_id)){
 			$mvc_info=self::getMVCInfo($mvc_unique_id);
@@ -415,12 +434,34 @@ class PVMVC extends PVStaticObject{
 			$query="DELETE FROM ".PVDatabase::getMVCTableName()." WHERE mvc_unique_id='$mvc_unique_id'";
 			$result=PVDatabase::query($query);
 			
-			$row=PVDatabase::fetchArray($result);
-			
-			return $row;
+			PVDatabase::fetchArray($result);
+			self::_notify(get_class().'::'.__FUNCTION__, $mvc_unique_id);
 		}
-		
 	}//end deleteMVC
+	
+	private static function getMVCDefaults() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$defaults=array(
+			'mvc_unique_id' => '',
+			'mvc_name' => '',
+			'mvc_description' => '',
+			'mvc_author' => '',
+			'mvc_website' => '',
+			'mvc_license' => '',
+			'mvc_version' => 0,
+			'mvc_directory' => '',
+			'mvc_file' =>'',
+			'mvc_object' => '',
+			'is_current_mvc' => 0,
+			'autoload_mvc' => 0
+		);
+		
+		$defaults = self::_applyFilter( get_class(), __FUNCTION__ , $defaults , array('event'=>'return'));
+		return $defaults;
+	}
 	
 }//end class
 	
