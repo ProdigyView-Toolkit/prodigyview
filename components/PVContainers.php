@@ -29,45 +29,92 @@
 
 class PVContainers extends PVStaticObject {
 	
-	public static function createContainer($args){
+	/**
+	 * Creates a container based upon the arguements passed to it.
+	 * 
+	 * @param array @args Arguements that define the container
+	 * 				-'container_name' _string_: The name of the container
+	 * 				-'container_description' _string_ The description of the container
+	 * 				-'container_alias' _string_: The alias of the container
+	 * 				-'container_position' _string_: The position of the container
+	 * 				-'container_header' _string_: Text to display in the containers header
+	 * 				-'show_header' _boolean_: Display the header of the container
+	 * 				-'container_enbaled' _boolean_: Determines if the container is enabled
+	 * 				-'container_params' _string_: Parameters that define the container
+	 * 				-'container_css_params' _string_: Parameters that define the CSS of the container
+	 * 				-'container_wrap' _boolean_: Wrap the container in divs
+	 * 				-'container_permissions' _string_: Set the permission of users allowed to view the container
+	 * 				-'container_parent' _id_: The parent id of the container
+	 * 				-'container_site_id' _id_: The id of the site the container belongs too
+	 * 
+	 * @return id $container_id The id of the container created
+	 * @access public
+	 */
+	public static function createContainer($args = array()) {
 		
-		if(is_array($args) && !empty($args)){
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$args=PVDatabase::makeSafe($args);
+		extract($args);
 			
-			$args=PVDatabase::makeSafe($args);
-			extract($args);
+		$container_enabled=ceil($container_enabled);
+		$show_header=ceil($show_header);
+		$container_wrap=ceil($container_wrap);
 			
-			$container_parent=ceil($container_parent);
-			$container_enabled=ceil($container_enabled);
-			$show_header=ceil($show_header);
-			$container_wrap=ceil($container_wrap);
-			$container_site_id=ceil($container_site_id);
+		$query="INSERT INTO ".PVDatabase::getContainersTableName()."(container_name, container_description, container_alias, container_position, container_header, show_header, container_enabled, container_params, container_css_params, container_wrap, container_permissions, container_parent, container_site_id) VALUES ( '$container_name', '$container_description', '$container_alias', '$container_position', '$container_header', '$show_header', '$container_enabled', '$container_params' , '$container_css_params', '$container_wrap', '$container_permissions', '$container_parent', '$container_site_id') ";
 			
-			$query="INSERT INTO ".PVDatabase::getContainersTableName()."(container_name, container_description, container_alias, container_position, container_header, show_header, container_enabled, container_params, container_css_params, container_wrap, container_permissions, container_parent, container_site_id) VALUES ( '$container_name', '$container_description', '$container_alias', '$container_position', '$container_header', '$show_header', '$container_enabled', '$container_params' , '$container_css_params', '$container_wrap', '$container_permissions', '$container_parent', '$container_site_id') ";
-			
-			$container_id=PVDatabase::return_last_insert_query($query, 'container_id', PVDatabase::getContainersTableName());
-			
-			return $container_id;
-			
-		}//end if
+		$container_id=PVDatabase::return_last_insert_query($query, 'container_id', PVDatabase::getContainersTableName());
+		self::_notify(get_class().'::'.__FUNCTION__, $container_id, $args);
+		$container_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $container_id, array('event'=>'return'));
+		
+		return $container_id;
 	}//end createContainer
 	
-	public static function getContainerList($args){
+	/**
+	 * Searches for a container in the database and uses the arguement passed to determine what to search for.
+	 * Uses the ProdigyView standard search query.
+	 * 
+	 * @param array @args Arguements that can be used when searching for a container
+	 * 				-'container_id' _id_: The id of the container to be searched for.
+	 * 				-'container_name' _string_: The name of the container
+	 * 				-'container_description' _string_ The description of the container
+	 * 				-'container_alias' _string_: The alias of the container
+	 * 				-'container_position' _string_: The position of the container
+	 * 				-'container_header' _string_: Text to display in the containers header
+	 * 				-'show_header' _boolean_: Display the header of the container
+	 * 				-'container_enbaled' _boolean_: Determines if the container is enabled
+	 * 				-'container_params' _string_: Parameters that define the container
+	 * 				-'container_css_params' _string_: Parameters that define the CSS of the container
+	 * 				-'container_wrap' _boolean_: Wrap the container in divs
+	 * 				-'container_permissions' _string_: Set the permission of users allowed to view the container
+	 * 				-'container_parent' _id_: The parent id of the container
+	 * 				-'container_site_id' _id_: The id of the site the container belongs too
+	 * 
+	 * @return array $conainters A array of containers found from the search arguements
+	 * @access public
+	 */
+	public static function getContainerList($args = array()) {
 		
-		if(is_array($args)){
-			$custom_where=$args['custom_where'];
-			$custom_join=$args['custom_join'];
-			$args=PVDatabase::makeSafe($args);
-			extract($args, EXTR_SKIP);
-		}
-		
-		
-			$first=1;
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-			$content_array=array();
-			$table_name=PVDatabase::getContainersTableName();
-			$db_type=PVDatabase::getDatabaseType();
+		$args += self::_getSqlSearchDefaults();
+		$args += array('join_page_containers'=>false);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$args=PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
+		
+		$first=1;
+			
+		$content_array=array();
+		$table_name=PVDatabase::getContainersTableName();
+		$db_type=PVDatabase::getDatabaseType();
 				
-			$WHERE_CLAUSE.='';
+		$WHERE_CLAUSE='';
 			
 			if(!empty($container_id)){
 					
@@ -86,7 +133,6 @@ class PVContainers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($container_name)){
 					
 				$container_name=trim($container_name);
@@ -103,7 +149,6 @@ class PVContainers extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($container_alias)){
 					
@@ -122,8 +167,6 @@ class PVContainers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
-			
 			if(!empty($container_position)){
 					
 				$container_position=trim($container_position);
@@ -141,7 +184,6 @@ class PVContainers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($container_enabled)){
 					
 				$container_enabled=trim($container_enabled);
@@ -158,7 +200,6 @@ class PVContainers extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($container_params)){
 					
@@ -228,9 +269,6 @@ class PVContainers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
-			
-			
 			if(!empty($page_name)){
 				
 				$page_name=trim($page_name);
@@ -247,7 +285,6 @@ class PVContainers extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($page_title)){
 					
@@ -266,7 +303,6 @@ class PVContainers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($page_description)){
 					
 				$page_description=trim($page_description);
@@ -283,7 +319,6 @@ class PVContainers extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($page_alias)){
 					
@@ -302,8 +337,6 @@ class PVContainers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
-			
 			if(!empty($frontpage)){
 					
 				$frontpage=trim($frontpage);
@@ -321,7 +354,6 @@ class PVContainers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($page_enabled)){
 					
 				$page_enabled=trim($page_enabled);
@@ -338,7 +370,6 @@ class PVContainers extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($page_ordering)){
 					
@@ -391,7 +422,6 @@ class PVContainers extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($page_site_id)){
 					
 				$page_site_id=trim($page_site_id);
@@ -425,9 +455,7 @@ class PVContainers extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-		
-		
-		
+
 		$JOINS='';
 		
 		if($join_page_containers || $join_pages){
@@ -438,7 +466,7 @@ class PVContainers extends PVStaticObject {
 			$JOINS.=" JOIN ".PVDatabase::getPagesTableName()." ON ".PVDatabase::getPageContainersRelationshipTableName().".page_id = ".PVDatabase::getPagesTableName().".page_id ";	
 		}
 		
-		if($join_container_modules || $join_modules ){
+		if(@$join_container_modules || @$join_modules ){
 			$JOINS.=" JOIN ".PVDatabase::getContainerModulesTableName()." ON ".PVDatabase::getContainersTableName().".container_id = ".PVDatabase::getContainerModulesTableName().".container_id ";	
 		}
 		
@@ -478,7 +506,6 @@ class PVContainers extends PVStaticObject {
 			}
 		}
 		
-	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -502,7 +529,7 @@ class PVContainers extends PVStaticObject {
 		if(empty($custom_select)){
 			$custom_select='*';
 		}
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -517,67 +544,128 @@ class PVContainers extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ ,  $content_array, array('event'=>'return'));
 		
-    	return $content_array;
-
-		
+    	return $content_array;	
 	}//end getContainerList
 	
-	
-	public static function getContainer($container_id){
-		if(!empty($container_id)){
+	/**
+	 * Returns the data related to a container based upon the id of the container.
+	 * 
+	 * @param id $contaier_id The id of the container
+	 * 
+	 * @return array $container Returns the data for that container
+	 * @access public
+	 */
+	public static function getContainer($container_id) {
 			
-			$container_id=ceil($container_id);
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$container_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $container_id , array('event'=>'args'));	
+		$container_id=PVDatabase::makeSafe($container_id);
 			
-			$query="SELECT * FROM ".PVDatabase::getContainersTableName()." WHERE container_id='$container_id'";
+		$query="SELECT * FROM ".PVDatabase::getContainersTableName()." WHERE container_id='$container_id'";
 			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $container_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
 			
-			return $row;
-			
-		}//end page id
+		return $row;
 	}//end get page
 	
-	public static function getContainerByAlias($container_id){
-		if(!empty($container_id)){
+	/**
+	 * Returns the data related to a container based upon the alias of the container. If more than one container has the
+	 * same alias, the first one found will be returned.
+	 * 
+	 * @param string $contaier_alias The alias of the container
+	 * 
+	 * @return array $container Returns the data for that container
+	 * @access public
+	 */
+	public static function getContainerByAlias($container_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $container_id);
+		
+		$container_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $container_id, array('event'=>'args'));
+		$container_id=PVDatabase::makeSafe($container_id);
 			
-			$container_id=PVDatabase::makeSafe($container_id);
+		$query="SELECT * FROM ".PVDatabase::getContainersTableName()." WHERE container_alias='$container_id'";
 			
-			$query="SELECT * FROM ".PVDatabase::getContainersTableName()." WHERE container_alias='$container_id'";
-			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			
-			return $row;
-			
-		}//end page id
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $container_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
+		
+		return $row;
 	}//end get page
 	
-	public static function updateContainer($args){
+	/**
+	 * Updates a container in the database. The passed arguements will define how the update occurs. Fields left blank
+	 * will use their default valules.
+	 * 
+	 * @param array @args Arguements that can be used when searching for a container
+	 * 				-'container_id' _id_: Required. The id of the container to be updated.
+	 * 				-'container_name' _string_: The name of the container
+	 * 				-'container_description' _string_ The description of the container
+	 * 				-'container_alias' _string_: The alias of the container
+	 * 				-'container_position' _string_: The position of the container
+	 * 				-'container_header' _string_: Text to display in the containers header
+	 * 				-'show_header' _boolean_: Display the header of the container
+	 * 				-'container_enbaled' _boolean_: Determines if the container is enabled
+	 * 				-'container_params' _string_: Parameters that define the container
+	 * 				-'container_css_params' _string_: Parameters that define the CSS of the container
+	 * 				-'container_wrap' _boolean_: Wrap the container in divs
+	 * 				-'container_permissions' _string_: Set the permission of users allowed to view the container
+	 * 				-'container_parent' _id_: The parent id of the container
+	 * 				-'container_site_id' _id_: The id of the site the container belongs too
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function updateContainer($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 	
-		if( is_array($args) && !empty($args['container_id'])){
-				$args=PVDatabase::makeSafe($args);
-				extract($args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$args=PVDatabase::makeSafe($args);
+		extract($args);
 				
-				$show_header=ceil($show_header);
-				$container_enabled=ceil($container_enabled);
-				$container_enabled=ceil($container_enabled);
-				$container_parent=ceil($container_parent);
-				$container_site_id=ceil($container_site_id);
+		$show_header=ceil($show_header);
+		$container_enabled=ceil($container_enabled);
 				
-				$query="UPDATE ".PVDatabase::getContainersTableName()." SET container_name='$container_name', container_description='$container_description', container_alias='$container_alias', container_position='$container_position', container_header='$container_header', show_header='$show_header', container_enabled='$container_enabled', container_params='$container_params', container_css_params='$container_css_params', container_wrap='$container_wrap', container_permissions='$container_permissions', container_parent='$container_parent', container_site_id='$container_site_id' WHERE container_id='$container_id' ";
-				
-				PVDatabase::query($query);
-		}//end if is array
+		$query="UPDATE ".PVDatabase::getContainersTableName()." SET container_name='$container_name', container_description='$container_description', container_alias='$container_alias', container_position='$container_position', container_header='$container_header', show_header='$show_header', container_enabled='$container_enabled', container_params='$container_params', container_css_params='$container_css_params', container_wrap='$container_wrap', container_permissions='$container_permissions', container_parent='$container_parent', container_site_id='$container_site_id' WHERE container_id='$container_id' ";
+		PVDatabase::query($query);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
+		
 	}//end updateContainer
 	
-	
-	public static function deleteContainer($container_id, $recursive=FALSE){
-		
-		if(!empty($container_id)){
+	/**
+	 * Removes a container from the database.
+	 * 
+	 * @param id $container_id The id of the container to remove
+	 * @param boolean $recursive Default is false. If set as true, children containers will also be removed.
+	 * 				  Children containers are determined if the container_parent field equals the container_id
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function deleteContainer($container_id, $recursive=FALSE) {
 			
-			$container_id=ceil($container_id);
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $container_id, $recursive);
+			
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('container_id'=>$container_id, 'recursive'=>$recursive), array('event'=>'args'));
+		$container_id = $filtered['container_id'];
+		$recursive = $filtered['recursive'];
+		$container_id = PVDatabase::makeSafe($container_id);
+		
+		if(!empty($container_id)) {
 			
 			$query="DELETE FROM ".PVDatabase::getContainerModulesTableName()." WHERE container_id='$container_id' ";
 			PVDatabase::query($query);
@@ -590,44 +678,63 @@ class PVContainers extends PVStaticObject {
 			
 			if($recursive==TRUE){
 				$query="SELECT * FROM ".PVDatabase::getContainersTableName()." WHERE container_parent='$container_id'";
-				
-				
 				$result=PVDatabase::query($query);
 			
 				while ($row = PVDatabase::fetchArray($result)){
-					self::deletePage($row['container_id'], $recursive);
+					self::deleteContainer($row['container_id'], $recursive);
 				}//end while
 			}//recursive true
-			
+			self::_notify(get_class().'::'.__FUNCTION__, $container_id, $recursive);
 		}//end not empty page id
 		
 	}//end deletePage
 	
-	public static function addContainerModuleRelationship($container_id, $module_id, $container_module_ordering=0, $container_module_enabled=0){
+	/**
+	 * Adds a relationship between a module and a container.
+	 * 
+	 * @param $container_id The id of the container
+	 * @param $module_id The id of the module
+	 */
+	public static function addContainerModuleRelationship($container_id, $module_id, $container_module_ordering=0, $container_module_enabled=0) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $container_id, $module_id, $container_module_ordering, $container_module_enabled);
+			
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('container_id'=>$container_id, 'module_id'=>$module_id, 'container_module_ordering'=>$container_module_ordering, 'container_module_enabled'=>$container_module_enabled ), array('event'=>'args'));
+		$container_id = $filtered['container_id'];
+		$module_id = $filtered['module_id'];
+		$container_module_ordering = $filtered['container_module_ordering'];
+		$container_module_enabled = $filtered['container_module_enabled'];
 		
 		if(!empty($container_id) && !empty($module_id)){
 			
-			$container_id=ceil($container_id);
-			$module_id=ceil($module_id);
+			$container_id=PVDatabase::makeSafe($container_id);
+			$module_id=PVDatabase::makeSafe($module_id);
 			$container_module_ordering=ceil($container_module_ordering);
 			$container_module_enabled=ceil($container_module_enabled);
 			
 			$query="INSERT INTO ".PVDatabase::getContainerModulesTableName()."( container_id , module_id , container_module_ordering , container_module_enabled ) VALUES( '$container_id' , '$module_id' , '$container_module_ordering' , '$container_module_enabled' ) ";
 			
 			$container_module_id=PVDatabase::return_last_insert_query($query, 'container_module_id', PVDatabase::getContainerModulesTableName());
+			self::_notify(get_class().'::'.__FUNCTION__, $container_module_id, $container_id, $module_id, $container_module_ordering, $container_module_enabled);
+			$container_module_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $container_module_id , array('event'=>'return'));
 			
 			return $container_module_id;
 		}//end if not empty
 		
 	}//end addContainerModuleRelationship
 	
-	public static function getContainerModuleRelationshipList($args){
+	public static function getContainerModuleRelationshipList($args = array()) {
 		
-		if(is_array($args)){
-			$args=PVDatabase::makeSafe($args);
-			extract($args);
-		}
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 			$first=1;
 			
@@ -635,7 +742,7 @@ class PVContainers extends PVStaticObject {
 			$table_name=PVDatabase::getContainerModulesTableName();
 			$db_type=PVDatabase::getDatabaseType();
 				
-			$WHERE_CLAUSE.='';
+			$WHERE_CLAUSE='';
 			
 			if(!empty($container_id)){
 				
@@ -762,7 +869,6 @@ class PVContainers extends PVStaticObject {
 				$table_name=$page_results['from_clause'];
 			}
 		}
-		
 	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
@@ -788,7 +894,7 @@ class PVContainers extends PVStaticObject {
 			$custom_select='*';
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -803,22 +909,31 @@ class PVContainers extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ ,  $content_array , array('event'=>'return'));
 		
     	return $content_array;
-		
 	}//end get relationship
 	
-	public static function getContainerModuleRelationship($container_module_id){
+	public static function getContainerModuleRelationship($container_module_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $container_module_id);
 	
+		$container_module_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $container_module_id, array('event'=>'args'));
+		
 		if(!empty($container_module_id)){
 			
-			$container_module_id=ceil($container_module_id);
+			$container_module_id=PVDatabase::makeSafe($container_module_id);
 			
 			$query="SELECT * FROM ".PVDatabase::getContainerModulesTableName()." WHERE  container_module_id='$container_module_id' ";
 			
 			$result=PVDatabase::query($query);
-			
 			$row = PVDatabase::fetchArray($result);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $container_module_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if
@@ -826,34 +941,42 @@ class PVContainers extends PVStaticObject {
 	}//end getContainerModuleRelationship
 	
 	
-	public static function updateContainerModuleRelationship($args){
+	public static function updateContainerModuleRelationship($args = array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		
 		if(is_array($args) && !empty($args['container_module_id'])){
 			
 			extract($args);
 			
-			$container_id=ceil($container_id);
-			$module_id=ceil($module_id);
+			$container_id=PVDatabase::makeSafe($container_id);
+			$module_id=PVDatabase::makeSafe($module_id);
 			$container_module_ordering=ceil($container_module_ordering);
 			$container_module_enabled=ceil($container_module_enabled);
 			$container_module_id=ceil($container_module_id);
 			
 			$query="UPDATE ".PVDatabase::getContainerModulesTableName()." SET container_id='$container_id', module_id='$module_id', container_module_ordering='$container_module_ordering' , container_module_enabled='$container_module_enabled' WHERE container_module_id='$container_module_id'";
-			
 			PVDatabase::query($query);
-			
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 		}
 	}//end updateContainerModuleRelations
 	
 	
-	public static function deleteContainerModuleRelationship($container_module_id){
+	public static function deleteContainerModuleRelationship($container_module_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $container_module_id);
+		
+		$container_module_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $container_module_id , array('event'=>'args'));
 		
 		if(!empty($container_module_id)){
 			$container_module_id=ceil($container_module_id);
-			
 			$query="DELETE FROM ".PVDatabase::getContainerModulesTableName()." WHERE container_module_id='$container_module_id'";
-			
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $container_module_id);
 		}
 	}//end deleteContainerModuleRelationship
 		
