@@ -35,10 +35,27 @@ class PVPlugins extends PVStaticObject {
 	 * Remember to set the hookname and function called accordingly in the database
 	 *  
 	 * @param string hookname: The name of hooke associated with a plugin in the database
-	 * @param mixed params: Parameters passed to the function that the hook called. Typicallys a string or an array
-	 * @return Returns 
+	 * @param mixed $args An infinite amount of arguements that can be passed to a plugin
+	 * 
+	 * @return Returns
+	 * @access public 
 	 */
-	public static function callHook($hookname, $params=''){
+	public static function callHook($hookname) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $hookname);
+		
+		$args = func_get_args();
+        array_shift($args);
+       
+        $passable_args = array();
+        foreach($args as $key => &$arg){
+            $passable_args[$key] = &$arg;
+        } 
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('hookname'=>$hookname, 'passable_args'=>$passable_args ), array('event'=>'args'));
+		$hookname = $filtered['hookname'];
+		$passable_args  = $filtered['passable_args'];
 		
 		$hookname=PVDatabase::makeSafe($hookname);
 		$ovveride=true;
@@ -47,18 +64,34 @@ class PVPlugins extends PVStaticObject {
     	
     	while ($row = PVDatabase::fetchArray($result)){
     		if(!empty($row['plugin_function'])){
-    			call_user_func($row['plugin_function'], $params);
+    			call_user_func_array($row['plugin_function'], $passable_args);
     		}
 			
 			if($row['plugin_override']==1){
 				$ovveride=false;
 			}
     	}//end while
-		
+		self::_notify(get_class().'::'.__FUNCTION__, $hookname);
+	
 		return $ovveride;
 	}//
 	
-	public static function callHookOverride($hookname, $params=''){
+	public static function callHookOverride($hookname) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $hookname);
+		
+		$args = func_get_args();
+        array_shift($args);
+       
+        $passable_args = array();
+        foreach($args as $key => &$arg){
+            $passable_args[$key] = &$arg;
+        } 
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('hookname'=>$hookname, 'passable_args'=>$passable_args ), array('event'=>'args'));
+		$hookname = $filtered['hookname'];
+		$passable_args  = $filtered['passable_args'];
 		
 		$hookname=PVDatabase::makeSafe($hookname);
 		$ovveride=true;
@@ -67,19 +100,60 @@ class PVPlugins extends PVStaticObject {
     	
     	while ($row = PVDatabase::fetchArray($result)){
     		if(!empty($row['plugin_function'])){
-    			call_user_func($row['plugin_function'], $params);
+    			call_user_func_array($row['plugin_function'], $passable_args);
     		}
 			
 			if($row['plugin_override']==1){
 				$ovveride=false;
 			}
     	}//end while
+    	
+    	self::_notify(get_class().'::'.__FUNCTION__, $hookname);
 		
 		return $ovveride;
 	}//
 	
+	/**
+	 * Install or update a plugin into the system based on the plugin's unique name.
+	 * 
+	 * @param array $args The arguements that define the plugin
+	 * 			-'plugin_unique_name' _string_: A custom unique identifer for the plugin
+	 * 			-'plugin_name' _string_: The name of plugin
+	 * 			-'plugin_function' _string_: The function the plugin calls when loaded
+	 * 			-'plugin_command' _string_: The command for the plugin to execute
+	 * 			-'plugin_order' _int_: The order the plugin is loaded in
+	 * 			-'plugin_ovveride' _boolean_: Is the plugin used to ovveride other plugins
+	 * 			-'plugin_type' _string_: The type of plugin
+	 * 			-'plugin_version' _double_: The current version of the plugin
+	 * 			-'plugin_parameters' _string_: The parameters in the plugin
+	 * 			-'plugin_author' _string_: The author of the plugin
+	 * 			-'plugin_homepage' _string_: The homepage of the plugin
+	 * 			-'plugin_license' _string_: The license of the plugin
+	 * 			-'plugin_file' _string_: The main file to include in loading the plug-in
+	 * 			-'plugin_uninstall_function' _string_: The function to be called when uninstalling the plugin
+	 * 			-'is_plugin_editable' _boolean_: Can the plugin be modified. Default is false.
+	 * 			-'plugin_description' _string_: A description of the plug-in
+	 * 			-'plugin_preferences' _string_: Preferences for the plugin
+	 * 			-'plugin_hook' _string_: The hook name for the pluginn. Calls it when hook in initizalied.
+	 * 			-'plugin_enabled' _boolean_: Is the current plugin enabled. Default is set to false
+	 * 			-'plugin_directory' _string_: The location the plugin resides in relative to PV_PLUGIN define
+	 * 			-'plugin_admin_function' _string_: The function to be called for the plug-ins admin
+	 * 			-'plugin_application' _string_: The unique identifer of the application the plugin is associated with
+	 * 			-'is_frontend_plugin' _boolean_: Decides if the plugin can be loaded on the front end
+	 * 			-'is_admin_plugin' _boolean_: Decides if the plugin can be loaded on the back end
+	 * 			-'plugin_object' _string_: The plugin's object, if it has one
+	 * 			-'plugin_language' _string: The plugin's language. For PHP, put php or plugin will not loade
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function installPlugin($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getPluginDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);	
 			
@@ -108,11 +182,53 @@ class PVPlugins extends PVStaticObject {
 			$query="UPDATE ".PVDatabase::getPluginsTableName()." SET plugin_function='$plugin_function', plugin_command='$plugin_command', plugin_application='$plugin_application', plugin_order='$plugin_order', plugin_override='$plugin_override', plugin_type='$plugin_type', plugin_version='$plugin_version', plugin_parameters='$plugin_parameters', plugin_author='$plugin_author', plugin_homepage='$plugin_homepage', plugin_license='$plugin_license', plugin_name='$plugin_name', plugin_file='$plugin_file', plugin_uninstall_function='$plugin_uninstall_function', plugin_preferences='$plugin_preferences', plugin_hook='plugin_hook', plugin_enabled='$plugin_enabled', plugin_description='$plugin_description', is_plugin_editable='$is_plugin_editable', plugin_directory='$plugin_directory', plugin_admin_function='$plugin_admin_function', is_frontend_plugin='$is_frontend_plugin', is_admin_plugin='$is_admin_plugin', plugin_object='$plugin_object', plugin_language='$plugin_language' WHERE  plugin_unique_name='$plugin_unique_name'";
 			PVDatabase::query($query);	
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}
 	
-	public static function getPluginList($args=array()){
+	/**
+	 * Search for plugins currently in the database
+	 * 
+	 * @param array $args The arguements that define the plugin
+	 * 			-'plugin_id' _string_: The name of the plugin
+	 * 			-'plugin_unique_name' _string_: A custom unique identifer for the plugin
+	 * 			-'plugin_name' _string_: The name of plugin
+	 * 			-'plugin_function' _string_: The function the plugin calls when loaded
+	 * 			-'plugin_command' _string_: The command for the plugin to execute
+	 * 			-'plugin_order' _int_: The order the plugin is loaded in
+	 * 			-'plugin_ovveride' _boolean_: Is the plugin used to ovveride other plugins
+	 * 			-'plugin_type' _string_: The type of plugin
+	 * 			-'plugin_version' _double_: The current version of the plugin
+	 * 			-'plugin_parameters' _string_: The parameters in the plugin
+	 * 			-'plugin_author' _string_: The author of the plugin
+	 * 			-'plugin_homepage' _string_: The homepage of the plugin
+	 * 			-'plugin_license' _string_: The license of the plugin
+	 * 			-'plugin_file' _string_: The main file to include in loading the plug-in
+	 * 			-'plugin_uninstall_function' _string_: The function to be called when uninstalling the plugin
+	 * 			-'is_plugin_editable' _boolean_: Can the plugin be modified. Default is false.
+	 * 			-'plugin_description' _string_: A description of the plug-in
+	 * 			-'plugin_preferences' _string_: Preferences for the plugin
+	 * 			-'plugin_hook' _string_: The hook name for the pluginn. Calls it when hook in initizalied.
+	 * 			-'plugin_enabled' _boolean_: Is the current plugin enabled. Default is set to false
+	 * 			-'plugin_directory' _string_: The location the plugin resides in relative to PV_PLUGIN define
+	 * 			-'plugin_admin_function' _string_: The function to be called for the plug-ins admin
+	 * 			-'plugin_application' _string_: The unique identifer of the application the plugin is associated with
+	 * 			-'is_frontend_plugin' _boolean_: Decides if the plugin can be loaded on the front end
+	 * 			-'is_admin_plugin' _boolean_: Decides if the plugin can be loaded on the back end
+	 * 			-'plugin_object' _string_: The plugin's object, if it has one
+	 * 			-'plugin_language' _string: The plugin's language. For PHP, put php or plugin will not loade
+	 * 
+	 * @return array $plugins Returns a list of plugins
+	 * @access public
+	 */
+	public static function getPluginList($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getPluginDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
 		$custom_select=$args['custom_select'];
@@ -159,7 +275,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($plugin_command)){
 					
 				$plugin_command=trim($plugin_command);
@@ -176,7 +291,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($plugin_order)){
 					
@@ -195,7 +309,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($plugin_override)){
 					
 				$plugin_override=trim($plugin_override);
@@ -212,7 +325,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($plugin_type)){
 					
@@ -231,7 +343,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($plugin_version)){
 					
 				$plugin_version=trim($plugin_version);
@@ -248,7 +359,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($plugin_parameters)){
 					
@@ -267,7 +377,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($plugin_author)){
 					
 				$plugin_author=trim($plugin_author);
@@ -284,7 +393,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($plugin_homepage)){
 					
@@ -303,7 +411,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($plugin_license)){
 					
 				$plugin_license=trim($plugin_license);
@@ -320,7 +427,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($plugin_name)){
 					
@@ -339,7 +445,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($plugin_file)){
 					
 				$plugin_file=trim($plugin_file);
@@ -356,7 +461,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($plugin_uninstall_function)){
 					
@@ -375,7 +479,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($is_plugin_editable)){
 					
 				$is_plugin_editable=trim($is_plugin_editable);
@@ -392,7 +495,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($plugin_description)){
 					
@@ -411,7 +513,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($plugin_preferences)){
 					
 				$plugin_preferences=trim($plugin_preferences);
@@ -428,7 +529,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($plugin_hook)){
 					
@@ -447,8 +547,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
-			
 			if(!empty($plugin_enabled)){
 					
 				$plugin_enabled=trim($plugin_enabled);
@@ -466,7 +564,6 @@ class PVPlugins extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($plugin_directory)){
 					
 				$plugin_directory=trim($plugin_directory);
@@ -483,8 +580,6 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
-			
 			
 			if(!empty($plugin_application)){
 					
@@ -570,7 +665,9 @@ class PVPlugins extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
+		
+		$JOIN = '';
+		
 		if(!empty($custom_where)){
 			$WHERE_CLAUSE.=' '.$custom_where.' ';
 		}
@@ -627,7 +724,7 @@ class PVPlugins extends PVStaticObject {
 			$custom_select='*';
 		}
 		
-    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOIN $WHERE_CLAUSE";
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -640,33 +737,58 @@ class PVPlugins extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array  = self::_applyFilter( get_class(), __FUNCTION__ , $content_array  , array('event'=>'return'));
 		
     	return $content_array;
-		
 	}//end getPluginList
 	
-	public static function getPlugin($plugin_unique_name){
+	/**
+	 * Returns a plugin's data in the system.
+	 * 
+	 * @param mixed $plugin_id Either the assigned unique identifier or the id of the plugin
+	 * 
+	 * @return array $plugin The data pertaining that plguin
+	 * @access public
+	 */
+	public static function getPlugin($plugin_unique_name) {
 		
-		if(!empty($plugin_unique_name)){
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $plugin_unique_name);
+		
+		$plugin_unique_name = self::_applyFilter( get_class(), __FUNCTION__ , $plugin_unique_name, array('event'=>'args'));
+		$plugin_unique_name=PVDatabase::makeSafe($plugin_unique_name);
 			
-			$plugin_unique_name=PVDatabase::makeSafe($plugin_unique_name);
-			
-			if(PVValidator::isInteger($plugin_unique_name)){
-				$query="SELECT * FROM ".PVDatabase::getPluginsTableName()." WHERE plugin_id='$plugin_unique_name' ";
-			} else {
-				$query="SELECT * FROM ".PVDatabase::getPluginsTableName()." WHERE plugin_unique_name='$plugin_unique_name' ";
-			}
-			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
-			
-			return $row;	
+		if(PVValidator::isInteger($plugin_unique_name)){
+			$query="SELECT * FROM ".PVDatabase::getPluginsTableName()." WHERE plugin_id='$plugin_unique_name' ";
+		} else {
+			$query="SELECT * FROM ".PVDatabase::getPluginsTableName()." WHERE plugin_unique_name='$plugin_unique_name' ";
 		}
+			
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row=PVDatabase::formatData($row);
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $plugin_unique_name);
+		$row  = self::_applyFilter( get_class(), __FUNCTION__ , $row  , array('event'=>'return'));
+		
+		return $row;	
 	}//end getPlugin
 	
-	public static function removePlugin($plugin_unique_name){
+	/**
+	 * Removes a plugin from the database and the plugin's directory.
+	 * 
+	 * @param mixed $plugin_id Either the assigned unique identifier or the id of the plugin
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function removePlugin($plugin_unique_name) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $plugin_unique_name);
+		
+		$plugin_unique_name = self::_applyFilter( get_class(), __FUNCTION__ , $plugin_unique_name, array('event'=>'args'));
 		
 		if(!empty($plugin_unique_name)){
 			$plugin_info=self::getPlugin($plugin_unique_name);
@@ -688,10 +810,15 @@ class PVPlugins extends PVStaticObject {
 				$query="DELETE FROM ".PVDatabase::getPluginsTableName()." WHERE plugin_unique_name='plugin_unique_name' ;";
 				PVDatabase::query($query);
 			}//end if is array
+			self::_notify(get_class().'::'.__FUNCTION__, $plugin_unique_name);
 		}
 	}//end removePlugin
 	
 	private static function getPluginDefaults() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		$defaults = array(
 			'plugin_id'=>0,
 			'plugin_unique_name'=>'',
@@ -720,6 +847,8 @@ class PVPlugins extends PVStaticObject {
 			'plugin_object'=>'',
 			'plugin_language'=>''
 		);
+		
+		$defaults = self::_applyFilter( get_class(), __FUNCTION__ , $defaults  , array('event'=>'return'));
 		
 		return $defaults;
 	}
