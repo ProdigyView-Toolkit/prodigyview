@@ -45,21 +45,21 @@ class PVObject extends PVPatterns {
 		return $this->_collection->get($index);
  	}
 	
-	protected function _addToCollection($data) {
+	protected function addToCollection($data) {
 		if($this->_collection==null) {
 			$this->_collection=new PVCollection();
 		}
 		$this->_collection->add($data);
 	}//end 
 	
-	protected function _addToCollectionWithName($name, $data) {
+	protected function addToCollectionWithName($name, $data) {
 		if($this->_collection==null) {
 			$this->_collection=new PVCollection();
 		}
 		$this->_collection->addWithName($name, $data);
 	}//end 
 	
-	public function _getIterator() {
+	public function getIterator() {
 		if($this->_collection==null) {
 			$this->_collection=new PVCollection();
 		}

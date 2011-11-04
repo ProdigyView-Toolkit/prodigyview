@@ -29,9 +29,9 @@
 
 class PVStaticObject extends PVStaticPatterns {
 	
-	public static $_collection=null;
+	protected static $_collection=null;
 	
-	private static $_instance;
+	protected static $_instance;
 	
 	/**
 	 * Adds a value to the classes Collection. By default the collection is stored
@@ -76,7 +76,7 @@ class PVStaticObject extends PVStaticPatterns {
 	 * @return void
 	 * @access public	 
 	 */
-	protected static function _addToCollection($data) {
+	protected static function addToCollection($data) {
 		if(self::$_collection==null) {
 			self::$_collection=new PVCollection();
 		}
@@ -89,14 +89,14 @@ class PVStaticObject extends PVStaticPatterns {
 	 * 
 	 * @todo check the relevance of get and set
 	 */
-	protected static function _addToCollectionWithName($name, $data) {
+	protected static function addToCollectionWithName($name, $data) {
 		if(self::$_collection==null) {
 			self::$_collection=new PVCollection();
 		}
 		self::$_collection->addWithName($name, $data);
 	}//end 
 	
-	public function _getIterator() {
+	public function getIterator() {
 		if(self::$_collection==null) {
 			self::$_collection=new PVCollection();
 		}
@@ -124,7 +124,10 @@ class PVStaticObject extends PVStaticPatterns {
 			'join_content'=>false,
 			'join_comments'=>false,
 			'join_applications'=>false,
-			'join_apps'=>false
+			'join_apps'=>false,
+			'join_pages'=>false,
+			'join_modules'=>false,
+			'join_containers'=>false
 		);
 		
 		return $defaults;
