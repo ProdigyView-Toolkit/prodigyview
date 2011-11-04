@@ -754,7 +754,7 @@ class PVTemplate extends PVStaticObject {
 		if(empty($custom_select)){
 			$custom_select='*';
 		}
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -981,9 +981,12 @@ class PVTemplate extends PVStaticObject {
 		
 		$args += self::getTemplatePositionDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args += array('join_templates' => false);
 		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
 		$args = PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		$first=1;
 		$content_array=array();
@@ -1064,7 +1067,6 @@ class PVTemplate extends PVStaticObject {
 		}
 		
 		$query="SELECT $custom_select FROM ".PVDatabase::getTemplatePositionsTableName()." $JOINS ".$WHERE_CLAUSE." $ORDER_BY $LIMIT ";
-		
 		$result=PVDatabase::query($query);
 	
 		while ($row = PVDatabase::fetchArray($result)){
