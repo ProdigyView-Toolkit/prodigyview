@@ -29,8 +29,32 @@
 
 class PVMenus extends PVStaticObject{
 	
-	public static function createMenu($args){
+	/**
+	 * Create a menu container. The menu container will hold the menu items.
+	 * 
+	 * @param array $args Arguements passed that define the menu
+	 * 			-'menu_name' _string_: The name of the menu
+	 * 			-'menu_type' _string_: The type of menu being created
+	 * 			-'menu_tag_id' _string_: The id of the tag as an attribute
+	 * 			-'menu_css' _string_: The css for the mnsu
+	 * 			-'content_id' _id_: Content this menu is related too
+	 * 			-'user_id' _id_: The id of the user the menu is associated with
+	 * 			-'app_id' _id_: The aplication the menu is associated with
+	 * 			-'menu_unique_id' _string_: A assigned unique identifer for the menu
+	 * 			-'menu_class' _string_: The class attributes for the menu
+	 * 			-'menu_description' _string_: A description of the menu
+	 * 			-'menu_enabled' _boolean_: Determines if the menu is enabled
+	 * 
+	 * @return id $menu_id The id of the menu created
+	 * @access public
+	 */
+	public static function createMenu($args = array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getMenuDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		
 		if(is_array($args)){
@@ -48,24 +72,46 @@ class PVMenus extends PVStaticObject{
 		}
 		
 		$query="INSERT INTO ".PVDatabase::getMenuTableName()."(menu_name, menu_type, menu_tag_id, menu_css, menu_order, content_id, user_id, app_id, menu_unique_id, menu_class, menu_description, menu_enabled) VALUES( '$menu_name', '$menu_type', '$menu_tag_id', '$menu_css', '$menu_order', '$content_id', '$user_id', '$app_id', '$menu_unique_id', '$menu_class', '$menu_description', '$menu_enabled')";
-		
 		$menu_id=PVDatabase::return_last_insert_query($query, 'menu_id', PVDatabase::getMenuTableName());
-			
-			
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $menu_id , $args);
+		$menu_id = self::_applyFilter( get_class(), __FUNCTION__ , $menu_id, array('event'=>'return'));
+		
 		return $menu_id;
-	
 	}//end createMenu
 	
+	/**
+	 * Update a menu based on passed elements. The menu id is required to successfully update a menu.
+	 * 
+	 * @param array $args Arguements passed that define the menu
+	 * 			-'menu_id' _id_: Required. Updates the menu based on the id.
+	 * 			-'menu_name' _string_: The name of the menu
+	 * 			-'menu_type' _string_: The type of menu being created
+	 * 			-'menu_tag_id' _string_: The id of the tag as an attribute
+	 * 			-'menu_css' _string_: The css for the mnsu
+	 * 			-'content_id' _id_: Content this menu is related too
+	 * 			-'user_id' _id_: The id of the user the menu is associated with
+	 * 			-'app_id' _id_: The aplication the menu is associated with
+	 * 			-'menu_unique_id' _string_: A assigned unique identifer for the menu
+	 * 			-'menu_class' _string_: The class attributes for the menu
+	 * 			-'menu_description' _string_: A description of the menu
+	 * 			-'menu_enabled' _boolean_: Determines if the menu is enabled
+	 * 
+	 * @return voids
+	 * @access public
+	 */
+	public static function updateMenu($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 	
-	public static function updateMenu($args){
-	
+		$args += self::getMenuDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		
 		if(is_array($args)){
 			extract($args);	
 		}
-		$menu_id=ceil($menu_id);
-		
 		
 		if(!empty($menu_id)){
 			
@@ -76,21 +122,47 @@ class PVMenus extends PVStaticObject{
 			$menu_enabled=ceil($menu_enabled);
 			
 			$query="UPDATE ".PVDatabase::getMenuTableName()." SET menu_name='$menu_name', menu_type='$menu_type' , menu_tag_id='$menu_tag_id' , menu_css='$menu_css' , menu_order='$menu_order' , content_id='$content_id', user_id='$user_id', app_id='$app_id', menu_unique_id='$menu_unique_id', menu_class='$menu_class', menu_description='$menu_description', menu_enabled='$menu_enabled' WHERE menu_id='$menu_id' ";
-			
 			PVDatabase::query($query);
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 		}//end
 		
 	}//end updateMenu
 	
-	public static function getMenuList($args){
+	/**
+	 * Search for a menu in the database based on the parameters based that describe the menu. The parameters passed should
+	 * follow the PV Standard Search Query arguements
+	 * 
+	 * @param array $args Arguements passed that define the menu
+	 * 			-'menu_id' _id_: The id of the menu
+	 * 			-'menu_name' _string_: The name of the menu
+	 * 			-'menu_type' _string_: The type of menu being created
+	 * 			-'menu_tag_id' _string_: The id of the tag as an attribute
+	 * 			-'menu_css' _string_: The css for the mnsu
+	 * 			-'content_id' _id_: Content this menu is related too
+	 * 			-'user_id' _id_: The id of the user the menu is associated with
+	 * 			-'app_id' _id_: The aplication the menu is associated with
+	 * 			-'menu_unique_id' _string_: A assigned unique identifer for the menu
+	 * 			-'menu_class' _string_: The class attributes for the menu
+	 * 			-'menu_description' _string_: A description of the menu
+	 * 			-'menu_enabled' _boolean_: Determines if the menu is enabled
+	 * 
+	 * @return array $menus Returns an array of menus
+	 * @access public
+	 */
+	public static function getMenuList($args = array()) {
 		
-		if(is_array($args)){
-			$custom_where=$args['custom_where'];
-			$custom_join=$args['custom_join'];
-			extract($args, EXTR_SKIP);
-		}
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::getMenuDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		$args += self::_getSqlSearchDefaults();
+		
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$args = PVDatabase::makeSage($args);
+		extract($args, EXTR_SKIP);
 		
 		$first=1;
 		
@@ -98,7 +170,7 @@ class PVMenus extends PVStaticObject{
 		$table_name=PVDatabase::getMenuTableName();
 		$db_type=PVDatabase::getDatabaseType();
 				
-		$WHERE_CLAUSE.='';
+		$WHERE_CLAUSE='';
 			
 		if(!empty($menu_id) || $menu_id==='0'){
 					
@@ -134,7 +206,6 @@ class PVMenus extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($menu_type) || $menu_type==='0' ){
 					
 			$menu_type=trim($menu_type);
@@ -151,7 +222,6 @@ class PVMenus extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($menu_tag_id)){
 					
@@ -170,7 +240,6 @@ class PVMenus extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($menu_css)){
 					
 			$menu_css=trim($menu_css);
@@ -187,7 +256,6 @@ class PVMenus extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($menu_order)){
 					
@@ -206,7 +274,6 @@ class PVMenus extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($content_id)){
 					
 			$content_id=trim($content_id);
@@ -223,7 +290,6 @@ class PVMenus extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($user_id)){
 					
@@ -242,7 +308,6 @@ class PVMenus extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($app_id)){
 					
 			$app_id=trim($app_id);
@@ -260,7 +325,6 @@ class PVMenus extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($menu_unique_id)){
 					
 			$menu_unique_id=trim($menu_unique_id);
@@ -277,7 +341,6 @@ class PVMenus extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($menu_class)){
 					
@@ -313,7 +376,6 @@ class PVMenus extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		$JOINS='';
 		
 		if(!empty($custom_where)){
@@ -347,7 +409,6 @@ class PVMenus extends PVStaticObject{
 				$table_name=$page_results['from_clause'];
 			}
 		}
-		
 	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
@@ -373,8 +434,7 @@ class PVMenus extends PVStaticObject{
 			$custom_select='*';	
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
-    	
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -388,14 +448,28 @@ class PVMenus extends PVStaticObject{
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array, array('event'=>'return'));
 		
     	return $content_array;
 		
 	}//end getMeniUtemList
 	
-	public static function getMenu($menu_id){
+	/**
+	 * Returns a menu's data based on the id of the menu.
+	 * 
+	 * @param id $menu_id The id of the menu
+	 * 
+	 * @return array $menu Returns the menu's data
+	 * @access public
+	 */
+	public static function getMenu($menu_id) {
 		
-		$menu_id=ceil($menu_id);
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $menu_id);
+		
+		$menu_id = self::_applyFilter( get_class(), __FUNCTION__ , $menu_id , array('event'=>'args'));
+		$menu_id=PVDatabase::makeSafe($menu_id);
 		
 		if(!empty($menu_id)){
 			$query="SELECT * FROM ".PVDatabase::getMenuTableName()." WHERE menu_id='$menu_id' ";
@@ -404,13 +478,28 @@ class PVMenus extends PVStaticObject{
 			$row = PVDatabase::fetchArray($result);
 			
 			$row=PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $menu_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
+			
 			return $row;
 		}
 		
 	}//end
 	
-	public static function getMenuByUniqueID($menu_unique_id){
+	/**
+	 * Returns a menu's data based on the assigned unique id of the menu.
+	 * 
+	 * @param id $menu_id The assigned unique id of the menu
+	 * 
+	 * @return array $menu Returns the menu's data
+	 * @access public
+	 */
+	public static function getMenuByUniqueID($menu_unique_id) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $menu_unique_id);
+		
+		$menu_unique_id = self::_applyFilter( get_class(), __FUNCTION__ , $menu_unique_id , array('event'=>'args'));
 		$menu_unique_id=PVDatabase::makeSafe($menu_unique_id);
 		
 		if(!empty($menu_unique_id)){
@@ -420,76 +509,162 @@ class PVMenus extends PVStaticObject{
 			$row = PVDatabase::fetchArray($result);
 			
 			$row=PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $menu_unique_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
+			
 			return $row;
 		}
 		
 	}//end
 	
-	public static function deleteMenu($menu_id, $DELETE_MENU_ITEMS=TRUE){
-		$menu_id=ceil($menu_id);
+	/**
+	 * Delete a menu from the database.
+	 * 
+	 * @param id $menu_id The id of the mneu to be tdeleted
+	 * @param boolean $delete_menu_items By default is set to true. Items with this menu will be deleted as well
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function deleteMenu($menu_id, $delete_menu_items=TRUE) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $menu_id, $delete_menu_items);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('menu_id'=>$menu_id, 'delete_menu_items'=>$delete_menu_items ), array('event'=>'args'));
+		$menu_id = $filtered['menu_id'];
+		$delete_menu_items = $filtered['delete_menu_items'];
+		
+		$menu_id=PVDatabase::makeSafe($menu_id);
 		
 		if(!empty($menu_id)){
 			$query="DELETE FROM ".PVDatabase::getMenuTableName()." WHERE menu_id='$menu_id' ";
 			PVDatabase::query($query);
 			
-			if($DELETE_MENU_ITEMS){
+			if($delete_menu_items){
 				$query="DELETE FROM ".PVDatabase::getMenuItemsTableName()." WHERE menu_id='$menu_id'";
 				PVDatabase::query($query);
 			}
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $menu_id , $delete_menu_items);
 		}//end !empty(menu_id)
 	}//end deleteMenu
 	
-	
-	public static function createMenuItem($args){
+	/**
+	 * Create a menu item that is associated with a menu
+	 * 
+	 * @param array $args Arguements that define the fields in the menu item
+	 * 		'menu_id' _id_: The id of the menu the menu item will belong too
+	 * 		'parent_id' _id_: The id of the parent menu item
+	 * 		'item_name' _string_: The name of the menu item
+	 * 		'item_description' _string_: The description of the menu item
+	 * 		'item_url' _string_: The url of the menu item
+	 * 		'item_params' _string_: Parameters for the item
+	 * 		'item_css' _string_: Css for the menu item
+	 * 		'item_ordering' _int_: The order of the item, in the menu
+	 * 		'item_enabled' _boolean_: If the item is enabled
+	 * 		'item_title' _string_: The title of the menu tiem
+	 * 		'item_permissions' _string_: The permissions allowed to view this item
+	 * 		'item_id_tag' _string_: The tag id attribute of the menu item 
+	 * 
+	 * @return id $item_id The of the item tag
+	 * @access public
+	 */
+	public static function createMenuItem($args = array()) {
 		
-		if(is_array($args)){
-			$args=PVDatabase::makeSafe($args);
-			extract($args);
-			
-			
-			$menu_id=ceil($menu_id);
-			$parent_id=ceil($parent_id);
-			$item_ordering=ceil($item_ordering);
-			$item_enabled=ceil($item_enabled);
-			
-			$query="INSERT INTO ".PVDatabase::getMenuItemsTableName()."(menu_id, parent_id,item_name, item_description, item_url, item_params, item_css, item_ordering, item_enabled, item_title, item_permissions, item_id_tag) VALUES( '$menu_id' , '$parent_id' , '$item_name' , '$item_description', '$item_url', '$item_params', '$item_css', '$item_ordering', '$item_enabled', '$item_title', '$item_permissions' , '$item_id_tag' ) ";
-			
-			$item_id=PVDatabase::return_last_insert_query($query, 'item_id', PVDatabase::getMenuItemsTableName());
-			
-			
-			return $item_id;
-		}//end if is_array
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::getMenuItemDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		$args = PVDatabase::makeSafe($args);
+		
+		extract($args);
+			
+		$item_ordering=ceil($item_ordering);
+		$item_enabled=ceil($item_enabled);
+			
+		$query="INSERT INTO ".PVDatabase::getMenuItemsTableName()."(menu_id, parent_id,item_name, item_description, item_url, item_params, item_css, item_ordering, item_enabled, item_title, item_permissions, item_id_tag) VALUES( '$menu_id' , '$parent_id' , '$item_name' , '$item_description', '$item_url', '$item_params', '$item_css', '$item_ordering', '$item_enabled', '$item_title', '$item_permissions' , '$item_id_tag' ) ";
+		$item_id=PVDatabase::return_last_insert_query($query, 'item_id', PVDatabase::getMenuItemsTableName());
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $item_id , $args);
+		$item_id = self::_applyFilter( get_class(), __FUNCTION__ , $item_id, array('event'=>'return'));
+		
+		return $item_id;
 	}//end createmenuitem
 	
-	
-	public static function updateMenuItem($args){
+	/**
+	 * Update a menu item. Requires the item_id to update.
+	 * 
+	 * @param array $args Arguements that define the fields in the menu item
+	 * 		'item_id' _id_: The id of the item. Required for updating the item
+	 * 		'menu_id' _id_: The id of the menu the menu item will belong too
+	 * 		'parent_id' _id_: The id of the parent menu item
+	 * 		'item_name' _string_: The name of the menu item
+	 * 		'item_description' _string_: The description of the menu item
+	 * 		'item_url' _string_: The url of the menu item
+	 * 		'item_params' _string_: Parameters for the item
+	 * 		'item_css' _string_: Css for the menu item
+	 * 		'item_ordering' _int_: The order of the item, in the menu
+	 * 		'item_enabled' _boolean_: If the item is enabled
+	 * 		'item_title' _string_: The title of the menu tiem
+	 * 		'item_permissions' _string_: The permissions allowed to view this item
+	 * 		'item_id_tag' _string_: The tag id attribute of the menu item 
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function updateMenuItem($args = array()) {
 		
-		if( is_array($args) && !empty($args['menu_id']) && !empty($args['item_id']) ){
-			$args=PVDatabase::makeSafe($args);
-			extract($args);
-			
-			$menu_id=ceil($menu_id);
-			$parent_id=ceil($parent_id);
-			$item_ordering=ceil($item_ordering);
-			$item_enabled=ceil($item_enabled);
-			
-			$query="UPDATE ".PVDatabase::getMenuItemsTableName()." SET  parent_id='$parent_id', item_name='$item_name', item_description='$item_description',  item_url='$item_url' , item_params='$item_params' , item_css='$item_css' , item_ordering='$item_ordering' ,  item_enabled='$item_enabled' , item_title='$item_title' , item_permissions='$item_permissions' ,  item_id_tag='$item_id_tag' WHERE menu_id='$menu_id' AND item_id='$item_id' ";
-			
-			PVDatabase::query($query);
-		}//end is_array
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::getMenuItemDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		$args=PVDatabase::makeSafe($args);
+		extract($args);
+			
+		$item_ordering=ceil($item_ordering);
+		$item_enabled=ceil($item_enabled);
+			
+		$query="UPDATE ".PVDatabase::getMenuItemsTableName()." SET  parent_id='$parent_id', item_name='$item_name', item_description='$item_description',  item_url='$item_url' , item_params='$item_params' , item_css='$item_css' , item_ordering='$item_ordering' ,  item_enabled='$item_enabled' , item_title='$item_title' , item_permissions='$item_permissions' ,  item_id_tag='$item_id_tag', menu_id='$menu_id' WHERE item_id='$item_id' ";		
+		PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end updateMenuItem
 	
-	public static function getMenuItemList($args){
+	/**
+	 * Search for items in a list of items.Uses the PV Standard Search Query
+	 * 
+	 * @param array $args Arguements that define the fields in the menu item
+	 * 		'item_id' _id_: The id of the item. Required for updating the item
+	 * 		'menu_id' _id_: The id of the menu the menu item will belong too
+	 * 		'parent_id' _id_: The id of the parent menu item
+	 * 		'item_name' _string_: The name of the menu item
+	 * 		'item_description' _string_: The description of the menu item
+	 * 		'item_url' _string_: The url of the menu item
+	 * 		'item_params' _string_: Parameters for the item
+	 * 		'item_css' _string_: Css for the menu item
+	 * 		'item_ordering' _int_: The order of the item, in the menu
+	 * 		'item_enabled' _boolean_: If the item is enabled
+	 * 		'item_title' _string_: The title of the menu tiem
+	 * 		'item_permissions' _string_: The permissions allowed to view this item
+	 * 		'item_id_tag' _string_: The tag id attribute of the menu item 
+	 * 
+	 * @return array $items Returns an array of item
+	 * @access public
+	 */
+	public static function getMenuItemList($args =array()) {
 		
-		if(is_array($args)){
-			$custom_where=$args['custom_where'];
-			$custom_join=$args['custom_join'];
-			extract($args, EXTR_SKIP);
-		}
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::getMenuItemDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args += array('join_menu' => false);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		extract($args, EXTR_SKIP);
 		
 		$first=1;
 			
@@ -497,7 +672,7 @@ class PVMenus extends PVStaticObject{
 		$table_name=PVDatabase::getMenuItemsTableName();
 		$db_type=PVDatabase::getDatabaseType();
 				
-		$WHERE_CLAUSE.='';
+		$WHERE_CLAUSE='';
 			
 		if(!empty($menu_id) || $menu_id==='0'){
 					
@@ -659,7 +834,6 @@ class PVMenus extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($item_enabled)){
 					
 			$item_enabled=trim($item_enabled);
@@ -676,7 +850,6 @@ class PVMenus extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($item_title)){
 					
@@ -766,7 +939,6 @@ class PVMenus extends PVStaticObject{
 				$table_name=$page_results['from_clause'];
 			}
 		}
-		
 	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
@@ -792,7 +964,7 @@ class PVMenus extends PVStaticObject{
 			$custom_select='*';	
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -807,46 +979,72 @@ class PVMenus extends PVStaticObject{
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array, array('event'=>'return'));
 		
     	return $content_array;
-		
 	}//end getMeniUtemList
 	
-	public static function getMenuItem($menu_id, $item_id){
+	/**
+	 * Returns the data for a specified item.
+	 * 
+	 * @param id $item_id The id of the item being returned
+	 * 
+	 * @return array $item Data about the item
+	 * @access public
+	 */
+	public static function getMenuItem($item_id) {
 		
-		$menu_id=ceil($menu_id);
-		$item_id=ceil($item_id);
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $item_id);
+		
+		$item_id = self::_applyFilter( get_class(), __FUNCTION__ , $item_id, array('event'=>'args'));
+		$item_id=PVDatabase::getMenuItem($item_id);
 			
 		if( !empty($menu_id) && !empty($item_id) ){
 			
-			$query="SELECT * FROM ".PVDatabase::getMenuItemsTableName()." WHERE menu_id='$menu_id' AND item_id='$item_id' ";
+			$query="SELECT * FROM ".PVDatabase::getMenuItemsTableName()." WHERE item_id='$item_id' ";
 			
 			$result=PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			
 			$row=PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $row, $item_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
+			
 			return $row;
-			
 		}//end is_array
 		
 	}//end updateMenuItem
 	
-	
-	public static function deleteMenuItem($menu_id, $item_id){
+	/**
+	 * Deletes an item from the database.
+	 * 
+	 * @param id $item_id The id of the time to be deleted
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function deleteMenuItem($item_id) {
 		
-		if( !empty($menu_id) && !empty($item_id) ){
-			
-			$menu_id=ceil($menu_id);
-			$item_id=ceil($item_id);
-			
-			$query="DELETE FROM ".PVDatabase::getMenuItemsTableName()." WHERE menu_id='$menu_id' AND item_id='$item_id' ";
-			
-			PVDatabase::query($query);
-		}//end is_array
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $item_id);
 		
+		$item_id = self::_applyFilter( get_class(), __FUNCTION__ , $item_id, array('event'=>'args'));
+		$item_id=PVDatabase::makeSafe($item_id);
+		$query="DELETE FROM ".PVDatabase::getMenuItemsTableName()." WHERE item_id='$item_id' ";
+			
+		PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $item_id);
 	}//end updateMenuItem
 	
-	public static function generateListMenu($menu_unique_id, $args){
+	/**
+	 * @todo remove??? 
+	 */
+	public static function generateListMenu($menu_unique_id, $args) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $menu_unique_id, $args);
 		
 		if(!empty($menu_unique_id)){
 			
@@ -867,11 +1065,58 @@ class PVMenus extends PVStaticObject{
 				
 			}//end !empty($menu_info)
 			
-			
-			
 		}//end !empty(menu_unique_id)
 		
 	}//end displayListMenu
+	
+	private static function getMenuDefaults() {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+			
+		$defaults = array(
+			'menu_id'=>0,
+			'menu_name'=>'',
+			'menu_type'=>'',
+			'menu_tag_id'=>'',
+			'menu_css'=>'',
+			'menu_order'=>0,
+			'content_id'=>0,
+			'user_id'=>0,
+			'app_id'=>0,
+			'menu_unique_id'=>'',
+			'menu_class'=>'',
+			'menu_description'=>'',
+			'menu_enabled'=>0
+		);
+		
+		$defaults = self::_applyFilter( get_class(), __FUNCTION__ , $defaults, array('event'=>'return'));
+		return $defaults;
+	}
+	private static function getMenuItemDefaults() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$defaults = array(
+			'menu_id' => 0,
+			'item_id' => 0,
+			'parent_id' => 0,
+			'item_name' => '',
+			'item_description' => '',
+			'item_url' => '',
+			'item_params' => '',
+			'item_css' => '',
+			'item_ordering' => 0,
+			'item_enabled' => 0,
+			'item_title' => '',
+			'item_permissions' =>'',
+			'item_id_tag' =>''
+		);
+		
+		$defaults = self::_applyFilter( get_class(), __FUNCTION__ , $defaults, array('event'=>'return'));
+		return $defaults;
+	}
 		
 }//end class
 	
