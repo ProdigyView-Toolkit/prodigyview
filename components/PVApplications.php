@@ -29,24 +29,73 @@
 
 class PVApplications extends PVStaticObject {
 	
-	private static $stored_app_objects;
-	private static $stored_app_objects_admin;
+	private static $stored_app_objects = array();
+	private static $stored_app_objects_admin = array();
+	private static $store_objects = true;
 	
-	public static function pv_exec($app, $command, $params, $new_object=FALSE){
+	/**
+	 * Initliazes the class and settings configuration
+	 * 
+	 * @param array $config Configuration file of default values
+	 * 			-'store_objects' _boolean_: Set the application object to be stored. When application is called
+	 * 			more than once, the stored object will be used and a new object will not be initalized.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function init($config = array()) {
 		
-		if($new_object==FALSE && !is_object($app)){
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		
+		$defaults = array(
+			'store_objects'=>true
+		);
+		
+		$config + $defaults;
+		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config, array('event'=>'args'));
+		self::$store_objects = $config['store_objects'];
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $config);
+	}
+	
+	/**
+	 * Executes an application that has been installed. Only exectues that application front end side
+	 * 
+	 * @param mixed $app The id or the unique identifer of the application
+	 * @param string $command The command to be executed
+	 * @param args $args An infinite amount of commands that will be passed to the object
+	 * 
+	 * @return mixed $arg The value the command will returned, if any
+	 * @access public
+	 */
+	public static function pv_exec($app, $command) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app, $command);
+		
+		$args = func_get_args();
+        array_shift($args);
+       
+        $passable_args = array();
+        foreach($args as $key => &$arg){
+           $passable_args[$key] = &$arg;
+        }
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('app'=>$app, 'passable_args'=>$passable_args ), array('event'=>'args'));
+		$app = $filtered['app'];
+		$passable_args  = $filtered['passable_args'];
+		
+		if(self::$store_objects==FALSE && !is_object($app)){
 			$temp_object=self::$stored_app_objects[$app];
 			if(!empty($temp_object) && is_object($temp_object)){
 				$app=$temp_object;
 			}
 		}
 		
-		if(is_object ($app)){
-		
-			return $app->commandInterpreter($command, $params);
-		
-		}
-		else{
+		if(is_object ($app)) {
+			$value = self::_invokeMethod($appObject, 'commandInterpreter', $passable_args);
+		} else {
 			if(PVValidator::isInteger($app)){
 				$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_id='$app' ";
 			}
@@ -66,7 +115,7 @@ class PVApplications extends PVStaticObject {
 			for ($i = 0; $i < $count; $i++) {
 				$name=trim($array[$i]);
 				if(!empty($name)){
-					PVLibraries::enqueue_jquery($name);
+					PVLibraries::enqueueJquery($name);
 				}
 			}//end for
 			
@@ -75,7 +124,7 @@ class PVApplications extends PVStaticObject {
 			for ($i = 0; $i < $count; $i++) {
 				$name=trim($array[$i]);
 				if(!empty($name)){
-					PVLibraries::enqueue_javascript($name);
+					PVLibraries::enqueueJavascript($name);
 				}
 			}//end for
 			
@@ -84,17 +133,16 @@ class PVApplications extends PVStaticObject {
 			for ($i = 0; $i < $count; $i++) {
 				$name=trim($array[$i]);
 				if(!empty($name)){
-					PVLibraries::enqueue_prototype($name);
+					PVLibraries::enqueuePrototype($name);
 				}
 			}//end for
 			
-			
-			$array=preg_split('/;|,/', $row['motools_libraries']);
+			$array=preg_split('/;|,/', $row['mootools_libraries']);
 			$count = count($array);
 			for ($i = 0; $i < $count; $i++) {
 				$name=trim($array[$i]);
 				if(!empty($name)){
-					PVLibraries::enqueue_mootools($name);
+					PVLibraries::enqueueMootools($name);
 				}
 			}//end for
 			$array=preg_split('/;|,/', $row['css_files']);
@@ -102,53 +150,75 @@ class PVApplications extends PVStaticObject {
 			for ($i = 0; $i < $count; $i++) {
 				$name=trim($array[$i]);
 				if(!empty($name)){
-					PVLibraries::enqueue_css($name);
+					PVLibraries::enqueueCss($name);
 				}
 			}//end for
 			
 			include_once(PV_APPLICATIONS.$app_directory.$app_file);
 			
-			
 			if(!empty($app_object)){
 				$appObject=new $app_object;
 				self::$stored_app_objects[$app]=$appObject;
-				return $appObject->commandInterpreter($command, $params);
+				
+				$value = self::_invokeMethod($appObject, 'commandInterpreter', $passable_args);
 			}
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $value, $app, $passable_args);
+			$value = self::_applyFilter( get_class(), __FUNCTION__ , $value , array('event'=>'return'));
+			
+			return $value;
 		}//end else
-	
-	
 	}//end pv_exec
 	
-	
-	public static function pv_exec_admin($app, $command, $params, $new_object=FALSE){
+	/**
+	 * Executes an application that has been installed. Only exectues that application backend-end
+	 * 
+	 * @param mixed $app The id or the unique identifer of the application
+	 * @param string $command The command to be executed
+	 * @param args $args An infinite amount of commands that will be passed to the object
+	 * 
+	 * @return mixed $arg The value the command will returned, if any
+	 * @access public
+	 */
+	public static function pv_exec_admin($app, $command) {
 		
-		if($new_object==FALSE && !is_object($app)){
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app, $command);
+		
+		$args = func_get_args();
+        array_shift($args);
+       
+        $passable_args = array();
+        foreach($args as $key => &$arg){
+            $passable_args[$key] = &$arg;
+        }
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('app'=>$app, 'passable_args'=>$passable_args ), array('event'=>'args'));
+		$app = $filtered['app'];
+		$passable_args  = $filtered['passable_args'];
+		
+		if(self::$store_objects==FALSE && !is_object($app)){
 			$temp_object=self::$stored_app_objects_admin[$app];
 			if(!empty($temp_object) && is_object($temp_object)){
 				$app=$temp_object;
 			}
 		}
 		
-		
 		if(PV_IS_ADMIN==true){
 			
 			if(is_object ($app)){
-			
-				return $app->commandInterpreter($command, $params);
-			
-			}
-			else{
+				$value = self::_invokeMethod($appObject, 'commandInterpreter', $passable_args);
+			} else {
 				if(PVValidator::isInteger($app)){
 					$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_id='$app' ";
-				}
-				else{
+				} else {
 					$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_unique_id='$app' ";
 				}
 				
 				$result=PVDatabase::query($query);
 				$row=PVDatabase::fetchArray($result);
 					
-				$app_directory=$row['admin_dir'];
+				$app_directory=$row['admin_directory'];
 				$app_file=$row['admin_file'];
 				$app_object=trim($row['admin_object']);
 				
@@ -181,7 +251,7 @@ class PVApplications extends PVStaticObject {
 				}//end for
 				
 				
-				$array=preg_split('/;|,/', $row['admin_motools_libraries']);
+				$array=preg_split('/;|,/', $row['admin_mootools_libraries']);
 				$count = count($array);
 				for ($i = 0; $i < $count; $i++) {
 					$name=trim($array[$i]);
@@ -201,20 +271,51 @@ class PVApplications extends PVStaticObject {
 				
 				include_once(PV_ADMIN_APPLICATIONS.$app_directory.$app_file);
 				
-				
 				if(!empty($app_object)){
 					$appObject=new $app_object;
 					self::$stored_app_objects_admin[$app]=$appObject;
-					return $appObject->commandInterpreter($command, $params);
+					$value = self::_invokeMethod($appObject, 'commandInterpreter', $passable_args);
 				}
-		}//end else
-	
+			}//end else
+		
+			self::_notify(get_class().'::'.__FUNCTION__, $value, $app, $passable_args);
+			$value = self::_applyFilter( get_class(), __FUNCTION__ , $value , array('event'=>'return'));
+				
+			return $value;
 		}//end is admin
 	
 	}//end pv_exec
 	
-	public static function installApplication($args=array()){
+	/**
+	 * Install or update an application
+	 * 
+	 * @param array $args Arguements that define which fields go into an application.
+	 * 			-'app_name' _string_: The nameof the application
+	 * 			-'app_file' _string_: The location of the files for the app frontend. Should contain the main class
+	 * 			-'app_directory' _string_: The directory that contains the file for the applications front end
+	 * 			-'app_unique_id' _string-: The unique identifer for the application.
+	 * 			-'app_parameters' _string_: A location to store parameters for the application
+	 * 			-'enabled' _boolean_: Is the application enabled
+	 * 			-'app_object' _string_: The name of the class that will be initialized to object for the frontend when the applicaiton is called
+	 * 			-'jquery_libraries' _string_: A string of comman delimented jquery libraries to load when the application is executed
+	 * 			-'javacript_libraries' _string_: A string of comman delimented javacript libraries to load when the application is executed
+	 * 			-'prototype_libraries' _string_: A string of comman delimented prototype libraries to load when the application is executed
+	 * 			-'mootools_libraries' _string_: A string of comman delimented mootools libraries to load when the application is executed
+	 * 			-'css_files' _string_: A string of comman delimented css files to load when the application is executed
+	 * 			-'admin_jquery_libraries' _string_: A string of comman delimented jquery libraries to load when the backend of the application is executed
+	 * 			-'admin_javacript_libraries' _string_: A string of comman delimented javacript libraries to load when the backend of the  application is executed
+	 * 			-'admin_prototype_libraries' _string_: A string of comman delimented prototype libraries to load when the backend of the  application is executed
+	 * 			-'admin_mootools_libraries' _string_: A string of comman delimented mootools libraries to load when the backend of the  application is executed
+	 * 			-'admin_css_files' _string_: A string of comman delimented css files to load when the backend of the  application is executed
+	 * 			
+	 */
+	public static function installApplication($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getApplicationDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 			
@@ -233,38 +334,70 @@ class PVApplications extends PVStaticObject {
 	  	$result = PVDatabase::query($query);
 	  		
 	  	if(PVDatabase::resultRowCount($result) <= 0){
-			$query="INSERT INTO ".PVDatabase::getApplicationsTableName()."(app_name , app_file , app_directory , app_unique_id , app_parameters , app_object , jquery_libraries , javascript_libraries , show_admin , admin_dir , admin_file , admin_object , backend_app , admin_jquery_libraries , admin_javascript_libraries , admin_motools_libraries , prototype_libraries , admin_prototype_libraries , app_default_page , app_version , app_description , motools_libraries , css_files , admin_css_files , uninstall_file , has_module, app_icon, app_preferences, is_application_editable, app_license, application_type, application_language, app_site, app_author ) VALUES('$app_name' , '$app_file' , '$app_directory' , '$app_unique_id' , '$app_paramters' , '$app_object' , '$jquery_libraries' , '$javascript_libraries' , '$show_admin' , '$admin_dir' , '$admin_file' , '$admin_object' , '$backend_app' , '$admin_jquery_libraries' , '$admin_javascript_libraries' , '$admin_motools_libraries' , '$prototype_libraries' , '$admin_prototype_libraries' , '$app_default_page' , '$app_version' , '$app_description' , '$motools_libraries' , '$css_files' , '$admin_css_files' , '$uninstall_file' , '$has_module', '$app_icon' , '$app_preferences', '$is_application_editable', '$app_license', '$application_type' , '$application_language', '$app_site', '$app_author') ";
-			return $app_id=PVDatabase::return_last_insert_query($query, "app_id", PVDatabase::getApplicationsTableName());
+			$query="INSERT INTO ".PVDatabase::getApplicationsTableName()."(app_name , app_file , app_directory , app_unique_id , app_parameters , app_object , jquery_libraries , javascript_libraries , show_admin , admin_directory , admin_file , admin_object , backend_app , admin_jquery_libraries , admin_javascript_libraries , admin_mootools_libraries , prototype_libraries , admin_prototype_libraries , app_default_page , app_version , app_description , mootools_libraries , css_files , admin_css_files , uninstall_file , has_module, app_icon, app_preferences, is_application_editable, app_license, application_type, application_language, app_site, app_author ) VALUES('$app_name' , '$app_file' , '$app_directory' , '$app_unique_id' , '$app_paramters' , '$app_object' , '$jquery_libraries' , '$javascript_libraries' , '$show_admin' , '$admin_directory' , '$admin_file' , '$admin_object' , '$backend_app' , '$admin_jquery_libraries' , '$admin_javascript_libraries' , '$admin_mootools_libraries' , '$prototype_libraries' , '$admin_prototype_libraries' , '$app_default_page' , '$app_version' , '$app_description' , '$mootools_libraries' , '$css_files' , '$admin_css_files' , '$uninstall_file' , '$has_module', '$app_icon' , '$app_preferences', '$is_application_editable', '$app_license', '$application_type' , '$application_language', '$app_site', '$app_author') ";
+			$app_id=PVDatabase::return_last_insert_query($query, "app_id", PVDatabase::getApplicationsTableName());
 		} else {
-			$query="UPDATE ".PVDatabase::getApplicationsTableName()." SET app_name='$app_name' , app_file='$app_file' , app_directory='$app_directory' , app_unique_id='$app_unique_id' , app_object='$app_object' , jquery_libraries='$jquery_libraries' , javascript_libraries='$javascript_libraries' , show_admin='$show_admin' , admin_dir='$admin_dir' , admin_file='$admin_file' , admin_object='$admin_object' , backend_app='$backend_app' , admin_jquery_libraries='$admin_jquery_libraries' , admin_javascript_libraries='$admin_javascript_libraries' , admin_motools_libraries='$admin_motools_libraries' , prototype_libraries='$prototype_libraries' , admin_prototype_libraries='$admin_prototype_libraries' , app_default_page='$app_default_page' , app_version='$app_version' , app_description='$app_description' , motools_libraries='$motools_libraries' , css_files='$css_files' , admin_css_files='$admin_css_files' , uninstall_file='$uninstall_file' , has_module='$has_module', app_icon='$app_icon', app_preferences='$app_preferences', is_application_editable='$is_application_editable', app_license='$app_license', application_type='$application_type', application_language='$application_language', app_site='$app_site', app_author='$app_author' WHERE app_unique_id='$app_unique_id' ";
-			PVDatabase::query($query);			
-			return true;
+			$query="UPDATE ".PVDatabase::getApplicationsTableName()." SET app_name='$app_name' , app_file='$app_file' , app_directory='$app_directory' , app_unique_id='$app_unique_id' , app_object='$app_object' , jquery_libraries='$jquery_libraries' , javascript_libraries='$javascript_libraries' , show_admin='$show_admin' , admin_directory='$admin_directory' , admin_file='$admin_file' , admin_object='$admin_object' , backend_app='$backend_app' , admin_jquery_libraries='$admin_jquery_libraries' , admin_javascript_libraries='$admin_javascript_libraries' , admin_mootools_libraries='$admin_mootools_libraries' , prototype_libraries='$prototype_libraries' , admin_prototype_libraries='$admin_prototype_libraries' , app_default_page='$app_default_page' , app_version='$app_version' , app_description='$app_description' , mootools_libraries='$mootools_libraries' , css_files='$css_files' , admin_css_files='$admin_css_files' , uninstall_file='$uninstall_file' , has_module='$has_module', app_icon='$app_icon', app_preferences='$app_preferences', is_application_editable='$is_application_editable', app_license='$app_license', application_type='$application_type', application_language='$application_language', app_site='$app_site', app_author='$app_author' WHERE app_unique_id='$app_unique_id' ";
+			PVDatabase::query($query);	
+			$row = PVDatabase::fetchArray($result);
+			$app_id = $row['app_id'];		
 		}//end else
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $app_id , $args);
+		$app_id  = self::_applyFilter( get_class(), __FUNCTION__ , $app_id  , array('event'=>'return'));
+			
+		return $app_id;
 	}//end installApplication
 	
-	public static function getApplication($app_id){
+	/**
+	 * Get the application based upon the id of the application
+	 * 
+	 * @param mixed $app_id The ID of the application. Either is the unique name or the auto generated id
+	 * 
+	 * @return array $application The data that the application contains
+	 * @access public
+	 */
+	public static function getApplication($app_id) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app_id);
 		
-		if(!empty($app_id)){
+		$app_id = self::_applyFilter( get_class(), __FUNCTION__ , $app_id, array('event'=>'args')); 
+		$app_id=PVDatabase::makeSafe($app_id);
 			
-			if(PVValidator::isID($app_id)){
-				$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_id='$app_id'";
-			} else {
-				$app_id=PVDatabase::makeSafe($app_id);
-				$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_unique_id='$app_id'";
-			}
-			
-			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			$row= PVDatabase::formatData($row);
-			
-			return $row;
+		if(PVValidator::isID($app_id)){
+			$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_id='$app_id'";
+		} else {
+			$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_unique_id='$app_id'";
 		}
+			
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row= PVDatabase::formatData($row);
+			
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $app_id);
+		$row  = self::_applyFilter( get_class(), __FUNCTION__ , $row  , array('event'=>'return'));
+		
+		return $row;
 	}//end getApplicationInfo
 	
-	public static function getApplicationList($args=array()){
+	/**
+	 * Returns a list of applications found in the database. Applications can be searched for by using arguements that define
+	 * the application. PV Standard Search Query rules apply.
+	 * 
+	 * @param array @args Arguements that define the application's field and used for searching.
+	 * 
+	 * @return array $applications An array of applications that are found with the search critera
+	 * @access public
+	 */
+	public static function getApplicationList($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getApplicationDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
 		$custom_select=$args['custom_select'];
@@ -466,36 +599,36 @@ class PVApplications extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		if(!empty($admin_dir)){
+		if(!empty($admin_directory)){
 				
-			$admin_dir=trim($admin_dir);
+			$admin_directory=trim($admin_directory);
 			
-			if($first==0 && ($admin_dir[0]!='+' && $admin_dir[0]!=',' ) ){
+			if($first==0 && ($admin_directory[0]!='+' && $admin_directory[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
 				}
 				
-			else if( ($admin_dir[0]=='+' || $admin_dir[0]==',') && $first==1 ){
-				$admin_dir[0]='';
+			else if( ($admin_directory[0]=='+' || $admin_directory[0]==',') && $first==1 ){
+				$admin_directory[0]='';
 			}
 			
-			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($admin_dir, 'admin_dir');
+			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($admin_directory, 'admin_directory');
 			
 			$first=0;
 		}//end not empty app_id
 		
-		if(!empty($admin_dir)){
+		if(!empty($admin_directory)){
 				
-			$admin_dir=trim($admin_dir);
+			$admin_directory=trim($admin_directory);
 			
-			if($first==0 && ($admin_dir[0]!='+' && $admin_dir[0]!=',' ) ){
+			if($first==0 && ($admin_directory[0]!='+' && $admin_directory[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
 				}
 				
-			else if( ($admin_dir[0]=='+' || $admin_dir[0]==',') && $first==1 ){
-				$admin_dir[0]='';
+			else if( ($admin_directory[0]=='+' || $admin_directory[0]==',') && $first==1 ){
+				$admin_directory[0]='';
 			}
 			
-			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($admin_dir, 'admin_dir');
+			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($admin_directory, 'admin_directory');
 			
 			$first=0;
 		}//end not empty app_id
@@ -602,19 +735,19 @@ class PVApplications extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		if(!empty($admin_motools_libraries)){
+		if(!empty($admin_mootools_libraries)){
 				
-			$admin_motools_libraries=trim($admin_motools_libraries);
+			$admin_mootools_libraries=trim($admin_mootools_libraries);
 			
-			if($first==0 && ($admin_motools_libraries[0]!='+' && $admin_motools_libraries[0]!=',' ) ){
+			if($first==0 && ($admin_mootools_libraries[0]!='+' && $admin_mootools_libraries[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
 				}
 				
-			else if( ($admin_motools_libraries[0]=='+' || $admin_motools_libraries[0]==',') && $first==1 ){
-				$admin_motools_libraries[0]='';
+			else if( ($admin_mootools_libraries[0]=='+' || $admin_mootools_libraries[0]==',') && $first==1 ){
+				$admin_mootools_libraries[0]='';
 			}
 			
-			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($admin_motools_libraries, 'admin_motools_libraries');
+			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($admin_mootools_libraries, 'admin_mootools_libraries');
 			
 			$first=0;
 		}//end not empty app_id
@@ -704,19 +837,19 @@ class PVApplications extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		if(!empty($motools_libraries)){
+		if(!empty($mootools_libraries)){
 				
-			$motools_libraries=trim($motools_libraries);
+			$mootools_libraries=trim($mootools_libraries);
 			
-			if($first==0 && ($motools_libraries[0]!='+' && $motools_libraries[0]!=',' ) ){
+			if($first==0 && ($mootools_libraries[0]!='+' && $mootools_libraries[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
 				}
 				
-			else if( ($motools_libraries[0]=='+' || $motools_libraries[0]==',') && $first==1 ){
-				$motools_libraries[0]='';
+			else if( ($mootools_libraries[0]=='+' || $mootools_libraries[0]==',') && $first==1 ){
+				$mootools_libraries[0]='';
 			}
 			
-			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($motools_libraries, 'motools_libraries');
+			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($mootools_libraries, 'mootools_libraries');
 			
 			$first=0;
 		}//end not empty app_id
@@ -980,11 +1113,33 @@ class PVApplications extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array  = self::_applyFilter( get_class(), __FUNCTION__ , $content_array  , array('event'=>'return'));
 		
     	return $content_array;
 	}
 	
-	public static function removeApplication($app_id, $options=array()){
+	/**
+	 * Removes an application from the database and deletes the assoicated files with that application.
+	 * 
+	 * @param id $app_id The id of the application to be deleted
+	 * @param array @options Options that define if to delete assoicated content with the application. Defaults are set to true.
+	 * 			-'remove_app_content' _boolean_: Will remove any content associated with the application
+	 * 			-'remove_app_options' _boolean_: Will remove any options associated with the application
+	 * 			-'remove_app_modules' _boolean_: Will remove any modules associated with the application
+	 * 			-'remove_app_points' _boolean_: Will remove any points associated with the application
+	 * 			-'remove_app_subscriptions' _boolean_: Will remove any subscriptions associated with the application
+	 * 			-'remove_app_categories' _boolean_: Will remove any categories associated with the application
+	 * 			-'remove_modules_admin' _boolean_: Will removes any admin to modules that are associated with this application
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function removeApplication($app_id, $options=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app_id, $options);
+		
 		$defaults=array(
 			'remove_app_content'=>TRUE,
 			'remove_app_options'=>TRUE,
@@ -996,6 +1151,10 @@ class PVApplications extends PVStaticObject {
 		);
 		
 		$options += $defaults;
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('app_id'=>$app_id, 'options'=>$options ), array('event'=>'args'));
+		$app_id = $filtered['app_id'];
+		$options  = $filtered['options'];
+		
 		extract($options);
 		
 		$app_info=self::getApplication($app_id);
@@ -1079,23 +1238,36 @@ class PVApplications extends PVStaticObject {
 			}
 			
 			if(!empty($app_directory)){
-				if(file_exists(PV_APPLICATIONS.$admin_dir)){
-					PVFileManager::deleteDirectory(PV_APPLICATIONS.$admin_dir);
+				if(file_exists(PV_APPLICATIONS.$admin_directory)){
+					PVFileManager::deleteDirectory(PV_APPLICATIONS.$admin_directory);
 				}
 			}
 			
-			if(file_exists(PV_APPLICATIONS.$admin_dir.$admin_file)){
-				unlink(PV_APPLICATIONS.$admin_dir.$admin_file);	
+			if(file_exists(PV_APPLICATIONS.$admin_directory.$admin_file)){
+				unlink(PV_APPLICATIONS.$admin_directory.$admin_file);	
 			}
 			
 			$query="DELETE FROM ".PVDatabase::getApplicationsTableName()." WHERE app_id='$app_id' ";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $app_id, $options);
 		}//end not epty
 		
 	}//end removeApplication
 	
-	
-	public static function getApplicationParameters($app_id){
+	/**
+	 * Retrieve the parameters associated with an application.
+	 * 
+	 * @param mixed $app_id The id of of the application can either be the id or the application's unique identifer.
+	 * 
+	 * @return string $parameters Returns the parameters associated with the application
+	 * @access public
+	 */
+	public static function getApplicationParameters($app_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app_id);
+		
+		$app_id = self::_applyFilter( get_class(), __FUNCTION__ , $app_id, array('event'=>'args'));
 		$app_id=PVDatabase::makeSafe($app_id);
 		
 		if(PVValidator::isID($app_id)){
@@ -1107,26 +1279,57 @@ class PVApplications extends PVStaticObject {
 		
 		$result = PVDatabase::query($query);
 		$row = PVDatabase::fetchArray($result);
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $app_id);
+		$row  = self::_applyFilter( get_class(), __FUNCTION__ , $row  , array('event'=>'return'));
 		
 		return $row['app_parameters'];
 	}//end getApplicationParameters
 	
-	public static function setApplicationParameters($app_id, $parameters){
-		$app_id=PVDatabase::makeSafe($app_id);
+	/**
+	 * Sets the applications paramter field.
+	 * 
+	 * @param mixed $app_id The id of of the application can either be the id or the application's unique identifer.
+	 * @param string $parameters The data to set in the application's parameters field.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function setApplicationParameters($app_id, $parameters) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app_id, $parameters);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('app_id'=>$app_id, 'parameters'=>$parameters ), array('event'=>'args'));
+		$app_id = $filtered['app_id'];
+		$parameters  = $filtered['parameters'];
+		$app_id=PVDatabase::makeSafe($app_id); 
 		$parameters=PVDatabase::makeSafe($parameters);
 		
 		if(PVValidator::isID($app_id)){
 			$query="UPDATE  ".PVDatabase::getApplicationsTableName()." SET app_parameters'".$parameters."' WHERE app_id='$app_id' ";
-		}
-		else{
+		} else {
 			$query="UPDATE  ".PVDatabase::getApplicationsTableName()." SET app_parameters'".$parameters."' WHERE app_id='$app_id' ";
 		}
 		
 		PVDatabase::query($query);
-		
+		self::_notify(get_class().'::'.__FUNCTION__, $app_id, $parameters);
 	}//end setApplicationParameters
 	
-	public static function getAppObject($app_unique_name){
+	/**
+	 * Returns a non-initalized front-end object of an application.
+	 * 
+	 * @param string $application_unique_identifier The applications unique identifier, NOT THE ID
+	 * 
+	 * @return object $object The object of the application
+	 * @access void
+	 */
+	public static function getAppObject($app_unique_name) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app_unique_name);
+		
+		$app_unique_name = self::_applyFilter( get_class(), __FUNCTION__ , $app_unique_name, array('event'=>'args'));
+		$app_unique_name = PVDatabase::makeSafe($app_unique_name);
 		
 		$query="SELECT app_directory, app_file, app_object FROM ".PVDatabase::getApplicationsTableName()." WHERE app_unique_id='$app_unique_name' ";	
 		$result = PVDatabase::query($query);
@@ -1138,28 +1341,41 @@ class PVApplications extends PVStaticObject {
 		
 		include_once(PV_APPLICATIONS.DS.$app_directory.$app_file);
 		
+		if(!empty($app_object)) {
+			self::_notify(get_class().'::'.__FUNCTION__, $app_object, $app_unique_name);
+			$app_object  = self::_applyFilter( get_class(), __FUNCTION__ , $app_object , array('event'=>'return'));
 		
-		if(!empty($app_object)){
 			return $app_object;
-			
 		}
 	}//end getAppObject
 	
+	/**
+	 * Returns a non-initalized back-end object of an application.
+	 * 
+	 * @param string $application_unique_identifier The applications unique identifier, NOT THE ID
+	 * 
+	 * @return object $object The object of the application
+	 * @access void
+	 */
+	public static function getAdminAppObject($app_unique_name) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app_unique_name);
 	
-	public static function getAdminAppObject($app_unique_name){
-	
+		$app_unique_name = self::_applyFilter( get_class(), __FUNCTION__ , $app_unique_name, array('event'=>'args'));
+		$app_unique_name = PVDatabase::makeSafe($app_unique_name);
+		
 		$site_config=PVConfiguration::getSiteGeneralConfiguration();
 		
-		$query="SELECT admin_dir, admin_file, admin_object, backend_app FROM ".PVDatabase::getApplicationsTableName()." WHERE app_unique_id='$app_unique_name' ";	
+		$query="SELECT admin_directory, admin_file, admin_object, backend_app FROM ".PVDatabase::getApplicationsTableName()." WHERE app_unique_id='$app_unique_name' ";	
 		$result = PVDatabase::query($query);
 		$row = PVDatabase::fetchArray($result);
 		
-		$app_directory=$row['admin_dir'];
+		$app_directory=$row['admin_directory'];
 		$app_file=$row['admin_file'];
 		$app_object=trim($row['admin_object']);
 		$backend_app=$row['backend_app'];
 
-		
 		if($backend_app==1){
 			include_once(ROOT.DS.$site_config['admin_url'].$app_directory.$app_file);
 		}
@@ -1167,23 +1383,45 @@ class PVApplications extends PVStaticObject {
 			include_once(ROOT.DS.$app_directory.$app_file);
 		}
 		
-		if(!empty($app_object)){
-			return $app_object;
+		if(!empty($app_object)) {
+			self::_notify(get_class().'::'.__FUNCTION__, $app_object, $app_unique_name);
+			$app_object  = self::_applyFilter( get_class(), __FUNCTION__ , $app_object , array('event'=>'return'));
 			
+			return $app_object;
 		}
 	}//end getAppObject
 	
-	public static function getApplicationID($app_unique_name){
+	/**
+	 * Returns the application's id based up on the application unique identifer.
+	 * 
+	 * @param string $app_unique_name The unique name of the application
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function getApplicationID($app_unique_name) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $app_unique_name);
+			
+		$app_unique_name = self::_applyFilter( get_class(), __FUNCTION__ , $app_unique_name, array('event'=>'args'));
+		$app_unique_name = PVDatabase::makeSafe($app_unique_name);
 		
 		$query="SELECT app_id FROM ".PVDatabase::getApplicationsTableName()." WHERE app_unique_id='$app_unique_name' ";	
 		$result = PVDatabase::query($query);
 		$row = PVDatabase::fetchArray($result);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $app_unique_name);
+		$row  = self::_applyFilter( get_class(), __FUNCTION__ , $row, array('event'=>'return'));
 	
 		return $row['app_id'];
-	
 	}//end getApplicationID
 	
 	private static function getApplicationDefaults() {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		$defaults=array(
 			'app_id'=>0,
 			'app_name'=>'',
@@ -1198,13 +1436,13 @@ class PVApplications extends PVStaticObject {
 			'prototype_libraries'=>'',
 			'css_files'=>'',
 			'show_admin'=>0,
-			'admin_dir'=>'',
+			'admin_directory'=>'',
 			'admin_file'=>'',
 			'admin_object'=>'',
 			'backend_app'=>0,
 			'admin_jquery_libraries'=>'',
 			'admin_javascript_libraries'=>'',
-			'admin_motools_libraries'=>'',
+			'admin_mootools_libraries'=>'',
 			'admin_prototype_libraries'=>'',
 			'admin_css_files'=>'',
 			'uninstall_file'=>'',
@@ -1220,6 +1458,7 @@ class PVApplications extends PVStaticObject {
 			'app_author'=>''
 		);
 		
+		$defaults  = self::_applyFilter( get_class(), __FUNCTION__ , $defaults, array('event'=>'return'));
 		return $defaults;
 	}
 	
