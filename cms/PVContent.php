@@ -525,7 +525,7 @@ class PVContent extends PVStaticObject {
     		$app_id=PVDatabase::makeSafe($order_by_clause['app_id']);
     		$owner_id=PVDatabase::makeSafe($order_by_clause['owner_id']);
     		$content_type=PVDatabase::makeSafe($order_by_clause['content_type']);
-    		$parent_id=PVDatabase::makeSafe($order_by_clause['parent_content']);
+    		$parent_content=PVDatabase::makeSafe($order_by_clause['parent_content']);
     		$category_id=$order_by_clause['category_id'];
     		$content_approved=PVDatabase::makeSafe($order_by_clause['content_approved']);
     		$content_promoted=PVDatabase::makeSafe($order_by_clause['content_promoted']);
