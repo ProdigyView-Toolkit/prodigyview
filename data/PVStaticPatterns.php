@@ -51,7 +51,7 @@ class PVStaticPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public static function _addAdapter($trigger_class, $trigger_method, $call_class, $options=array()) {
+	public static function addAdapter($trigger_class, $trigger_method, $call_class, $options=array()) {
 		$defaults=array(
 			'object'=> 'static',
 			'call_class'=>$call_class,
@@ -125,7 +125,7 @@ class PVStaticPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public static function _addObserver($event , $class, $method, $options=array()) {
+	public static function addObserver($event , $class, $method, $options=array()) {
 		$default=array(
 			'object'=>'static',
 			'class'=>$class,
@@ -182,7 +182,7 @@ class PVStaticPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public static function _addFilter($class, $method, $filter_class, $filter_method, $options=array()){
+	public static function addFilter($class, $method, $filter_class, $filter_method, $options=array()){
 		$defaults=array(
 			'object'=>'static',
 			'class'=>$filter_class,
@@ -259,7 +259,9 @@ class PVStaticPatterns {
 	 * @access protected
 	 */
 	protected static function _invokeMethod($class, $method, $args) {
-		$class=new $class();
+		if(!is_object($class))
+			$class=new $class();
+		
 		switch(count($args)): 
 	        case 0: 
 	        	return $class->{$method}(); 

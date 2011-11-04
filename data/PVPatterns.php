@@ -51,7 +51,7 @@ class PVPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public function _addAdapter($trigger_class, $trigger_method, $call_class, $options=array()) {
+	public function addAdapter($trigger_class, $trigger_method, $call_class, $options=array()) {
 		$defaults=array(
 			'object'=> 'static',
 			'call_class'=>$call_class,
@@ -125,7 +125,7 @@ class PVPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public function _addObserver($event , $class, $method, $options=array()) {
+	public function addObserver($event , $class, $method, $options=array()) {
 		$default=array(
 			'object'=>'static',
 			'class'=>$class,
@@ -182,7 +182,7 @@ class PVPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public function _addFilter($class, $method, $filter_class, $filter_method, $options=array()){
+	public function addFilter($class, $method, $filter_class, $filter_method, $options=array()){
 		$defaults=array(
 			'object'=>'static',
 			'class'=>$filter_class,
