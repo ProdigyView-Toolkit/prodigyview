@@ -48,7 +48,7 @@ class PVConfiguration extends PVStaticObject{
 		
 		if(!empty($args)) {
 			foreach($args as $key=>$value) {
-				self::_addToCollectionWithName($key, $value);
+				self::addToCollectionWithName($key, $value);
 			}
 		}
 		
@@ -74,7 +74,7 @@ class PVConfiguration extends PVStaticObject{
 		$key = $filtered['key'];
 		$value = $filtered['value'];
 		
-		self::_addToCollectionWithName($key, $value);
+		self::addToCollectionWithName($key, $value);
 		self::_notify(get_class().'::'.__FUNCTION__, $key, $value);
 	}
 	
@@ -131,7 +131,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -169,7 +169,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -207,7 +207,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -255,7 +255,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -267,7 +267,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 	        
@@ -279,7 +279,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 		}//end foreach
@@ -290,7 +290,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 		}
@@ -327,7 +327,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -339,7 +339,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -377,7 +377,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -415,7 +415,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -453,7 +453,7 @@ class PVConfiguration extends PVStaticObject{
 			if($node->childNodes->length) {
 	            foreach($node->childNodes as $i) {
 	            	$parameter_array[$i->nodeName]=$i->nodeValue;
-					self::_addToCollectionWithName($i->nodeName, $i->nodeValue);
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 	            }//end foreach
 	        }//end if
 			
@@ -464,7 +464,6 @@ class PVConfiguration extends PVStaticObject{
 		
 		return $parameter_array;
 	}//end getSiteEmailConfiguration
-	
 	
 }//end class
 	
