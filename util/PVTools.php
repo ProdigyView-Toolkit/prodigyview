@@ -103,7 +103,7 @@ class PVTools extends PVStaticObject {
              $truncated = $string.$trailing;
             }
 			
-			self::_notify(get_class().'::'.__FUNCTION__, $truncated, $string , $length, $trailing, $strip_tags, $allowed_tag);
+			self::_notify(get_class().'::'.__FUNCTION__, $truncated, $string , $length, $trailing, $strip_tags, $allowed_tags);
 	    	$truncated = self::_applyFilter( get_class(), __FUNCTION__ , $truncated , array('event'=>'return'));
 		
             return $truncated;
@@ -123,7 +123,7 @@ class PVTools extends PVStaticObject {
 		
 		$current_page_url = 'http';
 		 
-		if ($_SERVER['HTTPS'] == 'on') { 
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') { 
 		 	$current_page_url .= 's';
 		}
 		  
@@ -1059,15 +1059,6 @@ class PVTools extends PVStaticObject {
 	
 	}//end createrParamterArray
 	
-	/**
-	 * @todo move to conversions
-	 */
-	public static function xmlToArray($params){
-		$xml = simplexml_load_string($params);
-		return get_object_vars($xml);
-		
-	}
-
 	private static function getOptionDefaults() {
 		$defaults=array(
 			'option_id'=>0,
