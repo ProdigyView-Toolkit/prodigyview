@@ -29,62 +29,81 @@
 
 class PVPages extends PVStaticObject{
 	
-	public static function getPageURLByID($page_id){
+	/**
+	 * Retrieve a pages's url by the page's page id.
+	 * 
+	 * @param id $page_id The id of the page
+	 * 
+	 * @return string $page_url The url of the page
+	 * @access public
+	 */
+	public static function getPageURLByID($page_id) {
 		
-		if(!empty($page_id)){
-			
-			$query="SELECT page_url FROM ".PVDatabase::getPagesTableName()." WHERE page_id='$page_id'";
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			
-			return $row['page_short_url'];
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id);
 		
-		}
-	
-	}//end get pagePageNameByID
-	
-	
-	public static function getPageShortURLByID($page_id){
+		$page_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_id , array('event'=>'args'));
 		
-		if(!empty($page_id)){
-			
-			$query="SELECT page_short_url FROM ".PVDatabase::getPagesTableName()." WHERE page_id='$page_id'";
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			
-			return $row['page_short_url'];
-		
-		}
-	
-	}//end get pagePageNameByID
-	
-	public static function getPages(){
-	
-		$page_array=array();
-		
-		$query="SELECT page_name, page_id FROM ".PVDatabase::getPagesTableName()." ORDER BY page_name";
+		$query="SELECT page_url FROM ".PVDatabase::getPagesTableName()." WHERE page_id='$page_id'";
 		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
 		
-		while($row = PVDatabase::fetchArray($result)){
-			$page_array[$row['page_id']]=$row['page_name'];
-		}//end while
+		$row = PVDatabase::formatData($row);
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $page_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row, array('event'=>'return'));
+			
+		return $row['page_short_url'];
+	}//end get pagePageNameByID
+	
+	
+	public static function getPageAliasByID($page_id) {
 		
-		return $page_array;
-	
-	}//end
-	
-	
-	public static function getPageAliasByID($page_id){
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id);
+		
+		$page_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_id, array('event'=>'args'));
 		
 		$query="SELECT page_alias FROM ".PVDatabase::getPagesTableName()." WHERE page_id='$page_id'";
 		$result = PVDatabase::query($query);
 		$row = PVDatabase::fetchArray($result);
 		
+		$row = PVDatabase::formatData($row);
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $page_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row, array('event'=>'return'));
+		
 		return $row['page_alias'];
 	}
 	
-	public static function createPage($args=array()){
+	/**
+	 * Create a page in the database that interacts with the paging system.
+	 * 
+	 * @param array $args A list of arguements that define a page
+	 * 			-'page_name' _string_: The name of the page
+	 * 			-'page_title' _string_: page_title
+	 * 			-'page_description' _string_: A description of the page. Doubles as the page's text
+	 * 			-'page_aias' _string_: An alias of the page
+	 * 			-'frontpage' _boolean:Is  page the default/front page. Default is false.
+	 * 			-'page_enabled' _boolean: Is the current page enabled. Default is false.
+	 * 			-'page_ordering' _int_: The order that the page is in.
+	 * 			-'page_short_url' _string_: A shortned url of the page
+	 * 			-'page_url' _string_ The url of the page
+	 * 			-'page_params' _string_: Parameters in the page
+	 * 			-'page_permissions_' _string_ The roles of the users allowed to access this page
+	 * 			-'parent_page' _id_: The id of the parent page to the page
+	 * 			-'page_site_id' _id_: The site id this page displays on
+	 * 			-'page_access_level' _integer_: The access level of the page
+	 * 			-'page_text' _string_: The text that page displays
+	 * 
+	 * @return id $page_id The id of the page
+	 * @access public 
+	 */
+	public static function createPage($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getPageDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -92,14 +111,47 @@ class PVPages extends PVStaticObject{
 		$page_ordering=ceil($page_ordering);
 		$frontpage=ceil($frontpage);
 		
-		$query="INSERT INTO ".PVDatabase::getPagesTableName()." (page_name, page_title, page_description, page_alias, frontpage, page_enabled, page_ordering, page_short_url, page_params, page_permissions, parent_page, page_site_id) VALUES ('$page_name', '$page_title', '$page_description', '$page_alias', '$frontpage', '$page_enabled', '$page_ordering', '$page_short_url', '$page_params', '$page_permissions', '$parent_page', '$page_site_id' )";
+		$query="INSERT INTO ".PVDatabase::getPagesTableName()." (page_name, page_title, page_description, page_alias, frontpage, page_enabled, page_ordering, page_url, page_params, page_permissions, parent_page, page_site_id, page_access_level, page_text) VALUES ('$page_name', '$page_title', '$page_description', '$page_alias', '$frontpage', '$page_enabled', '$page_ordering', '$page_url', '$page_params', '$page_permissions', '$parent_page', '$page_site_id','$page_access_level','$page_text' )";
 		$page_id=PVDatabase::return_last_insert_query($query, 'page_id', PVDatabase::getPagesTableName());
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $page_id, $args);
+		$page_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_id, array('event'=>'return'));
+		
 		return $page_id;
 	}//end createPage
 	
-	public static function getPageList($args=array()){
+	/**
+	 * Find pages based on the based critera. Uses the PV Standard Search Query when searching.
+	 * 
+	 * @param array $args A list of arguements that define a page
+	 * 			-'page_id' _id_: The id of a page
+	 * 			-'page_name' _string_: The name of the page
+	 * 			-'page_title' _string_: page_title
+	 * 			-'page_description' _string_: A description of the page. Doubles as the page's text
+	 * 			-'page_aias' _string_: An alias of the page
+	 * 			-'frontpage' _boolean:Is  page the default/front page. Default is false.
+	 * 			-'page_enabled' _boolean: Is the current page enabled. Default is false.
+	 * 			-'page_ordering' _int_: The order that the page is in.
+	 * 			-'page_short_url' _string_: A shortned url of the page
+	 * 			-'page_url' _string_ The url of the page
+	 * 			-'page_params' _string_: Parameters in the page
+	 * 			-'page_permissions_' _string_ The roles of the users allowed to access this page
+	 * 			-'parent_page' _id_: The id of the parent page to the page
+	 * 			-'page_site_id' _id_: The site id this page displays on
+	 * 			-'page_access_level' _integer_: The access level of the page
+	 * 			-'page_text' _string_: The text that page displays
+	 * 
+	 * @return id array $pages Returns an array of pages
+	 * @access public 
+	 */
+	public static function getPageList($args=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getPageDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
 		$custom_select=$args['custom_select'];
@@ -352,7 +404,6 @@ class PVPages extends PVStaticObject{
 			}
 		}
 		
-	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -377,8 +428,7 @@ class PVPages extends PVStaticObject{
 			$custom_select='*';
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
-    	
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -391,60 +441,107 @@ class PVPages extends PVStaticObject{
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ ,  $content_array, array('event'=>'return'));
 		
     	return $content_array;
-		
 	}//end getPageList
 	
-	public static function getPage($page_id){
-		if(!empty($page_id)){
+	public static function getPage($page_id) {
 			
-			$page_id=ceil($page_id);
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id);
+		
+		$page_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_id, array('event'=>'args'));
 			
-			$query="SELECT * FROM ".PVDatabase::getPagesTableName()." WHERE page_id='$page_id'";
+		$page_id=PVDatabase::makeSafe($page_id);
 			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
-			return $row;
+		$query="SELECT * FROM ".PVDatabase::getPagesTableName()." WHERE page_id='$page_id'";
 			
-		}//end page id
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row=PVDatabase::formatData($row);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $page_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
+			
+		return $row;
 	}//end get page
 	
-	public static function getPageByAlias($page_id){
-		if(!empty($page_id)){
+	public static function getPageByAlias($page_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id);
+		
+		$page_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_id, array('event'=>'args'));
+		
+		$page_id=PVDatabase::makeSafe($page_id);
 			
-			$page_id=PVDatabase::makeSafe($page_id);
+		$query="SELECT * FROM ".PVDatabase::getPagesTableName()." WHERE page_alias='$page_id'";
 			
-			$query="SELECT * FROM ".PVDatabase::getPagesTableName()." WHERE page_alias='$page_id'";
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row=PVDatabase::formatData($row);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $page_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
 			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			
-			return $row;
-			
-		}//end page id
+		return $row;
 	}//end get page
 	
 	
-	public static function getPageByUrl($page_id){
-		if(!empty($page_id)){
+	public static function getPageByUrl($url) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		
+		$url = self::_applyFilter( get_class(), __FUNCTION__ ,  $url, array('event'=>'args'));
+		$url = PVDatabase::makeSafe($url);
 			
-			$page_id=PVDatabase::makeSafe($page_id);
+		$query="SELECT * FROM ".PVDatabase::getPagesTableName()." WHERE page_short_url='$url'";
 			
-			$query="SELECT * FROM ".PVDatabase::getPagesTableName()." WHERE page_short_url='$page_id'";
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row=PVDatabase::formatData($row);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $url);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
 			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			
-			return $row;
-			
-		}//end page id
+		return $row;
 	}//end get page
 	
+	/**
+	 * Update a page's information. Required the id of the page.
+	 * 
+	 * @param array $args A list of arguements that define a page
+	 * 			-'page_id' _id_: Required, the id of the page to update
+	 * 			-'page_name' _string_: The name of the page
+	 * 			-'page_title' _string_: page_title
+	 * 			-'page_description' _string_: A description of the page. Doubles as the page's text
+	 * 			-'page_aias' _string_: An alias of the page
+	 * 			-'frontpage' _boolean:Is  page the default/front page. Default is false.
+	 * 			-'page_enabled' _boolean: Is the current page enabled. Default is false.
+	 * 			-'page_ordering' _int_: The order that the page is in.
+	 * 			-'page_short_url' _string_: A shortned url of the page
+	 * 			-'page_url' _string_ The url of the page
+	 * 			-'page_params' _string_: Parameters in the page
+	 * 			-'page_permissions_' _string_ The roles of the users allowed to access this page
+	 * 			-'parent_page' _id_: The id of the parent page to the page
+	 * 			-'page_site_id' _id_: The site id this page displays on
+	 * 			-'page_access_level' _integer_: The access level of the page
+	 * 			-'page_text' _string_: The text that page displays
+	 * 
+	 * @return void
+	 * @access public 
+	 */
 	public static function updatePage($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getPageDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
@@ -454,13 +551,22 @@ class PVPages extends PVStaticObject{
 			
 		$query="UPDATE ".PVDatabase::getPagesTableName()." SET page_name='$page_name', page_title='$page_title', page_description='$page_description', page_alias='$page_alias', frontpage='$frontpage', page_enabled='$page_enabled', page_ordering='$page_ordering', page_short_url='$page_short_url', page_params='$page_params', page_permissions='$	page_permissions', page_site_id='$page_site_id', parent_page='$parent_page' WHERE page_id='$page_id'";
 		PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
+		
 	}//end updatePage
 	
-	public static function deletePage($page_id, $recursive=FALSE){
+	public static function deletePage($page_id, $recursive=FALSE) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id, $recursive);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('page_id'=>$page_id, 'recursive'=>$recursive), array('event'=>'args'));
+		$page_id = $filtered['page_id'];
+		$recursive = $filtered['recursive'];
 		
 		if(!empty($page_id)){
 			
-			$page_id=ceil($page_id);
+			$page_id=PVDatabase::makeSafe($page_id);
 			
 			$query="DELETE FROM ".PVDatabase::getPagesTableName()." WHERE page_id='$page_id'";
 			PVDatabase::query($query);
@@ -479,30 +585,49 @@ class PVPages extends PVStaticObject{
 					self::deletePage($row['page_id'], $recursive);
 				}//end while
 			}//recursive true
-			
+		
+			self::_notify(get_class().'::'.__FUNCTION__, $page_id, $recursive);
 		}//end not empty page id
 		
 	}//end deletePage
 	
 	
-	public static function addPageContainerRelationship($page_id, $container_id, $page_container_order=0, $page_container_enabled=0  ){
+	public static function addPageContainerRelationship($page_id, $container_id, $page_container_order=0, $page_container_enabled=0 ) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id, $container_id, $page_container_order, $page_container_enabled);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('page_id'=>$page_id, 'container_id'=>$container_id, 'page_container_order'=>$page_container_order, 'page_container_enabled'=>$page_container_enabled), array('event'=>'args'));
+		$page_id = $filtered['page_id'];
+		$container_id = $filtered['container_id'];
+		$page_container_order = $filtered['page_container_order'];
+		$page_container_enabled = $filtered['page_container_enabled'];
 		
 		if(!empty($page_id) && !empty($container_id)){
 			
-			$page_id=ceil($page_id);
-			$container_id=ceil($container_id);
+			$page_id=PVDatabase::makeSafe($page_id);
+			$container_id=PVDatabase::makeSafe($container_id);
 			$page_container_order=ceil($page_container_order);
 			$page_container_enabled=ceil($page_container_enabled);
 			
 			$query="INSERT INTO ".PVDatabase::getPageContainersRelationshipTableName()."( page_id , container_id , page_container_ordering , page_container_enabled) VALUES( '$page_id' , '$container_id' , '$page_container_ordering' , '$page_container_enabled') ";
 			$page_container_id=PVDatabase::return_last_insert_query($query,'page_container_id', PVDatabase::getPageContainersRelationshipTableName());
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $page_container_id, $page_id, $container_id, $page_container_order, $page_container_enabled);
+			$page_container_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_container_id , array('event'=>'return'));
+			
 			return $page_container_id;
 		}
 		
 	}//end addPageContainerRelationship
 	
-	public static function getPageContainerRelationshipList($args){
+	public static function getPageContainerRelationshipList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		
 		if(is_array($args)){
 			$custom_where=$args['custom_where'];
@@ -516,7 +641,7 @@ class PVPages extends PVStaticObject{
 			$table_name=PVDatabase::getPageContainersRelationshipTableName();
 			$db_type=PVDatabase::getDatabaseType();
 				
-			$WHERE_CLAUSE.='';
+			$WHERE_CLAUSE='';
 			
 			if(!empty($page_id)){
 					
@@ -671,7 +796,7 @@ class PVPages extends PVStaticObject{
 			$custom_select='*';
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $JOINS $WHERE_CLAUSE";
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -685,67 +810,99 @@ class PVPages extends PVStaticObject{
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getPageContainerList
 	
-	public static function getPageContainerRelationship($page_container_id){
-		if(!empty($page_container_id)){
-			$page_container_id=ceil($page_container_id);
-			$query="SELECT * FROM ".PVDatabase::getPageContainersRelationshipTableName()." WHERE page_container_id='$page_container_id' ";
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
+	public static function getPageContainerRelationship($page_container_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_container_id );
 			
-			return $row;
-		}
+		$page_container_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_container_id, array('event'=>'args'));
+		$page_container_id = PVDatabase::makeSafe($page_container_id);
+		$query="SELECT * FROM ".PVDatabase::getPageContainersRelationshipTableName()." WHERE page_container_id='$page_container_id' ";
+		
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row=PVDatabase::formatData($row);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $page_container_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
+		
+		return $row;
 	}//end getPageContainerRelationship
 	
-	public static function updatePageContainerRelationship($args){
+	public static function updatePageContainerRelationship($args = array()) {
 		
-		if(is_array($args) && !empty($args['page_container_id'])){
-			extract($args);
-			
-			$page_id=ceil($page_id);
-			$container_id=ceil($container_id);
-			$page_container_ordering=ceil($page_container_ordering);
-			$page_container_enabled=ceil($page_container_enabled);
-			$page_container_id=ceil($page_container_id);
-			
-			$query="UPDATE ".PVDatabase::getPageContainersRelationshipTableName()." SET page_id='$page_id', container_id='$container_id', page_container_ordering='$page_container_ordering' , page_container_enabled='$page_container_enabled' WHERE page_container_id='$page_container_id' ";
-			PVDatabase::query($query);
-		}//end is arrau
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$args = PVDatabase::makeSafe($args);
+		extract($args);
+			
+		$page_container_ordering=ceil($page_container_ordering);
+		$page_container_enabled=ceil($page_container_enabled);
+			
+		$query="UPDATE ".PVDatabase::getPageContainersRelationshipTableName()." SET page_id='$page_id', container_id='$container_id', page_container_ordering='$page_container_ordering' , page_container_enabled='$page_container_enabled' WHERE page_container_id='$page_container_id' ";
+		PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end getPageContainerList
 	
-	public static function deletePageContainerRelationship($page_container_id){
+	public static function deletePageContainerRelationship($page_container_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_container_id);
+		
+		$page_container_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_container_id, array('event'=>'args'));
 		
 		if(!empty($page_container_id)){
-			
 			$query="DELETE FROM ".PVDatabase::getPageContainersRelationshipTableName()." WHERE page_container_id='$page_container_id' ";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $page_container_id);
 		}
 		
 	}//end deletePageContainerRelationship
 	
 	
-	
-	public static function addPageModuleRelationship($page_id, $module_id, $page_module_order=0, $page_module_enabled=0  ){
+	public static function addPageModuleRelationship($page_id, $module_id, $page_module_order=0, $page_module_enabled=0) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id, $module_id, $page_module_order, $page_module_enabled );
+			
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('page_id'=>$page_id, 'module_id'=>$module_id, 'page_module_order'=>$page_module_order, 'page_module_enabled'=>$page_module_enabled), array('event'=>'args'));
+		$page_id = $filtered['page_id'];
+		$module_id = $filtered['module_id'];
+		$page_module_order = $filtered['page_module_order'];
+		$page_module_enabled = $filtered['page_module_enabled'];
 		
 		if(!empty($page_id) && !empty($module_id)){
 			
-			$page_id=ceil($page_id);
-			$module_id=ceil($module_id);
+			$page_id=PVDatabase::makeSafe($page_id);
+			$module_id=PVDatabase::makeSafe($module_id);
 			$page_module_order=ceil($page_module_order);
 			$page_module_enabled=ceil($page_module_enabled);
 			
 			$query="INSERT INTO ".PVDatabase::getPageModuleRelationshipTableName()."(page_id, module_id, page_module_order , page_module_enabled) VALUES( '$page_id' , '$module_id' , '$page_module_order' , '$page_module_enabled' ) ";
 			$page_module_id=PVDatabase::return_last_insert_query($query,'page_module_id', PVDatabase::getPageModuleRelationshipTableName());
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $page_module_id, $page_id, $module_id, $page_module_order, $page_module_enabled);
+			$page_module_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_module_id , array('event'=>'return'));
+		
 			return $page_module_id;
 		}
 		
 	}//end addPageContainerRelationship
 	
-	public static function getPageModuleRelationshipList($args){
+	public static function getPageModuleRelationshipList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		
 		if(is_array($args)){
 			$args=PVDatabase::makeSafe($args);
@@ -847,7 +1004,6 @@ class PVPages extends PVStaticObject{
 				$first=0;
 			}//end not empty app_id
 			
-			
 		}//end if is array
 		
 		$JOINS='';
@@ -856,11 +1012,9 @@ class PVPages extends PVStaticObject{
 			$WHERE_CLAUSE.=' '.$custom_where.' ';
 		}
 		
-		
 		if(!empty($custom_join)){
 			$JOINS.=' '.$custom_join.' ';
 		}
-		
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
@@ -886,7 +1040,6 @@ class PVPages extends PVStaticObject{
 			}
 		}
 		
-	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -926,54 +1079,70 @@ class PVPages extends PVStaticObject{
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array, $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ ,  $content_array , array('event'=>'return'));
 		
     	return $content_array;
-		
 	}//end getPageContainerList
 	
-	public static function getPageModuleRelationship($page_container_id){
-		if(!empty($page_module_id)){
+	public static function getPageModuleRelationship($page_module_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_module_id);
+		
+		$page_module_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_module_id, array('event'=>'args'));
+		$page_module_id=PVDatabase::makeSafe($page_module_id);
 			
-			$page_module_id=ceil($page_module_id);
+		$query="SELECT * FROM ".PVDatabase::getPageModuleRelationshipTableName()." WHERE page_module_id='$page_module_id' ";
 			
-			$query="SELECT * FROM ".PVDatabase::getPageModuleRelationshipTableName()." WHERE page_module_id='$page_module_id' ";
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row=PVDatabase::formatData($row);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $page_module_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row , array('event'=>'return'));
 			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			
-			return $row;
-		}
+		return $row;
 	}//end getPageContainerRelationship
 	
-	public static function updatePageModuleRelationship($args){
+	public static function updatePageModuleRelationship($args = array()){
 		
-		if(is_array($args) && !empty($args['page_module_id'])){
-			extract($args);
-			
-			$page_id=ceil($page_id);
-			$module_id=ceil($module_id);
-			$page_module_ordering=ceil($page_module_ordering);
-			$page_module_enabled=ceil($page_module_enabled);
-			$page_module_id=ceil($page_module_id);
-			
-			$query="UPDATE ".PVDatabase::getPageModuleRelationshipTableName()." SET page_id='$page_id', module_id='$module_id', page_module_ordering='$page_module_ordering' , page_module_enabled='$page_module_enabled' WHERE page_module_id='$page_module_id' ";
-			PVDatabase::query($query);
-			
-		}//end is arrau
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
+		$args = PVDatabase::makeSafe($args);
+		extract($args);
+		
+		$page_module_ordering=ceil($page_module_ordering);
+		$page_module_enabled=ceil($page_module_enabled);
+			
+		$query="UPDATE ".PVDatabase::getPageModuleRelationshipTableName()." SET page_id='$page_id', module_id='$module_id', page_module_ordering='$page_module_ordering' , page_module_enabled='$page_module_enabled' WHERE page_module_id='$page_module_id' ";
+		PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end getPageContainerList
 	
-	public static function deletePageModuleRelationship($page_module_id){
+	public static function deletePageModuleRelationship($page_module_id) {
+				
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_module_id);
+		
+		$page_module_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_module_id, array('event'=>'args'));
+		$page_module_id = PVDatabase::makeSafe($page_module_id);
 		
 		if(!empty($page_module_id)){
-			
 			$query="DELETE FROM ".PVDatabase::getPageModuleRelationshipTableName()." WHERE page_module_id='$page_module_id' ";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $page_module_id);
 		}
 		
 	}//end deletePageContainerRelationship
 	
 	private static function getPageDefaults() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		$defaults=array(
 			'page_id'=>0,
 			'page_name'=>'',
@@ -992,6 +1161,8 @@ class PVPages extends PVStaticObject{
 			'page_access_level'=>0,
 			'page_text'=>''
 		);
+		
+		$defaults = self::_applyFilter( get_class(), __FUNCTION__ ,  $defaults , array('event'=>'return'));
 		
 		return $defaults;
 	}
