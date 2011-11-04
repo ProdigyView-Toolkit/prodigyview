@@ -667,7 +667,7 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	}//end createParameterArray($params)
 	
 	function pv_xmlToArray($params){
-		return PVTools::xmlToArray($params);
+		return PVConversions::xmlToArray($params);
 	}//end xmlToArray($params)
 	
 	function pv_convertNumbericBoolean($boolean){
@@ -1327,23 +1327,23 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	}//end getServerConfiguration()
 	
 	function pv_enqueue_javascript($script){
-		PVLibraries::enqueue_javascript($script);
+		PVLibraries::enqueueJavascript($script);
 	}
 	
 	function pv_enqueue_jquery($script){
-		PVLibraries::enqueue_jquery($script);
+		PVLibraries::enqueueJquery($script);
 	}
 	
 	function pv_enqueue_prototype($script){
-		PVLibraries::enqueue_prototype($script);
+		PVLibraries::enqueuePrototype($script);
 	}
 	
 	function pv_enqueue_mootools($script){
-		PVLibraries::enqueue_mootools($script);
+		PVLibraries::enqueueMootools($script);
 	}
 	
 	function pv_enqueue_css($script){
-		PVLibraries::enqueue_css($script);
+		PVLibraries::enqueueCss($script);
 	}
 	
 	function pv_enqueue_javascript_header($script){
@@ -1351,32 +1351,32 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	}
 	
 	function pv_enqueue_openscript($script){
-		PVLibraries::enqueue_openscript($script);
+		PVLibraries::enqueueOpenscript($script);
 	}
 	
 	function pv_get_enqueue_javascript(){
-		return PVLibraries::get_enqueue_javascript();
+		return PVLibraries::getJavascriptQueue();
 	}
 	
 	function pv_get_enqueue_jquery(){
-		return PVLibraries::get_enqueue_jquery();
+		return PVLibraries::getJqueryQueue();
 	}
 	
 	function pv_get_enqueue_prototype(){
-		return PVLibraries::get_enqueue_prototype();
+		return PVLibraries::getPrototypeQueue();
 	}
 	
 	function pv_get_enqueue_mootools(){
-		return PVLibraries::get_enqueue_mootools();
+		return PVLibraries::getMootoolsQueue();
 	}
 	
 	function pv_get_enqueue_css(){
-		return PVLibraries::get_enqueue_css();
+		return PVLibraries::getCssQueue();
 	}
 
 
 	function pv_get_enqueue_openscript(){
-		return PVLibraries::get_enqueue_openscript();
+		return PVLibraries::getOpenscriptQueue();
 	}
 	
 	function pv_printHeaderWithVersions($version='', $use_url=FALSE){
