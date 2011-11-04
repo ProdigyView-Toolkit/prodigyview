@@ -77,4 +77,19 @@ class PVConversions {
         }
         return array_map( 'PVConversions::objectToArray', $object );
     }
+	 
+	 /**
+	  * Converts an xml document into an array.
+	  * 
+	  * @param @string xml A string of xml to convert to an array
+	  * 
+	  * @return array $array The xml documented converted into an array
+	  * @access public
+	  */
+	 public static function xmlToArray($xml){
+	 	if(empty($xml))
+			return false;
+		$object = simplexml_load_string($xml);
+		return get_object_vars($object);
+	}
 }//end class
