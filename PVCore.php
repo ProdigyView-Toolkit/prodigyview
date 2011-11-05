@@ -1028,12 +1028,12 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 		return PVMenus::getMenuItemList($args);
 	}
 	
-	function pv_getMenuItem($menu_id, $item_id){
-		return PVMenus::getMenuItem($menu_id, $item_id);
+	function pv_getMenuItem($item_id){
+		return PVMenus::getMenuItem( $item_id);
 	}
 	
-	function pv_deleteMenuItem($menu_id, $item_id){
-		return PVMenus::deleteMenuItem($menu_id, $item_id);
+	function pv_deleteMenuItem($item_id){
+		return PVMenus::deleteMenuItem($item_id);
 	}
 	
 	function pv_initiliazeMVC($mvc_unique_id){
