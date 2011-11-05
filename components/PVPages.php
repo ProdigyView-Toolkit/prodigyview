@@ -52,10 +52,43 @@ class PVPages extends PVStaticObject{
 		self::_notify(get_class().'::'.__FUNCTION__, $row, $page_id);
 		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row, array('event'=>'return'));
 			
+		return $row['page_url'];
+	}//end get pagePageNameByID
+	
+	/**
+	 * Retrieve a pages's short url by the page's page id.
+	 * 
+	 * @param id $page_id The id of the page
+	 * 
+	 * @return string $page_url The url of the page
+	 * @access public
+	 */
+	public static function getPageShortURLByID($page_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id);
+		
+		$page_id = self::_applyFilter( get_class(), __FUNCTION__ ,  $page_id , array('event'=>'args'));
+		
+		$query="SELECT page_short_url FROM ".PVDatabase::getPagesTableName()." WHERE page_id='$page_id'";
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		
+		$row = PVDatabase::formatData($row);
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $page_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ ,  $row, array('event'=>'return'));
+			
 		return $row['page_short_url'];
 	}//end get pagePageNameByID
 	
-	
+	/**
+	 * Get the page's alias by the id of the page.
+	 * 
+	 * @param id $page_id The id of the page
+	 * 
+	 * @return string $page_alias The alias of the page
+	 * @access public
+	 */
 	public static function getPageAliasByID($page_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -102,7 +135,7 @@ class PVPages extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getPageDefaults();
+		$args += self::_getPageDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
@@ -149,7 +182,7 @@ class PVPages extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getPageDefaults();
+		$args += self::_getPageDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		$custom_where=$args['custom_where'];
@@ -448,6 +481,14 @@ class PVPages extends PVStaticObject{
     	return $content_array;
 	}//end getPageList
 	
+	/**
+	 * Returns the data on page determined by the id of the page.
+	 * 
+	 * @param id $page_id The id of the page
+	 * 
+	 * @return array $page Data pertaining to that page
+	 * @access public
+	 */
 	public static function getPage($page_id) {
 			
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -469,6 +510,15 @@ class PVPages extends PVStaticObject{
 		return $row;
 	}//end get page
 	
+	/**
+	 * Returns the data on page determined by the alias of the page. If multipe pages has the same alias, the
+	 * first page found will be returned
+	 * 
+	 * @param string $page_alias The alias of the page
+	 * 
+	 * @return array $page Data pertaining to that page
+	 * @access public
+	 */
 	public static function getPageByAlias($page_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -490,7 +540,15 @@ class PVPages extends PVStaticObject{
 		return $row;
 	}//end get page
 	
-	
+	/**
+	 * Returns the data on page determined by the url of the page. If multipe pages have the same url, the
+	 * first page found will be returned
+	 * 
+	 * @param string $page_alias The alias of the page
+	 * 
+	 * @return array $page Data pertaining to that page
+	 * @access public
+	 */
 	public static function getPageByUrl($url) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -499,7 +557,7 @@ class PVPages extends PVStaticObject{
 		$url = self::_applyFilter( get_class(), __FUNCTION__ ,  $url, array('event'=>'args'));
 		$url = PVDatabase::makeSafe($url);
 			
-		$query="SELECT * FROM ".PVDatabase::getPagesTableName()." WHERE page_short_url='$url'";
+		$query="SELECT * FROM ".PVDatabase::getPagesTableName()." WHERE page_url='$url'";
 			
 		$result=PVDatabase::query($query);
 		$row = PVDatabase::fetchArray($result);
@@ -540,7 +598,7 @@ class PVPages extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getPageDefaults();
+		$args += self::_getPageDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
@@ -555,6 +613,15 @@ class PVPages extends PVStaticObject{
 		
 	}//end updatePage
 	
+	/**
+	 * Remove a page from the database and optionally all it's chidren pages.
+	 * 
+	 * @param id $page_id The id of the page to delete
+	 * @param boolean $recursive Will remove children pages. Default is false.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deletePage($page_id, $recursive=FALSE) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -591,7 +658,17 @@ class PVPages extends PVStaticObject{
 		
 	}//end deletePage
 	
-	
+	/**
+	 * Adds a relationship between a page and a container.
+	 * 
+	 * @param id $page_id The id of the page
+	 * @param id $container_id The id of the container
+	 * @param int $page_container_order The order in which the container is set
+	 * @param boolean $page_container_enabled Determines if the relationship is active
+	 * 
+	 * @return id $page_container_id The id of the relationship
+	 * @access public
+	 */
 	public static function addPageContainerRelationship($page_id, $container_id, $page_container_order=0, $page_container_enabled=0 ) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -621,6 +698,19 @@ class PVPages extends PVStaticObject{
 		
 	}//end addPageContainerRelationship
 	
+	/**
+	 * Returns a list of relationships between pages and containers.
+	 * 
+	 * @param array @args Arguements that define the relationship and are used for searching a relationship
+	 * 			-'page_container_id' _id_: The id of the page container relationship
+	 * 			-'page_id' _id_: The id of the page
+	 * 			-'container_id' _id_: The id of the container
+	 * 			-'page_container_order' _int_: The order in which relationship is set
+	 * 			-'page_container_enabled' _boolean_: Determines if the relationship is active
+	 * 
+	 * @return array $page_container_relationships An array of relationships between a page and a container
+	 * @access public
+	 */
 	public static function getPageContainerRelationshipList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -816,6 +906,14 @@ class PVPages extends PVStaticObject{
     	return $content_array;
 	}//end getPageContainerList
 	
+	/**
+	 * Returns the data associated with a page container relationship.
+	 * 
+	 * @param id $page_container_id The id of the relationship whose data to return
+	 * 
+	 * @return array $page_container_relationship The data between the relationship
+	 * @access public
+	 */
 	public static function getPageContainerRelationship($page_container_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -835,6 +933,19 @@ class PVPages extends PVStaticObject{
 		return $row;
 	}//end getPageContainerRelationship
 	
+	/**
+	 * Updates a relationship between a page and a container. Requires the id of the relationship.
+	 * 
+	 * @param array @args Arguements that define the relationship and are used for searching a relationship
+	 * 			-'page_container_id' _id_: Required.  The id of the page container relationship
+	 * 			-'page_id' _id_: The id of the page
+	 * 			-'container_id' _id_: The id of the container
+	 * 			-'page_container_order' _int_: The order in which relationship is set
+	 * 			-'page_container_enabled' _boolean_: Determines if the relationship is active
+	 * 
+	 * @return array $page_container_relationships An array of relationships between a page and a container
+	 * @access public
+	 */
 	public static function updatePageContainerRelationship($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -852,6 +963,14 @@ class PVPages extends PVStaticObject{
 		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end getPageContainerList
 	
+	/**
+	 * Removes a relationship between the page and a container.
+	 * 
+	 * @param id $page_container_id The id between the page and the container
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deletePageContainerRelationship($page_container_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -867,7 +986,17 @@ class PVPages extends PVStaticObject{
 		
 	}//end deletePageContainerRelationship
 	
-	
+	/**
+	 * Adds a relationship between a page and a module.
+	 * 
+	 * @param id $page_id The id of the page
+	 * @param id $module_id The id of the module
+	 * @param int $page_module_order The order the module will be placed in.
+	 * @param boolean $page_module_enabled Determines if the page module relationship is active
+	 * 
+	 * @return id $page_module_id The id of the newly created page module relationship
+	 * @access public
+	 */
 	public static function addPageModuleRelationship($page_id, $module_id, $page_module_order=0, $page_module_enabled=0) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -897,6 +1026,19 @@ class PVPages extends PVStaticObject{
 		
 	}//end addPageContainerRelationship
 	
+	/**
+	 * Searches for a page module relationships based uponthe passed arguements.
+	 * 
+	 * @param array $args Arguements used for searching for a page module relationship
+	 * 			-'page_module_id' _id_: The id of the relationship to search for
+	 * 			-'page_id' _id_ The id of the page
+	 * 			-'module_id' _id_ The id of the module
+	 * 			-'page_module_order' _int_: The order the pagemodule relationshp has set
+	 * 			-'page_module_enabled' _boolean_: Determines if the page module relatuionship is active
+	 * 
+	 * @return array $page_module_relationships An array of page module relationships found
+	 * @access public
+	 */
 	public static function getPageModuleRelationshipList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -1085,6 +1227,14 @@ class PVPages extends PVStaticObject{
     	return $content_array;
 	}//end getPageContainerList
 	
+	/**
+	 * Retrieve the data associated with a page module relationship.
+	 * 
+	 * @param id $page_module_id The id of the page module relationship
+	 * 
+	 * @return array $page_module_relationship The data associated with the page module relationshiop
+	 * @access public
+	 */
 	public static function getPageModuleRelationship($page_module_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -1105,6 +1255,20 @@ class PVPages extends PVStaticObject{
 		return $row;
 	}//end getPageContainerRelationship
 	
+	
+	/**
+	 * Updates a page module relationship
+	 * 
+	 * @param array $args Arguements used for updating page module relationship
+	 * 			-'page_module_id' _id_: The id of the relationship to search for
+	 * 			-'page_id' _id_ The id of the page
+	 * 			-'module_id' _id_ The id of the module
+	 * 			-'page_module_order' _int_: The order the pagemodule relationshp has set
+	 * 			-'page_module_enabled' _boolean_: Determines if the page module relatuionship is active
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function updatePageModuleRelationship($args = array()){
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -1122,6 +1286,14 @@ class PVPages extends PVStaticObject{
 		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end getPageContainerList
 	
+	/**
+	 * Remove a page module relationship from the database
+	 * 
+	 * @param id $page_module_id The id of page module relationship to delete
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deletePageModuleRelationship($page_module_id) {
 				
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -1138,7 +1310,7 @@ class PVPages extends PVStaticObject{
 		
 	}//end deletePageContainerRelationship
 	
-	private static function getPageDefaults() {
+	protected static function _getPageDefaults() {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__);
