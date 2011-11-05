@@ -29,17 +29,40 @@
 
 class PVModules extends PVStaticObject {
 	
+	/**
+	 * Install or update a module's adminstrative section into the database. The module admin is the base of the module being installed.
+	 * It requires a unique identifer and an application to be assoicaited wtih. Modules are nornally then created with parameters related
+	 * to the module admin, and optionally placed inside pages and/or containers.
+	 * 
+	 * @param array $args An array of arguements used to define the module being installed.
+	 * 		-'module_name' _string_: The name of the module
+	 * 		-'module_unique_id' _string_: The assigned module unique identeifer
+	 * 		-'module_app_identifer' _string_: The application identifer associated with this module
+	 * 		-'module_directory' _string_: The directory the module resides in
+	 * 		-'module_file' _string_: The main file associated with the module
+	 * 		-'module_funciton' _string_: The function called for the module admin
+	 * 		-'module_description' _string_: A description of the module
+	 * 		-'module_author' _string_: Creator of the module
+	 * 		-'module_license' _string_: The license used for the module
+	 * 		-'module_site' _string_: A site associated withthe model
+	 * 		-'module_version' _double_: The version of the module
+	 * 		-'is_module_editable' _boolean_: Defines if the module is able to be edited
+	 * 
+	 * @return void
+	 * @access public
+ 	 */
 	public static function installModule($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::_getModuleAdminDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		
 		if(!empty($args) && is_array($args)){
 			
 			$args=PVDatabase::makeSafe($args);
-			
 			extract($args);
-			
 			$is_module_editable=ceil($is_module_editable);
 			
 			if(!PVValidator::isDouble($module_version) && !PVValidator::isInteger($module_version)){
@@ -57,14 +80,28 @@ class PVModules extends PVStaticObject {
 				PVDatabase::query($query);
 			}
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 		}//end if not empty and is array
 		
 	}//end installModule
 	
+	/**
+	 * Retrieves data related to a module administrative section.
+	 * 
+	 * @param string $module_unique_id The assigned unique id of the module
+	 * @param string $module_app_identifer The application associated with the module
+	 * 
+	 * @return array $module_admin The data associated with the admin section for the module
+	 * @access public
+	 */
 	public static function getModuleAdmin($module_unique_id, $module_app_identifier) {
 			
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $module_unique_id, $module_app_identifier);
+			
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('module_unique_id'=> $module_unique_id , 'module_app_identifier'=>$module_app_identifier ), array('event'=>'args'));
+		$module_unique_id = $filtered['module_unique_id'];
+		$module_app_identifier = $filtered['module_app_identifier'];
 		
 		if(!empty($module_unique_id) && !empty($module_app_identifier)){
 			
@@ -74,8 +111,11 @@ class PVModules extends PVStaticObject {
 			$query="SELECT * FROM ".PVDatabase::getModuleAdminTableName()." WHERE module_unique_id='$module_unique_id' AND module_app_identifier='$module_app_identifier'";
 			
 			$result=PVDatabase::query($query);
-			
 			$row = PVDatabase::fetchArray($result);
+			$row = PVDatabase::formatData($row);
+			
+			self::_notify(get_class().'::'.__FUNCTION__,$row, $module_unique_id, $module_app_identifier );
+			$row  = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 			
@@ -83,12 +123,36 @@ class PVModules extends PVStaticObject {
 		
 	}//getModuleAdmin
 	
+	/**
+	 * Searches for a modules adminstrative section based upon arguements passed. Uses the PV Standard Search Query
+	 * when searching.
+	 * 
+	 * @param array $args An array of arguements used to define the module being installed.
+	 * 		-'module_admin_id' _id_: The id of the module adminsitrative data
+	 * 		-'module_name' _string_: The name of the module
+	 * 		-'module_unique_id' _string_: The assigned module unique identeifer
+	 * 		-'module_app_identifer' _string_: The application identifer associated with this module
+	 * 		-'module_directory' _string_: The directory the module resides in
+	 * 		-'module_file' _string_: The main file associated with the module
+	 * 		-'module_funciton' _string_: The function called for the module admin
+	 * 		-'module_description' _string_: A description of the module
+	 * 		-'module_author' _string_: Creator of the module
+	 * 		-'module_license' _string_: The license used for the module
+	 * 		-'module_site' _string_: A site associated withthe model
+	 * 		-'module_version' _double_: The version of the module
+	 * 		-'is_module_editable' _boolean_: Defines if the module is able to be edited
+	 * 
+	 * @return void
+	 * @access public
+ 	 */
 	public static function getModuleAdminList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::_getModuleAdminDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
 		if(is_array($args)) {
 			$custom_where=$args['custom_where'];
@@ -117,7 +181,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($module_unique_id)){
 					
 				$module_unique_id=trim($module_unique_id);
@@ -134,7 +197,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_app_identifier)){
 					
@@ -153,7 +215,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($module_directory)){
 					
 				$module_directory=trim($module_directory);
@@ -170,7 +231,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_file)){
 					
@@ -224,7 +284,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($module_description)){
 					
 				$module_description=trim($module_description);
@@ -241,7 +300,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_author)){
 					
@@ -260,7 +318,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($module_license)){
 					
 				$module_license=trim($module_license);
@@ -277,7 +334,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_site)){
 					
@@ -296,7 +352,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id		
 			
-			
 			if(!empty($module_version)){
 					
 				$module_version=trim($module_version);
@@ -313,7 +368,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id	
-			
 			
 			if(!empty($is_module_editable)){
 					
@@ -340,7 +394,6 @@ class PVModules extends PVStaticObject {
 			$WHERE_CLAUSE.=' '.$custom_where.' ';
 		}
 		
-		
 		if(!empty($custom_join)){
 			$JOINS.=' '.$custom_join.' ';
 		}
@@ -348,7 +401,6 @@ class PVModules extends PVStaticObject {
 		if($join_apps==true){
 			$JOINS.=' JOIN '.PVDatabase::getApplicationsTableName().' ON '.PVDatabase::getApplicationsTableName().'.app_unique_id='.PVDatabase::getModuleAdminTableName().'.module_app_identifier ';
 		}
-		
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
@@ -379,15 +431,32 @@ class PVModules extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array  = self::_applyFilter( get_class(), __FUNCTION__ , $content_array  , array('event'=>'return'));
     	
 		return $content_array;	
 		
 	}//end getModuleList
 	
+	/**
+	 * Removes a modules admin section, its files and associated modules
+	 * 
+	 * @param string $module_unique_id The assigned unique id of the module
+	 * @param string $module_app_identifer The application associated with the module
+	 * @param $remove_modules. Default is false. Removes in assigned modules.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deleteModuleAdmin($module_unique_id, $module_app_identifier, $remove_modules=FALSE) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $module_unique_id, $module_app_identifier, $remove_modules);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('module_unique_id'=> $module_unique_id , 'module_app_identifier'=>$module_app_identifier, 'remove_modules'=> $remove_modules ), array('event'=>'args'));
+		$module_unique_id = $filtered['module_unique_id'];
+		$module_app_identifier = $filtered['module_app_identifier'];
+		$remove_modules = $filtered['remove_modules'];
 		
 		$module_info=self::getModuleAdmin($module_unique_id, $module_app_identifier);
 		
@@ -415,41 +484,93 @@ class PVModules extends PVStaticObject {
 					self::deleteModule($value['module_id']);
 				}
 			}//end if removeModule
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $module_unique_id, $module_app_identifier, $remove_modules);
 		}
 		
 	}//end 
 	
-	public static function createModule($args) {
+	/**
+	 * Add a module into the database. Modules require an
+	 * 
+	 * @param array $args An array of arguements used to define the module being installed.
+	 * 		-'module_name' _string_: The name of the module
+	 * 		-'module_alias' _string_: The alias of the module
+	 * 		-'module_description' _string_: The description of the module
+	 * 		-'module_app' _id_: The id of the application of the module
+	 * 		-'module_ordering' _int_: The order the module is placed in
+	 * 		-'module_enabled' _boolean_: Is the module enabled.
+	 * 		-'module_params'_string_: The parameters set for the module
+	 * 		-'module_css' _string_: CSS defined for the module
+	 * 		-'module_title' _string_: The title for the module
+	 * 		-'show_module_title' _boolean_: An option for displaying the module title.
+	 * 		-'module_wrap' _boolean_: Wrap the module in a wrapper
+	 * 		-'module_permisions' _string_: The permission users allowed to access the module
+	 * 		-'module_identifer' _string_: As custom assigned identifer to the module
+	 * 		-'module_parent' _id_: A possible parent module
+	 * 		-'module_site_id' _id_: The site id the module belongs too
+	 * 		-'module_positon' _string_: A position the module is assigned too
+	 * 
+	 * @return id $module_id The id of the recently created module
+	 * @access public
+ 	 */
+	public static function createModule($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		if(is_array($args) && !empty($args)){
-			
-			$args=PVDatabase::makeSafe($args);
-			
-			$module_app=ceil($module_app);
-			$module_ordering=ceil($module_ordering);
-			$module_enabled=ceil($module_enabled);
-			$show_module_title=ceil($show_module_title);
-			$module_wrap=ceil($module_wrap);
-			$module_parent=ceil($module_parent);
-			$module_site_id=ceil($module_site_id);
-			
-			extract($args);
-			
-			$query="INSERT INTO ".PVDatabase::getModulesTableName()." ( module_name, module_alias, module_description, module_app, module_ordering, module_enabled, module_params, module_css, module_title, show_module_title, module_wrap, module_permissions, module_identifier, module_parent, module_site_id) VALUES ( '$module_name', '$module_alias', '$module_description', '$module_app', '$module_ordering', '$module_enabled', '$module_params', '$module_css', '$module_title', '$show_module_title', '$module_wrap', '$module_permissions', '$module_identifier', '$module_parent', '$module_site_id')";
-		}//end $args
+		$args += self::_getModuleDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));	
+		$args=PVDatabase::makeSafe($args);
+		extract($args);
 		
+		$module_ordering=ceil($module_ordering);
+		$module_enabled=ceil($module_enabled);
+		$show_module_title=ceil($show_module_title);
+		$module_wrap=ceil($module_wrap);	
+			
+		$query="INSERT INTO ".PVDatabase::getModulesTableName()." ( module_name, module_alias, module_description, module_app, module_ordering, module_enabled, module_params, module_css, module_title, show_module_title, module_wrap, module_permissions, module_identifier, module_parent, module_site_id) VALUES ( '$module_name', '$module_alias', '$module_description', '$module_app', '$module_ordering', '$module_enabled', '$module_params', '$module_css', '$module_title', '$show_module_title', '$module_wrap', '$module_permissions', '$module_identifier', '$module_parent', '$module_site_id')";
 		$module_id=PVDatabase::return_last_insert_query($query, 'module_id', PVDatabase::getModulesTableName() );
 		
-		return $module_id;
+		self::_notify(get_class().'::'.__FUNCTION__, $module_id , $args);
+		$module_id  = self::_applyFilter( get_class(), __FUNCTION__ , $module_id  , array('event'=>'return'));
 		
+		return $module_id;
 	}//end createModule
 	
-	public static function getModuleList($args = array()){
+	/**
+	 * Search through the modules based upon attributes that define the moduel. Uses PV Standard Search query.
+	 * 
+	 * @param array $args An array of arguements used to define the module being installed.
+	 * 		-'module_id' _id_: The id of the module
+	 * 		-'module_name' _string_: The name of the module
+	 * 		-'module_alias' _string_: The alias of the module
+	 * 		-'module_description' _string_: The description of the module
+	 * 		-'module_app' _id_: The id of the application of the module
+	 * 		-'module_ordering' _int_: The order the module is placed in
+	 * 		-'module_enabled' _boolean_: Is the module enabled.
+	 * 		-'module_params'_string_: The parameters set for the module
+	 * 		-'module_css' _string_: CSS defined for the module
+	 * 		-'module_title' _string_: The title for the module
+	 * 		-'show_module_title' _boolean_: An option for displaying the module title.
+	 * 		-'module_wrap' _boolean_: Wrap the module in a wrapper
+	 * 		-'module_permisions' _string_: The permission users allowed to access the module
+	 * 		-'module_identifer' _string_: As custom assigned identifer to the module
+	 * 		-'module_parent' _id_: A possible parent module
+	 * 		-'module_site_id' _id_: The site id the module belongs too
+	 * 		-'module_positon' _string_: A position the module is assigned too
+	 * 
+	 * @return array $modules Returns an array of modules
+	 * @access public
+ 	 */
+	public static function getModuleList($args = array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::_getModuleDefaults();	
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
 		$args=PVDatabase::makeSafe($args);
@@ -497,7 +618,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($module_name)){
 					
 				$module_name=trim($module_name);
@@ -514,7 +634,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_alias)){
 					
@@ -533,7 +652,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($module_app)){
 					
 				$module_app=trim($module_app);
@@ -550,7 +668,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_ordering)){
 					
@@ -569,8 +686,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
-			
 			if(!empty($module_enabled)){
 					
 				$module_enabled=trim($module_enabled);
@@ -587,8 +702,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
-			
 			
 			if(!empty($module_params)){
 					
@@ -607,7 +720,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($module_permissions)){
 					
 				$module_permissions=trim($module_permissions);
@@ -624,7 +736,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_identifier)){
 					
@@ -643,7 +754,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($module_parent)){
 					
 				$module_parent=trim($module_parent);
@@ -660,7 +770,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($module_site_id)){
 					
@@ -679,7 +788,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($container_id)){
 					
 				$container_id=trim($container_id);
@@ -697,7 +805,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($container_name)){
 					
 				$container_name=trim($container_name);
@@ -714,7 +821,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($container_alias)){
 					
@@ -752,7 +858,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($container_enabled)){
 					
 				$container_enabled=trim($container_enabled);
@@ -769,7 +874,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($container_params)){
 					
@@ -838,10 +942,7 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
-			
-			
-			
+
 			if(!empty($page_name)){
 				
 				$page_name=trim($page_name);
@@ -858,7 +959,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($page_title)){
 					
@@ -877,7 +977,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($page_description)){
 					
 				$page_description=trim($page_description);
@@ -895,7 +994,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($page_alias)){
 					
 				$page_alias=trim($page_alias);
@@ -912,9 +1010,7 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
-			
-			
+
 			if(!empty($frontpage)){
 					
 				$frontpage=trim($frontpage);
@@ -932,7 +1028,6 @@ class PVModules extends PVStaticObject {
 				$first=0;
 			}//end not empty app_id
 			
-			
 			if(!empty($page_enabled)){
 					
 				$page_enabled=trim($page_enabled);
@@ -949,7 +1044,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($page_ordering)){
 					
@@ -1001,7 +1095,6 @@ class PVModules extends PVStaticObject {
 				
 				$first=0;
 			}//end not empty app_id
-			
 			
 			if(!empty($page_site_id)){
 					
@@ -1091,7 +1184,6 @@ class PVModules extends PVStaticObject {
 			}
 		}
 		
-	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -1130,78 +1222,121 @@ class PVModules extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
 		
     	return $content_array;
-		
 	}//end getModuleList
 	
 	
-	public static function getModule($module_id){
+	public static function getModule($module_id) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $module_id);
 		
-		if(!empty($module_id)){
+		$module_id = self::_applyFilter( get_class(), __FUNCTION__ , $module_id , array('event'=>'args'));
+		$module_id=PVDatabase::makeSafe($module_id);
 			
-			$module_id=ceil($module_id);
-			
-			$query="SELECT * FROM ".PVDatabase::getModulesTableName()." WHERE module_id='$module_id'";
-			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			
-			return $row;
-			
-		}//end page id
+		$query="SELECT * FROM ".PVDatabase::getModulesTableName()." WHERE module_id='$module_id'";	
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $module_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
+		
+		return $row;
 	}//end getModule
 	
+	/**
+	 * Find a module by the module's alias.
+	 */
+	public static function getModuleByAlias($module_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $module_id);
+		
+		$module_id = self::_applyFilter( get_class(), __FUNCTION__ , $module_id, array('event'=>'args'));
+		$module_id=PVDatabase::makeSafe($module_id);
+			
+		$query="SELECT * FROM ".PVDatabase::getModulesTableName()." WHERE module_alias='$module_id'";
+			
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row=PVDatabase::formatData($row);
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $module_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
+		
+		return $row;	
+	}//end getModule
 	
-	public static function getModuleByAlias($module_id){
+	/**
+	 * Update a module in the database. Requires the module id.
+	 * 
+	 * @param array $args An array of arguements used to define the module being installed.
+	 * 		-'module_id' _id_: Required. The data associated with this is will be updated.
+	 * 		-'module_name' _string_: The name of the module
+	 * 		-'module_alias' _string_: The alias of the module
+	 * 		-'module_description' _string_: The description of the module
+	 * 		-'module_app' _id_: The id of the application of the module
+	 * 		-'module_ordering' _int_: The order the module is placed in
+	 * 		-'module_enabled' _boolean_: Is the module enabled.
+	 * 		-'module_params'_string_: The parameters set for the module
+	 * 		-'module_css' _string_: CSS defined for the module
+	 * 		-'module_title' _string_: The title for the module
+	 * 		-'show_module_title' _boolean_: An option for displaying the module title.
+	 * 		-'module_wrap' _boolean_: Wrap the module in a wrapper
+	 * 		-'module_permisions' _string_: The permission users allowed to access the module
+	 * 		-'module_identifer' _string_: As custom assigned identifer to the module
+	 * 		-'module_parent' _id_: A possible parent module
+	 * 		-'module_site_id' _id_: The site id the module belongs too
+	 * 		-'module_positon' _string_: A position the module is assigned too
+	 * 
+	 * @return array $modules Returns the data associated with a module
+	 * @access public
+ 	 */
+	public static function updateModule($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::_getModuleDefaults();	
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		$args=PVDatabase::makeSafe($args);
+		extract($args);
+			
+		
+		$module_ordering=ceil($module_ordering);
+		$module_enabled=ceil($module_enabled);
+		$show_module_title=ceil($show_module_title);
+		$module_wrap=ceil($module_wrap);
+			
+		$query="UPDATE ".PVDatabase::getModulesTableName()." SET module_name='$module_name', module_alias='$module_alias' , module_description='$module_description' , module_app='$module_app' , module_ordering='$module_ordering' , module_enabled='$module_enabled' , module_params='$module_params' , module_css='$module_css' , module_title='$module_title' , show_module_title='$show_module_title' , module_wrap='$module_wrap' , module_permissions='$module_permissions' , module_identifier='$module_identifier' , module_parent='$module_parent' , module_site_id='$module_site_id' WHERE module_id='$module_id' ";
+		PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
+	}//end updateModule
+	
+	/**
+	 * Removes a module from the database.
+	 * 
+	 * @param id $module_id The id of the module to remove
+	 * @param boolean $recursive Removes children modules also. Default is false.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function deleteModule($module_id, $recursive=FALSE) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $module_id, $recursive);
+			
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('module_id'=> $module_id , 'recursive'=>$recursive ), array('event'=>'args'));
+		$module_id = $filtered['module_id'];
+		$recursive= $filtered['recursive'];
 		
 		if(!empty($module_id)){
 			
 			$module_id=PVDatabase::makeSafe($module_id);
-			
-			$query="SELECT * FROM ".PVDatabase::getModulesTableName()." WHERE module_alias='$module_id'";
-			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
-			
-			return $row;
-			
-		}//end page id
-		
-	}//end getModule
-	
-	public static function updateModule($args){
-		
-		if(is_array($args) && !empty($args['module_id']) ){
-			
-			$args=PVDatabase::makeSafe($args);
-			extract($args);
-			
-			$module_app=ceil($module_app);
-			$module_ordering=ceil($module_ordering);
-			$module_enabled=ceil($module_enabled);
-			$show_module_title=ceil($show_module_title);
-			$module_wrap=ceil($module_wrap);
-			$module_parent=ceil($module_parent);
-			$module_site_id=ceil($module_site_id);
-			
-			$module_id=ceil($module_id);
-			
-			$query="UPDATE ".PVDatabase::getModulesTableName()." SET module_name='$module_name', module_alias='$module_alias' , module_description='$module_description' , module_app='$module_app' , module_ordering='$module_ordering' , module_enabled='$module_enabled' , module_params='$module_params' , module_css='$module_css' , module_title='$module_title' , show_module_title='$show_module_title' , module_wrap='$module_wrap' , module_permissions='$module_permissions' , module_identifier='$module_identifier' , module_parent='$module_parent' , module_site_id='$module_site_id' WHERE module_id='$module_id' ";
-			PVDatabase::query($query);
-			
-		}//end if
-		
-	}//end updateModule
-	
-	
-	public static function deleteModule($module_id, $recursive=FALSE){
-		
-		if(!empty($module_id)){
-			
-			$module_id=ceil($module_id);
 			
 			$query="DELETE FROM ".PVDatabase::getModulesTableName()." WHERE module_id='$module_id'";
 			PVDatabase::query($query);
@@ -1223,9 +1358,64 @@ class PVModules extends PVStaticObject {
 				}//end while
 			}//recursive true
 			
+			self::_notify(get_class().'::'.__FUNCTION__, $module_id , $recursive);	
 		}//end not empty page id
 		
 	}//end deletePage
+	
+	protected static function _getModuleDefaults() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$defaults = array(
+			'module_id' => 0,
+			'module_name' => '',
+			'module_alias' => '',
+			'module_description' => '',
+			'module_app' => 0,
+			'module_ordering' => 0,
+			'module_enabled' => 0,
+			'module_params' => '',
+			'module_css' => '',
+			'module_title'=>'',
+			'show_module_title' => '',
+			'module_wrap' => '',
+			'module_permissions' => '',
+			'module_identifier'=> '',
+			'module_parent'=> 0,
+			'module_site_id' => 0,
+			'module_position' => ''
+		);
+		
+		$defaults  = self::_applyFilter( get_class(), __FUNCTION__ , $defaults , array('event'=>'return'));
+		return $defaults;
+	}
+	
+	protected static function _getModuleAdminDefaults() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$defaults = array(
+			'module_name'=>'',
+			'module_unique_id'=>'',
+			'module_app_identifier'=>'',
+			'module_directory' => '',
+			'module_file' =>'',
+			'module_function' => '',
+			'module_description' => '',
+			'module_author' => '',
+			'module_license' => '',
+			'module_site' => '',
+			'module_version' => 0,
+			'is_module_editable' => 0,
+			'module_admin_id' => 0
+		);
+		
+		$defaults  = self::_applyFilter( get_class(), __FUNCTION__ , $defaults , array('event'=>'return'));
+		return $defaults;
+	}
 		
 }//end class
 	
