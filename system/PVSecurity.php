@@ -535,13 +535,12 @@ class PVSecurity extends PVStaticObject {
 		}//end if !empty
 	}//end addApplicationPermission
 		
-	function getApplicationPermissionList($args){
+	function getApplicationPermissionList($args = array()){
 		
-		if(is_array($args)){
-			$custom_where=$args['custom_where'];
-			$custom_join=$args['custom_join'];
-			extract($args, EXTR_SKIP);
-		}
+		$args += self::_getSqlSearchDefaults();
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		extract($args, EXTR_SKIP);
 		
 		$first=1;
 			
@@ -549,7 +548,7 @@ class PVSecurity extends PVStaticObject {
 		$table_name=PVDatabase::getApplicationPermissionsTableName();
 		$db_type=PVDatabase::getDatabaseType();
 				
-		$WHERE_CLAUSE.='';
+		$WHERE_CLAUSE='';
 			
 		if(!empty($app_id)){
 					
@@ -741,7 +740,7 @@ class PVSecurity extends PVStaticObject {
 			$WHERE_CLAUSE.=" $limit";
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS * FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args * FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -863,22 +862,20 @@ class PVSecurity extends PVStaticObject {
 			}//end if !empty
 		}//end addApplicationPermission
 		
-		function getModulePermissionList($args){
+		function getModulePermissionList($args = array()){
 		
-		if(is_array($args)){
+			$args += self::_getSqlSearchDefaults();
 			$custom_where=$args['custom_where'];
 			$custom_join=$args['custom_join'];
 			extract($args, EXTR_SKIP);
-		}
-		
-		
+			
 			$first=1;
 			
 			$content_array=array();
 			$table_name=PVDatabase::getModulePermissionsTableName();
 			$db_type=PVDatabase::getDatabaseType();
 				
-			$WHERE_CLAUSE.='';
+			$WHERE_CLAUSE='';
 			
 			if(!empty($app_id)){
 					
@@ -1127,7 +1124,7 @@ class PVSecurity extends PVStaticObject {
 			$WHERE_CLAUSE.=" $limit";
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS * FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args * FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -1260,22 +1257,20 @@ class PVSecurity extends PVStaticObject {
 			}//end if !empty
 		}//end addApplicationPermission
 		
-		function getPluginPermissionList($args){
+		function getPluginPermissionList($args = array()){
 		
-		if(is_array($args)){
+			$args += self::_getSqlSearchDefaults();
 			$custom_where=$args['custom_where'];
 			$custom_join=$args['custom_join'];
 			extract($args, EXTR_SKIP);
-		}
-		
-		
+			
 			$first=1;
 			
 			$content_array=array();
 			$table_name=PVDatabase::getPluginPermissionsTableName();
 			$db_type=PVDatabase::getDatabaseType();
 				
-			$WHERE_CLAUSE.='';
+			$WHERE_CLAUSE='';
 			
 			if(!empty($plugin_unique_id)){
 					
@@ -1480,7 +1475,7 @@ class PVSecurity extends PVStaticObject {
 			$WHERE_CLAUSE.=" $limit";
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS * FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args * FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -1522,20 +1517,18 @@ class PVSecurity extends PVStaticObject {
 	
 	function getUserPermissionList($args){
 		
-		if(is_array($args)){
-			$custom_where=$args['custom_where'];
-			$custom_join=$args['custom_join'];
-			extract($args, EXTR_SKIP);
-		}
-		
-		
+		$args += self::_getSqlSearchDefaults();
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		extract($args, EXTR_SKIP);
+
 			$first=1;
 			
 			$content_array=array();
 			$table_name=PVDatabase::getApplicationPermissionsTableName();
 			$db_type=PVDatabase::getDatabaseType();
 				
-			$WHERE_CLAUSE.='';
+			$WHERE_CLAUSE='';
 			
 			if(!empty($app_id)){
 					
@@ -1687,7 +1680,7 @@ class PVSecurity extends PVStaticObject {
 			$WHERE_CLAUSE.=" $limit";
 		}
 		
-    	$query="$prequery SELECT $PREFIX_ARGS * FROM $table_name $JOINS $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args * FROM $table_name $JOINS $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
