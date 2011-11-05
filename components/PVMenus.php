@@ -62,9 +62,6 @@ class PVMenus extends PVStaticObject{
 		}
 		
 		$menu_order=ceil($menu_order);
-		$content_id=ceil($content_id);
-		$user_id=ceil($user_id);
-		$app_id=ceil($app_id);
 		$menu_enabled=ceil($menu_enabled);
 		
 		if(empty($menu_unique_id)){
@@ -116,9 +113,6 @@ class PVMenus extends PVStaticObject{
 		if(!empty($menu_id)){
 			
 			$menu_order=ceil($menu_order);
-			$content_id=ceil($content_id);
-			$user_id=ceil($user_id);
-			$app_id=ceil($app_id);
 			$menu_enabled=ceil($menu_enabled);
 			
 			$query="UPDATE ".PVDatabase::getMenuTableName()." SET menu_name='$menu_name', menu_type='$menu_type' , menu_tag_id='$menu_tag_id' , menu_css='$menu_css' , menu_order='$menu_order' , content_id='$content_id', user_id='$user_id', app_id='$app_id', menu_unique_id='$menu_unique_id', menu_class='$menu_class', menu_description='$menu_description', menu_enabled='$menu_enabled' WHERE menu_id='$menu_id' ";
@@ -156,12 +150,12 @@ class PVMenus extends PVStaticObject{
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$args += self::getMenuDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
-		$args = PVDatabase::makeSage($args);
+		$args = PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
 		
 		$first=1;
@@ -172,7 +166,7 @@ class PVMenus extends PVStaticObject{
 				
 		$WHERE_CLAUSE='';
 			
-		if(!empty($menu_id) || $menu_id==='0'){
+		if(!empty($menu_id) ){
 					
 			$menu_id=trim($menu_id);
 				
@@ -206,7 +200,7 @@ class PVMenus extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		if(!empty($menu_type) || $menu_type==='0' ){
+		if(!empty($menu_type)  ){
 					
 			$menu_type=trim($menu_type);
 				
@@ -999,22 +993,17 @@ class PVMenus extends PVStaticObject{
 			return self::_callAdapter(get_class(), __FUNCTION__, $item_id);
 		
 		$item_id = self::_applyFilter( get_class(), __FUNCTION__ , $item_id, array('event'=>'args'));
-		$item_id=PVDatabase::getMenuItem($item_id);
+		$item_id=PVDatabase::makeSafe($item_id);
 			
-		if( !empty($menu_id) && !empty($item_id) ){
+		$query="SELECT * FROM ".PVDatabase::getMenuItemsTableName()." WHERE item_id='$item_id' ";
+		$result=PVDatabase::query($query);
+		$row = PVDatabase::fetchArray($result);
+		$row=PVDatabase::formatData($row);
 			
-			$query="SELECT * FROM ".PVDatabase::getMenuItemsTableName()." WHERE item_id='$item_id' ";
+		self::_notify(get_class().'::'.__FUNCTION__, $row, $item_id);
+		$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
-			$result=PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
-			
-			self::_notify(get_class().'::'.__FUNCTION__, $row, $item_id);
-			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
-			
-			return $row;
-		}//end is_array
-		
+		return $row;
 	}//end updateMenuItem
 	
 	/**
