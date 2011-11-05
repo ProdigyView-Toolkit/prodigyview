@@ -96,7 +96,7 @@ class PVApplications extends PVStaticObject {
 		if(is_object ($app)) {
 			$value = self::_invokeMethod($appObject, 'commandInterpreter', $passable_args);
 		} else {
-			if(PVValidator::isInteger($app)){
+			if(PVValidator::isID($app)){
 				$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_id='$app' ";
 			}
 			else{
@@ -209,7 +209,7 @@ class PVApplications extends PVStaticObject {
 			if(is_object ($app)){
 				$value = self::_invokeMethod($appObject, 'commandInterpreter', $passable_args);
 			} else {
-				if(PVValidator::isInteger($app)){
+				if(PVValidator::isID($app)){
 					$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_id='$app' ";
 				} else {
 					$query="SELECT * FROM ".PVDatabase::getApplicationsTableName()." WHERE app_unique_id='$app' ";
@@ -223,49 +223,47 @@ class PVApplications extends PVStaticObject {
 				$app_object=trim($row['admin_object']);
 				
 				
-				$array=preg_split('/;|,/', $row['admin_jquery_libraries']);
+				$array=preg_split('/;|,/', $row['jquery_libraries']);
 				$count = count($array);
 				for ($i = 0; $i < $count; $i++) {
 					$name=trim($array[$i]);
 					if(!empty($name)){
-						PVLibraries::enqueue_jquery($name);
+						PVLibraries::enqueueJquery($name);
 					}
 				}//end for
 				
-				$array=preg_split('/;|,/', $row['admin_javascript_libraries']);
+				$array=preg_split('/;|,/', $row['javascript_libraries']);
 				$count = count($array);
 				for ($i = 0; $i < $count; $i++) {
 					$name=trim($array[$i]);
 					if(!empty($name)){
-						PVLibraries::enqueue_javascript($name);
+						PVLibraries::enqueueJavascript($name);
 					}
 				}//end for
 				
-				$array=preg_split('/;|,/', $row['admin_prototype_libraries']);
+				$array=preg_split('/;|,/', $row['prototype_libraries']);
 				$count = count($array);
 				for ($i = 0; $i < $count; $i++) {
 					$name=trim($array[$i]);
 					if(!empty($name)){
-						PVLibraries::enqueue_prototype($name);
+						PVLibraries::enqueuePrototype($name);
 					}
 				}//end for
 				
-				
-				$array=preg_split('/;|,/', $row['admin_mootools_libraries']);
+				$array=preg_split('/;|,/', $row['mootools_libraries']);
 				$count = count($array);
 				for ($i = 0; $i < $count; $i++) {
 					$name=trim($array[$i]);
 					if(!empty($name)){
-						PVLibraries::enqueue_mootools($name);
+						PVLibraries::enqueueMootools($name);
 					}
 				}//end for
-				
-				$array=preg_split('/;|,/', $row['admin_css_files']);
+				$array=preg_split('/;|,/', $row['css_files']);
 				$count = count($array);
 				for ($i = 0; $i < $count; $i++) {
 					$name=trim($array[$i]);
 					if(!empty($name)){
-						PVLibraries::enqueue_css($name);
+						PVLibraries::enqueueCss($name);
 					}
 				}//end for
 				
