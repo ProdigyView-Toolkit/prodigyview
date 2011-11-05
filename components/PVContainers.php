@@ -55,6 +55,7 @@ class PVContainers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::getContainerDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
@@ -99,7 +100,8 @@ class PVContainers extends PVStaticObject {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
-			
+		
+		$args += self::getContainerDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args += array('join_page_containers'=>false);
 		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
@@ -631,6 +633,7 @@ class PVContainers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 	
+		$args += self::getContainerDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ ,  $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
@@ -979,6 +982,33 @@ class PVContainers extends PVStaticObject {
 			self::_notify(get_class().'::'.__FUNCTION__, $container_module_id);
 		}
 	}//end deleteContainerModuleRelationship
+	
+	private static function getContainerDefaults() {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$defaults = array(
+			'container_id' => 0,
+			'container_name' => '',
+			'container_description' => '',
+			'container_alias' => '',
+			'container_position' => '',
+			'container_header' => '',
+			'show_header' => 0,
+			'container_enabled'=>0,
+			'container_params'=>'',
+			'container_css_params'=>'',
+			'container_wrap'=>0,
+			'container_permissions'=>'',
+			'container_parent' => 0,
+			'container_site_id' =>0
+		);
+		
+		$defaults = self::_applyFilter( get_class(), __FUNCTION__ , $defaults , array('event'=>'return'));
+		
+		return $defaults;
+	}
 		
 }//end class
 	
