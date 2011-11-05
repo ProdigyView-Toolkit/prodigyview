@@ -30,14 +30,31 @@
 class PVMVC extends PVStaticObject{
 	
 	/**
-	 * Install a module view controller with the assigned fields.
+	 * Install or update a MVC into the database. MVCs are created and assigned an id by you, the developer.
+	 * 
+	 * @param array $args The arguements that define an MVC
+	 * 			-'mvc_unique_id' _string_: Required. This is an assigned id by the developer of the MVC.
+	 * 			-'mvc_name' _string_: The name of the mvc.
+	 * 			-'mvc_description' _string_: A description of the MVC
+	 * 			-'mvc_author' _string_: The author of the MVC
+	 * 			-'mvc_website' _string_: A website for the mvc
+	 * 			-'mvc_license' _string_: The license for the MVC
+	 * 			-'mvc_version' _double_: The version of this mvc
+	 * 			-'mvc_directory' _string_: The directory of the MVC
+	 * 			-'mvc_file' _string_: The main file to called when the mvc is made active
+	 * 			-'mvc_object' _string_: An object associated with the MVC
+	 * 			-'is_current_mvc' _boolean_: Determines if the mvc is the current one. Will be booted automatically is set to true
+	 * 			-'auto_load' _boolean: Determines if the MVC will be automatically load in conjuction with initializeMVC()
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public static function installMVC($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getMVCDefaults();
+		$args += self::_getMVCDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
@@ -53,11 +70,10 @@ class PVMVC extends PVStaticObject{
 			
 			$mvc_info=self::getMVCInfo($mvc_unique_id);
 			
-			if(empty($mvc_info)){
-			$query="INSERT INTO ".PVDatabase::getMVCTableName()."(mvc_unique_id, mvc_name, mvc_description, mvc_author,  mvc_website, mvc_license, mvc_version, mvc_directory, mvc_file, mvc_object, is_current_mvc, autoload_mvc) VALUES( '$mvc_unique_id', '$mvc_name', '$mvc_description', '$mvc_author', '$mvc_website', '$mvc_license', '$mvc_version', '$mvc_directory', '$mvc_file', '$mvc_object', '$is_current_mvc', '$autoload_mvc')";
+			if(empty($mvc_info)) {
+				$query="INSERT INTO ".PVDatabase::getMVCTableName()."(mvc_unique_id, mvc_name, mvc_description, mvc_author,  mvc_website, mvc_license, mvc_version, mvc_directory, mvc_file, mvc_object, is_current_mvc, autoload_mvc) VALUES( '$mvc_unique_id', '$mvc_name', '$mvc_description', '$mvc_author', '$mvc_website', '$mvc_license', '$mvc_version', '$mvc_directory', '$mvc_file', '$mvc_object', '$is_current_mvc', '$autoload_mvc')";
 			
-			}
-			else{
+			} else {
 				$query="UPDATE ".PVDatabase::getMVCTableName()." SET  mvc_name='$mvc_name', mvc_description='$mvc_description' , mvc_author='$mvc_author',  mvc_website='$mvc_website', mvc_license='$mvc_license', mvc_version='$mvc_version', mvc_directory='$mvc_directory', mvc_file='$mvc_file', mvc_object='$mvc_object', is_current_mvc='$is_current_mvc', autoload_mvc='$autoload_mvc' WHERE mvc_unique_id='$mvc_unique_id' ";
 			}
 			
@@ -66,7 +82,14 @@ class PVMVC extends PVStaticObject{
 		}
 	}//end installMVC
 	
-	
+	/**
+	 * Initalizes and MVC that is passed through. That will boot the MVC that is going to be used.
+	 * 	
+	 * @param string $mvc_unique_id The unique identification of the MVC to initiliaze.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function initiliazeMVC($mvc_unique_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -84,6 +107,14 @@ class PVMVC extends PVStaticObject{
 		self::_notify(get_class().'::'.__FUNCTION__, $mvc_unique_id);
 	}//end initiliazeMVC
 	
+	/**
+	 * Retreives the data associated with an MVC.
+	 * 
+	 * @param string $mvc_unique_id The unique id of the MVC
+	 * 
+	 * @return array $mvc Data pertaining to the MVC
+	 * @access void
+	 */
 	public static function getMVCInfo($mvc_unique_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -103,13 +134,32 @@ class PVMVC extends PVStaticObject{
 		return $row;
 	}//end getMVCInfo
 	
-	
+	/**
+	 * Search for MVCs in the database based upon fields that make up that MVC. Uses the PV Standard Seeach Query.
+	 * 
+	 * @param array $args The arguements that define an MVC when searching
+	 * 			-'mvc_unique_id' _string_: Required. This is an assigned id by the developer of the MVC.
+	 * 			-'mvc_name' _string_: The name of the mvc.
+	 * 			-'mvc_description' _string_: A description of the MVC
+	 * 			-'mvc_author' _string_: The author of the MVC
+	 * 			-'mvc_website' _string_: A website for the mvc
+	 * 			-'mvc_license' _string_: The license for the MVC
+	 * 			-'mvc_version' _double_: The version of this mvc
+	 * 			-'mvc_directory' _string_: The directory of the MVC
+	 * 			-'mvc_file' _string_: The main file to called when the mvc is made active
+	 * 			-'mvc_object' _string_: An object associated with the MVC
+	 * 			-'is_current_mvc' _boolean_: Determines if the mvc is the current one. Will be booted automatically is set to true
+	 * 			-'auto_load' _boolean: Determines if the MVC will be automatically load in conjuction with initializeMVC()
+	 * 
+	 * @return array $mvcs Returns an array of MVCs found
+	 * @access public
+	 */
 	public static function getMVCList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getMVCDefaults();
+		$args += self::_getMVCDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$custom_where=$args['custom_where'];
@@ -194,7 +244,6 @@ class PVMVC extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($mvc_website)){
 					
 			$mvc_website=trim($mvc_website);
@@ -211,7 +260,6 @@ class PVMVC extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($mvc_license)){
 					
@@ -230,7 +278,6 @@ class PVMVC extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($mvc_version)){
 					
 			$mvc_version=trim($mvc_version);
@@ -247,7 +294,6 @@ class PVMVC extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($mvc_directory)){
 					
@@ -266,7 +312,6 @@ class PVMVC extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($mvc_file)){
 					
 			$mvc_file=trim($mvc_file);
@@ -284,7 +329,6 @@ class PVMVC extends PVStaticObject{
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($mvc_object)){
 					
 			$mvc_object=trim($mvc_object);
@@ -301,7 +345,6 @@ class PVMVC extends PVStaticObject{
 				
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($is_current_mvc)){
 					
@@ -371,7 +414,6 @@ class PVMVC extends PVStaticObject{
 			}
 		}
 		
-	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -417,6 +459,14 @@ class PVMVC extends PVStaticObject{
     	return $content_array;
 	}//end getMeniUtemList
 	
+	/**
+	 * Removes an MVC from the database and also deletes the directory pertaining to that mvc.
+	 * 
+	 * @param string $mvc_unique_id The assigned id of the MVC to delete
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function deleteMVC($mvc_unique_id){
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -439,7 +489,7 @@ class PVMVC extends PVStaticObject{
 		}
 	}//end deleteMVC
 	
-	private static function getMVCDefaults() {
+	protected static function _getMVCDefaults() {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__);
