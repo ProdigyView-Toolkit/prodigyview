@@ -159,13 +159,14 @@ class PVContent extends PVStaticObject {
 		
 		$args['adjacent_table']='pv_content_text';
 		$content_id=self::createContent($args);
+		$args['content_id'] = $content_id;
 		
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 		
 		$text_page_number=ceil($text_page_number);
 		$text_page_group=ceil($text_page_group);
-
+		
 		if(!empty($content_id)){
 			$query="INSERT INTO ".PVDatabase::getTextContentTableName()."(text_id, text_content, text_page_group , text_page_number, text_src ) VALUES( '$content_id', '$text_content', '$text_page_group' , '$text_page_number', '$text_src')";
 			PVDatabase::query($query);
