@@ -843,8 +843,8 @@ class PVForms extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
 		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('name'=>$name, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
-		$name = $filtered['name'];
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('text'=>$text, 'options'=>$options, 'css_options'=>$css_options ), array('event'=>'args'));
+		$text = $filtered['text'];
 		$options = $filtered['options'];
 		$css_options = $filtered['css_options'];
 		
