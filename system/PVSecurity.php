@@ -238,7 +238,7 @@ class PVSecurity extends PVStaticObject {
 		if(empty($user_role)){
 			$user_role=PVUsers::getAssignedUserRoles(PVUsers::getUserID());
 		}
-		$allowed_roles=PVApplications::getApplicationPermissions($app_id, $permission_name);
+		$allowed_roles=self::getApplicationPermissions($app_id, $permission_name);
 		
 		return self::checkUserPermission($user_role, $allowed_roles);
 	}//end checkUserApplicationPermission
@@ -281,7 +281,7 @@ class PVSecurity extends PVStaticObject {
 	public static function checkApplicationUserAccessLevel($app_id, $permission_name, $user_access_level=0){
 			
 		if(PVValidator::isID($app_id)){
-			$app_id=ceil($app_id);
+			$app_id=PVDatabase::makeSafe($app_id);
 			$query="SELECT access_level FROM ".PVDatabase::getApplicationPermissionsTableName()." WHERE app_id='$app_id' AND permission_unique_name='$permission_name'";
 		} else {
 			$app_info=PVApplication::getApplication($app_id);
@@ -314,7 +314,7 @@ class PVSecurity extends PVStaticObject {
 			$user_role=PVUsers::getAssignedUserRoles(PVUsers::getUserID());
 		}
 			
-		$allowed_roles=PVPlugins::getPluginPermissions($plugin_id, $permission_name);
+		$allowed_roles=self::getPluginPermissions($plugin_id, $permission_name);
 			
 		return self::checkUserPermission($user_role, $allowed_roles);
 	}//end checkUserApplicationPermission
