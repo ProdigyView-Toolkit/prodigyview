@@ -72,15 +72,18 @@ class PVContent extends PVStaticObject {
 	 * @return id $content_id The id of the content created
 	 * @todo Find something to do with cieling values
 	 */
-	public static function createContent($args=array()){
-		$args += self::getContentDefaults();
+	public static function createContent($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		$content_taxonomy=$args['content_taxonomy'];
 		$adjacent_table=$args['adjacent_table'];
-		
 		
 		if(empty($content_category) && !is_array($content_category)){
 			$content_category=0;
@@ -145,24 +148,28 @@ class PVContent extends PVStaticObject {
 		}
 		
 		self::insertAdjacentTables($content_id, $adjacent_table);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
 		
 		return $content_id;
-	
 	}//end createContent
 	
 	/**
 	 * Creates content that is primarly geared toward text. 
 	 */
-	public static function createTextContent($args=array()){
-		$defaults=self::getTextContentDefaults();
-		$args += $defaults;
+	public static function createTextContent($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getTextContentDefaults();
 		$args['adjacent_table']='pv_content_text';
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		$args['content_id'] = $content_id;
 		
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		$text_page_number=ceil($text_page_number);
 		$text_page_group=ceil($text_page_group);
@@ -171,6 +178,9 @@ class PVContent extends PVStaticObject {
 			$query="INSERT INTO ".PVDatabase::getTextContentTableName()."(text_id, text_content, text_page_group , text_page_number, text_src ) VALUES( '$content_id', '$text_content', '$text_page_group' , '$text_page_number', '$text_src')";
 			PVDatabase::query($query);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
 		
 		return $content_id;
 	}//end createTextContent
@@ -193,20 +203,26 @@ class PVContent extends PVStaticObject {
 	 * @return id $content_id The return of the newly created content
 	 * @access public
 	 */
-	public static function createImageContent($args=array()){
-		$defaults=self::getImageContentDefaults();
-		$args += $defaults;
+	public static function createImageContent($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getImageContentDefaults();
 		$args['adjacent_table']='pv_content_images';
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($content_id)){
 			$query="INSERT INTO ".PVDatabase::getImageContentTableName()."( image_id , image_type, image_size , image_url, thumb_url, image_width , image_height , thumb_width, thumb_height, image_src) VALUES( '$content_id' , '$image_type', '$image_size' , '$image_url' , '$thumb_url' , '$image_width' , '$image_height' , '$thumb_width' , '$thumb_height', '$image_src')";
 			PVDatabase::query($query);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
 		
 		return $content_id;
 	}//end createImageContent
@@ -233,18 +249,24 @@ class PVContent extends PVStaticObject {
 	 * @return id $content_id The return of the newly created content
 	 * @access public
 	 */
-	public static function createImageContentWithFile($args=array()){
-		$defaults=self::getImageContentDefaults();
-		$args += $defaults;
+	public static function createImageContentWithFile($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getImageContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($content_id)){
 			$return=PVImageRenderer::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width , $image_height , $thumb_width, $thumb_height, $image_src );
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
 		
 		return $content_id;
 	
@@ -278,20 +300,26 @@ class PVContent extends PVStaticObject {
 	 * @return id $content_id The id of the video content created
 	 * @access public
 	 */
-	public static function createVideoContent($args=array()){
-		$defaults=self::getVideoContentDefaults();
-		$args += $defaults;
+	public static function createVideoContent($args=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
+		$args += self::getVideoContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args['adjacent_table']='pv_content_video';
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($content_id)){
 			$query="INSERT INTO ".PVDatabase::getVideoContentTableName()."( video_id , video_type , video_length , video_allow_embedding, flv_file , mp4_file, wmv_file , mpeg_file, rm_file , avi_file, mov_file, asf_file, enable_hq, auto_hq, video_src, video_embed) VALUES( '$content_id', '$video_type' , '$video_length' , '$video_allow_embedding', '$flv_file' , '$mp4_file' , '$wmv_file' , '$mpeg_file', '$rm_file' , '$avi_file', '$mov_file', '$asf_file', '$enable_hq', '$auto_hq' , '$video_src', '$video_embed')";
 			PVDatabase::query($query);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
 	
 		return $content_id;
 	}//end createVideoContent
@@ -321,16 +349,22 @@ class PVContent extends PVStaticObject {
 	 * @return id $content_id The id of the video content created
 	 * @access public
 	 */
-	public static function createVideoContentWithFile($args=array()){
-		$defaults=self::getVideoContentDefaults();
-		$args += $defaults;
+	public static function createVideoContentWithFile($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getVideoContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
 		if(!empty($content_id)){
 			$args['content_id']=$content_id;
 			PVVideoRenderer::updateVideoContent($args);
 		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
 
 		return $content_id;
 	}//end createFileContent
@@ -355,15 +389,18 @@ class PVContent extends PVStaticObject {
 	 * @return id $content_id The id of the event and content
 	 * @access public
 	 */
-	public static function createEventContent($args=array()){
-		$defaults=self::getEventContentDefaults();
-		$args += $defaults;
+	public static function createEventContent($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getEventContentDefaults();
 		$args['adjacent_table']='pv_content_events';
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(empty($event_start_date)){
 			$event_start_date=date("Y-m-d H:i:s", time()) ;
@@ -384,6 +421,9 @@ class PVContent extends PVStaticObject {
 			PVDatabase::query($query);
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
+		
 		return $content_id;
 	}//end createVideoContent
 	
@@ -394,43 +434,58 @@ class PVContent extends PVStaticObject {
 	 * @param array @args Fields that define the audio content as well as the base content
 	 * 
 	 */
-	public static function createAudioContent($args=array()){
-		$defaults=self::getAudioContentDefaults();
-		$args += $defaults;
+	public static function createAudioContent($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getAudioContentDefaults();
 		$args['adjacent_table']='pv_content_audio';
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($content_id)){
 			$query="INSERT INTO ".PVDatabase::getAudioContentTableName()."( audio_id,  audio_length, mid_file , wav_file , aif_file , mp3_file , ra_file , oga_file, sample_length , audio_src ,audio_type ) VALUES( '$content_id', '$audio_length' , '$mid_file' , '$wav_file' , '$aif_file' , '$mp3_file' , '$ra_file' , '$oga_file','$sample_length' , '$audio_src', '$audio_type') ";
 			PVDatabase::query($query);
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
+		
 		return $content_id;
 	}//end createVideoContent
 	
-	public static function createAudioContentWithFile($args=array()){
-		$defaults=self::getAudioContentDefaults();
-		$args += $defaults;
+	public static function createAudioContentWithFile($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getAudioContentDefaults();
 		$args['adjacent_table']='pv_content_audio';
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		$args['content_id']=$content_id;
 		
 		PVAudioRenderer::uploadAudioFileToContent($args);
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
+		
 		return $content_id;
 	}//end createVideoContent
 	
 	
-	public static function createFileContent($args=array()){
-		$defaults=self::getFileContentDefaults();
-		$args += $defaults;
-		
+	public static function createFileContent($args=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getFileContentDefaults();
 		$args['adjacent_table']='pv_content_files';
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
@@ -449,15 +504,21 @@ class PVContent extends PVStaticObject {
 			PVDatabase::query($query);
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
+		
 		return $content_id;
 	}//end createFileContent
 	
 	
-	public static function createFileContentWithFile($args=array()){
-		$defaults=self::getFileContentDefaults();
-		$args += $defaults;
+	public static function createFileContentWithFile($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getFileContentDefaults();
 		$args['adjacent_table']='pv_content_files';
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
@@ -466,7 +527,6 @@ class PVContent extends PVStaticObject {
 		$file_size=ceil($file_size);
 		$file_downloadable=ceil($file_downloadable);
 		$file_max_downloads=ceil($file_max_downloads);
-		
 		
 		if(!PVValidator::isDouble($file_version) && !PVValidator::isInteger($file_version)){
 			$file_version=0;
@@ -481,90 +541,76 @@ class PVContent extends PVStaticObject {
 			PVFileManager::uploadFileFromContent($content_id,  $file_name, $tmp_name, $file_size, $file_type);
 		}
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
+		
 		return $content_id;
 	}//end createFileContent
 	
 	
-	public static function createProductContent($args=array()){
-		$defaults=self::getProductContentDefaults();
-		$args += $defaults;
+	public static function createProductContent($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getProductContentDefaults();
 		$args['adjacent_table']='pv_content_product';
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($content_id)){
 			$query="INSERT INTO ".PVDatabase::getProductContentTableName()."(product_id ,product_sku ,product_idsku ,product_vendor_id ,product_quantity ,product_price ,product_discount_price ,product_size ,product_color ,product_weight , product_height , product_length , product_currency , product_in_stock , product_type , product_tax_id , product_attribute , product_version ) VALUES( '$content_id' ,'$product_sku' ,'$product_idsku' ,'$product_vendor_id' , '$product_quantity' , '$product_price'  , '$product_discount_price'  , '$product_size' , '$product_color' , '$product_weight' , '$product_height' , '$product_length' , '$product_currency' , '$product_in_stock' , '$product_type' , '$product_tax_id' , '$product_attribute' , '$product_version') ";
 			PVDatabase::query($query);
 		}
 		
-		return $content_id;
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'return'));
 		
+		return $content_id;
 	}//end createProductFile
 	
 	
-	public static function createCategory($args=array()){
-		$defaults=self::getCategoryDefaults();
-		$args += $defaults;
+	public static function createCategory($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getCategoryDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
 		
 		$query="INSERT INTO ".PVDatabase::getContentCategoriesTableName()."( category_name, category_unique_name, parent_category, app_id , category_order , category_description, category_alias, category_type, category_owner ) VALUES( '$category_name', '$category_unique_name', '$parent_category', '$app_id' , '$category_order' , '$category_description' , '$category_alias' ,  '$category_type' , '$category_owner' ) ";
 		$category_id=PVDatabase::return_last_insert_query($query, "category_id", PVDatabase::getContentCategoriesTableName() );
 	
+		self::_notify(get_class().'::'.__FUNCTION__, $content_id, $args);
+		$category_id = self::_applyFilter( get_class(), __FUNCTION__ , $category_id , array('event'=>'return'));
+		
 		return $category_id;
 	}
 
-	private static function generateBasicWhereSqlClause($order_by_clause='', $limit='', $app_id='', $owner_id='', $content_type='',  $parent_id='', $category_id='', $content_approved='', $content_promoted='', $content_active='', $is_searchable='',$date_created='', $date_modified='', $date_active='', $date_inactive='', $custom_where=''){
+	private static function generateBasicWhereSqlClause($args = array()) {
 		
-		if(is_array($order_by_clause)){
-    		//$order_by_clause=PVDatabase::makeSafe($order_by_clause['order_by_clause']);
-    		$limit=PVDatabase::makeSafe($order_by_clause['limit']);
-    		$app_id=PVDatabase::makeSafe($order_by_clause['app_id']);
-    		$owner_id=PVDatabase::makeSafe($order_by_clause['owner_id']);
-    		$content_type=PVDatabase::makeSafe($order_by_clause['content_type']);
-    		$parent_content=PVDatabase::makeSafe($order_by_clause['parent_content']);
-    		$category_id=$order_by_clause['category_id'];
-    		$content_approved=PVDatabase::makeSafe($order_by_clause['content_approved']);
-    		$content_promoted=PVDatabase::makeSafe($order_by_clause['content_promoted']);
-    		$content_active=PVDatabase::makeSafe($order_by_clause['content_active']);
-    		$content_taxonomy=PVDatabase::makeSafe($order_by_clause['content_taxonomy']);
-    		$custom_where=$order_by_clause['custom_where'];
-    		$content_alias=PVDatabase::makeSafe($order_by_clause['content_alias']);
-			$content_id=$order_by_clause['content_id'];
-    		
-    		//Must Be Last
-    		$order_by_clause=PVDatabase::makeSafe($order_by_clause['order_by']);
-    		
-    	}//end if is array
-    	else{
-    	
-	    	$order_by_clause=PVDatabase::makeSafe($order_by_clause);
-	    	$limit=PVDatabase::makeSafe($limit);
-	    	$app_id=PVDatabase::makeSafe($app_id);
-	    	$owner_id=PVDatabase::makeSafe($owner_id);
-	    	$content_type=PVDatabase::makeSafe($content_type);
-	    	$parent_id=PVDatabase::makeSafe($parent_id);
-	    	$category_id=PVDatabase::makeSafe($category_id);
-	    	$content_approved=PVDatabase::makeSafe($content_approved);
-    		$content_promoted=PVDatabase::makeSafe($content_promoted);
-    		$content_taxonomy=$content_taxonomy;
-    		$content_active=PVDatabase::makeSafe($content_active);
-    	}
-    	
-    	$WHERE_CLAUSE="";
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$custom_select=$args['custom_select'];
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
+		
+    	$WHERE_CLAUSE='';
     	
     	if(!empty($content_taxonomy)){
     		$WHERE_CLAUSE=" JOIN ".PVDatabase::getContentTaxonomyTableName()." ON ".PVDatabase::getContentTaxonomyTableName().".content_id=".PVDatabase::getContentTableName().".content_id ";
     	}
-    	
-		if(!empty($app_id) || !empty($owner_id) || !empty($content_type) || !empty($parent_id) || !empty($category_id) || !empty($content_approved) || !empty($content_promoted) || !empty($content_active) || !empty($event_start_date) || !empty($event_end_date) ){
+    
 			$first=1;
-			
-			
 			
 			if(!empty($app_id)){
 				
@@ -589,7 +635,6 @@ class PVContent extends PVStaticObject {
 				
 				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($owner_id, 'owner_id');
 				$first=0;
-				
 			}
 			
 			if(!empty($content_type)){
@@ -705,6 +750,132 @@ class PVContent extends PVStaticObject {
 				$first=0;
 			}
 			
+			if(!empty($is_searchable)){
+				$is_searchable=trim($is_searchable);
+				
+				if($first==0 && ($is_searchable[0]!='+' && $is_searchable[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $is_searchable[0]=='+' || $is_searchable[0]==',' ){
+					$is_searchable[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($is_searchable, 'is_searchable');
+				$first=0;
+			}
+			
+			if(!empty($allow_comments)){
+				$allow_comments=trim($allow_comments);
+				
+				if($first==0 && ($allow_comments[0]!='+' && $allow_comments[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $allow_comments[0]=='+' || $allow_comments[0]==',' ){
+					$allow_comments[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($allow_comments, 'allow_comments');
+				$first=0;
+			}
+			
+			if(!empty($allow_rating)){
+				$allow_rating = trim($allow_rating);
+				
+				if($first==0 && ($allow_rating[0]!='+' && $allow_rating[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $allow_rating[0]=='+' || $allow_rating[0]==',' ){
+					$allow_rating[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($allow_rating, 'allow_rating');
+				$first=0;
+			}
+			
+			if(!empty($content_permissions)){
+				$content_permissions = trim($content_permissions);
+				
+				if($first==0 && ($content_permissions[0]!='+' && $content_permissions[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $content_permissions[0]=='+' || $content_permissions[0]==',' ){
+					$content_permissions[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($content_permissions, 'content_permissions');
+				$first=0;
+			}
+			
+			if(!empty($content_language)){
+				$content_language = trim($content_language);
+				
+				if($first==0 && ($content_language[0]!='+' && $content_language[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $content_language[0]=='+' || $content_language[0]==',' ){
+					$content_language[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($content_language, 'content_language');
+				$first=0;
+			}
+			
+			if(!empty($translate_content)){
+				$translate_content = trim($translate_content);
+				
+				if($first==0 && ($translate_content[0]!='+' && $translate_content[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $translate_content[0]=='+' || $translate_content[0]==',' ){
+					$translate_content[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($translate_content, 'translate_content');
+				$first=0;
+			}
+			
+			if(!empty($sym_link)){
+				$sym_link = trim($sym_link);
+				
+				if($first==0 && ($sym_link[0]!='+' && $sym_link[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $sym_link[0]=='+' || $sym_link[0]==',' ){
+					$sym_link[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($sym_link, 'sym_link');
+				$first=0;
+			}
+			
+			if(!empty($content_order)){
+				$content_order = trim($content_order);
+				
+				if($first==0 && ($content_order[0]!='+' && $content_order[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $content_order[0]=='+' || $content_order[0]==',' ){
+					$content_order[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($content_order, 'content_order');
+				$first=0;
+			}
+			
+			if(!empty($content_access_level)){
+				$content_access_level = trim($content_access_level);
+				
+				if($first==0 && ($content_access_level[0]!='+' && $content_access_level[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+				}
+				else if( $content_access_level[0]=='+' || $content_access_level[0]==',' ){
+					$content_access_level[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($content_access_level, 'content_access_level');
+				$first=0;
+			}
+			
 			if(!empty($custom_where)){
 				if($first==0){
 					$WHERE_CLAUSE.=" AND ";
@@ -726,13 +897,21 @@ class PVContent extends PVStaticObject {
 				}
 				$first=0;
 			}
-		}
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $WHERE_CLAUSE, $args);
+		$WHERE_CLAUSE = self::_applyFilter( get_class(), __FUNCTION__ , $WHERE_CLAUSE , array('event'=>'return'));
 		
 		return $WHERE_CLAUSE;
-	
 	}//end generateBasicWhereSqlClaouse
 	
-	private static function generateAudioContentWhereSQL($WHERE_CLAUSE, $args){
+	private static function generateAudioContentWhereSQL($WHERE_CLAUSE, $args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $WHERE_CLAUSE, $args);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('where_clause'=>$WHERE_CLAUSE, 'args'=>$args), array('event'=>'args'));
+		$WHERE_CLAUSE = $filtered['where_clause'];
+		$args = $filtered['args'];
 		
 		if(empty($WHERE_CLAUSE)){
 			$first=1;	 
@@ -742,7 +921,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if(is_array($args)){
-			extract($args);
+			extract($args, EXTR_SKIP);
 		}
 		
 		if(!empty($audio_length)){
@@ -751,7 +930,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($audio_length[0]!='+' && $audio_length[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($audio_length[0]=='+' || $audio_length[0]==',') && $first==1 ){
 				$audio_length[0]='';
@@ -762,14 +941,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($mid_file)){
 				
 			$mid_file=trim($mid_file);
 			
 			if($first==0 && ($mid_file[0]!='+' && $mid_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($mid_file[0]=='+' || $mid_file[0]==',') && $first==1 ){
 				$mid_file[0]='';
@@ -780,14 +958,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($wav_file)){
 				
 			$wav_file=trim($wav_file);
 			
 			if($first==0 && ($wav_file[0]!='+' && $wav_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($wav_file[0]=='+' || $wav_file[0]==',') && $first==1 ){
 				$wav_file[0]='';
@@ -798,14 +975,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($aif_file)){
 				
 			$aif_file=trim($aif_file);
 			
 			if($first==0 && ($aif_file[0]!='+' && $aif_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($aif_file[0]=='+' || $aif_file[0]==',') && $first==1 ){
 				$aif_file[0]='';
@@ -816,14 +992,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($mp3_file)){
 				
 			$mp3_file=trim($mp3_file);
 			
 			if($first==0 && ($mp3_file[0]!='+' && $mp3_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($mp3_file[0]=='+' || $mp3_file[0]==',') && $first==1 ){
 				$mp3_file[0]='';
@@ -834,14 +1009,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($ra_file)){
 				
-			$ra_file=trim($ra_file);
+			$ra_file = trim($ra_file);
 			
 			if($first==0 && ($ra_file[0]!='+' && $ra_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($ra_file[0]=='+' || $ra_file[0]==',') && $first==1 ){
 				$ra_file[0]='';
@@ -852,6 +1026,22 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
+		if(!empty($oga_file)){
+				
+			$oga_file = trim($oga_file);
+			
+			if($first==0 && ($oga_file[0]!='+' && $oga_file[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+			}
+				
+			else if( ($oga_file[0]=='+' || $oga_file[0]==',') && $first==1 ){
+				$oga_file[0]='';
+			}
+			
+			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($oga_file, 'oga_file');
+			
+			$first=0;
+		}//end not empty app_id
 		
 		if(!empty($sample_length)){
 				
@@ -904,11 +1094,20 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		return $WHERE_CLAUSE;
+		self::_notify(get_class().'::'.__FUNCTION__, $WHERE_CLAUSE, $args);
+		$WHERE_CLAUSE = self::_applyFilter( get_class(), __FUNCTION__ , $WHERE_CLAUSE , array('event'=>'return'));
 		
+		return $WHERE_CLAUSE;
 	}//end generateAudioContentWhereSQL
 	
-	private static function generateVideoContentWhereSQL($WHERE_CLAUSE, $args){
+	private static function generateVideoContentWhereSQL($WHERE_CLAUSE, $args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $WHERE_CLAUSE, $args);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('where_clause'=>$WHERE_CLAUSE, 'args'=>$args), array('event'=>'args'));
+		$WHERE_CLAUSE = $filtered['where_clause'];
+		$args = $filtered['args'];
 		
 		if(empty($WHERE_CLAUSE)){
 			$first=1;	 
@@ -918,7 +1117,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if(is_array($args)){
-			extract($args);
+			extract($args, EXTR_SKIP);
 		}
 		
 		if(!empty($video_type)){
@@ -937,7 +1136,6 @@ class PVContent extends PVStaticObject {
 			
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($video_length)){
 				
@@ -973,7 +1171,6 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($flv_file)){
 				
 			$flv_file=trim($flv_file);
@@ -991,7 +1188,6 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($mp4_file)){
 				
 			$mp4_file=trim($mp4_file);
@@ -1008,7 +1204,6 @@ class PVContent extends PVStaticObject {
 			
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($wmv_file)){
 				
@@ -1033,7 +1228,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($mpeg_file[0]!='+' && $mpeg_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($mpeg_file[0]=='+' || $mpeg_file[0]==',') && $first==1 ){
 				$mpeg_file[0]='';
@@ -1050,7 +1245,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($rm_file[0]!='+' && $rm_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($rm_file[0]=='+' || $rm_file[0]==',') && $first==1 ){
 				$rm_file[0]='';
@@ -1067,7 +1262,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($avi_file[0]!='+' && $avi_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($avi_file[0]=='+' || $avi_file[0]==',') && $first==1 ){
 				$avi_file[0]='';
@@ -1078,14 +1273,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($mov_file)){
 				
 			$mov_file=trim($mov_file);
 			
 			if($first==0 && ($mov_file[0]!='+' && $mov_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($mov_file[0]=='+' || $mov_file[0]==',') && $first==1 ){
 				$mov_file[0]='';
@@ -1103,7 +1297,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($asf_file[0]!='+' && $asf_file[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($asf_file[0]=='+' || $asf_file[0]==',') && $first==1 ){
 				$asf_file[0]='';
@@ -1114,6 +1308,39 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
+		if(!empty($ogv_file)){
+				
+			$ogv_file = trim($ogv_file);
+			
+			if($first==0 && ($ogv_file[0]!='+' && $ogv_file[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+			}
+				
+			else if( ($ogv_file[0]=='+' || $ogv_file[0]==',') && $first==1 ){
+				$ogv_file[0]='';
+			}
+			
+			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($ogv_file, 'ogv_file');
+			
+			$first=0;
+		}//end not empty app_id
+		
+		if(!empty($webm_file)){
+				
+			$webm_file = trim($webm_file);
+			
+			if($first==0 && ($webm_file[0]!='+' && $webm_file[0]!=',' ) ){
+					$WHERE_CLAUSE.=" AND ";
+			}
+				
+			else if( ($webm_file[0]=='+' || $webm_file[0]==',') && $first==1 ){
+				$webm_file[0]='';
+			}
+			
+			$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($webm_file, 'webm_file');
+			
+			$first=0;
+		}//end not empty app_id
 		
 		if(!empty($enable_hq)){
 				
@@ -1121,7 +1348,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($enable_hq[0]!='+' && $enable_hq[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($enable_hq[0]=='+' || $enable_hq[0]==',') && $first==1 ){
 				$enable_hq[0]='';
@@ -1132,14 +1359,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($auto_hq)){
 				
 			$auto_hq=trim($auto_hq);
 			
 			if($first==0 && ($auto_hq[0]!='+' && $auto_hq[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($auto_hq[0]=='+' || $auto_hq[0]==',') && $first==1 ){
 				$auto_hq[0]='';
@@ -1149,7 +1375,6 @@ class PVContent extends PVStaticObject {
 			
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($video_src)){
 				
@@ -1168,7 +1393,6 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($video_embed)){
 				
 			$video_embed=trim(video_embed);
@@ -1186,12 +1410,20 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $WHERE_CLAUSE, $args);
+		$WHERE_CLAUSE = self::_applyFilter( get_class(), __FUNCTION__ , $WHERE_CLAUSE , array('event'=>'return'));
 		
 		return $WHERE_CLAUSE;
-		
 	}//end generateAudioContentWhereSQL
 	
-	private static function generateTextContentWhereSQL($WHERE_CLAUSE, $args){
+	private static function generateTextContentWhereSQL($WHERE_CLAUSE, $args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $WHERE_CLAUSE, $args);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('where_clause'=>$WHERE_CLAUSE, 'args'=>$args), array('event'=>'args'));
+		$WHERE_CLAUSE = $filtered['where_clause'];
+		$args = $filtered['args'];
 		
 		if(empty($WHERE_CLAUSE)){
 			$first=1;	 
@@ -1201,7 +1433,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if(is_array($args)){
-			extract($args);
+			extract($args, EXTR_SKIP);
 		}
 		
 		if(!empty($text_content)){
@@ -1227,7 +1459,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($text_page_group[0]!='+' && $text_page_group[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($text_page_group[0]=='+' || $text_page_group[0]==',') && $first==1 ){
 				$text_page_group[0]='';
@@ -1238,14 +1470,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($text_page_number)){
 				
 			$text_page_number=trim($text_page_number);
 			
 			if($first==0 && ($text_page_number[0]!='+' && $text_page_number[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($text_page_number[0]=='+' || $text_page_number[0]==',') && $first==1 ){
 				$text_page_number[0]='';
@@ -1256,14 +1487,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($text_section)){
 				
 			$text_section=trim($text_section);
 			
 			if($first==0 && ($text_section[0]!='+' && $text_section[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($text_section[0]=='+' || $text_section[0]==',') && $first==1 ){
 				$text_section[0]='';
@@ -1274,14 +1504,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($text_src)){
 				
 			$text_src=trim($text_src);
 			
 			if($first==0 && ($text_src[0]!='+' && $text_src[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($text_src[0]=='+' || $text_src[0]==',') && $first==1 ){
 				$text_src[0]='';
@@ -1292,11 +1521,20 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		return $WHERE_CLAUSE;
+		self::_notify(get_class().'::'.__FUNCTION__, $WHERE_CLAUSE, $args);
+		$WHERE_CLAUSE = self::_applyFilter( get_class(), __FUNCTION__ , $WHERE_CLAUSE , array('event'=>'return'));
 		
+		return $WHERE_CLAUSE;
 	}//end generateAudioContentWhereSQL
 	
-	private static function generateFileContentWhereSQL($WHERE_CLAUSE, $args){
+	private static function generateFileContentWhereSQL($WHERE_CLAUSE, $args) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $WHERE_CLAUSE, $args);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('where_clause'=>$WHERE_CLAUSE, 'args'=>$args), array('event'=>'args'));
+		$WHERE_CLAUSE = $filtered['where_clause'];
+		$args = $filtered['args'];
 		
 		if(empty($WHERE_CLAUSE)){
 			$first=1;	 
@@ -1306,7 +1544,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if(is_array($args)){
-			extract($args);
+			extract($args, EXTR_SKIP);
 		}
 		
 		if(!empty($file_license)){
@@ -1315,7 +1553,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($file_license[0]!='+' && $file_license[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($file_license[0]=='+' || $file_license[0]==',') && $first==1 ){
 				$file_license[0]='';
@@ -1326,14 +1564,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($file_version)){
 				
 			$file_version=trim($file_version);
 			
 			if($first==0 && ($file_version[0]!='+' && $file_version[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($file_version[0]=='+' || $file_version[0]==',') && $first==1 ){
 				$file_version[0]='';
@@ -1344,14 +1581,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($file_type)){
 				
 			$file_type=trim($file_type);
 			
 			if($first==0 && ($file_type[0]!='+' && $file_type[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($file_type[0]=='+' || $file_type[0]==',') && $first==1 ){
 				$file_type[0]='';
@@ -1362,14 +1598,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($file_size)){
 				
 			$file_size=trim($file_size);
 			
 			if($first==0 && ($file_size[0]!='+' && $file_size[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($file_size[0]=='+' || $file_size[0]==',') && $first==1 ){
 				$file_size[0]='';
@@ -1380,14 +1615,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($file_location)){
 				
 			$file_location=trim($file_location);
 			
 			if($first==0 && ($file_location[0]!='+' && $file_location[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($file_location[0]=='+' || $file_location[0]==',') && $first==1 ){
 				$file_location[0]='';
@@ -1398,14 +1632,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($file_name)){
 				
 			$file_name=trim($file_name);
 			
 			if($first==0 && ($file_name[0]!='+' && $file_name[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($file_name[0]=='+' || $file_name[0]==',') && $first==1 ){
 				$file_name[0]='';
@@ -1422,7 +1655,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($file_src[0]!='+' && $file_src[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($file_src[0]=='+' || $file_src[0]==',') && $first==1 ){
 				$file_src[0]='';
@@ -1433,14 +1666,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($file_downloadable)){
 				
 			$file_downloadable=trim($file_downloadable);
 			
 			if($first==0 && ($file_downloadable[0]!='+' && $file_downloadable[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($file_downloadable[0]=='+' || $file_downloadable[0]==',') && $first==1 ){
 				$file_downloadable[0]='';
@@ -1450,7 +1682,6 @@ class PVContent extends PVStaticObject {
 			
 			$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($file_max_downloads)){
 				
@@ -1469,11 +1700,20 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		return $WHERE_CLAUSE;
+		self::_notify(get_class().'::'.__FUNCTION__, $WHERE_CLAUSE, $args);
+		$WHERE_CLAUSE = self::_applyFilter( get_class(), __FUNCTION__ , $WHERE_CLAUSE , array('event'=>'return'));
 		
+		return $WHERE_CLAUSE;
 	}//end generateAudioContentWhereSQL
 	
-	private static function generateImageContentWhereSQL($WHERE_CLAUSE, $args){
+	private static function generateImageContentWhereSQL($WHERE_CLAUSE, $args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $WHERE_CLAUSE, $args);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('where_clause'=>$WHERE_CLAUSE, 'args'=>$args), array('event'=>'args'));
+		$WHERE_CLAUSE = $filtered['where_clause'];
+		$args = $filtered['args'];
 		
 		if(empty($WHERE_CLAUSE)){
 			$first=1;	 
@@ -1483,7 +1723,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if(is_array($args)){
-			extract($args);
+			extract($args, EXTR_SKIP);
 		}
 		
 		if(!empty($image_type)){
@@ -1492,7 +1732,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($image_type[0]!='+' && $image_type[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($image_type[0]=='+' || $image_type[0]==',') && $first==1 ){
 				$image_type[0]='';
@@ -1509,7 +1749,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($image_size[0]!='+' && $image_size[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($image_size[0]=='+' || $image_size[0]==',') && $first==1 ){
 				$image_size[0]='';
@@ -1520,14 +1760,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($image_url)){
 				
 			$image_url=trim($image_url);
 			
 			if($first==0 && ($image_url[0]!='+' && $image_url[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($image_url[0]=='+' || $image_url[0]==',') && $first==1 ){
 				$image_url[0]='';
@@ -1538,14 +1777,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($thumb_url)){
 				
 			$thumb_url=trim($thumb_url);
 			
 			if($first==0 && ($thumb_url[0]!='+' && $thumb_url[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($thumb_url[0]=='+' || $thumb_url[0]==',') && $first==1 ){
 				$thumb_url[0]='';
@@ -1579,7 +1817,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($image_height[0]!='+' && $image_height[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($image_height[0]=='+' || $image_height[0]==',') && $first==1 ){
 				$image_height[0]='';
@@ -1613,7 +1851,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($thumb_height[0]!='+' && $thumb_height[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($thumb_height[0]=='+' || $thumb_height[0]==',') && $first==1 ){
 				$thumb_height[0]='';
@@ -1624,14 +1862,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($image_src)){
 				
 			$image_src=trim($image_src);
 			
 			if($first==0 && ($image_src[0]!='+' && $image_src[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($image_src[0]=='+' || $image_src[0]==',') && $first==1 ){
 				$image_src[0]='';
@@ -1642,13 +1879,21 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $WHERE_CLAUSE, $args);
+		$WHERE_CLAUSE = self::_applyFilter( get_class(), __FUNCTION__ , $WHERE_CLAUSE , array('event'=>'return'));
 		
 		return $WHERE_CLAUSE;
-		
 	}//end generateAudioContentWhereSQL
 	
 	
-	private static function generateProductContentWhereSQL($WHERE_CLAUSE, $args){
+	private static function generateProductContentWhereSQL($WHERE_CLAUSE, $args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $WHERE_CLAUSE, $args);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('where_clause'=>$WHERE_CLAUSE, 'args'=>$args), array('event'=>'args'));
+		$WHERE_CLAUSE = $filtered['where_clause'];
+		$args = $filtered['args'];
 		
 		if(empty($WHERE_CLAUSE)){
 			$first=1;	 
@@ -1658,7 +1903,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if(is_array($args)){
-			extract($args);
+			extract($args, EXTR_SKIP);
 		}
 		
 		if(!empty($product_sku)){
@@ -1667,7 +1912,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($product_sku[0]!='+' && $product_sku[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_sku[0]=='+' || $product_sku[0]==',') && $first==1 ){
 				$product_sku[0]='';
@@ -1678,14 +1923,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_idsku)){
 				
 			$product_idsku=trim($product_idsku);
 			
 			if($first==0 && ($product_idsku[0]!='+' && $product_idsku[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_idsku[0]=='+' || $product_idsku[0]==',') && $first==1 ){
 				$product_idsku[0]='';
@@ -1696,14 +1940,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_vendor_id)){
 				
 			$product_vendor_id=trim($product_vendor_id);
 			
 			if($first==0 && ($product_vendor_id[0]!='+' && $product_vendor_id[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_vendor_id[0]=='+' || $product_vendor_id[0]==',') && $first==1 ){
 				$product_vendor_id[0]='';
@@ -1714,14 +1957,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_quantity)){
 				
 			$product_quantity=trim($product_quantity);
 			
 			if($first==0 && ($product_quantity[0]!='+' && $product_quantity[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_quantity[0]=='+' || $product_quantity[0]==',') && $first==1 ){
 				$product_quantity[0]='';
@@ -1757,7 +1999,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($product_discount_price[0]!='+' && $product_discount_price[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_discount_price[0]=='+' || $product_discount_price[0]==',') && $first==1 ){
 				$product_discount_price[0]='';
@@ -1768,14 +2010,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_size)){
 				
 			$product_size=trim($product_size);
 			
 			if($first==0 && ($product_size[0]!='+' && $product_size[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_size[0]=='+' || $product_size[0]==',') && $first==1 ){
 				$product_size[0]='';
@@ -1793,7 +2034,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($product_color[0]!='+' && $product_color[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_color[0]=='+' || $product_color[0]==',') && $first==1 ){
 				$product_color[0]='';
@@ -1804,14 +2045,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_weight)){
 				
 			$product_weight=trim($product_weight);
 			
 			if($first==0 && ($product_weight[0]!='+' && $product_weight[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_weight[0]=='+' || $product_weight[0]==',') && $first==1 ){
 				$product_weight[0]='';
@@ -1822,14 +2062,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_height)){
 				
 			$product_height=trim($image_type);
 			
 			if($first==0 && ($product_height[0]!='+' && $product_height[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_height[0]=='+' || $product_height[0]==',') && $first==1 ){
 				$product_height[0]='';
@@ -1840,14 +2079,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_length)){
 				
 			$product_length=trim($product_length);
 			
 			if($first==0 && ($product_length[0]!='+' && $product_length[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_length[0]=='+' || $product_length[0]==',') && $first==1 ){
 				$product_length[0]='';
@@ -1858,14 +2096,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_currency)){
 				
 			$product_currency=trim($product_currency);
 			
 			if($first==0 && ($product_currency[0]!='+' && $product_currency[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_currency[0]=='+' || $product_currency[0]==',') && $first==1 ){
 				$product_currency[0]='';
@@ -1876,15 +2113,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
-
 		if(!empty($product_in_stock)){
 				
 			$product_in_stock=trim($product_in_stock);
 			
 			if($first==0 && ($product_in_stock[0]!='+' && $product_in_stock[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_in_stock[0]=='+' || $product_in_stock[0]==',') && $first==1 ){
 				$product_in_stock[0]='';
@@ -1895,14 +2130,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_type)){
 				
 			$product_type=trim($product_type);
 			
 			if($first==0 && ($product_type[0]!='+' && $product_type[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_type[0]=='+' || $product_type[0]==',') && $first==1 ){
 				$product_type[0]='';
@@ -1913,14 +2147,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_tax_id)){
 				
 			$product_tax_id=trim($product_tax_id);
 			
 			if($first==0 && ($product_tax_id[0]!='+' && $product_tax_id[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_tax_id[0]=='+' || $product_tax_id[0]==',') && $first==1 ){
 				$product_tax_id[0]='';
@@ -1931,14 +2164,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_attribute)){
 				
 			$product_attribute=trim($product_attribute);
 			
 			if($first==0 && ($product_attribute[0]!='+' && $product_attribute[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_attribute[0]=='+' || $product_attribute[0]==',') && $first==1 ){
 				$product_attribute[0]='';
@@ -1949,14 +2181,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($product_version)){
 				
 			$product_version=trim($product_version);
 			
 			if($first==0 && ($product_version[0]!='+' && $product_version[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($product_version[0]=='+' || $product_version[0]==',') && $first==1 ){
 				$product_version[0]='';
@@ -1967,13 +2198,21 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $WHERE_CLAUSE, $args);
+		$WHERE_CLAUSE = self::_applyFilter( get_class(), __FUNCTION__ , $WHERE_CLAUSE , array('event'=>'return'));
+		
 		return $WHERE_CLAUSE;
-		
-		
 	}//end generateAudioContentWhereSQL
 	
 	
-	private static function generateEventContentWhereSQL($WHERE_CLAUSE, $args){
+	private static function generateEventContentWhereSQL($WHERE_CLAUSE, $args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $WHERE_CLAUSE, $args);
+		
+		$filtered = self::_applyFilter( get_class(), __FUNCTION__ , array('where_clause'=>$WHERE_CLAUSE, 'args'=>$args), array('event'=>'args'));
+		$WHERE_CLAUSE = $filtered['where_clause'];
+		$args = $filtered['args'];
 		
 		if(empty($WHERE_CLAUSE)){
 			$first=1;	 
@@ -1982,9 +2221,10 @@ class PVContent extends PVStaticObject {
 			$first=0;	
 		}
 		
-		if(is_array($args)){
-			extract($args);
-		}
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$custom_select=$args['custom_select'];
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($event_location)){
 				
@@ -1992,7 +2232,7 @@ class PVContent extends PVStaticObject {
 			
 			if($first==0 && ($event_location[0]!='+' && $event_location[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_location[0]=='+' || $event_location[0]==',') && $first==1 ){
 				$event_location[0]='';
@@ -2003,14 +2243,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_start_date)){
 				
 			$event_start_date=trim($event_start_date);
 			
 			if($first==0 && ($event_start_date[0]!='+' && $event_start_date[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_start_date[0]=='+' || $event_start_date[0]==',') && $first==1 ){
 				$event_start_date[0]='';
@@ -2021,14 +2260,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_end_date)){
 				
 			$event_end_date=trim($event_end_date);
 			
 			if($first==0 && ($event_end_date[0]!='+' && $event_end_date[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_end_date[0]=='+' || $event_end_date[0]==',') && $first==1 ){
 				$event_end_date[0]='';
@@ -2038,8 +2276,6 @@ class PVContent extends PVStaticObject {
 			
 			$first=0;
 		}//end not empty app_id
-		
-		
 		
 		if(!empty($event_country)){
 				
@@ -2058,14 +2294,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_address)){
 				
 			$event_address=trim($event_address);
 			
 			if($first==0 && ($event_address[0]!='+' && $event_address[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_address[0]=='+' || $event_address[0]==',') && $first==1 ){
 				$event_address[0]='';
@@ -2076,14 +2311,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_city)){
 				
 			$event_city=trim($event_city);
 			
 			if($first==0 && ($event_city[0]!='+' && $event_city[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_city[0]=='+' || $event_city[0]==',') && $first==1 ){
 				$event_city[0]='';
@@ -2094,14 +2328,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_state)){
 				
 			$event_state=trim($event_state);
 			
 			if($first==0 && ($event_state[0]!='+' && $event_state[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_state[0]=='+' || $event_state[0]==',') && $first==1 ){
 				$event_state[0]='';
@@ -2112,14 +2345,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_zip)){
 				
 			$event_zip=trim($event_zip);
 			
 			if($first==0 && ($event_zip[0]!='+' && $event_zip[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_zip[0]=='+' || $event_zip[0]==',') && $first==1 ){
 				$event_zip[0]='';
@@ -2130,14 +2362,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_longitude)){
 				
 			$event_longitude=trim($event_longitude);
 			
 			if($first==0 && ($event_longitude[0]!='+' && $event_longitude[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_longitude[0]=='+' || $event_longitude[0]==',') && $first==1 ){
 				$event_longitude[0]='';
@@ -2148,14 +2379,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_latitude)){
 				
 			$event_latitude=trim($event_latitude);
 			
 			if($first==0 && ($event_latitude[0]!='+' && $event_latitude[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_latitude[0]=='+' || $event_latitude[0]==',') && $first==1 ){
 				$event_latitude[0]='';
@@ -2166,14 +2396,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_src)){
 				
 			$event_src=trim($event_src);
 			
 			if($first==0 && ($event_src[0]!='+' && $event_src[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_src[0]=='+' || $event_src[0]==',') && $first==1 ){
 				$event_src[0]='';
@@ -2184,14 +2413,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($event_map)){
 				
 			$event_map=trim($event_map);
 			
 			if($first==0 && ($event_map[0]!='+' && $event_map[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($event_map[0]=='+' || $event_map[0]==',') && $first==1 ){
 				$event_map[0]='';
@@ -2202,14 +2430,13 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($undefined_endtime)){
 				
 			$undefined_endtime=trim($undefined_endtime);
 			
 			if($first==0 && ($undefined_endtime[0]!='+' && $undefined_endtime[0]!=',' ) ){
 					$WHERE_CLAUSE.=" AND ";
-				}
+			}
 				
 			else if( ($undefined_endtime[0]=='+' || $undefined_endtime[0]==',') && $first==1 ){
 				$undefined_endtime[0]='';
@@ -2220,50 +2447,38 @@ class PVContent extends PVStaticObject {
 			$first=0;
 		}//end not empty app_id
 		
+		self::_notify(get_class().'::'.__FUNCTION__, $WHERE_CLAUSE, $args);
+		$WHERE_CLAUSE = self::_applyFilter( get_class(), __FUNCTION__ , $WHERE_CLAUSE , array('event'=>'return'));
 		
 		return $WHERE_CLAUSE;
-		
 	}// generateEventContentWhereSQL
 	
 	
-	
-	
-	
-	public static function getContentList($order_by_clause=array()){
-		$order_by_clause += self::getContentDefaults();
+	public static function getContentList($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getContentDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
     	$content_array=array();
     	$db_type=PVDatabase::getDatabaseType();
 		$table_name=PVDatabase::getContentTableName();
     	
-    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
+    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($args);
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
-    	
-    	if(is_array($order_by_clause)){
+		
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$custom_select=$args['custom_select'];
 			
-			$custom_where=$order_by_clause['custom_where'];
-			$custom_join=$order_by_clause['custom_join'];
-			$custom_select=$order_by_clause['custom_select'];
-			
-			$order_by_clause=PVDatabase::makeSafe($order_by_clause);
-    		
-			$limit=$order_by_clause['limit'];
-    		$category_id=$order_by_clause['category_id'];
-    		$distinct=$order_by_clause['distinct'];
-			$group_by=$order_by_clause['group_by'];
-			$having=$order_by_clause['having'];
-			$join_users=$order_by_clause['join_users'];
-			$current_page=$order_by_clause['current_page'];
-			$results_per_page=$order_by_clause['results_per_page'];
-			$paged=$order_by_clause['paged'];
-			$prequery=$order_by_clause['prequery'];
-			$prefix_args=$order_by_clause['prefix_args'];
-			
-			$order_by_clause=$order_by_clause['order_by'];
-    	}
+		$args=PVDatabase::makeSafe($args);
+    	extract($args, EXTR_SKIP);
     	
 		$CATEGORY_JOIN='';
 		
@@ -2288,7 +2503,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName() , $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName() , $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -2307,8 +2522,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -2324,7 +2539,6 @@ class PVContent extends PVStaticObject {
 		}
 		
     	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $CATEGORY_JOIN $WHERE_CLAUSE";
-    	
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -2338,54 +2552,44 @@ class PVContent extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
-	public static function getImageContentList($order_by_clause=array()){
-		$order_by_clause += self::getImageContentDefaults();
-		$order_by_clause += self::getContentDefaults();
+	public static function getImageContentList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args  += self::getImageContentDefaults();
+		$args  += self::getContentDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
     	$content_array=array();
     	$db_type=PVDatabase::getDatabaseType();
 		$table_name=PVDatabase::getContentTableName();
     	
-    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
+    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($args);
+		$WHERE_CLAUSE=self::generateImageContentWhereSQL($WHERE_CLAUSE, $args);
 		
-		$WHERE_CLAUSE=self::generateImageContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$custom_select=$args['custom_select'];
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
-    	
-    	if(is_array($order_by_clause)){
-			
-			$custom_where=$order_by_clause['custom_where'];
-			$custom_join=$order_by_clause['custom_join'];
-			$custom_select=$order_by_clause['custom_select'];
-			
-			$order_by_clause=PVDatabase::makeSafe($order_by_clause);
-			
-    		$limit=$order_by_clause['limit'];
-    		$category_id=$order_by_clause['category_id'];
-			$distinct=$order_by_clause['distinct'];
-			$group_by=$order_by_clause['group_by'];
-			$having=$order_by_clause['having'];
-			$join_users=$order_by_clause['join_users'];
-			$current_page=$order_by_clause['current_page'];
-			$results_per_page=$order_by_clause['results_per_page'];
-			$paged=$order_by_clause['paged'];
-			$prequery=$order_by_clause['prequery'];
-			$prefix_args=$order_by_clause['prefix_args'];
-			
-    		$order_by_clause=$order_by_clause['order_by'];	
-    	}
 		
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getImageContentTableName().' ON '.PVDatabase::getImageContentTableName().'.image_id='.PVDatabase::getContentTableName().'.content_id ';
 		
 		if(!empty($category_id)){
 			$CATEGORY_JOIN.=' JOIN '.PVDatabase::getContentCategoryRelationsTableName().' ON '.PVDatabase::getContentCategoryRelationsTableName().'.content_id='.PVDatabase::getContentTableName().'.content_id';
 		}
-		
 		
 		if(!empty($join_users)){
 			$CATEGORY_JOIN.='JOIN '.PVDatabase::getLoginTableName().' ON '.PVDatabase::getContentTableName().'.owner_id='.PVDatabase::getLoginTableName().'.user_id ';
@@ -2404,7 +2608,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -2415,7 +2619,6 @@ class PVContent extends PVStaticObject {
 			}
 		}
 		
-		
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -2424,8 +2627,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -2455,46 +2658,40 @@ class PVContent extends PVStaticObject {
     	}//end while
     	
     	$content_array=PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
-	public static function getVideoContentList($order_by_clause=array()){
-		$order_by_clause += self::getVideoContentDefaults();
-		$order_by_clause += self::getContentDefaults();
+	public static function getVideoContentList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getVideoContentDefaults();
+		$args += self::getContentDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
     	$content_array=array();
     	$db_type=PVDatabase::getDatabaseType();
 		$table_name=PVDatabase::getContentTableName();
     	
-    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
+    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($args);
+		$WHERE_CLAUSE=self::generateVideoContentWhereSQL($WHERE_CLAUSE, $args);
 		
-		$WHERE_CLAUSE=self::generateVideoContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
+		$custom_where = $args['custom_where'];
+		$custom_join = $args['custom_join'];
+		$custom_select = $args['custom_select'];
+			
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
     	
-    	if(is_array($order_by_clause)){
-			
-			$custom_where=$order_by_clause['custom_where'];
-			$custom_join=$order_by_clause['custom_join'];
-			$custom_select=$order_by_clause['custom_select'];
-    		
-			$limit=$order_by_clause['limit'];
-    		$category_id=$order_by_clause['category_id'];
-			$distinct=$order_by_clause['distinct'];
-			$group_by=$order_by_clause['group_by'];
-			$having=$order_by_clause['having'];
-			$join_users=$order_by_clause['join_users'];
-			$current_page=$order_by_clause['current_page'];
-			$results_per_page=$order_by_clause['results_per_page'];
-			$paged=$order_by_clause['paged'];
-			$prequery=$order_by_clause['prequery'];
-			$prefix_args=$order_by_clause['prefix_args'];
-			
-    		$order_by_clause=$order_by_clause['order_by'];	
-    	}
-		
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getVideoContentTableName().' ON '.PVDatabase::getVideoContentTableName().'.video_id='.PVDatabase::getContentTableName().'.content_id ';
 		
 		if(!empty($category_id)){
@@ -2518,7 +2715,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset( PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset( PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -2537,8 +2734,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -2567,54 +2764,40 @@ class PVContent extends PVStaticObject {
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
-	public static function getEventContentList($order_by_clause=array()){
-		$order_by_clause += self::getEventContentDefaults();
-		$order_by_clause += self::getContentDefaults();
+	public static function getEventContentList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getEventContentDefaults();
+		$args += self::getContentDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
     	$content_array=array();
     	$db_type=PVDatabase::getDatabaseType();
 		$table_name=PVDatabase::getContentTableName();
     	
-    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
+    	$WHERE_CLAUSE = self::generateBasicWhereSqlClause($args);
+		$WHERE_CLAUSE = self::generateEventContentWhereSQL($WHERE_CLAUSE, $args);
 		
-		$WHERE_CLAUSE=self::generateEventContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$custom_select=$args['custom_select'];
+			
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
-    	
-    	if(is_array($order_by_clause)){
-			
-			$custom_where=$order_by_clause['custom_where'];
-			$custom_join=$order_by_clause['custom_join'];
-			$custom_select=$order_by_clause['custom_select'];
-    		
-    		$limit=$order_by_clause['limit'];
-    		$category_id=$order_by_clause['category_id'];
-			$distinct=$order_by_clause['distinct'];
-			$group_by=$order_by_clause['group_by'];
-			$having=$order_by_clause['having'];
-			$join_users=$order_by_clause['join_users'];
-			
-    		$event_city=$order_by_clause['event_city'];
-    		$event_state=$order_by_clause['event_state'];
-    		$event_country=$order_by_clause['event_country'];
-    		$event_address=$order_by_clause['event_address'];
-    		$event_zip=$order_by_clause['event_zip'];
-    		$event_location=$order_by_clause['event_location'];
-			
-			$current_page=$order_by_clause['current_page'];
-			$results_per_page=$order_by_clause['results_per_page'];
-			$paged=$order_by_clause['paged'];
-			$prequery=$order_by_clause['prequery'];
-			$prefix_args=$order_by_clause['prefix_args'];
-    		
-    		$order_by_clause=$order_by_clause['order_by'];
-    	}
 
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getEventContentTableName().' ON '.PVDatabase::getEventContentTableName().'.event_id='.PVDatabase::getContentTableName().'.content_id ';	
 		
@@ -2639,7 +2822,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName() , $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName() , $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -2658,8 +2841,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -2675,7 +2858,6 @@ class PVContent extends PVStaticObject {
 		}
 		
     	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $CATEGORY_JOIN $WHERE_CLAUSE";
-    	
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -2688,52 +2870,40 @@ class PVContent extends PVStaticObject {
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
-	public static function getFileContentList($order_by_clause=array()){
-		$order_by_clause += self::getFileContentDefaults();
-		$order_by_clause += self::getContentDefaults();
+	public static function getFileContentList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getFileContentDefaults();
+		$args += self::getContentDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
     	$content_array=array();
 		$db_type=PVDatabase::getDatabaseType();
 		$table_name=PVDatabase::getContentTableName();
     	
-    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
-		
-		$WHERE_CLAUSE=self::generateFileContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
+    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($args);
+		$WHERE_CLAUSE=self::generateFileContentWhereSQL($WHERE_CLAUSE, $args);
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
+    	$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$custom_select=$args['custom_select'];
+			
+    	$args = PVDatabase::makeSafe($args);
+    	extract($args, EXTR_SKIP);
     	
-    	if(is_array($order_by_clause)){
-			
-			$custom_where=$order_by_clause['custom_where'];
-			$custom_join=$order_by_clause['custom_join'];
-			$custom_select=$order_by_clause['custom_select'];
-    		
-    		$limit=$order_by_clause['limit'];
-    		$category_id=$order_by_clause['category_id'];
-			$distinct=$order_by_clause['distinct'];
-			$group_by=$order_by_clause['group_by'];
-			$having=$order_by_clause['having'];
-			$join_users=$order_by_clause['join_users'];
-			
-    		$file_src=$order_by_clause['file_src'];
-    		$file_type=$order_by_clause['file_type'];
-    		$file_size=$order_by_clause['file_size'];
-			
-			$current_page=$order_by_clause['current_page'];
-			$results_per_page=$order_by_clause['results_per_page'];
-			$paged=$order_by_clause['paged'];
-			$prequery=$order_by_clause['prequery'];
-			$prefix_args=$order_by_clause['prefix_args'];
-    		
-    		$order_by_clause=$order_by_clause['order_by'];
-    	}
-	
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getFileContentTableName().' ON '.PVDatabase::getFileContentTableName().'.file_id='.PVDatabase::getContentTableName().'.content_id  ';
 			
 		if(!empty($category_id)){
@@ -2757,7 +2927,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset( PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset( PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -2768,7 +2938,6 @@ class PVContent extends PVStaticObject {
 			}
 		}
 		
-		
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -2777,8 +2946,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -2807,49 +2976,41 @@ class PVContent extends PVStaticObject {
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
 	
-	public static function getProductContentList($order_by_clause=array()){
-		$order_by_clause += self::getProductContentDefaults();
-		$order_by_clause += self::getContentDefaults();
+	public static function getProductContentList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getProductContentDefaults();
+		$args += self::getContentDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
     	$content_array=array();
 		$db_type=PVDatabase::getDatabaseType();
 		$table_name=PVDatabase::getContentTableName();
     	
-    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
+    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($args);
+		$WHERE_CLAUSE=self::generateProductContentWhereSQL($WHERE_CLAUSE, $args);
+
+		$custom_where = $args['custom_where'];
+		$custom_join = $args['custom_join'];
+		$custom_select = $args['custom_select'];
 		
-		$WHERE_CLAUSE=self::generateProductContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
-    	
-    	if(is_array($order_by_clause)){
-    		
-    		$limit=$order_by_clause['limit'];
-    		$category_id=$order_by_clause['category_id'];
-			
-			$custom_where=$order_by_clause['custom_where'];
-			$custom_join=$order_by_clause['custom_join'];
-			$custom_select=$order_by_clause['custom_select'];
-			
-			$distinct=$order_by_clause['distinct'];
-			$group_by=$order_by_clause['group_by'];
-			$having=$order_by_clause['having'];
-			$join_users=$order_by_clause['join_users'];
-			
-			$current_page=$order_by_clause['current_page'];
-			$results_per_page=$order_by_clause['results_per_page'];
-			$paged=$order_by_clause['paged'];
-			$prequery=$order_by_clause['prequery'];
-			$prefix_args=$order_by_clause['prefix_args'];
-    		
-    		$order_by_clause=$order_by_clause['order_by'];
-    	}
 		
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getProductContentTableName().' ON '.PVDatabase::getProductContentTableName().'.product_id='.PVDatabase::getContentTableName().'.content_id ';
 		
@@ -2874,7 +3035,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset( PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset( PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -2893,8 +3054,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -2923,47 +3084,40 @@ class PVContent extends PVStaticObject {
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
-	public static function getTextContentList($order_by_clause=array()){
-		$order_by_clause += self::getTextContentDefaults();
-		$order_by_clause += self::getContentDefaults();
+	public static function getTextContentList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getTextContentDefaults();
+		$args += self::getContentDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
     	$content_array=array();
     	$db_type=PVDatabase::getDatabaseType();
 		$table_name=PVDatabase::getContentTableName();
     	
-    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
-		
-		$WHERE_CLAUSE=self::generateTextContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
+    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($args);
+		$WHERE_CLAUSE=self::generateTextContentWhereSQL($WHERE_CLAUSE, $args);
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
     	
-    	if(is_array($order_by_clause)){
-    		$limit=$order_by_clause['limit'];
-    		$category_id=$order_by_clause['category_id'];
+    	$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$custom_select=$args['custom_select'];
 			
-			$custom_where=$order_by_clause['custom_where'];
-			$custom_join=$order_by_clause['custom_join'];
-			$custom_select=$order_by_clause['custom_select'];
-			
-			$distinct=$order_by_clause['distinct'];
-			$group_by=$order_by_clause['group_by'];
-			$having=$order_by_clause['having'];
-			$join_users=$order_by_clause['join_users'];
-			
-			$current_page=$order_by_clause['current_page'];
-			$results_per_page=$order_by_clause['results_per_page'];
-			$paged=$order_by_clause['paged'];
-			$prequery=$order_by_clause['prequery'];
-			$prefix_args=$order_by_clause['prefix_args'];
-			
-    		$order_by_clause=$order_by_clause['order_by'];
-    	}
+    	$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP); 
     	
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getTextContentTableName().' ON '.PVDatabase::getTextContentTableName().'.text_id='.PVDatabase::getContentTableName().'.content_id ';
 		
@@ -2988,7 +3142,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -3007,8 +3161,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -3036,47 +3190,40 @@ class PVContent extends PVStaticObject {
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
-	public static function getAudioContentList($order_by_clause=array()){
-		$order_by_clause += self::getAudioContentDefaults();
-		$order_by_clause += self::getContentDefaults();
+	public static function getAudioContentList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
+		$args += self::getAudioContentDefaults();
+		$args += self::getContentDefaults();
+		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
     	$content_array=array();
 		$db_type=PVDatabase::getDatabaseType();
 		$table_name=PVDatabase::getContentTableName();
     	
-    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
+    	$WHERE_CLAUSE=self::generateBasicWhereSqlClause($args);
+		$WHERE_CLAUSE=self::generateAudioContentWhereSQL($WHERE_CLAUSE, $args);
 		
-		$WHERE_CLAUSE=self::generateAudioContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
+		$custom_where=$args['custom_where'];
+		$custom_join=$args['custom_join'];
+		$custom_select=$args['custom_select'];
+			
+		$args = PVDatabase::makeSafe($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($WHERE_CLAUSE)){
 			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
-    	
-    	if(is_array($order_by_clause)){
-    		$limit=$order_by_clause['limit'];
-    		$category_id=$order_by_clause['category_id'];
-			
-			$custom_where=$order_by_clause['custom_where'];
-			$custom_join=$order_by_clause['custom_join'];
-			$custom_select=$order_by_clause['custom_select'];
-			
-			$distinct=$order_by_clause['distinct'];
-			$group_by=$order_by_clause['group_by'];
-			$having=$order_by_clause['having'];
-			$join_users=$order_by_clause['join_users'];
-			
-			$current_page=$order_by_clause['current_page'];
-			$results_per_page=$order_by_clause['results_per_page'];
-			$paged=$order_by_clause['paged'];
-			$prequery=$order_by_clause['prequery'];
-			$prefix_args=$order_by_clause['prefix_args'];
-			
-    		$order_by_clause=$order_by_clause['order_by']; 		
-    	}
    
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getAudioContentTableName().' ON '.PVDatabase::getAudioContentTableName().'.audio_id='.PVDatabase::getContentTableName().'.content_id ';
 		
@@ -3110,7 +3257,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -3129,8 +3276,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -3159,53 +3306,47 @@ class PVContent extends PVStaticObject {
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
 	
-	public static function getUniversalContentList($order_by_clause = array(), $limit='', $app_id='', $owner_id='', $content_type='', $parent_id='', $category_id=''){
+	public static function getUniversalContentList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
     		$content_array=array();
     		$db_type=PVDatabase::getDatabaseType();
 			$table_name=PVDatabase::getContentTableName();
     	
-    		$order_by_clause += self::getAudioContentDefaults();
-			$order_by_clause += self::getContentDefaults();
-			$order_by_clause += self::getVideoContentDefaults();
-    		$WHERE_CLAUSE=self::generateBasicWhereSqlClause($order_by_clause);
+    		$args += self::getAudioContentDefaults();
+			$args += self::getContentDefaults();
+			$args += self::getVideoContentDefaults();
+			$args += self::_getSqlSearchDefaults();
+			$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 			
-			$WHERE_CLAUSE=self::generateEventContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
-			$WHERE_CLAUSE=self::generateTextContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
-			$WHERE_CLAUSE=self::generateProductContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
-			$WHERE_CLAUSE=self::generateImageContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
-			$WHERE_CLAUSE=self::generateVideoContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
-			$WHERE_CLAUSE=self::generateAudioContentWhereSQL($WHERE_CLAUSE, $order_by_clause);
+    		$WHERE_CLAUSE=self::generateBasicWhereSqlClause($args);
+			
+			$WHERE_CLAUSE=self::generateEventContentWhereSQL($WHERE_CLAUSE, $args);
+			$WHERE_CLAUSE=self::generateTextContentWhereSQL($WHERE_CLAUSE, $args);
+			$WHERE_CLAUSE=self::generateProductContentWhereSQL($WHERE_CLAUSE, $args);
+			$WHERE_CLAUSE=self::generateImageContentWhereSQL($WHERE_CLAUSE, $args);
+			$WHERE_CLAUSE=self::generateVideoContentWhereSQL($WHERE_CLAUSE, $args);
+			$WHERE_CLAUSE=self::generateAudioContentWhereSQL($WHERE_CLAUSE, $args);
+			
+			$custom_where=$args['custom_where'];
+			$custom_join=$args['custom_join'];
+			$custom_select=$args['custom_select'];
+			
+			$args = PVDatabase::makeSafe($args);
+			extract($args, EXTR_SKIP);
 			
 			if(!empty($WHERE_CLAUSE)){
 				$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
-			}
-    	
-			if(is_array($order_by_clause)){
-				$limit=$order_by_clause['limit'];
-				$category_id=$order_by_clause['category_id'];
-				
-				$custom_where=$order_by_clause['custom_where'];
-				$custom_join=$order_by_clause['custom_join'];
-				$custom_select=$order_by_clause['custom_select'];
-				
-				$distinct=$order_by_clause['distinct'];
-				$group_by=$order_by_clause['group_by'];
-				$having=$order_by_clause['having'];
-				$join_users=$order_by_clause['join_users'];
-				
-				$current_page=$order_by_clause['current_page'];
-				$results_per_page=$order_by_clause['results_per_page'];
-				$paged=$order_by_clause['paged'];
-				$prequery=$order_by_clause['prequery'];
-				$prefix_args=$order_by_clause['prefix_args'];
-				$order_by_clause=$order_by_clause['order_by'];
-				
 			}
     	
 		$CATEGORY_JOIN=' JOIN '.PVDatabase::getAudioContentTableName().' ON '.PVDatabase::getAudioContentTableName().'.audio_id='.PVDatabase::getContentTableName().'.content_id 
@@ -3246,7 +3387,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(PVDatabase::getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -3265,8 +3406,8 @@ class PVContent extends PVStaticObject {
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -3295,14 +3436,23 @@ class PVContent extends PVStaticObject {
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	}//end getContentList
 	
 	
-	function getCategoryList($args=array()){
+	function getCategoryList($args=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		$args += self::getCategoryDefaults();
 		$args += self::_getSqlSearchDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
+		
 		$custom_where=$args['custom_where'];
 		$custom_join=$args['custom_join'];
 		$custom_select=$args['custom_select'];
@@ -3324,7 +3474,7 @@ class PVContent extends PVStaticObject {
 				
 				if($first==0 && ($app_id[0]!='+' && $app_id[0]!=',' ) ){
 						$WHERE_CLAUSE.=" AND ";
-					}
+				}
 					
 				else if( ($app_id[0]=='+' || $app_id[0]==',') && $first==1 ){
 					$app_id[0]='';
@@ -3341,7 +3491,7 @@ class PVContent extends PVStaticObject {
 				
 				if($first==0 && ($category_id[0]!='+' && $category_id[0]!=',' ) ){
 						$WHERE_CLAUSE.=" AND ";
-					}
+				}
 					
 				else if( ($category_id[0]=='+' || $category_id[0]==',') && $first==1 ){
 					$category_id[0]='';
@@ -3352,15 +3502,13 @@ class PVContent extends PVStaticObject {
 				$first=0;
 		}//end not empty app_id
 		
-		
-		
 		if(!empty($category_name)){
 					
 				$category_name=trim($category_name);
 				
 				if($first==0 && ($category_name[0]!='+' && $category_name[0]!=',' ) ){
 						$WHERE_CLAUSE.=" AND ";
-					}
+				}
 					
 				else if( ($category_name[0]=='+' || $category_name[0]==',') && $first==1 ){
 					$category_name[0]='';
@@ -3370,15 +3518,14 @@ class PVContent extends PVStaticObject {
 				
 				$first=0;
 		}//end not empty app_id
-		
-		
+	
 		if(!empty($category_unique_name)){
 					
 				$category_unique_name=trim($category_unique_name);
 				
 				if($first==0 && ($category_unique_name[0]!='+' && $category_unique_name[0]!=',' ) ){
 						$WHERE_CLAUSE.=" AND ";
-					}
+				}
 					
 				else if( ($category_unique_name[0]=='+' || $category_unique_name[0]==',') && $first==1 ){
 					$category_unique_name[0]='';
@@ -3389,14 +3536,13 @@ class PVContent extends PVStaticObject {
 				$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($parent_category)){
 					
 				$parent_category=trim($parent_category);
 				
 				if($first==0 && ($parent_category[0]!='+' && $parent_category[0]!=',' ) ){
 						$WHERE_CLAUSE.=" AND ";
-					}
+				}
 					
 				else if( ($parent_category[0]=='+' || $parent_category[0]==',') && $first==1 ){
 					$parent_category[0]='';
@@ -3407,14 +3553,13 @@ class PVContent extends PVStaticObject {
 				$first=0;
 		}//end not empty app_id
 		
-		
 		if(!empty($category_alias)){
 					
 				$category_alias=trim($category_alias);
 				
 				if($first==0 && ($category_alias[0]!='+' && $category_alias[0]!=',' ) ){
 						$WHERE_CLAUSE.=" AND ";
-					}
+				}
 					
 				else if( ($category_alias[0]=='+' || $category_alias[0]==',') && $first==1 ){
 					$category_alias[0]='';
@@ -3424,7 +3569,6 @@ class PVContent extends PVStaticObject {
 				
 				$first=0;
 		}//end not empty app_id
-		
 		
 		if(!empty($category_order)){
 					
@@ -3531,7 +3675,7 @@ class PVContent extends PVStaticObject {
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset($table_name, $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset($table_name, $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -3581,27 +3725,59 @@ class PVContent extends PVStaticObject {
     		array_push($content_array, $row);
     	}//end while
     	
-    	$content_array=PVDatabase::formatData($content_array);
+    	$content_array = PVDatabase::formatData($content_array);
+		self::_notify(get_class().'::'.__FUNCTION__, $content_array , $args);
+		$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+		
     	return $content_array;
 	
 	}//end getCategoryList
 	
-	public static function getContent($content_id){
+	/**
+	 * Retrieves the data for base content that associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
 	
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
+		
 		if(!empty($content_id)){
 			
 			$content_id=PVDatabase::makeSafe($content_id);
 	    	$query="SELECT * FROM ".PVDatabase::getContentTableName()." WHERE content_id='$content_id' ";
 	    	$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if content not empty
 		
 	}//end getContent
 	
-	public static function getTextContent($content_id){
+	/**
+	 * Retrieves the data for text content and the base content that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getTextContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
 	    	
@@ -3610,13 +3786,29 @@ class PVContent extends PVStaticObject {
 	    	
 			$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if content not empty
 	}//end getContent
 	
-	public static function getImageContent($content_id){
+	/**
+	 * Retrieves the data for image content and the base content that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getImageContent($content_id) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
 	    	
@@ -3624,15 +3816,30 @@ class PVContent extends PVStaticObject {
 	    	$query="SELECT * FROM ".PVDatabase::getContentTableName()." JOIN ".PVDatabase::getImageContentTableName()." ON ".PVDatabase::getContentTableName().".content_id=".PVDatabase::getImageContentTableName().".image_id WHERE content_id='$content_id' ";
 	    	$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if content not empty	
 	}//end getContent
 	
 	
-	
-	public static function getVideoContent($content_id){
+	/**
+	 * Retrieves the data for video content and the base content that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getVideoContent($content_id) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
 	    	
@@ -3640,13 +3847,29 @@ class PVContent extends PVStaticObject {
 	    	$query="SELECT * FROM ".PVDatabase::getContentTableName()." JOIN ".PVDatabase::getVideoContentTableName()." ON ".PVDatabase::getContentTableName().".content_id=".PVDatabase::getVideoContentTableName().".video_id WHERE content_id='$content_id' ";
 	    	$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if content not empty	
 	}//end getContent
 	
-	public static function getEventContent($content_id){
+	/**
+	 * Retrieves the data for event content and the base content that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getEventContent($content_id) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 	
 		if(!empty($content_id)){
 		
@@ -3654,13 +3877,29 @@ class PVContent extends PVStaticObject {
 	    	$query="SELECT * FROM ".PVDatabase::getContentTableName()." JOIN ".PVDatabase::getEventContentTableName()." ON ".PVDatabase::getContentTableName().".content_id=".PVDatabase::getEventContentTableName().".event_id WHERE content_id='$content_id' ";
 	    	$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}
 	}//end getContent
 	
-	public static function getAudioContent($content_id){
+	/**
+	 * Retrieves the data for audio content and the base content that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getAudioContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
 	    	
@@ -3668,28 +3907,60 @@ class PVContent extends PVStaticObject {
 	    	$query="SELECT * FROM ".PVDatabase::getContentTableName()." JOIN ".PVDatabase::getAudioContentTableName()." ON ".PVDatabase::getContentTableName().".content_id=".PVDatabase::getAudioContentTableName().".audio_id WHERE content_id='$content_id' ";
 	    	$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if content not empty	
 	}//end getContent
 	
-	public static function getFileContent($content_id){
+	/**
+	 * Retrieves the data for file content and the base content that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getFileContent($content_id) {
 
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
+		
 		if(!empty($content_id)){
 	    	
 	    	$content_id=PVDatabase::makeSafe($content_id);
 	    	$query="SELECT *  FROM ".PVDatabase::getContentTableName()." JOIN ".PVDatabase::getFileContentTableName()." ON ".PVDatabase::getContentTableName().".content_id=".PVDatabase::getFileContentTableName().".file_id WHERE content_id='$content_id' ";
 	    	$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if content not empty	
 	}//end getContent
 	
-	public static function getUniversalContent($content_id){
-
+	/**
+	 * Retrieves the data for all the content types that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getUniversalContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
+		
 		if(!empty($content_id)){
 	    	
 	    	$content_id=PVDatabase::makeSafe($content_id);
@@ -3705,43 +3976,89 @@ class PVContent extends PVStaticObject {
 	    	
 	    	$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if content not empty	
 	}//end getContent
 	
-	
-	public static function getProductContent($content_id){
+	/**
+	 * Retrieves the data for product content and the base content that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content to be retrieved
+	 * 
+	 * @return array $content The data pertaining to the content
+	 * @access public
+	 */
+	public static function getProductContent($content_id) {
 
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
+		
 		if(!empty($content_id)){
 	    	
 	    	$content_id=PVDatabase::makeSafe($content_id);
 	    	$query="SELECT *  FROM ".PVDatabase::getContentTableName()." JOIN ".PVDatabase::getProductContentTableName()." ON ".PVDatabase::getContentTableName().".content_id=".PVDatabase::getProductContentTableName().".product_id WHERE content_id='$content_id' ";
 	    	$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row=PVDatabase::formatData($row);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $content_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}//end if content not empty	
 	}//end getContent
 	
+	/**
+	 * Retrieves the data for the category that is  associated with the category id passed.
+	 * 
+	 * @param id $category_id The id of the content to be retrieved
+	 * 
+	 * @return array $category The data pertaining to the category
+	 * @access public
+	 */
+	public static function getCategory($category_id) {
 	
-	public static function getCategory($category_id){
-	
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $category_id);
+		
+		$category_id = self::_applyFilter( get_class(), __FUNCTION__ , $category_id , array('event'=>'args'));
+		
 		if(!empty($category_id)){
 		
 			$category_id=PVDatabase::makeSafe($category_id);
 			$query="SELECT * FROM ".PVDatabase::getContentCategoriesTableName()." WHERE category_id='$category_id' ";
 			$result = PVDatabase::query($query);
-			$row = PVDatabase::fetchArray($result);
+			
+			$row = PVDatabase::formatData($row);
+			self::_notify(get_class().'::'.__FUNCTION__, $row , $category_id);
+			$row = self::_applyFilter( get_class(), __FUNCTION__ , $row , array('event'=>'return'));
 			
 			return $row;
 		}
 	
 	}//end getCategory
 	
-	public static function getContentCategories($content_id){
+	/**
+	 * Retrieves the categories that is associated with the content id passed.
+	 * 
+	 * @param id $content_id The id of the content whose categories are being retrieved
+	 * 
+	 * @return array $categories Retrns an array of categories associated with that content
+	 * @access public
+	 */
+	public static function getContentCategories($content_id) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+			
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
 			
@@ -3749,15 +4066,17 @@ class PVContent extends PVStaticObject {
 			$content_array=array();
 			
 			$query="SELECT * FROM ".PVDatabase::getContentCategoryRelationsTableName()." JOIN ".PVDatabase::getContentCategoriesTableName()." ON  ".PVDatabase::getContentCategoryRelationsTableName().".category_id=".PVDatabase::getContentCategoriesTableName().".category_id WHERE content_id='$content_id' ";
-			
 			$result = PVDatabase::query($query);
     	
 	    	while ($row = PVDatabase::fetchArray($result)){
 	    		array_push($content_array,$row );
 	    	}//end while
 	    	
+	    	$content_array = PVDatabase::formatData($content_array);
+			self::_notify(get_class().'::'.__FUNCTION__, $content_array , $content_id);
+			$content_array = self::_applyFilter( get_class(), __FUNCTION__ , $content_array , array('event'=>'return'));
+			
 	    	return $content_array;
-	
 		}
 		
 	}//end getContentCategory
@@ -3765,11 +4084,14 @@ class PVContent extends PVStaticObject {
 
 	
 	public static function updateContent($args=array()) {
-		$defaults=self::getContentDefaults();
-		$args += $defaults;
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($content_id) ){
 			if(empty($content_category) && !is_array($content_category)){
@@ -3809,7 +4131,6 @@ class PVContent extends PVStaticObject {
 				}//end foreach	
 			}
 			else{
-			
 				$query="INSERT INTO ".PVDatabase::getContentCategoryRelationsTableName()."(category_id, content_id) VALUES('$content_category',' $content_id')";
 				PVDatabase::query($query);
 			}
@@ -3818,34 +4139,41 @@ class PVContent extends PVStaticObject {
 	    	$ip = $_SERVER['REMOTE_ADDR'];
 	    	$query="INSERT INTO ".PVDatabase::getContentModifiersTableName()."(content_id, user_id, user_ip) VALUES('$content_id', '$uid', '$ip' )";
 	    	PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
 		}
 	}//end updateContent
 	
-	public static function updateTextContent($args=array()){
+	public static function updateTextContent($args=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		self::updateContent($args);
 		
-		$defaults=self::getTextContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getTextContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
     	
     	if(!empty($content_id)){
     		$query="UPDATE ".PVDatabase::getTextContentTableName()." SET text_content='$text_content', text_page_group='$text_page_group', text_page_number='$text_page_number', text_src='$text_src' WHERE text_id='$content_id' ";
     		PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
     	}
-    	
 	}//end
 	
 	
-	public static function updateImageContent($args=array()){
+	public static function updateImageContent($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
     	self::updateContent($args);
     	
-    	$defaults=self::getImageContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getImageContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args); 	
+		extract($args, EXTR_SKIP); 	
     	
     	$sql=" image_url='$image_url '";
     	
@@ -3881,87 +4209,106 @@ class PVContent extends PVStaticObject {
     	$query="UPDATE ".PVDatabase::getImageContentTableName()." SET $sql WHERE image_id='$content_id'";
 		
     	PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	
 	}//end updateImageContent
 	
 	
-	public static function updateImageContentWithFile($args=array()){
+	public static function updateImageContentWithFile($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+			
     	self::updateContent($args);
 		
-		$defaults=self::getImageContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getImageContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($content_id)){
 			$return=PVImageRenderer::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width , $image_height , $thumbnailwidth, $thumbnailheight, $image_src );
 		}
-		
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 		return $content_id;
 	}//end createTextField
 	
 	
 	
-	public static function updateEventContent($args=array()){
+	public static function updateEventContent($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		self::updateContent($args);
 		
-		$defaults=self::getEventContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getEventContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
     	if(!empty($content_id)){
     		$query="UPDATE ".PVDatabase::getEventContentTableName()." SET event_location='$event_location', event_start_date='$event_start_date', event_end_date='$event_end_date', event_country='$event_country', event_address='$event_address', event_city='$event_city', event_state='$event_state', event_zip='$event_zip', event_map='$event_map', event_src='$event_src', event_contact='$event_contact', undefined_endtime='$undefined_endtime' WHERE event_id='$content_id' ";
     		PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
     	}
     	
 	}//end
 	
 	
-	public static function updateVideoContent($args=array()){
+	public static function updateVideoContent($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		self::updateContent($args);
 		
-		$defaults=self::getVideoContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getVideoContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
     	
     	if(!empty($content_id)){
     		$query="UPDATE ".PVDatabase::getVideoContentTableName()." SET video_type='$video_type', video_length='$video_length', video_allow_embedding='$video_allow_embedding', flv_file='$flv_file', mp4_file='$mp4_file', wmv_file='$wmv_file', mpeg_file='$mpeg_file', rm_file='$rm_file' , avi_file='$avi_file', mov_file='$mov_file', asf_file='$asf_file', enable_hq='$enable_hq', auto_hq='$auto_hq', video_src='$video_src', video_embed='$video_embed'  WHERE video_id='$content_id' ";
     		PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
     	}
 	}//end
 	
 	
 	
-	public static function updateAudioContent($args=array()){
+	public static function updateAudioContent($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		self::updateContent($args);
 		
-		$defaults=self::getAudioContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getAudioContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 
     	if(!empty($content_id)){
     		$query="UPDATE ".PVDatabase::getAudioContentTableName()." SET audio_length='$audio_length', mid_file='$mid_file', aif_file='$aif_file', mp3_file='$mp3_file', ra_file='$ra_file', oga_file='$oga_file', sample_length='$sample_length', audio_type='$audio_type', audio_src='$audio_src'   WHERE audio_id='$content_id' ";
 			PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
     	}
     	
     	return $content_id;
 	}//end
 	
-	public static function updateFileContent($args=array()){
+	public static function updateFileContent($args=array()) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		self::updateContent($args);
 		
-		$defaults=self::getFileContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getFileContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		$file_size=ceil($file_size);
 		$file_downloadable=ceil($file_downloadable);
@@ -3970,20 +4317,24 @@ class PVContent extends PVStaticObject {
     	if(!empty($content_id)){
     		$query="UPDATE ".PVDatabase::getFileContentTableName()." SET file_type='$file_type', file_size='$file_size', file_location='$file_location', file_name='$file_name', file_src='$file_src', file_downloadable='$file_downloadable', file_max_downloads='$file_max_downloads' , file_version='$file_version', file_license='$file_license'  WHERE file_id='$content_id' ";
     		PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
     	}
     	
     	return $content_id;
 	}//end
 	
 	
-	public static function updateFileContentWithFile($args=array()){
+	public static function updateFileContentWithFile($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		self::updateContent($args);
 		
-		$defaults=self::getFileContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getFileContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		$file_size=ceil($file_size);
 		$file_downloadable=ceil($file_downloadable);
@@ -3997,50 +4348,67 @@ class PVContent extends PVStaticObject {
 		if(!empty($tmp_name)){
 			PVFileManager::uploadFileFromContent($content_id,  $file_name, $tmp_name, $file_size, $file_type);
 		}
-    	
+    	self::_notify(get_class().'::'.__FUNCTION__, $args);
     	return $content_id;
 	}//end
 	
 	
-	public static function updateProductContent($args=array()){
+	public static function updateProductContent($args=array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
 		self::updateContent($args);
 		
-		$defaults=self::getProductContentDefaults();
-		$args += $defaults;
-		
+		$args += self::getProductContentDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		if(!empty($content_id)){
     		$query="UPDATE ".PVDatabase::getProductContentTableName()." SET product_sku='$product_sku' ,product_idsku='$product_idsku' , product_vendor_id='$product_vendor_id' ,product_quantity='$product_quantity' , product_price='$product_price' ,product_discount_price='$product_discount_price' ,product_size='$product_size' ,product_color='$product_color' ,product_weight='$product_weight' , product_height='$product_height' , product_length='$product_length' , product_currency='$product_currency' , product_in_stock='$product_in_stock' , product_type='$product_type' , product_tax_id='$product_tax_id' , product_attribute='$product_attribute' , product_version='$product_version'  WHERE product_id='$content_id' ";
     		PVDatabase::query($query);
+			self::_notify(get_class().'::'.__FUNCTION__, $args);
     	}
     	
     	return $content_id;
 	}//end
 	
-	public static function updateCategory($args=array() ){
-		$defaults=self::getCategoryDefaults();
-		$args += $defaults;
+	public static function updateCategory($args=array()) {
 		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		
+		$args += self::getCategoryDefaults();
+		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		$query="UPDATE ".PVDatabase::getContentCategoriesTableName()." SET category_name='$category_name' , category_unique_name='$category_unique_name' , parent_category='$parent_category' ,  app_id='$app_id' , category_order='$category_order' , category_description='$category_description', category_alias='$category_alias', category_type='$category_type', category_owner='$category_owner'  WHERE category_id='$category_id' ";
+		PVDatabase::query($query);
 		
-		return PVDatabase::query($query);
+		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end updateCategoryArry
 	
 	
 	
 	/**
-	 * Delete Content Section
+	 * Deletes content from the database and will delete associated files and content. This means that text content, image content
+	 * and all the other content types will be deleted as well.
+	 * 
+	 * @param id $content_id The id of the content to be deleted
+	 * @param boolean $recursive Default is false. If set to true, will delete any children content as well.
+	 * 
+	 * @return void
+	 * @access public
 	 */
-	
-	public static function deleteContent($content_id, $recursive=FALSE, $adjacent_content=''){
+	public static function deleteContent($content_id, $recursive=FALSE) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $recursive);
+		
 		if(!empty($content_id)){
-			$content_id=ceil($content_id);
-			self::deleteAdjacentContent($content_id, $adjacent_content);
+			$content_id=PVDatabase::makeSafe($content_id);
 	    	
 	    	$query="DELETE FROM ".PVDatabase::getContentFieldRelationsTableName()." WHERE content_id='$content_id' ";
 	    	PVDatabase::query($query);
@@ -4063,38 +4431,49 @@ class PVContent extends PVStaticObject {
 			$query="DELETE FROM ".PVDatabase::getContentMultiAuthorTableName()." WHERE content_id='$content_id'";
 	    	PVDatabase::query($query);
 			
-			self::deleteTextContent($content_id, $recursive);
-			self::deleteImageContent($content_id, $recursive);
-			self::deleteVideoContent($content_id, $recursive);
-			self::deleteEventContent($content_id, $recursive);
-			self::deleteAudioContent($content_id, $recursive);
-			self::deleteFileContent($content_id, $recursive);
-			self::deleteProductContent($content_id, $recursive);
+			self::deleteTextContent($content_id);
+			self::deleteImageContent($content_id);
+			self::deleteVideoContent($content_id);
+			self::deleteEventContent($content_id);
+			self::deleteAudioContent($content_id);
+			self::deleteFileContent($content_id);
+			self::deleteProductContent($content_id);
 			
 			if($recursive==TRUE){
-				$subcontentlist=self::getContentList('', '', '', '', '',  $content_id, '');
+				$subcontentlist=self::getContentList(array('parent_content' => $content_id ));
 				
 				foreach($subcontentlist as $value){
 					self::deleteContent($value['content_id'], $recursive);
 				}//end foreach
 			}//end if recursive
-		
+			self::_notify(get_class().'::'.__FUNCTION__, $content_id, $recursive);
 		}
-		
 	}//end getContent
 	
-	public static function deleteTextContent($content_id, $recursive=FALSE){
+	/**
+	 * 
+	 */
+	public static function deleteTextContent($content_id) {
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
-	    	
 	    	$query="DELETE FROM ".PVDatabase::getTextContentTableName()." WHERE text_id='$content_id' ";
 	    	PVDatabase::query($query);
-			
+			self::_notify(get_class().'::'.__FUNCTION__, $content_id);
 		}
 		
 	}//end getContent
 	
-	public static function deleteImageContent($content_id, $recursive=FALSE){
+	public static function deleteImageContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
 	    	
@@ -4113,14 +4492,16 @@ class PVContent extends PVStaticObject {
 	    	
 	    	$query="DELETE FROM ".PVDatabase::getImageContentTableName()." WHERE image_id='$content_id' ";
 	    	PVDatabase::query($query);
-	    	
+			self::_notify(get_class().'::'.__FUNCTION__, $content_id);	
 		}
-		
 	}//end getContent
-	
-	
-	
-	public static function deleteVideoContent($content_id, $recursive=FALSE){
+
+	public static function deleteVideoContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
 			
@@ -4169,26 +4550,33 @@ class PVContent extends PVStaticObject {
 				unlink(PV_ROOT.PV_AUDIO.$row['webm_file']);
 			}
 			
-	    	
 	    	$query="DELETE FROM ".PVDatabase::getVideoContentTableName()." WHERE video_id='$content_id' ";
-			
 			PVDatabase::query($query);
-	    	
-			//self::deleteContent($content_id, FALSE, 'video_content');
+			self::_notify(get_class().'::'.__FUNCTION__, $content_id);
 		}
 	}//end getContent
 	
-	public static function deleteEventContent($content_id, $recursive=FALSE){
+	public static function deleteEventContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
 		
 		if(!empty($content_id)){
-	    	
 	    	$query="DELETE FROM ".PVDatabase::getEventContentTableName()." WHERE event_id='$content_id' ";
 	    	PVDatabase::query($query);
-			
+			self::_notify(get_class().'::'.__FUNCTION__, $content_id);
 		}
 	}//end getContent
 	
-	public static function deleteAudioContent($content_id, $recursive=FALSE){
+	public static function deleteAudioContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
+		
 		if(!empty($content_id)){
 	    	
 			$query="SELECT * FROM ".PVDatabase::getAudioContentTableName()." WHERE audio_id='$content_id'";
@@ -4217,12 +4605,18 @@ class PVContent extends PVStaticObject {
 			
 	    	$query="DELETE FROM ".PVDatabase::getAudioContentTableName()." WHERE audio_id='$content_id' ";
 	    	PVDatabase::query($query);
-			
+			self::_notify(get_class().'::'.__FUNCTION__, $content_id);
 		}
 		
 	}//end getContent
 	
-	public static function deleteFileContent($content_id, $recursive=FALSE){
+	public static function deleteFileContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
+		
 		if(!empty($content_id)){
 	    	
 	    	$query="SELECT file_location, file_src FROM ".PVDatabase::getFileContentTableName()." WHERE file_id='$content_id'";
@@ -4239,20 +4633,32 @@ class PVContent extends PVStaticObject {
 			
 	    	$query="DELETE FROM ".PVDatabase::getFileContentTableName()." WHERE file_id='$content_id' ";
 	    	PVDatabase::query($query);
-			//self::deleteContent($content_id, FALSE, 'file_content');
+			self::_notify(get_class().'::'.__FUNCTION__, $content_id);
 		}
 	}//end getContent
 	
-	public static function deleteProductContent($content_id, $recursive=FALSE){
+	public static function deleteProductContent($content_id) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		$content_id = self::_applyFilter( get_class(), __FUNCTION__ , $content_id , array('event'=>'args'));
+		
 		if(!empty($content_id)){
 			
 	    	$query="DELETE FROM ".PVDatabase::getProductContentTableName()." WHERE product_id='$content_id' ";
 	    	PVDatabase::query($query);
-			//self::deleteContent($content_id, FALSE, 'file_content');
+			self::_notify(get_class().'::'.__FUNCTION__, $content_id);
 		}
 	}//end getContent
 	
-	public static function deleteCategory($category_id, $recursive=FALSE){
+	public static function deleteCategory($category_id, $recursive = FALSE) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $category_id);
+		
+		$category_id = self::_applyFilter( get_class(), __FUNCTION__ , $category_id , array('event'=>'args'));
+		
 		if(!empty($category_id)){
 			
 			$query="DELETE FROM ".PVDatabase::getContentCategoriesTableName()." WHERE category_id='$category_id' ";
@@ -4266,21 +4672,16 @@ class PVContent extends PVStaticObject {
 					self::deleteCategory($value['category_id'], $recursive);
 				}//end foreach
 			}//end if recursive
+			self::_notify(get_class().'::'.__FUNCTION__, $category_id, $recursive);
 		}
 	}//end deleteCategory
 	
-	private static function deleteAdjacentContent($content_id, $content_type=''){
+	public static function addContentTaxonomy($content_id, $taxonomy_term, $taxonomy_term_parent='') {
 		
-		if(!empty($content_id)){
-			
-			
-		}//end if!empty
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $taxonomy_term, $taxonomy_term_parent);
 		
-	}//end deleteAdjacent
-	
-	
-	public static function addContentTaxonomy($content_id, $taxonomy_term, $taxonomy_term_parent=''){
-		$content_id=ceil($content_id);
+		$content_id=PVDatabase::makeSafe($content_id);
 		
 		if(!empty($content_id) || !empty($taxonomy_term)){
 			if(is_array($taxonomy_term)){
@@ -4300,14 +4701,17 @@ class PVContent extends PVStaticObject {
 				
 				$query="INSERT INTO ".PVDatabase::getContentTaxonomyTableName()."(content_id, taxonomy_term, taxonomy_term_parent) VALUES( '$content_id', '$taxonomy_term' , '$taxonomy_term_parent' )";
 				PVDatabase::query($query);
-			
 			}
-		
 		}
 	}//end addTaxonomyToContent
 	
+	
 	public static function updateContentTaxonomy($content_id, $taxonomy_term, $taxonomy_term_parent='', $trim_values=true){
-		$content_id=ceil($content_id);
+			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $taxonomy_term, $taxonomy_term_parent);
+		
+		$content_id=PVDatabase::makeSafe($content_id);
 		
 		if(!empty($content_id) || !empty($taxonomy_term)){
 			
@@ -4347,8 +4751,12 @@ class PVContent extends PVStaticObject {
 		}
 	}//end addTaxonomyToContent
 	
-	function getContentTaxonomy($content_id,$taxonomy_term_parent='' ){
-		$content_id=ceil($content_id);
+	function getContentTaxonomy($content_id,$taxonomy_term_parent='' ) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $taxonomy_term_parent);
+		
+		$content_id=PVDatabase::makeSafe($content_id);
 		
 		if(!empty($content_id)){
 			
@@ -4359,7 +4767,6 @@ class PVContent extends PVStaticObject {
 				$query.=" AND taxonomy_term_parent='$taxonomy_term_parent'";
 			}
 			
-			
 			$result=PVDatabase::query($query);
 			
 			if(PVDatabase::resultRowCount($result) > 0){
@@ -4368,14 +4775,17 @@ class PVContent extends PVStaticObject {
 		    	}//end while
 			}
 	    	
-	    
 	    	return $content_array;
 		}
 	}//end getContentTaxonomy
 	
 	
-	public static function clearContentTaxonomy($content_id,  $taxonomy_term_parent=''){
-		$content_id=ceil($content_id);
+	public static function clearContentTaxonomy($content_id,  $taxonomy_term_parent='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $taxonomy_term_parent);
+		
+		$content_id=PVDatabase::makeSafe($content_id);
 		
 		if(!empty($content_id)){
 			
@@ -4390,12 +4800,14 @@ class PVContent extends PVStaticObject {
 		
 	}//end addTaxonomyToContent
 	
-	public static function getContentIDByAlias($content_alias, $app_id='', $owner_id='', $content_type=''){
+	public static function getContentIDByAlias($content_alias, $app_id='', $owner_id='', $content_type='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_alias, $app_id, $owner_id, $content_type);
 	
 		if(!empty($content_alias)){
 			
-			
-		$WHERE_CLAUSE="";
+		$WHERE_CLAUSE='';
     	
 		if(!empty($app_id) || !empty($owner_id) || !empty($content_type) || !empty($content_alias) ){
 			$first=1;
@@ -4434,29 +4846,30 @@ class PVContent extends PVStaticObject {
 				$WHERE_CLAUSE.=" content_alias='$content_alias' ";
 				$first=0;
 			}
-			
-			
 		}
 			
 			$query="SELECT content_id FROM ".PVDatabase::getContentTableName()." $WHERE_CLAUSE";
 			$result=PVDatabase::query($query);
-			
+				
 			$row = PVDatabase::fetchArray($result);
-			
+				
 			return $row['content_id'];
-			
+				
 		}//end if not empty
 	
 	}//end 
 	
-	public static function getCategoryIDByAlias($category_alias, $app_id='', $category_unique_name='', $parent_category=''){
+	public static function getCategoryIDByAlias($category_alias, $app_id='', $category_unique_name='', $parent_category='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $category_alias, $app_id, $category_unique_name, $parent_category);
+		
 		if(PVValidator::isInteger($category_alias)){
 			return $category_alias;
 		}
 		if(!empty($category_alias)){
 			
-			
-			$WHERE_CLAUSE="";
+			$WHERE_CLAUSE='';
 	    	
 			if(!empty($app_id) || !empty($category_unique_name) || !empty($parent_category) || !empty($category_alias)){
 				$first=1;
@@ -4505,13 +4918,14 @@ class PVContent extends PVStaticObject {
 			$row = PVDatabase::fetchArray($result);
 			
 			return $row['category_id'];
-			
-		
 		}//end empty category_alias
 	
 	}//end getCategoryIDByAslias
 	
-	public static function createUniqueContentAlias($content_alias, $content_id='', $count=''){
+	public static function createUniqueContentAlias($content_alias, $content_id='', $count='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_alias, $content_id, $count);
 		
 		if(!empty($content_alias)){
 			$content_alias=trim($content_alias);
@@ -4542,16 +4956,17 @@ class PVContent extends PVStaticObject {
 				else{
 					$count++;
 				}
-				
-				
-				
+
 				return self::createUniqueContentAlias($content_alias, $content_id, $count);
 			}
 			
 		}
 	}//end createUniqueContentAlias
 	
-	public static function createUniqueCategoryAlias($category_alias, $category_id='', $count=''){
+	public static function createUniqueCategoryAlias($category_alias, $category_id='', $count='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $category_alias, $category_id, $count);
 		
 		if(!empty($category_alias)){
 			$category_aliass=trim($category_alias);
@@ -4583,15 +4998,16 @@ class PVContent extends PVStaticObject {
 					$count++;
 				}
 				
-				
-				
 				return self::createUniqueCategoryAlias($category_alias, $category_id, $count);
 			}
 			
 		}
 	}//end createUniqueContentAlias
 	
-	function getContentIDByContentAlias($content_alias, $app_id='', $content_type=''){
+	function getContentIDByContentAlias($content_alias, $app_id='', $content_type='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_alias, $app_id, $content_type);
 		
 		if(!empty($content_alias)){
 		
@@ -4617,7 +5033,10 @@ class PVContent extends PVStaticObject {
 		}//end if!empty
 	}//getContentIDByContentAlias
 	
-	function getCategoryIDByContentAlias($category_alias, $app_id='', $category_type=''){
+	function getCategoryIDByContentAlias($category_alias, $app_id='', $category_type='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $category_alias, $app_id, $category_type);
 		
 		if(!empty($content_alias)){
 		
@@ -4643,7 +5062,11 @@ class PVContent extends PVStaticObject {
 		}//end if!empty
 	}//getContentIDByContentAlias
 	
-	private static function insertAdjacentTables($content_id, $table_name){
+	private static function insertAdjacentTables($content_id, $table_name) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $table_name);
+		
 		if(!empty($content_id)){
 			
 			if($table_name!='pv_content_text'){
@@ -4686,7 +5109,10 @@ class PVContent extends PVStaticObject {
 		
 	}//end insert adjust table
 	
-	public static function addContentView($content_id, $user_id=''){
+	public static function addContentView($content_id, $user_id='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $user_id);
 		
 		if(!empty($content_id)){
 			
@@ -4703,7 +5129,10 @@ class PVContent extends PVStaticObject {
 		
 	}//end addContentView
 	
-	public static function addContentViewUnique($content_id, $user_id=''){
+	public static function addContentViewUnique($content_id, $user_id='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $user_id);
 		
 		if(!empty($content_id)){
 			
@@ -4713,12 +5142,9 @@ class PVContent extends PVStaticObject {
 			
 			$ip = $_SERVER['REMOTE_ADDR'];
 			
-			
-			
 			if($user_id!=0){
 				$WHERE_CLAUSE.="user_id='$user_id'";	
-			}
-			else{
+			} else {
 				$WHERE_CLAUSE=" user_ip='$ip' AND user_id='0'";
 			}
 			
@@ -4728,28 +5154,32 @@ class PVContent extends PVStaticObject {
 			if(PVDatabase::resultRowCount($result) <= 0){
 				$query="INSERT INTO ".PVDatabase::getContentViewsTableName()."(content_id, user_id, user_ip) VALUES( '$content_id' , '$user_id', '$ip' )";
 				$view_id=PVDatabase::return_last_insert_query($query, 'view_id', PVDatabase::getContentViewsTableName());
-			return $view_id;
+				
+				return $view_id;
 			}
 		}//end if not empty
 		
 	}//end addContentView
 	
-	public static function getContentViews($content_id){
+	public static function getContentViews($content_id) {
 		
-		if(!empty($content_id)){
-			
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
+		
+		if(!empty($content_id)) {
 			
 			$query="SELECT content_id FROM ".PVDatabase::getContentViewsTableName()." WHERE content_id='$content_id' ";
 			$result = PVDatabase::query($query);
 			
 			return PVDatabase::resultRowCount($result);
-			
-			
 		}
 		
 	}//get content views
 	
-	public static function getContentViewsList($args = array()){
+	public static function getContentViewsList($args = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
 		$content_array=array();
 		$args += self::_getSqlSearchDefaults();
@@ -4859,16 +5289,13 @@ class PVContent extends PVStaticObject {
 		$JOINS='';
 		
 		if(!empty($custom_join)){
-			
 			$JOINS.=" $custom_join ";
-			
 		}
 		
 		if($join_users == true){
 			$JOINS.=" JOIN ".PVDatabase::getLoginTableName()." ON ".PVDatabase::getLoginTableName().".user_id=".PVDatabase::getContentViewsTableName().".user_id ";	
 			$SELECTS.=' , pv_login.* ';
 		}
-		
 		
 		if($join_content == true){
 			$JOINS.=" JOIN ".PVDatabase::getContentTableName()." ON ".PVDatabase::getContentTableName().".content_id=".PVDatabase::getContentViewsTableName().".content_id ";
@@ -4904,7 +5331,6 @@ class PVContent extends PVStaticObject {
 			}
 		}
 		
-	
 		if(!empty($group_by)){
 			$WHERE_CLAUSE.=" GROUP BY $group_by";
 		}
@@ -4946,10 +5372,12 @@ class PVContent extends PVStaticObject {
     	$content_array=PVDatabase::formatData($content_array);
 		
     	return $content_array;
-		
 	}//get content views
 	
-	public static function getContentViewsByUserID($content_id, $user_id=''){
+	public static function getContentViewsByUserID($content_id, $user_id='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $user_id);
 		
 		if(!empty($content_id)){
 			
@@ -4957,17 +5385,18 @@ class PVContent extends PVStaticObject {
 				$user_id=PVUsers::getUserID();
 			}
 			
-			
 			$query="SELECT content_id FROM ".PVDatabase::getContentViewsTableName()." WHERE content_id='$content_id' AND user_id='$user_id' ";
 			$result = PVDatabase::query($query);
 			
 			return PVDatabase::resultRowCount($result);	
-			
 		}
 		
 	}//get content views
 	
-	public static function getContentViewsByIP($content_id, $ip){
+	public static function getContentViewsByIP($content_id, $ip) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $ip);
 		
 		if(!empty($content_id)){
 			
@@ -4980,7 +5409,10 @@ class PVContent extends PVStaticObject {
 		
 	}//get content views
 	
-	public static function addContentRating($content_id, $rating=0, $user_id=0, $rating_type=''){
+	public static function addContentRating($content_id, $rating=0, $user_id=0, $rating_type='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $rating, $user_id, $rating_type);
 		
 		if(!empty($content_id)){
 			
@@ -5000,13 +5432,15 @@ class PVContent extends PVStaticObject {
 			$rating_id=PVDatabase::return_last_insert_query($query, 'rating_id' , PVDatabase::getContentRatingTableName() );
 		
 			return $rating_id;	
-			
 		}//end !empty
 		
 	}//end addContentRating
 	
 	
-	public static function addUniqueContentRating($content_id, $rating=0, $user_id=0, $rating_type=''){
+	public static function addUniqueContentRating($content_id, $rating=0, $user_id=0, $rating_type='') {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $rating, $user_id, $rating_type);
 		
 		if(!empty($content_id)){
 			
@@ -5377,7 +5811,7 @@ class PVContent extends PVStaticObject {
 	public static function getContentMutliAuthorList($args=array()){
 			
 		$args += self::getContentMultiAuthorDefaults();
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		$first=1;
 		
@@ -5586,7 +6020,7 @@ class PVContent extends PVStaticObject {
 	
 	public static function getContentRelationshipList($args = array()){
 		
-		extract($args);
+		extract($args, EXTR_SKIP);
 		
 		$first=1;
 		
@@ -5847,7 +6281,7 @@ class PVContent extends PVStaticObject {
 			'content_category'=>'',
 			'category_id'=>''
 		);
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}//end getContentDefaults
 	
 	private static function getAudioContentDefaults() {
@@ -5864,7 +6298,7 @@ class PVContent extends PVStaticObject {
 			'audio_src'=>'',
 			'audio_type'=>''
 		);
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}
 
 	private static function getEventContentDefaults() {
@@ -5885,7 +6319,7 @@ class PVContent extends PVStaticObject {
 			'event_map'=>'',
 			'undefined_endtime'=>'',
 		);
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}
 
 	private static function getTextContentDefaults() {
@@ -5897,7 +6331,7 @@ class PVContent extends PVStaticObject {
 			'text_section'=>'',
 			'text_src'=>''
 		);
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}
 	
 	private static function getFileContentDefaults() {
@@ -5913,7 +6347,7 @@ class PVContent extends PVStaticObject {
 			'file_version'=>0,
 			'file_license'=>''
 		);
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}
 	
 	private static function getImageContentDefaults() {
@@ -5929,7 +6363,7 @@ class PVContent extends PVStaticObject {
 			'thumb_height'=>0,
 			'image_src'=>''
 		);
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}
 	
 	private static function getProductContentDefaults() {
@@ -5953,7 +6387,7 @@ class PVContent extends PVStaticObject {
 			'product_attribute'=>'',
 			'product_version'=>0
 		);
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}
 
 	private static function getVideoContentDefaults() {
@@ -5977,7 +6411,7 @@ class PVContent extends PVStaticObject {
 			'video_src'=>'',
 			'video_embed'=>''
 		);
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}
 	
 	private static function getContentMultiAuthorDefaults() {
@@ -5988,7 +6422,7 @@ class PVContent extends PVStaticObject {
 			'owner_added_date'=>''
 		);
 		
-		return $defaults += self::_getSqlSearchDefaults();
+		return $defaults;
 	}
 	
 }//end class
