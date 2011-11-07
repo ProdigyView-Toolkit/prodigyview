@@ -1666,7 +1666,7 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	}
 	
 	function pv_getCategoryIDByAlias($category_alias, $app_id='', $category_type='', $parent_category=''){
-		return PVContent::getCategoryIDByAlias($category_alias, $app_id, $category_unique_name, $parent_category);
+		return PVContent::getCategoryIDByAlias($category_alias, $app_id, $category_type, $parent_category);
 	}//end getApplicationID($app_unique_name)
 	
 	function pv_addComment($content_id, $comment_text='', $owner_id='', $comment_date='', $comment_approved='', $comment_title='', $comment_parent='', $comment_author='', $comment_author_email='', $comment_author_website='', $comment_type=''	){
