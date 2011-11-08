@@ -287,7 +287,7 @@ class PVUsers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args, $password_encoded);
 		
-		$args += self::getUserDefaults();
+		$args += self::_getUserDefaults();
 		$data = self::_applyFilter( get_class(), __FUNCTION__ , array('args'=>$args, 'password_encoded'=>$password_encoded), array('event'=>'args'));
 		$args = $data['args'];
 		$password_encoded =  $data['password_encoded'];
@@ -384,7 +384,7 @@ class PVUsers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getUserDefaults();
+		$args += self::_getUserDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
@@ -721,7 +721,7 @@ class PVUsers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getUserRoleDefaults();
+		$args += self::_getUserRoleDefaults();
 		$args=PVDatabase::makeSafe($args);
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
@@ -759,7 +759,7 @@ class PVUsers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getUserRoleDefaults();
+		$args += self::_getUserRoleDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
@@ -960,7 +960,7 @@ class PVUsers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getUserRoleDefaults();
+		$args += self::_getUserRoleDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		
@@ -1246,7 +1246,7 @@ class PVUsers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getUserDefaults();
+		$args += self::_getUserDefaults();
 		$args= self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args += self::_getSqlSearchDefaults();
 		
@@ -1745,7 +1745,7 @@ class PVUsers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getUserRoleDefaults();
+		$args += self::_getUserRoleDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -1928,7 +1928,7 @@ class PVUsers extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getUserRelationshipDefaults();
+		$args += self::_getUserRelationshipDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
@@ -2167,7 +2167,7 @@ class PVUsers extends PVStaticObject {
 		
 	}//end checkUserRole
 	
-	private static function getUserDefaults() {
+	protected static function _getUserDefaults() {
 		$defaults = array(
 			'user_email'=>'',
 			'user_password'=>'',
@@ -2186,7 +2186,7 @@ class PVUsers extends PVStaticObject {
 		return $defaults;
 	}
 	
-	private static function getUserRoleDefaults() {
+	protected static function _getUserRoleDefaults() {
 		$defaults=array(
 			'role_id'=>0,
 			'role_name'=>'',
@@ -2198,7 +2198,7 @@ class PVUsers extends PVStaticObject {
 		return $defaults;
 	}
 	
-	private static function getUserRelationshipDefaults() {
+	protected static function _getUserRelationshipDefaults() {
 		$defaults=array(
 			'relationship_id'=>0,
 			'requesting_user'=>0,
