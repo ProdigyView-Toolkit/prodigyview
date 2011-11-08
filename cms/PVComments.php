@@ -53,7 +53,7 @@ class PVComments extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getCommentDefaults();
+		$args += self::_getCommentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
@@ -128,7 +128,7 @@ class PVComments extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getCommentDefaults();
+		$args += self::_getCommentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
@@ -479,7 +479,7 @@ class PVComments extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getCommentDefaults();
+		$args += self::_getCommentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
@@ -531,7 +531,7 @@ class PVComments extends PVStaticObject {
 	
 	}//end deleteComenet
 	
-	private static function getCommentDefaults() {
+	protected static function _getCommentDefaults() {
 		$defaults=array(
 			'comment_id'=>0,
 			'content_id'=>0,
