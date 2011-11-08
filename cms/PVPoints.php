@@ -48,7 +48,7 @@ class PVPoints extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getPointsDefaults();
+		$args += self::_getPointsDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
@@ -89,7 +89,7 @@ class PVPoints extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getPointsDefaults();
+		$args += self::_getPointsDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
@@ -167,7 +167,7 @@ class PVPoints extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getPointsDefaults();
+		$args += self::_getPointsDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		
@@ -484,7 +484,7 @@ class PVPoints extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getPointsDefaults();
+		$args += self::_getPointsDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
@@ -522,7 +522,7 @@ class PVPoints extends PVStaticObject {
 		}
 	}//end deleteUserPoint
 	
-	private static function getPointsDefaults() {
+	protected static function _getPointsDefaults() {
 		$defaults=array(
 			'point_id'=>0,
 			'user_id'=>0,
