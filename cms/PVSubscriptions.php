@@ -50,7 +50,7 @@ class PVSubscriptions extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getSubscriptionDefaults();
+		$args += self::_getSubscriptionDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
@@ -97,7 +97,7 @@ class PVSubscriptions extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getSubscriptionDefaults();
+		$args += self::_getSubscriptionDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
@@ -158,7 +158,7 @@ class PVSubscriptions extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getSubscriptionDefaults();
+		$args += self::_getSubscriptionDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$custom_where=$args['custom_where'];
@@ -478,7 +478,7 @@ class PVSubscriptions extends PVStaticObject{
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getSubscriptionDefaults();
+		$args += self::_getSubscriptionDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args= PVDatabase::makeSafe($args);
 		extract($args);
@@ -525,7 +525,7 @@ class PVSubscriptions extends PVStaticObject{
 		}//end if
 	}//end deleteUserSubscription
 	
-	private static function getSubscriptionDefaults() {
+	protected static function _getSubscriptionDefaults() {
 		$defaults=array(
 			'subscription_id'=>0,
 			'content_id'=>0,
