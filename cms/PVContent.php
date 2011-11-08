@@ -77,7 +77,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getContentDefaults();
+		$args += self::_getContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -155,14 +155,15 @@ class PVContent extends PVStaticObject {
 	}//end createContent
 	
 	/**
-	 * Creates content that is primarly geared toward text. 
+	 * Creates content that is primarly geared toward text content. The content will extend the base meaning the same values passed
+	 * in the based 
 	 */
 	public static function createTextContent($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getTextContentDefaults();
+		$args += self::_getTextContentDefaults();
 		$args['adjacent_table']='pv_content_text';
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
@@ -208,7 +209,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getImageContentDefaults();
+		$args += self::_getImageContentDefaults();
 		$args['adjacent_table']='pv_content_images';
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
@@ -254,7 +255,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getImageContentDefaults();
+		$args += self::_getImageContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
@@ -305,7 +306,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getVideoContentDefaults();
+		$args += self::_getVideoContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args['adjacent_table']='pv_content_video';
 		$content_id=self::createContent($args);
@@ -354,7 +355,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getVideoContentDefaults();
+		$args += self::_getVideoContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
 		
@@ -394,7 +395,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getEventContentDefaults();
+		$args += self::_getEventContentDefaults();
 		$args['adjacent_table']='pv_content_events';
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
@@ -439,7 +440,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getAudioContentDefaults();
+		$args += self::_getAudioContentDefaults();
 		$args['adjacent_table']='pv_content_audio';
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
@@ -463,7 +464,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getAudioContentDefaults();
+		$args += self::_getAudioContentDefaults();
 		$args['adjacent_table']='pv_content_audio';
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
@@ -483,7 +484,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getFileContentDefaults();
+		$args += self::_getFileContentDefaults();
 		$args['adjacent_table']='pv_content_files';
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
@@ -516,7 +517,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getFileContentDefaults();
+		$args += self::_getFileContentDefaults();
 		$args['adjacent_table']='pv_content_files';
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
@@ -547,13 +548,15 @@ class PVContent extends PVStaticObject {
 		return $content_id;
 	}//end createFileContent
 	
-	
+	/**
+	 * 
+	 */
 	public static function createProductContent($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getProductContentDefaults();
+		$args += self::_getProductContentDefaults();
 		$args['adjacent_table']='pv_content_product';
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$content_id=self::createContent($args);
@@ -572,13 +575,22 @@ class PVContent extends PVStaticObject {
 		return $content_id;
 	}//end createProductFile
 	
-	
+	/**
+	 * Creates a category can be used with content.
+	 * 
+	 * @param array $args Arguements that define the category.
+	 * 			-''
+	 * 
+	 * @return id $category_id The id of the recently created category
+	 * @access public
+	 * @todo finish documenting
+	 */
 	public static function createCategory($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getCategoryDefaults();
+		$args += self::_getCategoryDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args, array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -2454,12 +2466,21 @@ class PVContent extends PVStaticObject {
 	}// generateEventContentWhereSQL
 	
 	
+	/**
+	 * Retrieves a list of base content from the database. The PV Standard Search
+	 * Query is used when searching for content.
+	 * 
+	 * @param array $args Arguements that are used to search for content
+	 * 
+	 * @return array $args An array of base content returned
+	 * @access public
+	 */
 	public static function getContentList($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getContentDefaults();
+		$args += self::_getContentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -2558,13 +2579,25 @@ class PVContent extends PVStaticObject {
     	return $content_array;
 	}//end getContentList
 	
+	/**
+	 * @see self::getContentList() Same values passed there can be passed here
+	 * 
+	 * Retrieves a list of image content in the database, as well as base content. Parameters passed to
+	 * find the content are those that define both image and base content as well. The PV Standard Search
+	 * Query is used when searching for content.
+	 * 
+	 * @param array $args Arguements that are used to search for content
+	 * 
+	 * @return array $args A combined array of image and base content returned
+	 * @access public
+	 */
 	public static function getImageContentList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args  += self::getImageContentDefaults();
-		$args  += self::getContentDefaults();
+		$args  += self::_getImageContentDefaults();
+		$args  += self::_getContentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -2664,13 +2697,25 @@ class PVContent extends PVStaticObject {
     	return $content_array;
 	}//end getContentList
 	
+	/**
+	 * @see self::getContentList() Same values passed there can be passed here
+	 * 
+	 * Retrieves a list of video content in the database, as well as base content. Parameters passed to
+	 * find the content are those that define both video and base content as well. The PV Standard Search
+	 * Query is used when searching for content.
+	 * 
+	 * @param array $args Arguements that are used to search for content
+	 * 
+	 * @return array $args A combined array of video and base content returned
+	 * @access public
+	 */
 	public static function getVideoContentList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getVideoContentDefaults();
-		$args += self::getContentDefaults();
+		$args += self::_getVideoContentDefaults();
+		$args += self::_getContentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -2776,8 +2821,8 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getEventContentDefaults();
-		$args += self::getContentDefaults();
+		$args += self::_getEventContentDefaults();
+		$args += self::_getContentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -2877,13 +2922,25 @@ class PVContent extends PVStaticObject {
     	return $content_array;
 	}//end getContentList
 	
+	/**
+	 * @see self::getContentList() Same values passed there can be passed here
+	 * 
+	 * Retrieves a list of file content in the database, as well as base content. Parameters passed to
+	 * find the content are those that define both file and base content as well. The PV Standard Search
+	 * Query is used when searching for content.
+	 * 
+	 * @param array $args Arguements that are used to search for content
+	 * 
+	 * @return array $args An array of file and base content returned
+	 * @access public
+	 */
 	public static function getFileContentList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getFileContentDefaults();
-		$args += self::getContentDefaults();
+		$args += self::_getFileContentDefaults();
+		$args += self::_getContentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -2983,14 +3040,25 @@ class PVContent extends PVStaticObject {
     	return $content_array;
 	}//end getContentList
 	
-	
+	/**
+	 * @see self::getContentList() Same values passed there can be passed here
+	 * 
+	 * Retrieves a list of product content in the database, as well as base content. Parameters passed to
+	 * find the content are those that define both product and base content as well. The PV Standard Search
+	 * Query is used when searching for content.
+	 * 
+	 * @param array $args Arguements that are used to search for content
+	 * 
+	 * @return array $args An array of product and base content returned
+	 * @access public
+	 */
 	public static function getProductContentList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getProductContentDefaults();
-		$args += self::getContentDefaults();
+		$args += self::_getProductContentDefaults();
+		$args += self::_getContentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -3091,13 +3159,25 @@ class PVContent extends PVStaticObject {
     	return $content_array;
 	}//end getContentList
 	
+	/**
+	 * @see self::getContentList() Same values passed there can be passed here
+	 * 
+	 * Retrieves a list of text content in the database, as well as base content. Parameters passed to
+	 * find the content are those that define both text and base content as well. The PV Standard Search
+	 * Query is used when searching for content.
+	 * 
+	 * @param array $args Arguements that are used to search for content
+	 * 
+	 * @return array $args An array of text and base content returned
+	 * @access public
+	 */
 	public static function getTextContentList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getTextContentDefaults();
-		$args += self::getContentDefaults();
+		$args += self::_getTextContentDefaults();
+		$args += self::_getContentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -3197,13 +3277,25 @@ class PVContent extends PVStaticObject {
     	return $content_array;
 	}//end getContentList
 	
+	/**
+	 * @see self::getContentList() Same values passed there can be passed here
+	 * 
+	 * Retrieves a list of audio content in the database, as well as base content. Parameters passed to
+	 * find the content are those that define both audio and base content as well. The PV Standard Search
+	 * Query is used when searching for content.
+	 * 
+	 * @param array $args Arguements that are used to search for content
+	 * 
+	 * @return array $args An array of audio and base content returned
+	 * @access public
+	 */
 	public static function getAudioContentList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 			
-		$args += self::getAudioContentDefaults();
-		$args += self::getContentDefaults();
+		$args += self::_getAudioContentDefaults();
+		$args += self::_getContentDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -3314,6 +3406,17 @@ class PVContent extends PVStaticObject {
 	}//end getContentList
 	
 	
+	/**
+	 * @see self::getContentList() Same values passed there can be passed here
+	 * 
+	 * Retrieves a list of all content types in the database(base, file, text, etc.). The PV Standard Search
+	 * Query is used when searching for content.
+	 * 
+	 * @param array $args Arguements that are used to search for content
+	 * 
+	 * @return array $args An array of all content types returned
+	 * @access public
+	 */
 	public static function getUniversalContentList($args = array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -3323,9 +3426,9 @@ class PVContent extends PVStaticObject {
     		$db_type=PVDatabase::getDatabaseType();
 			$table_name=PVDatabase::getContentTableName();
     	
-    		$args += self::getAudioContentDefaults();
-			$args += self::getContentDefaults();
-			$args += self::getVideoContentDefaults();
+    		$args += self::_getAudioContentDefaults();
+			$args += self::_getContentDefaults();
+			$args += self::_getVideoContentDefaults();
 			$args += self::_getSqlSearchDefaults();
 			$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 			
@@ -3449,7 +3552,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getCategoryDefaults();
+		$args += self::_getCategoryDefaults();
 		$args += self::_getSqlSearchDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
@@ -3769,7 +3872,7 @@ class PVContent extends PVStaticObject {
 	 * 
 	 * @param id $content_id The id of the content to be retrieved
 	 * 
-	 * @return array $content The data pertaining to the content
+	 * @return array $content The text content data as well as the associated base content
 	 * @access public
 	 */
 	public static function getTextContent($content_id) {
@@ -4088,7 +4191,7 @@ class PVContent extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getContentDefaults();
+		$args += self::_getContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4143,6 +4246,16 @@ class PVContent extends PVStaticObject {
 		}
 	}//end updateContent
 	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates text content and the assoicated base content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateTextContent($args=array()) {
 			
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4150,7 +4263,7 @@ class PVContent extends PVStaticObject {
 		
 		self::updateContent($args);
 		
-		$args += self::getTextContentDefaults();
+		$args += self::_getTextContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4162,7 +4275,16 @@ class PVContent extends PVStaticObject {
     	}
 	}//end
 	
-	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates image content and the assoicated base content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateImageContent($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4170,7 +4292,7 @@ class PVContent extends PVStaticObject {
 		
     	self::updateContent($args);
     	
-		$args += self::getImageContentDefaults();
+		$args += self::_getImageContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP); 	
@@ -4213,7 +4335,17 @@ class PVContent extends PVStaticObject {
 	
 	}//end updateImageContent
 	
-	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates image content and the assoicated base content. A file will be required and will replace
+	 * the current image, if it as an image file.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateImageContentWithFile($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4221,7 +4353,7 @@ class PVContent extends PVStaticObject {
 			
     	self::updateContent($args);
 		
-		$args += self::getImageContentDefaults();
+		$args += self::_getImageContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4233,8 +4365,16 @@ class PVContent extends PVStaticObject {
 		return $content_id;
 	}//end createTextField
 	
-	
-	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates image content and the assoicated base content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateEventContent($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4242,7 +4382,7 @@ class PVContent extends PVStaticObject {
 		
 		self::updateContent($args);
 		
-		$args += self::getEventContentDefaults();
+		$args += self::_getEventContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4255,7 +4395,16 @@ class PVContent extends PVStaticObject {
     	
 	}//end
 	
-	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates video content and the assoicated base content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateVideoContent($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4263,7 +4412,7 @@ class PVContent extends PVStaticObject {
 		
 		self::updateContent($args);
 		
-		$args += self::getVideoContentDefaults();
+		$args += self::_getVideoContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4275,8 +4424,16 @@ class PVContent extends PVStaticObject {
     	}
 	}//end
 	
-	
-	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates audio content and the assoicated base content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateAudioContent($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4284,7 +4441,7 @@ class PVContent extends PVStaticObject {
 		
 		self::updateContent($args);
 		
-		$args += self::getAudioContentDefaults();
+		$args += self::_getAudioContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4298,6 +4455,16 @@ class PVContent extends PVStaticObject {
     	return $content_id;
 	}//end
 	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates file content and the assoicated base content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateFileContent($args=array()) {
 			
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4305,7 +4472,7 @@ class PVContent extends PVStaticObject {
 		
 		self::updateContent($args);
 		
-		$args += self::getFileContentDefaults();
+		$args += self::_getFileContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4323,7 +4490,17 @@ class PVContent extends PVStaticObject {
     	return $content_id;
 	}//end
 	
-	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates file content and the assoicated base content. The file will replace the current file
+	 * associated with this content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateFileContentWithFile($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4331,7 +4508,7 @@ class PVContent extends PVStaticObject {
 		
 		self::updateContent($args);
 		
-		$args += self::getFileContentDefaults();
+		$args += self::_getFileContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4352,7 +4529,16 @@ class PVContent extends PVStaticObject {
     	return $content_id;
 	}//end
 	
-	
+	/**
+	 * @see self::updateContent() Base content fields will be updated also
+	 * 
+	 * Updates product content and the assoicated base content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateProductContent($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -4360,7 +4546,7 @@ class PVContent extends PVStaticObject {
 		
 		self::updateContent($args);
 		
-		$args += self::getProductContentDefaults();
+		$args += self::_getProductContentDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4374,12 +4560,20 @@ class PVContent extends PVStaticObject {
     	return $content_id;
 	}//end
 	
+	/**
+	 * Updates the content for a category that relates to content.
+	 * 
+	 * @param array $args The fields to be updated. If a field is left blank, the default value will be used.
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function updateCategory($args=array()) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 		
-		$args += self::getCategoryDefaults();
+		$args += self::_getCategoryDefaults();
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		$args=PVDatabase::makeSafe($args);
 		extract($args, EXTR_SKIP);
@@ -4431,13 +4625,13 @@ class PVContent extends PVStaticObject {
 			$query="DELETE FROM ".PVDatabase::getContentMultiAuthorTableName()." WHERE content_id='$content_id'";
 	    	PVDatabase::query($query);
 			
-			self::deleteTextContent($content_id);
-			self::deleteImageContent($content_id);
-			self::deleteVideoContent($content_id);
-			self::deleteEventContent($content_id);
-			self::deleteAudioContent($content_id);
-			self::deleteFileContent($content_id);
-			self::deleteProductContent($content_id);
+			self::_deleteTextContent($content_id);
+			self::_deleteImageContent($content_id);
+			self::_deleteVideoContent($content_id);
+			self::_deleteEventContent($content_id);
+			self::_deleteAudioContent($content_id);
+			self::_deleteFileContent($content_id);
+			self::_deleteProductContent($content_id);
 			
 			if($recursive==TRUE){
 				$subcontentlist=self::getContentList(array('parent_content' => $content_id ));
@@ -4451,9 +4645,14 @@ class PVContent extends PVStaticObject {
 	}//end getContent
 	
 	/**
+	 * Deletes only the text content from the database.
 	 * 
+	 * @param id $content_id The id of the text content to be deleted
+	 * 
+	 * @return void
+	 * @access protected
 	 */
-	public static function deleteTextContent($content_id) {
+	protected static function _deleteTextContent($content_id) {
 			
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
@@ -4468,7 +4667,16 @@ class PVContent extends PVStaticObject {
 		
 	}//end getContent
 	
-	public static function deleteImageContent($content_id) {
+	/**
+	 * Deletes only the image content from the database. If the image has an associated file,
+	 * the file will be deleteed also.
+	 * 
+	 * @param id $content_id The id of the image content to be deleted
+	 * 
+	 * @return void
+	 * @access protected
+	 */
+	protected static function _deleteImageContent($content_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
@@ -4496,7 +4704,15 @@ class PVContent extends PVStaticObject {
 		}
 	}//end getContent
 
-	public static function deleteVideoContent($content_id) {
+	/**
+	 * Deletes only the video content from the database. If there are associated files, they will be deleted also.
+	 * 
+	 * @param id $content_id The id of the video content to be deleted
+	 * 
+	 * @return void
+	 * @access protected
+	 */
+	protected static function _deleteVideoContent($content_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
@@ -4556,7 +4772,15 @@ class PVContent extends PVStaticObject {
 		}
 	}//end getContent
 	
-	public static function deleteEventContent($content_id) {
+	/**
+	 * Deletes only the event content from the database.
+	 * 
+	 * @param id $content_id The id of the event content to be deleted
+	 * 
+	 * @return void
+	 * @access protected
+	 */
+	protected static function _deleteEventContent($content_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
@@ -4570,7 +4794,16 @@ class PVContent extends PVStaticObject {
 		}
 	}//end getContent
 	
-	public static function deleteAudioContent($content_id) {
+	/**
+	 * Deletes only the audio content from the database. If the audio content as associated files, they will be
+	 * deleted as well.
+	 * 
+	 * @param id $content_id The id of the audio content to be deleted
+	 * 
+	 * @return void
+	 * @access protected
+	 */
+	protected static function _deleteAudioContent($content_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
@@ -4610,7 +4843,15 @@ class PVContent extends PVStaticObject {
 		
 	}//end getContent
 	
-	public static function deleteFileContent($content_id) {
+	/**
+	 * Deletes only the file content from the database. If there is an associated file, the file will be deleted as well.
+	 * 
+	 * @param id $content_id The id of the file content to be deleted
+	 * 
+	 * @return void
+	 * @access protected
+	 */
+	protected static function _deleteFileContent($content_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
@@ -4637,7 +4878,15 @@ class PVContent extends PVStaticObject {
 		}
 	}//end getContent
 	
-	public static function deleteProductContent($content_id) {
+	/**
+	 * Deletes only the product content from the database.
+	 * 
+	 * @param id $content_id The id of the product content to be deleted
+	 * 
+	 * @return void
+	 * @access protected
+	 */
+	protected static function _deleteProductContent($content_id) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $content_id);
@@ -4652,6 +4901,14 @@ class PVContent extends PVStaticObject {
 		}
 	}//end getContent
 	
+	/**
+	 * Deletes a category from the database.
+	 * 
+	 * @param id $category_id The id of the category to be deleted
+	 * 
+	 * @return void
+	 * @access protected
+	 */
 	public static function deleteCategory($category_id, $recursive = FALSE) {
 		
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
@@ -5810,7 +6067,7 @@ class PVContent extends PVStaticObject {
 	
 	public static function getContentMutliAuthorList($args=array()){
 			
-		$args += self::getContentMultiAuthorDefaults();
+		$args += self::_getContentMultiAuthorDefaults();
 		extract($args, EXTR_SKIP);
 		
 		$first=1;
@@ -6230,7 +6487,7 @@ class PVContent extends PVStaticObject {
 		
 	}//end removeContentRelationship
 	
-	private static function getCategoryDefaults() {
+	protected static function _getCategoryDefaults() {
 		$defaults=array(
 			'category_id'=>'',
 			'parent_category'=>0,
@@ -6244,9 +6501,9 @@ class PVContent extends PVStaticObject {
 			'category_owner'=>0
 		);
 		return $defaults;
-	}//end getCategoryDefaults
+	}//end _getCategoryDefaults
 	
-	private static function getContentDefaults() {
+	protected static function _getContentDefaults() {
 		$defaults=array(
 			'content_id'=>0,
 			'parent_content'=>0,
@@ -6282,9 +6539,9 @@ class PVContent extends PVStaticObject {
 			'category_id'=>''
 		);
 		return $defaults;
-	}//end getContentDefaults
+	}//end _getContentDefaults
 	
-	private static function getAudioContentDefaults() {
+	protected static function _getAudioContentDefaults() {
 		$defaults=array(
 			'audio_id'=>0,
 			'audio_length'=>'',
@@ -6301,7 +6558,7 @@ class PVContent extends PVStaticObject {
 		return $defaults;
 	}
 
-	private static function getEventContentDefaults() {
+	protected static function _getEventContentDefaults() {
 		$defaults=array(
 			'event_id'=>0,
 			'event_location'=>'',
@@ -6322,7 +6579,7 @@ class PVContent extends PVStaticObject {
 		return $defaults;
 	}
 
-	private static function getTextContentDefaults() {
+	protected static function _getTextContentDefaults() {
 		$defaults=array(
 			'text_id'=>0,
 			'text_content'=>'',
@@ -6334,7 +6591,7 @@ class PVContent extends PVStaticObject {
 		return $defaults;
 	}
 	
-	private static function getFileContentDefaults() {
+	protected static function _getFileContentDefaults() {
 		$defaults=array(
 			'file_id'=>0,
 			'file_type'=>'',
@@ -6350,7 +6607,7 @@ class PVContent extends PVStaticObject {
 		return $defaults;
 	}
 	
-	private static function getImageContentDefaults() {
+	protected static function _getImageContentDefaults() {
 		$defaults=array(
 			'image_id'=>0,
 			'image_type'=>'',
@@ -6366,7 +6623,7 @@ class PVContent extends PVStaticObject {
 		return $defaults;
 	}
 	
-	private static function getProductContentDefaults() {
+	protected static function _getProductContentDefaults() {
 		$defaults=array(
 			'product_id'=>0,
 			'product_sku'=>'',
@@ -6390,7 +6647,7 @@ class PVContent extends PVStaticObject {
 		return $defaults;
 	}
 
-	private static function getVideoContentDefaults() {
+	protected static function _getVideoContentDefaults() {
 		$defaults=array(
 			'video_id'=>0,
 			'video_type'=>'',
@@ -6414,7 +6671,7 @@ class PVContent extends PVStaticObject {
 		return $defaults;
 	}
 	
-	private static function getContentMultiAuthorDefaults() {
+	protected static function _getContentMultiAuthorDefaults() {
 		$defaults = array(
 			'content_id'=>0,
 			'author_id'=>0,
