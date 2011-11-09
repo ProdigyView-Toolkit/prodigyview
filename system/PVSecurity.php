@@ -135,6 +135,7 @@ class PVSecurity extends PVStaticObject {
 				return 1;
 		}
 		$roles=PVUsers::getUserRolesList();
+		$found = false;
 			
 		//Put Roles Into Array for checking
 		if(!is_array($allowed_roles)){
