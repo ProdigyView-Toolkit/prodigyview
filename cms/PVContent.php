@@ -4138,6 +4138,7 @@ class PVContent extends PVStaticObject {
 			$category_id=PVDatabase::makeSafe($category_id);
 			$query="SELECT * FROM ".PVDatabase::getContentCategoriesTableName()." WHERE category_id='$category_id' ";
 			$result = PVDatabase::query($query);
+			$row = PVDatabase::fetchArray($result);
 			
 			$row = PVDatabase::formatData($row);
 			self::_notify(get_class().'::'.__FUNCTION__, $row , $category_id);
