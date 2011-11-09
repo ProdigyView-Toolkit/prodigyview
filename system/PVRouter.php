@@ -406,7 +406,7 @@ class PVRouter extends PVStaticObject{
 		self::_notify(get_class().'::'.__FUNCTION__ , $url);
 		$url= self::_applyFilter( get_class(), __FUNCTION__ , $url, array('event'=>'args'));
 		
-		if(PVValidator::isValidUrl()){
+		if(PVValidator::isValidUrl($url)){
 			header('Location: '.$url);
 		} else {
 			self::setRoute($url);
