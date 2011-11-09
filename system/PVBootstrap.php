@@ -77,7 +77,7 @@ class PVBootstrap extends PVStaticObject{
 		self::setErrorReporting($config['report_errors'],$config['log_errors'], $config['error_report_level'] );
 		
 		if($args['initialize_database']) {
-			PVDatabase::init();
+			PVDatabase::init($config);
 			PVDatabase::setDatabase(0);
 		}
 		
