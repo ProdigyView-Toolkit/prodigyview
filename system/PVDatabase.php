@@ -41,9 +41,10 @@ class PVDatabase extends PVStaticObject {
 	private static $oracleConnection="oracle";
 	private static $msSQLConnection="mssql";
 	private static $sqLiteConnection="sqlite";
-	private static $uniqueName="pv_dbconnector";
 	
-	private static $connections=array();
+	private static $connections = array();
+	
+	private static $mysql_error_report = MYSQLI_REPORT_ERROR;
 	
 	//Database Implementation
 	private static $dbhost = "";
@@ -58,7 +59,13 @@ class PVDatabase extends PVStaticObject {
 	//Variables
 	private static $row;
 	
-	public static function init(){
+	public static function init($config = array()){
+		
+		$defaults = array('mysql_error_report' => MYSQLI_REPORT_ERROR);
+		$config += $defaults;
+		
+		self::$mysql_error_report = $config['mysql_error_report'];
+		
 		self::$connections=array();
 		
 		if(file_exists(PV_DB_CONFIG)){
