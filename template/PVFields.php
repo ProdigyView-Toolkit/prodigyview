@@ -38,7 +38,8 @@ class PVFields extends PVStaticObject{
 		$args = PVDatabase::makeSafe($args);
 		extract($args);
 	
-		$query="INSERT INTO ".pv_getFieldsTableName()."(field_name ,field_type,field_description,field_title,max_length, max_size, columns,rows,value,searchable,readonly,show_title, is_required , on_blur,id,on_change,on_click,on_doubelclick,on_focus,on_keydown,on_keyup,on_keypress,on_mousedown,on_mouseup,on_mousemove,on_mouseover,on_mouseout,instructions,show_instructions,checked,disabled,lang,align,accept,class,size, field_prefix, field_suffix, field_css,app_id, field_prefix, field_suffix, field_css, owner_id, field_unique_name) VALUES( '$field_name' ,'$field_type', '$field_description' , '$field_title' , '$max_length' , '$max_size' , '$columns' , '$rows' ,'$value' , '$searchable' , '$readonly' , '$show_title' , '$is_required' , '$on_blur' , '$id' , '$on_change' , '$on_click' , '$on_doubelclick' ,'$on_focus' , '$on_keydown' ,' $on_keyup' , '$on_keypress' , '$on_mousedown' , '$on_mouseup' , '$on_mousemove' , '$on_mouseover' , '$on_mouseout' , '$instructions' , '$show_instructions' , '$checked' , '$disabled' , '$lang' ,'$align' , '$accept' , '$field_class' , '$size' , '$field_prefix' , '$field_suffix' , '$field_css' , '$app_id' , '$field_prefix', '$field_suffix', '$field_css' , '$owner_id' , '$field_unique_name')";
+		$query="INSERT INTO ".pv_getFieldsTableName()."(field_name ,field_type,field_description,field_title,max_length, max_size, columns,rows,value,searchable,readonly,show_title, is_required , on_blur,id,on_change,on_click,on_doubelclick,on_focus,on_keydown,on_keyup,on_keypress,on_mousedown,on_mouseup,on_mousemove,on_mouseover,on_mouseout,instructions,show_instructions,checked,disabled,lang,align,accept,class,size, field_prefix, field_suffix, field_css,app_id, field_prefix, field_suffix, field_css, owner_id, field_unique_name, content_type, field_order, content_id ) VALUES( '$field_name' ,'$field_type', '$field_description' , '$field_title' , '$max_length' , '$max_size' , '$columns' , '$rows' ,'$value' , '$searchable' , '$readonly' , '$show_title' , '$is_required' , '$on_blur' , '$id' , '$on_change' , '$on_click' , '$on_doubelclick' ,'$on_focus' , '$on_keydown' ,' $on_keyup' , '$on_keypress' , '$on_mousedown' , '$on_mouseup' , '$on_mousemove' , '$on_mouseover' , '$on_mouseout' , '$instructions' , '$show_instructions' , '$checked' , '$disabled' , '$lang' ,'$align' , '$accept' , '$field_class' , '$size' , '$field_prefix' , '$field_suffix' , '$field_css' , '$app_id' , '$field_prefix', '$field_suffix', '$field_css' , '$owner_id' , '$field_unique_name', '$content_type', '$field_order', '$content_id'
+		)";
 		$field_id=PVDatabase::return_last_insert_query($query, "field_id", pv_getFieldsTableName() );
 		
 		self::_notify(get_class().'::'.__FUNCTION__, $field_id, $args);
@@ -57,7 +58,7 @@ class PVFields extends PVStaticObject{
 		$args=PVDatabase::makeSafe($args);
 		extract($args);
 			
-		$query="UPDATE ".pv_getFieldsTableName()." SET field_name='$field_name' , field_type='$field_type',field_description='$field_description' , field_title='$field_title' , max_length='$max_length' , max_size='$max_size', field_columns='$field_columns',field_rows='$field_rows' , field_value='$field_value' , searchable='$searchable' , readonly='$readonly' , show_title='$show_title' , is_required='$is_required' , on_blur='$on_blur',id='$id', on_change='$on_change',on_click='$on_click' , on_doubelclick='$on_doubelclick' ,on_focus='$on_focus' ,on_keydown='$on_keydown' ,on_keyup='$on_keyup' , on_keypress='$on_keypress' , on_mousedown='$on_mousedown',on_mouseup='$on_mouseup', on_mousemove='$on_mousemove' ,on_mouseover='$on_mouseover', on_mouseout='$on_mouseout' , instructions='$instructions',show_instructions='$show_instructions', checked='$checked' ,disabled='$disabled' , lang='$lang' , align='$align' ,accept='$accept' ,field_class='$field_class' , field_size='$size' , field_prefix='$field_prefix' , field_suffix='$field_suffix' , field_css='$field_css' ,app_id='$app_id', field_prefix='$field_prefix', field_suffix='$field_suffix', field_css='$field_css', owner_id='$owner_id', field_unique_name='$field_unique_name', content_type='$content_type', field_order='$field_order' WHERE field_id='$field_id' ";
+		$query="UPDATE ".pv_getFieldsTableName()." SET field_name='$field_name' , field_type='$field_type',field_description='$field_description' , field_title='$field_title' , max_length='$max_length' , max_size='$max_size', field_columns='$field_columns',field_rows='$field_rows' , field_value='$field_value' , searchable='$searchable' , readonly='$readonly' , show_title='$show_title' , is_required='$is_required' , on_blur='$on_blur',id='$id', on_change='$on_change',on_click='$on_click' , on_doubelclick='$on_doubelclick' ,on_focus='$on_focus' ,on_keydown='$on_keydown' ,on_keyup='$on_keyup' , on_keypress='$on_keypress' , on_mousedown='$on_mousedown',on_mouseup='$on_mouseup', on_mousemove='$on_mousemove' ,on_mouseover='$on_mouseover', on_mouseout='$on_mouseout' , instructions='$instructions',show_instructions='$show_instructions', checked='$checked' ,disabled='$disabled' , lang='$lang' , align='$align' ,accept='$accept' ,field_class='$field_class' , field_size='$size' , field_prefix='$field_prefix' , field_suffix='$field_suffix' , field_css='$field_css' ,app_id='$app_id', field_prefix='$field_prefix', field_suffix='$field_suffix', field_css='$field_css', owner_id='$owner_id', field_unique_name='$field_unique_name', content_type='$content_type', field_order='$field_order', content_id='$content_id' WHERE field_id='$field_id' ";
 		PVDatabase::query($query);
 		self::_notify(get_class().'::'.__FUNCTION__, $args);
 	}//end updateField
@@ -933,13 +934,31 @@ class PVFields extends PVStaticObject{
 				$first=0;
 		}//end not empty app_id
 		
+		if(!empty($content_id)){
+					
+				$content_id = trim($content_id);
+				
+				if($first==0 && ($content_id[0]!='+' && $content_id[0]!=',' ) ){
+						$WHERE_CLAUSE.=" AND ";
+					}
+					
+				else if( ($content_id[0]=='+' || $content_id[0]==',') && $first==1 ){
+					$content_id[0]='';
+				}
+				
+				$WHERE_CLAUSE.=' '.PVTools::parseSQLOperators($content_id, 'content_id');
+				
+				$first=0;
+		}//end not empty app_id
+		
+		$CATEGORY_JOIN = '';
+		
 		if(!empty($custom_where)){
-			
-			if(empty($WHERE_CLAUSE)){
-				$WHERE_CLAUSE.=' WHERE ';
-			}
-			
-			$WHERE_CLAUSE.=" $custom_where";
+			$WHERE_CLAUSE.=" $custom_where ";
+		}
+		
+		if(!empty($WHERE_CLAUSE)){
+			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
 	
 		if(!empty($category_id)){
@@ -963,7 +982,7 @@ class PVFields extends PVStaticObject{
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(pv_getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(pv_getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -982,8 +1001,8 @@ class PVFields extends PVStaticObject{
 			$WHERE_CLAUSE.=" HAVING $having";
 		}
 		
-		if(!empty($order_by_clause)){
-			$WHERE_CLAUSE.=" ORDER BY $order_by_clause";
+		if(!empty($order_by)){
+			$WHERE_CLAUSE.=" ORDER BY $order_by";
 		}
 		
 		if(!empty($limit) && !$paged && ($db_type=='mysql' || $db_type=='postgresql') ){
@@ -998,8 +1017,7 @@ class PVFields extends PVStaticObject{
 			$custom_select='*';
 		}
 		
-    	$query="$PREQUERY SELECT $PREFIX_ARGS $custom_select FROM $table_name $CATEGORY_JOIN $WHERE_CLAUSE";
-    	
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $CATEGORY_JOIN $WHERE_CLAUSE";
 		$result = PVDatabase::query($query);
     	
     	while ($row = PVDatabase::fetchArray($result)){
@@ -1492,17 +1510,12 @@ class PVFields extends PVStaticObject{
 				$first=0;
 		}//end not empty app_id
 		
-		if(!empty($WHERE_CLAUSE)){
-				$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
-		}
-
 		if(!empty($custom_where)){
-			
-			if(empty($WHERE_CLAUSE)){
-				$WHERE_CLAUSE.=' WHERE ';
-			}
-			
-			$WHERE_CLAUSE.=" $custom_where";
+			$WHERE_CLAUSE.=" $custom_where ";
+		}
+		
+		if(!empty($WHERE_CLAUSE)){
+			$WHERE_CLAUSE=' WHERE '.$WHERE_CLAUSE;
 		}
 	
 		if(!empty($custom_join)){
@@ -1518,7 +1531,7 @@ class PVFields extends PVStaticObject{
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(pv_getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(pv_getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -1553,7 +1566,7 @@ class PVFields extends PVStaticObject{
 			$custom_select='*';
 		}
 		
-    	$query="$PREQUERY SELECT $PREFIX_ARGS $custom_select FROM $table_name $CATEGORY_JOIN $WHERE_CLAUSE";
+    	$query="$prequery SELECT $prefix_args $custom_select FROM $table_name $CATEGORY_JOIN $WHERE_CLAUSE";
     	
 		$result = PVDatabase::query($query);
     	
@@ -1814,7 +1827,7 @@ class PVFields extends PVStaticObject{
 		}
 		
 		if($paged){
-			$page_results=PVDatabase::getPagininationOffset(pv_getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by_clause);
+			$page_results=PVDatabase::getPagininationOffset(pv_getContentTableName(), $CATEGORY_JOIN , $WHERE_CLAUSE, $current_page, $results_per_page, $order_by);
 			
 			if($db_type=='mysql' || $db_type=='postgresql'){
 				$limit=' '.$page_results['limit_offset'];
@@ -2003,7 +2016,8 @@ class PVFields extends PVStaticObject{
 			'owner_id' => '',
 			'field_unique_name' => '',
 			'content_type' => '',
-			'field_order' => 0
+			'field_order' => 0,
+			'content_id' => 0
 		);
 		
 		return $defaults;
