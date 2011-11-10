@@ -1,40 +1,40 @@
 <?php
 /*
-*Copyright 2011 ProdigyView LLC. All rights reserved.
-*
-*Redistribution and use in source and binary forms, with or without modification, are
-*permitted provided that the following conditions are met:
-*
-*   1. Redistributions of source code must retain the above copyright notice, this list of
-*      conditions and the following disclaimer.
-*
-*   2. Redistributions in binary form must reproduce the above copyright notice, this list
-*      of conditions and the following disclaimer in the documentation and/or other materials
-*      provided with the distribution.
-*
-*THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
-*WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-*FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
-*CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-*SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-*ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-*NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-*ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*The views and conclusions contained in the software and documentation are those of the
-*authors and should not be interpreted as representing official policies, either expressed
-*or implied, of ProdigyView LLC.
-*/
+ *Copyright 2011 ProdigyView LLC. All rights reserved.
+ *
+ *Redistribution and use in source and binary forms, with or without modification, are
+ *permitted provided that the following conditions are met:
+ *
+ *   1. Redistributions of source code must retain the above copyright notice, this list of
+ *      conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *      of conditions and the following disclaimer in the documentation and/or other materials
+ *      provided with the distribution.
+ *
+ *THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
+ *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *The views and conclusions contained in the software and documentation are those of the
+ *authors and should not be interpreted as representing official policies, either expressed
+ *or implied, of ProdigyView LLC.
+ */
 class PVHtml extends PVStaticObject {
-	
+
 	/**
 	 * Displays an image in the <img /> tags. By default the location can be either an image
 	 * in an url or the image location referenced will be from the PV_IMAGE define set.
-	 * 
+	 *
 	 * @see self::getEventAttributes()
 	 * @see self::getStandardAttributes()
-	 * 
+	 *
 	 * @param string $location Either a url of the image or the path to the image in the PV_IMAGE define location
 	 * @param array $options Attributes that can be added to the image. includes self::getStandardAttributes and self::getEventAttributes
 	 * 				-'image_width' _double_: The width of the image
@@ -44,121 +44,121 @@ class PVHtml extends PVStaticObject {
 	 * 				-'alt' _string_: Value to go in the alt tag of the image
 	 * 				-'longdesc' _string_: Value to go in the longdesc tag of the image
 	 * 				-'usemap' _string_: Value to go in the usemap tag of an image
-	 * 
+	 *
 	 * @return string $image The image tag returned as a string
 	 * @access public
 	 */
-	public static function image($location, $options=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+	public static function image($location, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $location, $options);
-		
-		$defaults=array('alt'=>'');
+
+		$defaults = array('alt' => '');
 		$options += $defaults;
-		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('location'=>$location, 'options'=>$options), array('event'=>'args'));
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('location' => $location, 'options' => $options), array('event' => 'args'));
 		$location = $filtered['location'];
 		$options = $filtered['options'];
-		
-		$image='<img ';
-		
-		if(PVValidator::isValidUrl($location)){
-			$image.='src="'.$location.'" ';
+
+		$image = '<img ';
+
+		if (PVValidator::isValidUrl($location)) {
+			$image .= 'src="' . $location . '" ';
 		} else {
-			$image.='src="'.PVRouter::url(PV_IMAGE.$location).'" ';
+			$image .= 'src="' . PVRouter::url(PV_IMAGE . $location) . '" ';
 		}
-		
-		if(!empty($options['image_width'])){
-			$image.='width="'.$options['image_width'].'" ';
+
+		if (!empty($options['image_width'])) {
+			$image .= 'width="' . $options['image_width'] . '" ';
 		}
-		
-		if(!empty($options['image_height'])){
-			$image.='width="'.$options['image_height'].'" ';
+
+		if (!empty($options['image_height'])) {
+			$image .= 'width="' . $options['image_height'] . '" ';
 		}
-		
-		if(!empty($options['width'])){
-			$image.='width="'.$options['width'].'" ';
+
+		if (!empty($options['width'])) {
+			$image .= 'width="' . $options['width'] . '" ';
 		}
-		
-		if(!empty($options['height'])){
-			$image.='width="'.$options['height'].'" ';
+
+		if (!empty($options['height'])) {
+			$image .= 'width="' . $options['height'] . '" ';
 		}
-		
-		if(isset($options['alt'])){
-			$image.='alt="'.$options['alt'].'" ';
+
+		if (isset($options['alt'])) {
+			$image .= 'alt="' . $options['alt'] . '" ';
 		}
-		
-		if(!empty($options['longdesc'])){
-			$image.='longdesc="'.$options['longdesc'].'" ';
+
+		if (!empty($options['longdesc'])) {
+			$image .= 'longdesc="' . $options['longdesc'] . '" ';
 		}
-		
-		if(!empty($options['usemap'])){
-			$image.='usemap="'.$options['usemap'].'" ';
+
+		if (!empty($options['usemap'])) {
+			$image .= 'usemap="' . $options['usemap'] . '" ';
 		}
-		
-		$image.=self::getStandardAttributes($options);
-		$image.=self::getEventAttributes($options);
-		
-		$image.='/>';
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $image, $location, $options);
-		$image = self::_applyFilter( get_class(), __FUNCTION__ , $image , array('event'=>'return'));	
-		
+
+		$image .= self::getStandardAttributes($options);
+		$image .= self::getEventAttributes($options);
+
+		$image .= '/>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $image, $location, $options);
+		$image = self::_applyFilter(get_class(), __FUNCTION__, $image, array('event' => 'return'));
+
 		return $image;
 	}//end getImageDisplay
-	
+
 	/**
 	 * Display a time passed in the HTML5 time field.
-	 * 
+	 *
 	 * @see self::getEventAttributes()
 	 * @see self::getStandardAttributes()
-	 * 
+	 *
 	 * @param string $time A time value
 	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
 	 * 				-'datetime' _string_: Tags to go in the datetime tags
 	 * 				-'pubdate' _string_: Tags to go in the pubdate
-	 * 
+	 *
 	 * @return string $time The time taged returned a time
 	 * @access public
 	 */
-	public static function time($time, $options=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+	public static function time($time, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $time, $options);
-		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('time'=>$time, 'options'=>$options), array('event'=>'args'));
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('time' => $time, 'options' => $options), array('event' => 'args'));
 		$time = $filtered['time'];
 		$options = $filtered['options'];
-		
-		$tag='<time ';
-		
-		if(!empty($options['datetime'])){
-			$tag.='datetime="'.$options['datetime'].'" ';
+
+		$tag = '<time ';
+
+		if (!empty($options['datetime'])) {
+			$tag .= 'datetime="' . $options['datetime'] . '" ';
 		}
-		
-		if(!empty($options['pubdate'])){
-			$tag.='pubdate="'.$options['pubdate'].'" ';
+
+		if (!empty($options['pubdate'])) {
+			$tag .= 'pubdate="' . $options['pubdate'] . '" ';
 		}
-		
-		$tag.=self::getStandardAttributes($options);
-		$tag.=self::getEventAttributes($options);
-		
-		$tag.='>'.$time.'</time>';
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $tag, $time, $options);
-		$tag = self::_applyFilter( get_class(), __FUNCTION__ , $tag , array('event'=>'return'));
-		
+
+		$tag .= self::getStandardAttributes($options);
+		$tag .= self::getEventAttributes($options);
+
+		$tag .= '>' . $time . '</time>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $time, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
 		return $tag;
-		
+
 	}//end getImageDisplay
-	
+
 	/**
 	 * Display an ahref links
-	 * 
+	 *
 	 * @see self::getEventAttributes()
 	 * @see self::getStandardAttributes()
 	 * @see PVRouter::url()
-	 * 
+	 *
 	 * @param string $title The title of link that the user will see
 	 * @param mixed $url A url that the link will point too. If the url is an array or not a valid url, it will be passed to PVRouter::url.
 	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
@@ -168,74 +168,74 @@ class PVHtml extends PVStaticObject {
 	 * 				-'rel' _string_: Value to go in the rel attribute
 	 * 				-'shape' _string_: Value to o in the shape attribute
 	 * 				-'target' _string_: Value to in the target attribute
-	 * 
+	 *
 	 * @return string $link The link tag returned as a string
 	 * @access public
 	 */
-	public static function alink($title, $url, $options=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+	public static function alink($title, $url, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $title, $url, $options);
-		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array('title'=>$title, 'url'=>$url, 'options'=>$options), array('event'=>'args'));
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('title' => $title, 'url' => $url, 'options' => $options), array('event' => 'args'));
 		$title = $filtered['title'];
 		$url = $filtered['url'];
 		$options = $filtered['options'];
-		
-		$link='<a ';
-		
-		if(is_array($url) || !PVValidator::isValidUrl($url))
-			$link.='href="'.PVRouter::url($url).'" ';
+
+		$link = '<a ';
+
+		if (is_array($url) || !PVValidator::isValidUrl($url))
+			$link .= 'href="' . PVRouter::url($url) . '" ';
 		else
-			$link.='href="'.$url.'" ';
-		
-		if(!empty($options['charset'])){
-			$link.='charset="'.$options['charset'].'" ';
+			$link .= 'href="' . $url . '" ';
+
+		if (!empty($options['charset'])) {
+			$link .= 'charset="' . $options['charset'] . '" ';
 		}
-		
-		if(!empty($options['hreflang'])){
-			$link.='hreflang="'.$options['hreflang'].'" ';
+
+		if (!empty($options['hreflang'])) {
+			$link .= 'hreflang="' . $options['hreflang'] . '" ';
 		}
-		
-		if(!empty($options['name'])){
-			$link.='name="'.$options['name'].'" ';
+
+		if (!empty($options['name'])) {
+			$link .= 'name="' . $options['name'] . '" ';
 		}
-		
-		if(!empty($options['rel'])){
-			$link.='rel="'.$options['rel'].'" ';
+
+		if (!empty($options['rel'])) {
+			$link .= 'rel="' . $options['rel'] . '" ';
 		}
-		
-		if(!empty($options['rev'])){
-			$link.='rev="'.$options['rev'].'" ';
+
+		if (!empty($options['rev'])) {
+			$link .= 'rev="' . $options['rev'] . '" ';
 		}
-		
-		if(!empty($options['shape'])){
-			$link.='shape="'.$options['shape'].'" ';
+
+		if (!empty($options['shape'])) {
+			$link .= 'shape="' . $options['shape'] . '" ';
 		}
-		
-		if(!empty($options['target'])){
-			$link.='target="'.$options['target'].'" ';
+
+		if (!empty($options['target'])) {
+			$link .= 'target="' . $options['target'] . '" ';
 		}
-		
-		$link.=self::getStandardAttributes($options);
-		$link.=self::getEventAttributes($options);
-		
-		$link.='>'.$title.'</a>';
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $link, $title, $url, $options);
-		$link = self::_applyFilter( get_class(), __FUNCTION__ , $link , array('event'=>'return'));
-		
+
+		$link .= self::getStandardAttributes($options);
+		$link .= self::getEventAttributes($options);
+
+		$link .= '>' . $title . '</a>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $link, $title, $url, $options);
+		$link = self::_applyFilter(get_class(), __FUNCTION__, $link, array('event' => 'return'));
+
 		return $link;
-		
+
 	}//end getImageDisplay
-	
+
 	/**
 	 * Display a link
-	 * 
+	 *
 	 * @see self::getEventAttributes()
 	 * @see self::getStandardAttributes()
 	 * @see PVRouter::url()
-	 * 
+	 *
 	 * @param mixed $url A url that the link will point too. If the url is an array or not a valid url, it will be passed to PVRouter::url.
 	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
 	 * 				-'hreflang' _string_: Value to go in the hreflang tag.
@@ -243,112 +243,112 @@ class PVHtml extends PVStaticObject {
 	 * 				-'rel' _string_: Value to go in the rel attribute
 	 * 				-'media' _string_: Value to go in the media attribute.
 	 * 				-'sizes' _string_: Value to in the sizes attribute
-	 * 
+	 *
 	 * @return string $link The link tag returned as a string
 	 * @access public
 	 */
-	public static function link($url, $options=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+	public static function link($url, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url, $options);
-		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'url'=>$url, 'options'=>$options), array('event'=>'args'));
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('url' => $url, 'options' => $options), array('event' => 'args'));
 		$url = $filtered['url'];
 		$options = $filtered['options'];
-		
-		$link='<link ';
-		
-		if(is_array($url) || !PVValidator::isValidUrl($url))
-			$link.='href="'.PVRouter::url($url).'" ';
+
+		$link = '<link ';
+
+		if (is_array($url) || !PVValidator::isValidUrl($url))
+			$link .= 'href="' . PVRouter::url($url) . '" ';
 		else
-			$link.='href="'.$url.'" ';
-		
-		if(!empty($options['hreflang'])){
-			$link.='hreflang="'.$options['hreflang'].'" ';
-		}
-		
-		if(!empty($options['name'])){
-			$link.='name="'.$options['name'].'" ';
-		}
-		
-		if(!empty($options['media'])){
-			$link.='media="'.$options['media'].'" ';
+			$link .= 'href="' . $url . '" ';
+
+		if (!empty($options['hreflang'])) {
+			$link .= 'hreflang="' . $options['hreflang'] . '" ';
 		}
 
-		if(!empty($options['rel'])){
-			$link.='rel="'.$options['rel'].'" ';
+		if (!empty($options['name'])) {
+			$link .= 'name="' . $options['name'] . '" ';
 		}
-		
-		if(!empty($options['sizes'])){
-			$link.='sizes="'.$options['sizes'].'" ';
+
+		if (!empty($options['media'])) {
+			$link .= 'media="' . $options['media'] . '" ';
 		}
-		
-		$link.=self::getStandardAttributes($options);
-		
-		$link.='/>';
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $link, $url, $options);
-		$link = self::_applyFilter( get_class(), __FUNCTION__ , $link , array('event'=>'return'));
-		
+
+		if (!empty($options['rel'])) {
+			$link .= 'rel="' . $options['rel'] . '" ';
+		}
+
+		if (!empty($options['sizes'])) {
+			$link .= 'sizes="' . $options['sizes'] . '" ';
+		}
+
+		$link .= self::getStandardAttributes($options);
+
+		$link .= '/>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $link, $url, $options);
+		$link = self::_applyFilter(get_class(), __FUNCTION__, $link, array('event' => 'return'));
+
 		return $link;
-		
+
 	}//end getImageDisplay
-	
+
 	/**
 	 * Generate a meta tag.
 	 *
 	 * @see self::getStandardAttributes()
-	 * 
+	 *
 	 * @param string $name The name of the meta tag being generated
 	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
 	 * 				-'charset' _string_: Value to go in the charset tag.
 	 * 				-'content' _string_: Value to go in the content attribute.
 	 * 				-'name' _string_: Value tog go in the name attribute
 	 * 				-'http-equiv' _string_: Value to go in the http-equiv attribute
-	 * 
+	 *
 	 * @return string $meta The meta tag returned as a string
 	 * @access public
 	 */
-	public static function meta($name='', $options=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+	public static function meta($name = '', $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
-		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'name'=>$name, 'options'=>$options), array('event'=>'args'));
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'options' => $options), array('event' => 'args'));
 		$name = $filtered['name'];
 		$options = $filtered['options'];
-		
-		$link='<meta ';
-		
-		if(!empty($options['charset'])){
-			$link.='charset="'.$options['charset'].'" ';
+
+		$link = '<meta ';
+
+		if (!empty($options['charset'])) {
+			$link .= 'charset="' . $options['charset'] . '" ';
 		}
-		
-		if(!empty($options['content'])){
-			$link.='content="'.$options['content'].'" ';
+
+		if (!empty($options['content'])) {
+			$link .= 'content="' . $options['content'] . '" ';
 		}
-		
-		if(!empty($name)){
-			$link.='name="'.$name.'" ';
+
+		if (!empty($name)) {
+			$link .= 'name="' . $name . '" ';
 		}
-		
-		if(!empty($options['http-equiv'])){
-			$link.='http-equiv="'.$options['http-equiv'].'" ';
+
+		if (!empty($options['http-equiv'])) {
+			$link .= 'http-equiv="' . $options['http-equiv'] . '" ';
 		}
-		
-		$link.=self::getStandardAttributes($options);
-		
-		$link.='/>';
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $link, $name, $options);
-		$link = self::_applyFilter( get_class(), __FUNCTION__ , $link , array('event'=>'return'));
-		
+
+		$link .= self::getStandardAttributes($options);
+
+		$link .= '/>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $link, $name, $options);
+		$link = self::_applyFilter(get_class(), __FUNCTION__, $link, array('event' => 'return'));
+
 		return $link;
 	}//end meta
-	
+
 	/**
 	 * Displays a video using the HTML5 video component. For best usage, pass through a mp4, ogv and webm file.
-	 * 
+	 *
 	 * @param string $src The location of the video file to be played. Will be rendered by self::videoContentURL() function
 	 * @param array $options Options that can be used to define attributes in the elements tag
 	 * 				-'height' _double_: The height of the video
@@ -362,86 +362,86 @@ class PVHtml extends PVStaticObject {
 	 * 				-'mp4_file' _string_: Location of the mp4 file
 	 * 				-'webm_file' _string_: The location of the webm file
 	 * 				-'ogv_file' _string_: Location of the ogv file
-	 * 
+	 *
 	 * @return string $video Returns the video tag
 	 * @access public
 	 */
-	public static function video($src='', $options=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
-			return self::_callAdapter(get_class(), __FUNCTION__, $src , $options);
-		
-		$defaults=array('controls'=>'controls', 'error'=>'Sorry but your browser cannot play this HTML5 Element');
+	public static function video($src = '', $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
+
+		$defaults = array('controls' => 'controls', 'error' => 'Sorry but your browser cannot play this HTML5 Element');
 		$options += $defaults;
-		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'src'=>$src, 'options'=>$options), array('event'=>'args'));
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('src' => $src, 'options' => $options), array('event' => 'args'));
 		$src = $filtered['src'];
 		$options = $filtered['options'];
-		
-		$video='<video ';
-		
-		if(!empty($src)){
-			$video.='src="'.self::videoContentURL($src).'" ';
-		}
-		
-		if(!empty($options['height'])){
-			$video.='height="'.$options['height'].'" ';
-		}
-		
-		if(!empty($options['width'])){
-			$video.='width="'.$options['width'].'" ';
-		}
-		
-		if(!empty($options['controls'])){
-			$video.='controls="'.$options['controls'].'" ';
-		}
-		
-		if(!empty($options['audio'])){
-			$video.='audio="'.$options['audio'].'" ';
-		}
-		
-		if(!empty($options['autoplay'])){
-			$video.='autoplay="'.$options['autoplay'].'" ';
-		}
-		
-		if(!empty($options['loop'])){
-			$video.='loop="'.$options['loop'].'" ';
-		}
-		
-		if(!empty($options['poster'])){
-			$video.='poster="'.$options['poster'].'" ';
+
+		$video = '<video ';
+
+		if (!empty($src)) {
+			$video .= 'src="' . self::videoContentURL($src) . '" ';
 		}
 
-		if(!empty($options['preload'])){
-			$video.='preload="'.$options['preload'].'" ';
+		if (!empty($options['height'])) {
+			$video .= 'height="' . $options['height'] . '" ';
 		}
-		
-		$video.=self::getMediaEventAttributes($options);
-		$video.='>';
-		
-		if(!empty($options['mp4_file'])){
-			$video.='<source src="'.self::videoContentURL($options['mp4_file']).'" type="video/mp4" >';
+
+		if (!empty($options['width'])) {
+			$video .= 'width="' . $options['width'] . '" ';
 		}
-		
-		if(!empty($options['ogv_file'])){
-			$video.='<source src="'.self::videoContentURL($options['ogv_file']).'" type="video/ogg" >';
+
+		if (!empty($options['controls'])) {
+			$video .= 'controls="' . $options['controls'] . '" ';
 		}
-		
-		if(!empty($options['webm_file'])){
-			$video.='<source src="'.self::videoContentURL($options['webm_file']).'" type="video/webm" >';
+
+		if (!empty($options['audio'])) {
+			$video .= 'audio="' . $options['audio'] . '" ';
 		}
-		$video.=$options['error'];
-		$video.='</video>';
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $video, $src, $options);
-		$video = self::_applyFilter( get_class(), __FUNCTION__ , $video , array('event'=>'return'));
-		
+
+		if (!empty($options['autoplay'])) {
+			$video .= 'autoplay="' . $options['autoplay'] . '" ';
+		}
+
+		if (!empty($options['loop'])) {
+			$video .= 'loop="' . $options['loop'] . '" ';
+		}
+
+		if (!empty($options['poster'])) {
+			$video .= 'poster="' . $options['poster'] . '" ';
+		}
+
+		if (!empty($options['preload'])) {
+			$video .= 'preload="' . $options['preload'] . '" ';
+		}
+
+		$video .= self::getMediaEventAttributes($options);
+		$video .= '>';
+
+		if (!empty($options['mp4_file'])) {
+			$video .= '<source src="' . self::videoContentURL($options['mp4_file']) . '" type="video/mp4" >';
+		}
+
+		if (!empty($options['ogv_file'])) {
+			$video .= '<source src="' . self::videoContentURL($options['ogv_file']) . '" type="video/ogg" >';
+		}
+
+		if (!empty($options['webm_file'])) {
+			$video .= '<source src="' . self::videoContentURL($options['webm_file']) . '" type="video/webm" >';
+		}
+		$video .= $options['error'];
+		$video .= '</video>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $video, $src, $options);
+		$video = self::_applyFilter(get_class(), __FUNCTION__, $video, array('event' => 'return'));
+
 		return $video;
 	}//end getVideoDisplay
-	
+
 	/**
 	 * Displays an audio clip using the HTML5 audio component. For best usage, pass through a wav, mp3 and oga file.
-	 * 
+	 *
 	 * @param string $src The location of the audio file to be played. Will be rendered by self::audioContentURL() function
 	 * @param array $options Options that can be used to define attributes in the elements tag
 	 * 				-'controls' _string_: The controls attributes.
@@ -453,107 +453,107 @@ class PVHtml extends PVStaticObject {
 	 * 				-'wav_file' _string_: Location of the wav file
 	 * 				-'mp3_file' _string_: The location of the mp3 file
 	 * 				-'oga_file' _string_: Location of the oga file
-	 * 
+	 *
 	 * @return string $audio Returns the audio tag
 	 * @access public
 	 */
-	public static function audio($src='', $options=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+	public static function audio($src = '', $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
-		
-		$defaults=array('controls'=>'controls', 'error'=>'Sorry but your browser cannot play this HTML5 Element');
+
+		$defaults = array('controls' => 'controls', 'error' => 'Sorry but your browser cannot play this HTML5 Element');
 		$options += $defaults;
-		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'src'=>$src, 'options'=>$options), array('event'=>'args'));
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('src' => $src, 'options' => $options), array('event' => 'args'));
 		$src = $filtered['src'];
 		$options = $filtered['options'];
-		
-		$audio='<audio ';
-		
-		if(!empty($src)){
-			$audio.='src="'.self::audioContentURL($src).'" ';
-		}
-		
-		if(!empty($options['controls'])){
-			$audio.='controls="'.$options['controls'].'" ';
-		}
-		
-		if(!empty($options['audio'])){
-			$audio.='audio="'.$options['audio'].'" ';
-		}
-		
-		if(!empty($options['autoplay'])){
-			$audio.='autoplay="'.$options['autoplay'].'" ';
-		}
-		
-		if(!empty($options['loop'])){
-			$audio.='loop="'.$options['loop'].'" ';
+
+		$audio = '<audio ';
+
+		if (!empty($src)) {
+			$audio .= 'src="' . self::audioContentURL($src) . '" ';
 		}
 
-		if(!empty($options['preload'])){
-			$audio.='preload="'.$options['preload'].'" ';
+		if (!empty($options['controls'])) {
+			$audio .= 'controls="' . $options['controls'] . '" ';
 		}
-		
-		$audio.=self::getMediaEventAttributes($options);
-		$audio.='>';
-		
-		if(!empty($options['wav_file'])){
-			$audio.='<source src="'.self::audioContentURL($options['wav_file']).'" type="audio/wav" >';
+
+		if (!empty($options['audio'])) {
+			$audio .= 'audio="' . $options['audio'] . '" ';
 		}
-		
-		if(!empty($options['mp3_file'])){
-			$audio.='<source src="'.self::audioContentURL($options['mp3_file']).'" type="audio/mpeg" >';
+
+		if (!empty($options['autoplay'])) {
+			$audio .= 'autoplay="' . $options['autoplay'] . '" ';
 		}
-		
-		if(!empty($options['oga_file'])){
-			$audio.='<source src="'.self::audioContentURL($options['oga_file']).'" type="audio/ogg" >';
+
+		if (!empty($options['loop'])) {
+			$audio .= 'loop="' . $options['loop'] . '" ';
 		}
-		$audio.=$options['error'];
-		$audio.='</audio>';
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $audio, $src, $options);
-		$audio = self::_applyFilter( get_class(), __FUNCTION__ , $audio , array('event'=>'return'));
-		
+
+		if (!empty($options['preload'])) {
+			$audio .= 'preload="' . $options['preload'] . '" ';
+		}
+
+		$audio .= self::getMediaEventAttributes($options);
+		$audio .= '>';
+
+		if (!empty($options['wav_file'])) {
+			$audio .= '<source src="' . self::audioContentURL($options['wav_file']) . '" type="audio/wav" >';
+		}
+
+		if (!empty($options['mp3_file'])) {
+			$audio .= '<source src="' . self::audioContentURL($options['mp3_file']) . '" type="audio/mpeg" >';
+		}
+
+		if (!empty($options['oga_file'])) {
+			$audio .= '<source src="' . self::audioContentURL($options['oga_file']) . '" type="audio/ogg" >';
+		}
+		$audio .= $options['error'];
+		$audio .= '</audio>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $audio, $src, $options);
+		$audio = self::_applyFilter(get_class(), __FUNCTION__, $audio, array('event' => 'return'));
+
 		return $audio;
 	}//end getVideoDisplay
-	
+
 	/**
 	 * Creates a div to display.
-	 * 
+	 *
 	 * @see self::getEventAttributes()
 	 * @see self::getStandardAttributes()
-	 * 
+	 *
 	 * @param string $data The information thatwill be displayed inside the div
 	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
-	 * 
+	 *
 	 * @return string $div The div element that was generated
 	 * @access public
 	 */
-	public static function div($data, $options=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+	public static function div($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
-		
-		$filtered = self::_applyFilter( get_class(), __FUNCTION__ ,  array( 'data'=>$data, 'options'=>$options), array('event'=>'args'));
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
 		$data = $filtered['data'];
 		$options = $filtered['options'];
-			
-		$tag='<div ';
-		$tag.=self::getStandardAttributes($options);
-		$tag.=self::getEventAttributes($options);
-		$tag.='>'.$data.'</div>';
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $tag, $data , $options);
-		$tag = self::_applyFilter( get_class(), __FUNCTION__ , $tag , array('event'=>'return'));
-		
+
+		$tag = '<div ';
+		$tag .= self::getStandardAttributes($options);
+		$tag .= self::getEventAttributes($options);
+		$tag .= '>' . $data . '</div>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
 		return $tag;
 	}
-	
+
 	/**
 	 * Standard attributes that are present in many html tags. This functionisused for assigning those attribute by passing
 	 * them in as an array and returning them as a string. Contains both html and html5 elements
-	 * 
+	 *
 	 * @param array $attributes Attribues that will be assigned if they match
 	 * 			-'class' _string_: The class attribute
 	 * 			-'id' _string_: The class attribute
@@ -571,120 +571,121 @@ class PVHtml extends PVStaticObject {
 	 *  		-'hidden' _string_: The class attribute
 	 *  		-'spellcheck' _string_: The class attribute
 	 * 			-'title' _string_: The class attribute
-	 * 
+	 *
 	 * @return string $attributes Returns the matched attributes as a string
 	 * @access public
 	 */
-	public static function getStandardAttributes($attributes=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+	public static function getStandardAttributes($attributes = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
-		
-		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
-		
-		$return_attributes='';
-		$accepted_attributes=array('class', 'id', 'dir', 'lang', 'style', 'title', 'xml:lang','accesskey', 'contenteditable', 'contextmenu', 'draggable', 'dropzone', 'hidden', 'spellcheck', 'title');
-		
-		foreach($attributes as $key => $attribute){
-			if(in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)){
-				$return_attributes.=$key.'="'.$attribute.'" ';
+
+		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+
+		$return_attributes = '';
+		$accepted_attributes = array('class', 'id', 'dir', 'lang', 'style', 'title', 'xml:lang', 'accesskey', 'contenteditable', 'contextmenu', 'draggable', 'dropzone', 'hidden', 'spellcheck', 'title');
+
+		foreach ($attributes as $key => $attribute) {
+			if (in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)) {
+				$return_attributes .= $key . '="' . $attribute . '" ';
 			}
 		}
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));
-		
-		return $return_attributes;
-	}
-	
-	public static function getEventAttributes($attributes=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
-			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
-		
-		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
-		
-		$return_attributes='';
-		$accepted_attributes=array('onabort', 'onclick', 'ondblclick', 'onmousedown', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onkeydown', 'onkeypress', 'onkeyup', 'onblur', 'onfocus', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onmousewheel', 'onscroll');
-		
-		foreach($attributes as $key => $attribute){
-			if(in_array($key,$accepted_attributes) && !PVValidator::isInteger($key)){
-				$return_attributes.=$key.'="'.$attribute.'" ';
-			}
-		}
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));
-		
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+
 		return $return_attributes;
 	}
 
-	public static function getMediaEventAttributes($attributes=array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
-			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
-		
-		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
+	public static function getEventAttributes($attributes = array()) {
 
-		$return_attributes='';
-		$accepted_attributes=array( 'oncanplay', 'oncanplaythrough', 'ondurationchange', 'onemptied', 'onended', 'onerror', 'onloadeddata', 'onloadedmetadata', 'onloadstart', 'onpause', 'onplay', 'onplaying', 'onprogress', 'onratechange', 'onreadystatechange', 'onseeked', 'onseeking', 'onstalled', 'onsuspend', 'ontimeupdate', 'onvolumechange', 'onwaiting');
-		
-		foreach($attributes as $key => $attribute){
-			if(in_array($key,$accepted_attributes) && !PVValidator::isInteger($key)){
-				$return_attributes.=$key.'="'.$attribute.'" ';
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+
+		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+
+		$return_attributes = '';
+		$accepted_attributes = array('onabort', 'onclick', 'ondblclick', 'onmousedown', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onkeydown', 'onkeypress', 'onkeyup', 'onblur', 'onfocus', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onmousewheel', 'onscroll');
+
+		foreach ($attributes as $key => $attribute) {
+			if (in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)) {
+				$return_attributes .= $key . '="' . $attribute . '" ';
 			}
 		}
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));
-		
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+
+		return $return_attributes;
+	}
+
+	public static function getMediaEventAttributes($attributes = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+
+		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+
+		$return_attributes = '';
+		$accepted_attributes = array('oncanplay', 'oncanplaythrough', 'ondurationchange', 'onemptied', 'onended', 'onerror', 'onloadeddata', 'onloadedmetadata', 'onloadstart', 'onpause', 'onplay', 'onplaying', 'onprogress', 'onratechange', 'onreadystatechange', 'onseeked', 'onseeking', 'onstalled', 'onsuspend', 'ontimeupdate', 'onvolumechange', 'onwaiting');
+
+		foreach ($attributes as $key => $attribute) {
+			if (in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)) {
+				$return_attributes .= $key . '="' . $attribute . '" ';
+			}
+		}
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+
 		return $return_attributes;
 	}
 
 	public static function getWindowAttributes($attributes = array()) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
-		
-		$attributes = self::_applyFilter( get_class(), __FUNCTION__ ,  $attributes, array('event'=>'args'));
-		
-		$accepted_attributes=array( 'onafterprint', 'onbeforeprint', 'ondurationchange', 'onbeforeonload', 'onblur', 'onerror', 'onfocus', 'onhaschange', 'onload', 'onmessage', 'onoffline', 'ononline', 'onpageshow', 'onpopstate', 'onredo', 'onresize', 'onstorage', 'onundo', 'onunload');
-		
-		foreach($attributes as $key => $attribute){
-			if(in_array($key,$accepted_attributes) && !PVValidator::isInteger($key)){
-				$return_attributes.=$key.'="'.$attribute.'" ';
+
+		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+
+		$accepted_attributes = array('onafterprint', 'onbeforeprint', 'ondurationchange', 'onbeforeonload', 'onblur', 'onerror', 'onfocus', 'onhaschange', 'onload', 'onmessage', 'onoffline', 'ononline', 'onpageshow', 'onpopstate', 'onredo', 'onresize', 'onstorage', 'onundo', 'onunload');
+
+		foreach ($attributes as $key => $attribute) {
+			if (in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)) {
+				$return_attributes .= $key . '="' . $attribute . '" ';
 			}
 		}
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter( get_class(), __FUNCTION__ , $return_attributes , array('event'=>'return'));
-		
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+
 		return $return_attributes;
 	}
 
 	private static function audioContentURL($url) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url);
-		
-		$url = self::_applyFilter( get_class(), __FUNCTION__ ,  $url, array('event'=>'args'));
-		
-		if(!PVValidator::isValidURL($url)){
-			$url=PV_AUDIO.$url;
+
+		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+
+		if (!PVValidator::isValidURL($url)) {
+			$url = PV_AUDIO . $url;
 		}
 		return PVRouter::url($url);
 	}
-	
+
 	private static function videoContentURL($url) {
-		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url);
-		
-		$url = self::_applyFilter( get_class(), __FUNCTION__ ,  $url, array('event'=>'args'));
-		
-		if(!PVValidator::isValidURL($url)){
-			$url=PV_VIDEO.$url;
+
+		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+
+		if (!PVValidator::isValidURL($url)) {
+			$url = PV_VIDEO . $url;
 		}
 		return PVRouter::url($url);
 	}
+
 }//end fields

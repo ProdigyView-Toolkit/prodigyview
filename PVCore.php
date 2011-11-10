@@ -2280,7 +2280,6 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 		return PVFields::printContentMetaTags($apply_filter);	
 	}
 	
-	
 	function pv_getTheContentMetaTags($apply_filter=true){
 		return PVFields::getContentMetaTags($apply_filter);	
 	}
@@ -2297,7 +2296,6 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	function pv_printTheContentThumbnailLocation($apply_filter=true){
 		return PVFields::printContentThumbnailLocation($apply_filter);	
 	}
-	
 	
 	function pv_getTheContentThumbnailLocation($apply_filter=true){
 		return PVFields::getContentThumbnailLocation($apply_filter);	
@@ -2355,7 +2353,6 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	function pv_getTheContentIsSearchable($apply_filter=true){
 		return PVFields::getContentIsSearchable($apply_filter);	
 	}
-	
 	
 	function pv_printContentAllowComments($apply_filter=true){
 		return PVFields::printContentAllowComments($apply_filter);	
@@ -2552,8 +2549,7 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	function pv_getTheContentText($apply_filter=true){
 		return PVFields::getContentText($apply_filter);	
 	}
-	
-	
+
 	function pv_printTheContentTextPageGroup($apply_filter=true){
 		return PVFields::printContentTextPageGroup($apply_filter);	
 	}
@@ -2597,7 +2593,6 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 		return PVFields::getContentVideoLength($apply_filter);	
 	}
 	
-	
 	function pv_printTheContentVideoAllowEmbedding($apply_filter=true){
 		return PVFields::printContentVideoAllowEmbedding($apply_filter);	
 	}
@@ -2615,8 +2610,6 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 		return PVFields::getContentVideoFlvFile($apply_filter);	
 	}
 	
-	
-	
 	function pv_printTheContentVideoMp4File($apply_filter=true){
 		return PVFields::printContentVideoMp4File($apply_filter);	
 	}
@@ -2624,7 +2617,6 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	function pv_getTheContentVideoMp4File($apply_filter=true){
 		return PVFields::getContentVideoMp4File($apply_filter);	
 	}
-	
 	
 	function pv_printTheContentVideoWmvFile($apply_filter=true){
 		return PVFields::printContentVideoWmvFile($apply_filter);	
@@ -3336,40 +3328,37 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
     }
     
     function pv_successMessage($text){
-    	?>
-    	<div class="success-message" >
-    	<p><?php echo $text;?></p>
-    	</div><!-- success-message -->
-    	<?php
-    
-    }//end pv
-    
-    function pv_errorMessage($text){
-    	?>
-    	<div class="error-message" >
-    	<p><?php echo $text;?></p>
-    	</div><!-- success-message -->
-    	<?php
-    
-    }//end pv
-    
-    function pv_retrieveGET($variable){
-    	if(isset($_GET[$variable])){
-    		return $_GET[$variable];
-    	}
-    }//end 
-	
-	 function pv_retrievePOST($variable){
-    	if(isset($_POST[$variable])){
-    		return $_POST[$variable];
-    	}
-    }//end 
-	
-    /**
-     * 
-     */
-	
-	
-	
 
+?>
+<div class="success-message" >
+	<p>
+		<?php  echo $text;?>
+	</p>
+</div><!-- success-message -->
+<?php
+
+}//end pv
+
+function pv_errorMessage($text){
+?>
+<div class="error-message" >
+	<p>
+		<?php  echo $text;?>
+	</p>
+</div><!-- success-message -->
+<?php
+
+}//end pv
+
+function pv_retrieveGET($variable){
+if(isset($_GET[$variable])){
+return $_GET[$variable];
+}
+}//end
+
+function pv_retrievePOST($variable){
+if(isset($_POST[$variable])){
+return $_POST[$variable];
+}
+}//end
 ?>
