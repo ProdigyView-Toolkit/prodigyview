@@ -5766,7 +5766,8 @@ class PVContent extends PVStaticObject {
 	}//end
 
 	public static function getContentMutliAuthorList($args = array()) {
-
+			
+		$args += self::_getSqlSearchDefaults();
 		$args += self::_getContentMultiAuthorDefaults();
 		extract($args, EXTR_SKIP);
 
@@ -5959,7 +5960,8 @@ class PVContent extends PVStaticObject {
 	}//end addContentRelationship
 
 	public static function getContentRelationshipList($args = array()) {
-
+			
+		$args += self::_getSqlSearchDefaults();
 		extract($args, EXTR_SKIP);
 
 		$first = 1;
