@@ -75,16 +75,16 @@ class PVStaticPatterns {
 		array_shift($args);
 		array_shift($args);
 
-		$passasbe_args = array();
+		$passable_args = array();
 		foreach ($args as $key => &$arg) {
-			$passasbe_args[$key] = &$arg;
+			$passable_args[$key] = &$arg;
 		}
 
 		$options = self::$_adapters[$class][$method];
 		if ($options['object'] == 'instance')
-			return self::_invokeMethod($options['call_class'], $options['call_method'], $passasbe_args);
+			return self::_invokeMethod($options['call_class'], $options['call_method'], $passable_args);
 		else
-			return self::_invokeStaticMethod($options['call_class'], $options['call_method'], $passasbe_args);
+			return self::_invokeStaticMethod($options['call_class'], $options['call_method'], $passable_args);
 
 	}//end _callAdapter
 
@@ -140,17 +140,17 @@ class PVStaticPatterns {
 		$args = func_get_args();
 		array_shift($args);
 
-		$passasbe_args = array();
+		$passable_args = array();
 		foreach ($args as $key => &$arg) {
-			$passasbe_args[$key] = &$arg;
+			$passable_args[$key] = &$arg;
 		}
 
 		if (isset(self::$_observers[$event])) {
 			foreach (self::$_observers[$event] as $options) {
 				if ($options['object'] == 'instance')
-					self::_invokeMethod($options['class'], $options['method'], $passasbe_args);
+					self::_invokeMethod($options['class'], $options['method'], $passable_args);
 				else
-					self::_invokeStaticMethod($options['class'], $options['method'], $passasbe_args);
+					self::_invokeStaticMethod($options['class'], $options['method'], $passable_args);
 			}//end for each
 		}
 

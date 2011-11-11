@@ -148,14 +148,14 @@ class PVValidator extends PVStaticObject {
 		$args = func_get_args();
 		array_shift($args);
 
-		$passasbe_args = array();
+		$passable_args = array();
 		foreach ($args as $key => &$arg) {
-			$passasbe_args[$key] = &$arg;
+			$passable_args[$key] = &$arg;
 		}
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('rule' => $rule, 'passasbe_args' => $passasbe_args), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('rule' => $rule, 'passasbe_args' => $passable_args), array('event' => 'args'));
 		$rule = $filtered['rule'];
-		$passasbe_args = $filtered['passasbe_args'];
+		$passable_args = $filtered['passasbe_args'];
 		$validation = false;
 
 		if (!isset(self::$rules[$rule])) {
@@ -163,15 +163,15 @@ class PVValidator extends PVStaticObject {
 		}
 
 		if (self::$rules[$rule]['type'] == 'validator') {
-			$validation = self::_invokeStaticMethod('PVValidator', self::$rules[$rule]['function'], $passasbe_args);
+			$validation = self::_invokeStaticMethod('PVValidator', self::$rules[$rule]['function'], $passable_args);
 		} else if (self::$rules[$rule]['type'] == 'preg_match') {
-			$validation = preg_match(self::$rules[$rule]['rule'], $passasbe_args[0]);
+			$validation = preg_match(self::$rules[$rule]['rule'], $passable_args[0]);
 		} else if (self::$rules[$rule]['type'] == 'function') {
 			$function = self::$rules[$rule]['function'];
-			$validation = call_user_func_array($function, $passasbe_args);
+			$validation = call_user_func_array($function, $passable_args);
 		} else if (self::$rules[$rule]['type'] == 'closure') {
 			$function = self::$rules[$rule]['function'];
-			$validation = call_user_func_array($function, $passasbe_args);
+			$validation = call_user_func_array($function, $passable_args);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $rule);

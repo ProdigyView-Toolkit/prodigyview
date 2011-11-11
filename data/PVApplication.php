@@ -43,15 +43,15 @@ abstract class PVApplication extends PVObject {
 		$args = func_get_args();
 		array_shift($args);
 
-		$passasbe_args = array();
+		$passable_args = array();
 		foreach ($args as $key => &$arg) {
-			$passasbe_args[$key] = &$arg;
+			$passable_args[$key] = &$arg;
 		}
 
 		if (method_exists($this, $command)) {
-			return $this -> _invokeMethod($this, $command, $passasbe_args);
+			return $this -> _invokeMethod($this, $command, $passable_args);
 		} else {
-			return $this -> _invokeMethod($this, 'defaultFunction', $passasbe_args);
+			return $this -> _invokeMethod($this, 'defaultFunction', $passable_args);
 		}
 	}
 
