@@ -31,7 +31,7 @@ class PVStaticObject extends PVStaticPatterns {
 
 	protected static $_collection = null;
 
-	protected static $_instance;
+	protected static $_instances = array();
 
 	/**
 	 * Adds a value to the classes Collection. By default the collection is stored
@@ -134,13 +134,21 @@ class PVStaticObject extends PVStaticPatterns {
 		return $defaults;
 	}
 
+	/**
+	 * Returns the instance of a class. Used for implementing the singleton design pattern. Class
+	 * will only be instantiated once.
+	 * 
+	 * @return object $instance Returns the instance of a class.
+	 * @access public
+	 */
 	public static function getInstance() {
-		if (!self::$_instance) {
-			$class = get_class();
-			self::$_instance = new $class();
+		$class = get_called_class();
+
+		if (!isset(self::$instances[$class])) {
+			self::$instances[$class] = new $class;
 		}
 
-		return self::$_instance;
+		return self::$instances[$class];
 	}
 
 }//end class
