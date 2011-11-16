@@ -119,7 +119,7 @@ class PVStaticObject extends PVStaticPatterns {
 	 * @return void
 	 * @access public
 	 */
-	protected static function _addToCollection($data) {
+	public static function addToCollection($data) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data);
@@ -138,7 +138,7 @@ class PVStaticObject extends PVStaticPatterns {
 	 *
 	 * @todo check the relevance of get and set
 	 */
-	protected static function _addToCollectionWithName($name, $data) {
+	public static function addToCollectionWithName($name, $data) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $data);
