@@ -68,7 +68,7 @@ class PVForms extends PVStaticObject {
 		$input .= '/>';
 
 		if (!isset($css_options['disable_css'])) {
-			return PVHtml::div($input, $css_options);
+			$input = PVHtml::div($input, $css_options);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $type, $options, $css_options);
@@ -489,7 +489,7 @@ class PVForms extends PVStaticObject {
 	 * @return string $element The string that creates the element
 	 * @access public
 	 */
-	public static function radiobutton($name, $options = array(), $css_options = array()) {
+	public static function radio($name, $options = array(), $css_options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
