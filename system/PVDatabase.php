@@ -46,14 +46,14 @@ class PVDatabase extends PVStaticObject {
 	private static $mysql_error_report = MYSQLI_REPORT_ERROR;
 
 	//Database Implementation
-	private static $dbhost = "";
-	private static $dbname = "";
-	private static $dbuser = "";
-	private static $dbpass = "";
-	private static $dbtype = "";
-	private static $dbschema = "";
-	private static $dbprefix = "";
-	private static $dbport = "";
+	private static $dbhost = '';
+	private static $dbname = '';
+	private static $dbuser = '';
+	private static $dbpass = '';
+	private static $dbtype = '';
+	private static $dbschema = '';
+	private static $dbprefix = '';
+	private static $dbport = '';
 
 	//Variables
 	private static $row;
@@ -647,7 +647,7 @@ class PVDatabase extends PVStaticObject {
 	 * }
 	 *
 	 * @param string $table_name The name of the table to be checked
-	 * @param string $filed_name:The name of the column to check if iexit
+	 * @param string $field_name:The name of the column to check if iexit
 	 *
 	 * @return boolean $exist Returns true if exist, otherwise return false
 	 */
@@ -1216,8 +1216,8 @@ class PVDatabase extends PVStaticObject {
 		$first = 1;
 		$count = 0;
 		foreach ($data as $key => $value) {
-			$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
-			$params_holder[$key] = $value;
+			$params[] = (isset($formats[$count])) ? $formats[$count] : 's';
+			$params_holder[] = $value;
 
 			if ($first) {
 				$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
@@ -1233,8 +1233,8 @@ class PVDatabase extends PVStaticObject {
 			$query .= ' WHERE ';
 			$count2 = 0;
 			foreach ($wherelist as $key => $value) {
-				$params[$key] = (isset($wherelist[$count2])) ? $formats[$count2] : 's';
-				$params_holder[$key] = $value;
+				$params[] = (isset($wherelist[$count2])) ? $formats[$count2] : 's';
+				$params_holder[] = $value;
 
 				if ($first) {
 					$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
@@ -1246,16 +1246,16 @@ class PVDatabase extends PVStaticObject {
 				$first = 0;
 			}//end foreach
 		}//end if is_array and not emptys
-
+		
 		if (self::$dbtype == self::$mySQLConnection) {
 
 			$stmt = self::$link -> prepare($query);
 			self::bindParameters($stmt, $params);
-
+			
 			foreach ($params_holder as $key => $value) {
 				$params[$key] = $value;
 			}
-
+		
 			$result = $stmt -> execute();
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
 
@@ -1543,7 +1543,7 @@ class PVDatabase extends PVStaticObject {
 		if ($options['execute'])
 			PVDatabase::query($query);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $column_name, $column_data, $option);
+		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $column_name, $column_data, $options);
 		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
 
 		if ($options['return_query'])
@@ -1698,6 +1698,97 @@ class PVDatabase extends PVStaticObject {
 		}//end for each
 
 	}//end type map
+	
+	/**
+	 * Remove a column from a table in the database.
+	 * 
+	 * @param string $table_name The name of the table to remove the column from
+	 * @param string $column_name The name name of the column to be removed
+	 * @param array $options Options that define how removing a column operates.
+	 * 			-'format_table' _boolean_: Formats the table name by adding the prefix set in the database config. Default is false.
+	 * 			-'execute' _boolean_: Execute the query to remove the column. Default is true.
+	 * 			-'return_query' _bolean_: Return the generated query. Default is true;
+	 *
+	 * @return string $query Returns the query for removing the column
+	 * @access public
+	 */
+	public static function dropColumn($table_name, $column_name, $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $column_name, $options);
+
+		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, );
+		$options += $defaults;
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'column_name' => $column_name, 'options' => $options), array('event' => 'args'));
+		$table_name = $filtered['table_name'];
+		$column_name = $filtered['column_name'];
+		$options = $filtered['options'];
+
+		if ($options['format_table'])
+			$table_name = self::formatTableName($table_name);
+		
+		if (self::$dbtype == self::$mySQLConnection) {
+			$query = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name . ';';
+		} else if (self::$dbtype == self::$postgreSQLConnection) {
+			$query = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name . ';';
+		} else if (self::$dbtype == self::$msSQLConnection) {
+			$query = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name . ';';
+		}
+
+		if ($options['execute'])
+			PVDatabase::query($query);
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $column_name, $options);
+		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
+
+		if ($options['return_query'])
+			return $query;
+	}
+
+	/**
+	 * Drops a table in the database
+	 * 
+	 * @param string $table_name The name of the table to be dropped
+	 * @param array $options Options that define how to remove the table
+	 * 			-'format_table' _boolean_: Formats the table name by adding the prefix set in the database config. Default is false.
+	 * 			-'execute' _boolean_: Execute the query to the table. Default is true.
+	 * 			-'return_query' _bolean_: Return the generated query. Default is true;
+	 *
+	 * @return string $query Returns the query for dropping the stable
+	 * @access public
+	 */
+	public static function dropTable($table_name, $options = array()) {
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $options);
+
+		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, );
+		$options += $defaults;
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'options' => $options), array('event' => 'args'));
+		$table_name = $filtered['table_name'];
+		$options = $filtered['options'];
+
+		if ($options['format_table'])
+			$table_name = self::formatTableName($table_name);
+		
+		if (self::$dbtype == self::$mySQLConnection) {
+			$query = 'DROP TABLE ' . $table_name . ';';
+		} else if (self::$dbtype == self::$postgreSQLConnection) {
+			$query = 'DROP TABLE ' . $table_name . ';';
+		} else if (self::$dbtype == self::$msSQLConnection) {
+			$query = 'DROP TABLE ' . $table_name . ';';
+		}
+
+		if ($options['execute'])
+			PVDatabase::query($query);
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $options);
+		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
+
+		if ($options['return_query'])
+			return $query;
+	}
 
 	/**
 	 * Returns the table name for the application's permissions.
