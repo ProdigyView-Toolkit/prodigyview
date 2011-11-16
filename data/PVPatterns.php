@@ -48,6 +48,8 @@ class PVPatterns {
 	 * 			needs to be instantiated, change to instance and one will be created before the adapter calld the function
 	 * 			-'call_method' _string_: By default the method to be called to override the current one should be the
 	 * 			same name. But this can be ovveridden to call a different method.
+	 * 			-'type' _string_: The type of function being called. Default is class_method but if the function is a closure,
+	 * 			set the type to be 'closure' and make the $trigger_method the closure
 	 *
 	 * @return void
 	 * @access public
@@ -59,7 +61,8 @@ class PVPatterns {
 			'call_class' => $call_class, 
 			'class' => $trigger_class, 
 			'method' => $trigger_method, 
-			'call_method' => $trigger_method
+			'call_method' => $trigger_method,
+			'type' => 'class_method'
 		);
 		$options += $defaults;
 
@@ -89,7 +92,10 @@ class PVPatterns {
 		}
 
 		$options = $this -> _adapters[$class][$method];
-		if ($options['object'] == 'instance')
+		
+		if($options['type'] == 'closure')
+			return call_user_func_array( $options['call_method'], $passable_args);
+		else if ($options['object'] == 'instance')
 			return self::_invokeMethod($options['call_class'], $options['call_method'], $passable_args);
 		else
 			return self::_invokeStaticMethod($options['call_class'], $options['call_method'], $passable_args);
@@ -123,12 +129,19 @@ class PVPatterns {
 	 * 			-'object' _string_ : If the method being called is static, should be set to static. Else set to instance
 	 * 			-'class' _stinrg_ : The name of the class to be called. Default is the class that is passed in.
 	 * 			-'method' _string_: The name of the method to be called. Default is the method that is passed in.
+	 * 			-'type' _string_: The type of function being called. Default is class_method but if the function is a closure,
+	 * 			set the type to be 'closure' and make the $method the closure
 	 *
 	 * @return void
 	 * @access public
 	 */
 	public function addObserver($event, $class, $method, $options = array()) {
-		$default = array('object' => 'static', 'class' => $class, 'method' => $method);
+		$default = array(
+			'object' => 'static', 
+			'class' => $class, 
+			'method' => $method,
+			'type' => 'class_method'
+		);
 
 		$options += $default;
 		$this -> _observers[$event][] = $options;
@@ -155,7 +168,9 @@ class PVPatterns {
 
 		if (isset($this -> _observers[$event])) {
 			foreach ($this->_observers[$event] as $options) {
-				if ($options['object'] == 'instance')
+				if($options['type'] == 'closure')
+					call_user_func_array( $options['method'], $passable_args);
+				else if ($options['object'] == 'instance')
 					self::_invokeMethod($options['class'], $options['method'], $passable_args);
 				else
 					self::_invokeStaticMethod($options['class'], $options['method'], $passable_args);
@@ -176,6 +191,8 @@ class PVPatterns {
 	 * 			-'object' _string_: If the method being called is static, static should be inserted. If its in an instance, 'instance' should be set.
 	 * 			Default is set to static.
 	 * 			-'event' _string_: Associate this filter with an event.
+	 * 			-'type' _string_: The type of function being called. Default is class_method but if the function is a closure,
+	 * 			set the type to be 'closure' and make the $filter_method the closure
 	 *
 	 * @return void
 	 * @access public
@@ -185,7 +202,8 @@ class PVPatterns {
 			'object' => 'static', 
 			'class' => $filter_class, 
 			'method' => $filter_method, 
-			'event' => null
+			'event' => null,
+			'type' => 'class_method'
 		);
 
 		$options += $defaults;
@@ -222,8 +240,10 @@ class PVPatterns {
 		$passable_args = array($data, $options);
 
 		foreach ($this->_filters[$class][$method] as $function) {
-
-			if ($function['event'] == $options['event']) {
+			
+			if($function['type'] == 'closure' && $function['event'] == $options['event']) {
+				$passable_args[0] = call_user_func_array( $function['method'], $passable_args);
+			} else if ($function['event'] == $options['event']) {
 				if ($function['object'] == 'instance')
 					$passable_args[0] = $this -> _invokeMethod($function['class'], $function['method'], $passable_args);
 				else
