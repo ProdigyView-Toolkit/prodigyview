@@ -31,6 +31,8 @@ class PVObject extends PVPatterns {
 
 	protected $_collection = null;
 	
+	protected static $_instances = array();
+	
 	protected $_methods = array();
 
 	public function __set($index, $value) {
@@ -88,7 +90,7 @@ class PVObject extends PVPatterns {
 		return $value;
 	}
 
-	protected function _addToCollection($data) {
+	public function addToCollection($data) {
 		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
 			return $this->_callAdapter(get_class(), __FUNCTION__, $data);
@@ -102,7 +104,7 @@ class PVObject extends PVPatterns {
 		$this->_notify(get_class() . '::' . __FUNCTION__, $data);
 	}//end
 
-	protected function _addToCollectionWithName($name, $data) {
+	public function addToCollectionWithName($name, $data) {
 		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
 			return $this->_callAdapter(get_class(), __FUNCTION__, $name, $data);
@@ -167,6 +169,26 @@ class PVObject extends PVPatterns {
 		$defaults = $this->_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
 		
 		return $defaults;
+	}
+	
+	/**
+	 * Returns the instance of a class. Used for implementing the singleton design pattern. Class
+	 * will only be instantiated once.
+	 * 
+	 * @return object $instance Returns the instance of a class.
+	 * @access public
+	 */
+	public static function getInstance() {
+		
+		$class = get_called_class();
+
+		if (!isset(self::$_instances[$class])) {
+			self::$_instances[$class] = new $class;
+		}
+		
+		$object = self::$_instances[$class];
+		
+		return $object;
 	}
 
 }//end class
