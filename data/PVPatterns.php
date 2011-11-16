@@ -36,8 +36,9 @@ class PVPatterns {
 	protected $_filters;
 
 	/**
-	 * Adapters allows completely override the method of another class by calling a different class
-	 * with the same function name.
+	 * Adapters allows a method to be completely overwritten by calling a different class
+	 * with the same method name. Adapters can also be used with closures. The adapter uses
+	 * a strategy/adapter design pattern.
 	 *
 	 * @param string $trigger_class  The class that contains the function the adapter will respond too
 	 * @param string $trigger_method The method called that will have the adapter to be called.
