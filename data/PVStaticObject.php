@@ -32,6 +32,8 @@ class PVStaticObject extends PVStaticPatterns {
 	protected static $_collection = null;
 
 	protected static $_instances = array();
+	
+	protected static $_methods = array();
 
 	/**
 	 * Adds a value to the classes Collection. By default the collection is stored
@@ -44,12 +46,21 @@ class PVStaticObject extends PVStaticPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public static function _set($index, $value) {
+	public static function set($index, $value) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $index, $value);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('index' => $index, 'value' => $value), array('event' => 'args'));
+		$index = $filtered['index'];
+		$value = $filtered['value'];
+		
 		if (self::$_collection == null) {
 			self::$_collection = new PVCollection();
 		}
 
 		self::$_collection -> addWithName($index, $value);
+		self::_notify(get_class() . '::' . __FUNCTION__, $index, $value);
 	}
 
 	/**
@@ -60,13 +71,45 @@ class PVStaticObject extends PVStaticPatterns {
 	 *
 	 * @return mixed $data The data that was stored in that index
 	 */
-	public static function _get($index) {
+	public static function get($index) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $index);
+		
+		$index = self::_applyFilter(get_class(), __FUNCTION__, $index, array('event' => 'args'));
+		
 		if (self::$_collection == null) {
 			self::$_collection = new PVCollection();
 		}
-		return self::$_collection -> $index;
+		
+		$value = self::$_collection -> $index;
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $value, $index);
+		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
+		
+		return $value;
 	}
 
+	function __call($method,$args) {
+  			
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $method, $args);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('method' => $method, 'args' => $args), array('event' => 'args'));
+		$method = $filtered['method'];
+		$args = $filtered['args'];
+		
+  		if(isset(self::$_methods[$method]))
+  			$value = call_user_func_array(self::$_methods[$method] , $args);
+		else 
+			$value = null;
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $value, $method, $args);
+		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
+		
+		return $value;
+	}
+	
 	/**
 	 * Adds a data to the public collection, index will be assigned. Primary used for adding
 	 * launch quanties of data to the collection,
@@ -76,11 +119,17 @@ class PVStaticObject extends PVStaticPatterns {
 	 * @return void
 	 * @access public
 	 */
-	protected static function addToCollection($data) {
+	protected static function _addToCollection($data) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data);
+		
+		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'args'));
 		if (self::$_collection == null) {
 			self::$_collection = new PVCollection();
 		}
 		self::$_collection -> add($data);
+		self::_notify(get_class() . '::' . __FUNCTION__, $data);
 	}//end
 
 	/**
@@ -89,18 +138,44 @@ class PVStaticObject extends PVStaticPatterns {
 	 *
 	 * @todo check the relevance of get and set
 	 */
-	protected static function addToCollectionWithName($name, $data) {
+	protected static function _addToCollectionWithName($name, $data) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $data);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'data' => $data), array('event' => 'args'));
+		$name = $filtered['name'];
+		$data = $filtered['data'];
+		
 		if (self::$_collection == null) {
 			self::$_collection = new PVCollection();
 		}
 		self::$_collection -> addWithName($name, $data);
+		self::_notify(get_class() . '::' . __FUNCTION__, $name, $data);
 	}//end
 
 	public function getIterator() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		if (self::$_collection == null) {
 			self::$_collection = new PVCollection();
 		}
 		return self::$_collection -> getIterator();
+	}
+	
+	public function addMethod($method, $closure) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $method, $closure);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('method' => $method, 'closure' => $closure), array('event' => 'args'));
+		$method = $filtered['method'];
+		$closure = $filtered['closure'];
+		
+		self::$_methods[$method]=$closure;
+		self::_notify(get_class() . '::' . __FUNCTION__, $method, $closure);
 	}
 
 	protected static function _getSqlSearchDefaults() {
@@ -130,6 +205,8 @@ class PVStaticObject extends PVStaticPatterns {
 			'join_modules' => false, 
 			'join_containers' => false
 		);
+		
+		$defaults = self::_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
 
 		return $defaults;
 	}
@@ -142,13 +219,20 @@ class PVStaticObject extends PVStaticPatterns {
 	 * @access public
 	 */
 	public static function getInstance() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
 		$class = get_called_class();
 
 		if (!isset(self::$_instances[$class])) {
 			self::$_instances[$class] = new $class;
 		}
 		
-		return self::$_instances[$class];
+		$object = self::$_instances[$class];
+		$object = self::_applyFilter(get_class(), __FUNCTION__, $object, array('event' => 'return'));
+		
+		return $object;
 	}
 
 }//end class
