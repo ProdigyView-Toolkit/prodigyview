@@ -32,8 +32,10 @@ class PVPatterns {
 	protected $_adapters = array();
 
 	protected $_observers = array();
+	
+	protected static $_instances = array();
 
-	protected $_filters;
+	protected $_filters = array();
 
 	/**
 	 * Adapters allows a method to be completely overwritten by calling a different class
@@ -263,6 +265,26 @@ class PVPatterns {
 		if (isset($this -> _filters[$class][$method]))
 			return TRUE;
 		return false;
+	}
+	
+	/**
+	 * Returns the instance of a class. Used for implementing the singleton design pattern. Class
+	 * will only be instantiated once.
+	 * 
+	 * @return object $instance Returns the instance of a class.
+	 * @access public
+	 */
+	public static function getInstance() {
+		
+		$class = get_called_class();
+
+		if (!isset(self::$_instances[$class])) {
+			self::$_instances[$class] = new $class;
+		}
+		
+		$object = self::$_instances[$class];
+		
+		return $object;
 	}
 
 	/**

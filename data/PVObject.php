@@ -31,8 +31,6 @@ class PVObject extends PVPatterns {
 
 	protected $_collection = null;
 	
-	protected static $_instances = array();
-	
 	protected $_methods = array();
 
 	public function __set($index, $value) {
@@ -70,7 +68,7 @@ class PVObject extends PVPatterns {
 		return $value;
 	}
 	
-	function __call($method,$args) {
+	public function __call($method,$args = array()) {
   			
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
 			return $this->_callAdapter(get_class(), __FUNCTION__, $method, $args);
@@ -158,12 +156,21 @@ class PVObject extends PVPatterns {
 			'distinct' => '', 
 			'group_by' => '', 
 			'having' => '', 
-			'join_users' => '', 
+			'join_users' => false, 
 			'prequery' => '', 
 			'current_page' => '', 
 			'results_per_page' => '', 
 			'paged' => '', 
-			'prefix_args' => ''
+			'prefix_args' => '', 
+			'join_user_roles' => false, 
+			'join_content' => false, 
+			'join_content' => false, 
+			'join_comments' => false, 
+			'join_applications' => false, 
+			'join_apps' => false, 
+			'join_pages' => false, 
+			'join_modules' => false, 
+			'join_containers' => false
 		);
 
 		$defaults = $this->_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
@@ -171,24 +178,4 @@ class PVObject extends PVPatterns {
 		return $defaults;
 	}
 	
-	/**
-	 * Returns the instance of a class. Used for implementing the singleton design pattern. Class
-	 * will only be instantiated once.
-	 * 
-	 * @return object $instance Returns the instance of a class.
-	 * @access public
-	 */
-	public static function getInstance() {
-		
-		$class = get_called_class();
-
-		if (!isset(self::$_instances[$class])) {
-			self::$_instances[$class] = new $class;
-		}
-		
-		$object = self::$_instances[$class];
-		
-		return $object;
-	}
-
 }//end class

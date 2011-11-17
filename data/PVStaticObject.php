@@ -30,8 +30,6 @@
 class PVStaticObject extends PVStaticPatterns {
 
 	protected static $_collection = null;
-
-	protected static $_instances = array();
 	
 	protected static $_methods = array();
 
@@ -90,7 +88,18 @@ class PVStaticObject extends PVStaticPatterns {
 		return $value;
 	}
 
-	function __call($method,$args) {
+	/**
+	 * Uses the magic method __call and calls a closure/annoymous function that has been added
+	 * to the classes $_methods using the addMethod()  method.
+	 * 
+	 * @param string method The key/name assigned to the method when added
+	 * @param mixed $args Arguements to pass to the annoymous function. The function is called using
+	 * 				call_user_func_array.
+	 * 
+	 * @return mixed $value The value returned is the value the function retuens
+	 * @access public
+	 */
+	public function __callStatic($method,$args = array()) {
   			
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $method, $args);
@@ -165,6 +174,15 @@ class PVStaticObject extends PVStaticPatterns {
 		return self::$_collection -> getIterator();
 	}
 	
+	/**
+	 * Adds a closure/annoymous function the object that can be called.
+	 * 
+	 * @param string $method The key/value the function will be called by
+	 * @param function $closure The annymous function/closure to be added
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public function addMethod($method, $closure) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -179,6 +197,9 @@ class PVStaticObject extends PVStaticPatterns {
 	}
 
 	protected static function _getSqlSearchDefaults() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
 			
 		$defaults = array(
 			'custom_where' => '', 
@@ -209,30 +230,6 @@ class PVStaticObject extends PVStaticPatterns {
 		$defaults = self::_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
 
 		return $defaults;
-	}
-
-	/**
-	 * Returns the instance of a class. Used for implementing the singleton design pattern. Class
-	 * will only be instantiated once.
-	 * 
-	 * @return object $instance Returns the instance of a class.
-	 * @access public
-	 */
-	public static function getInstance() {
-		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-		
-		$class = get_called_class();
-
-		if (!isset(self::$_instances[$class])) {
-			self::$_instances[$class] = new $class;
-		}
-		
-		$object = self::$_instances[$class];
-		$object = self::_applyFilter(get_class(), __FUNCTION__, $object, array('event' => 'return'));
-		
-		return $object;
 	}
 
 }//end class
