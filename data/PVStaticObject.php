@@ -99,7 +99,7 @@ class PVStaticObject extends PVStaticPatterns {
 	 * @return mixed $value The value returned is the value the function retuens
 	 * @access public
 	 */
-	public function __callStatic($method,$args = array()) {
+	public static function __callStatic($method,$args = array()) {
   			
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $method, $args);
