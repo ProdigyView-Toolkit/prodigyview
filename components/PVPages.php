@@ -638,34 +638,34 @@ class PVPages extends PVStaticObject {
 	 *
 	 * @param id $page_id The id of the page
 	 * @param id $container_id The id of the container
-	 * @param int $page_container_order The order in which the container is set
+	 * @param int $page_container_ordering The order in which the container is set
 	 * @param boolean $page_container_enabled Determines if the relationship is active
 	 *
 	 * @return id $page_container_id The id of the relationship
 	 * @access public
 	 */
-	public static function addPageContainerRelationship($page_id, $container_id, $page_container_order = 0, $page_container_enabled = 0) {
+	public static function addPageContainerRelationship($page_id, $container_id, $page_container_ordering = 0, $page_container_enabled = 0) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $page_id, $container_id, $page_container_order, $page_container_enabled);
+			return self::_callAdapter(get_class(), __FUNCTION__, $page_id, $container_id, $page_container_ordering, $page_container_enabled);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('page_id' => $page_id, 'container_id' => $container_id, 'page_container_order' => $page_container_order, 'page_container_enabled' => $page_container_enabled), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('page_id' => $page_id, 'container_id' => $container_id, 'page_container_ordering' => $page_container_ordering, 'page_container_enabled' => $page_container_enabled), array('event' => 'args'));
 		$page_id = $filtered['page_id'];
 		$container_id = $filtered['container_id'];
-		$page_container_order = $filtered['page_container_order'];
+		$page_container_ordering = $filtered['page_container_ordering'];
 		$page_container_enabled = $filtered['page_container_enabled'];
 
 		if (!empty($page_id) && !empty($container_id)) {
 
 			$page_id = PVDatabase::makeSafe($page_id);
 			$container_id = PVDatabase::makeSafe($container_id);
-			$page_container_order = ceil($page_container_order);
+			$page_container_ordering = ceil($page_container_ordering);
 			$page_container_enabled = ceil($page_container_enabled);
 
 			$query = "INSERT INTO " . PVDatabase::getPageContainersRelationshipTableName() . "( page_id , container_id , page_container_ordering , page_container_enabled) VALUES( '$page_id' , '$container_id' , '$page_container_ordering' , '$page_container_enabled') ";
 			$page_container_id = PVDatabase::return_last_insert_query($query, 'page_container_id', PVDatabase::getPageContainersRelationshipTableName());
 
-			self::_notify(get_class() . '::' . __FUNCTION__, $page_container_id, $page_id, $container_id, $page_container_order, $page_container_enabled);
+			self::_notify(get_class() . '::' . __FUNCTION__, $page_container_id, $page_id, $container_id, $page_container_ordering, $page_container_enabled);
 			$page_container_id = self::_applyFilter(get_class(), __FUNCTION__, $page_container_id, array('event' => 'return'));
 
 			return $page_container_id;
