@@ -30,22 +30,26 @@
 class PVBootstrap extends PVStaticObject {
 
 	/**
-	 * Booth the ProdigyView system. Initilize variables, set logging,
+	 * Boot the ProdigyView system. Initilize variables, set logging,
 	 * sessions, etc. Many of the configuration settings are located in the xml
-	 * config file.
+	 * config file but can also be set here.
 	 *
 	 * @param array $args Arguments to pass that affect how ProdigyView will boot
 	 * 			-'initialize_database' _boolean_: Initialize the database and set the database to the default config
-	 * 			-'initialize_libraries' _boolean_: Initializes the libraries
-	 * 			-'initialize_router' _boolean_: Initializes the router
-	 * 			-'initialize_template' _boolean_:Initializes the template
-	 * 			-'initalize_validator' _boolean_: Initializes the validator
-	 * 			-'load_plugins' _booleans_: Loads the plug-ins at boot.
-	 *			-'load_libraries' _booleans_: Loads the libraries that have been added
+	 * 			-'initialize_libraries' _boolean_: Initializes PBLibraries
+	 * 			-'initialize_router' _boolean_: Initializes PVRouter
+	 * 			-'initialize_template' _boolean_:Initializes PVTemplate
+	 * 			-'initalize_validator' _boolean_: Initializes PVValidator
+	 * 			-'initalize_session' _boolean_: Initializes PVSession
+	 * 			-'initalize_security' _boolean_: Initializes PVSecurity
+	 * 			-'load_plugins' _boolean_: Loads the plug-ins at boot.
+	 *			-'load_libraries' _boolean_: Loads the libraries that have been added
+	 * 			-'load_configuration' _boolean_: Loads the xml configuration file
+	 * 			-'load_database' _boolean_: Opens up a connection to the database.
+	 * 			-'load_database_profile' _mixed_: Connects to the specified database that the option 'load_database' connects too.
 	 *
 	 * @return void
 	 * @access public
-	 * @todo Add ability to initialize other classes
 	 */
 	public static function bootSystem($args = array()) {
 
@@ -62,7 +66,9 @@ class PVBootstrap extends PVStaticObject {
 			'initialize_session' => true, 
 			'load_plugins' => true, 
 			'load_libraries' => true, 
-			'load_configuration' => true, 
+			'load_configuration' => true,
+			'load_database' => true, 
+			'load_database_profile' => 0, 
 			'config' => array('report_errors' => false, 'log_errors' => true, 'error_report_level' => E_ALL, 'enable_cache' => true, 'unset_cookie' => false, 'unset_session' => false, 'unset_post' => false, 'unset_get' => false, 'unset_request' => false, 'unset_env' => false, 'unset_files' => false, 'unset_server' => false, 'cache_time' => 15));
 
 		$args += $defaults;
@@ -75,10 +81,11 @@ class PVBootstrap extends PVStaticObject {
 
 		self::setErrorReporting($config['report_errors'], $config['log_errors'], $config['error_report_level']);
 
-		if ($args['initialize_database']) {
+		if ($args['initialize_database'])
 			PVDatabase::init($config);
-			PVDatabase::setDatabase(0);
-		}
+		
+		if ($args['load_database'])
+			PVDatabase::setDatabase($args['load_database_profile']);
 
 		if ($args['load_plugins'])
 			self::loadPlugins();
@@ -158,20 +165,22 @@ class PVBootstrap extends PVStaticObject {
 
 	/**
 	 * Sets the rror errporting in ProdigyView. The levels are numberic.
-	 * -0. Normal errors reparing
+	 * 0. No errors reported
 	 * 1. Report major and minor errors
 	 * 2. Report fatal, notices and warnings
 	 * 3. Report everything except notices
 	 * 4. Report everything
+	 * 
+	 * Or the values such as E_ALL, E_ALL ^ NOTICE, etc can be passed in.
 	 *
 	 *In your xml configuration, look for these tags.
 	 * <report_errors>1</report_errors> 1 for displaying errors, 0 for not displaying errors
 	 * <log_errors>1</log_errors> 1 for loggin errors to file, 0 for not logging errors to file
 	 * <error_report_level>4</error_report_level> Setting the error repporting level
 	 *
-	 * @param int/boolean $report_errors Set to true, errors will be displayed
-	 * @param int/boolean $log_errors Set to true, errors will be log in the defined log
-	 * @param int/string $error_reporting level Set the level errors will b shown
+	 * @param boolean $report_errors Set to true, errors will be displayed
+	 * @param boolean $log_errors Set to true, errors will be log in the defined log
+	 * @param mixed $error_reporting level Set the level errors will b shown
 	 *
 	 * @return void
 	 * @access private
@@ -242,7 +251,7 @@ class PVBootstrap extends PVStaticObject {
 	}//end load plugins
 
 	/**
-	 * Unets a global at launch. Use for removing data from $_GET, $_SESSION
+	 * Unsets a global at launch. Use for removing data from $_GET, $_SESSION
 	 * $_POST, $_COOKIE, $_REQUEST, $_ENV.
 	 *
 	 * @return void
@@ -272,7 +281,7 @@ class PVBootstrap extends PVStaticObject {
 
 	/**
 	 * Magic Quoutes should be disabled on your system. But if it is on, this function
-	 * will remove from any varabiles.
+	 * will remove from any variables in the $_GET, POST, COOKIE, and $_REQUEST.
 	 *
 	 * @return void
 	 * @access void
@@ -293,9 +302,11 @@ class PVBootstrap extends PVStaticObject {
 	}//end
 
 	/**
-	 * A boot, set in what amount of time the header will expire in. Should be
+	 * At boot, set in what amount of time the header will expire in. Should be
 	 * set in munutes. The configuration for this file can be changed in the xml
 	 * configuration file in the <cache_time>x</cache_time> tags.
+	 * 
+	 * @param int $expirationMinutes The amount of minutes in with the header will expire
 	 *
 	 * @return void
 	 * @access private
