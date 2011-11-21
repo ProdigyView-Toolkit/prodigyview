@@ -144,7 +144,7 @@ class PVPages extends PVStaticObject {
 		$page_ordering = ceil($page_ordering);
 		$frontpage = ceil($frontpage);
 
-		$query = "INSERT INTO " . PVDatabase::getPagesTableName() . " (page_name, page_title, page_description, page_alias, frontpage, page_enabled, page_ordering, page_url, page_params, page_permissions, parent_page, page_site_id, page_access_level, page_text) VALUES ('$page_name', '$page_title', '$page_description', '$page_alias', '$frontpage', '$page_enabled', '$page_ordering', '$page_url', '$page_params', '$page_permissions', '$parent_page', '$page_site_id','$page_access_level','$page_text' )";
+		$query = "INSERT INTO " . PVDatabase::getPagesTableName() . " (page_name, page_title, page_description, page_alias, frontpage, page_enabled, page_ordering, page_url, page_short_url, page_params, page_permissions, parent_page, page_site_id, page_access_level, page_text) VALUES ('$page_name', '$page_title', '$page_description', '$page_alias', '$frontpage', '$page_enabled', '$page_ordering', '$page_url', '$page_short_url', '$page_params', '$page_permissions', '$parent_page', '$page_site_id','$page_access_level','$page_text' )";
 		$page_id = PVDatabase::return_last_insert_query($query, 'page_id', PVDatabase::getPagesTableName());
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $page_id, $args);
@@ -582,7 +582,7 @@ class PVPages extends PVStaticObject {
 		$page_ordering = ceil($page_ordering);
 		$frontpage = ceil($frontpage);
 
-		$query = "UPDATE " . PVDatabase::getPagesTableName() . " SET page_name='$page_name', page_title='$page_title', page_description='$page_description', page_alias='$page_alias', frontpage='$frontpage', page_enabled='$page_enabled', page_ordering='$page_ordering', page_short_url='$page_short_url', page_params='$page_params', page_permissions='$	page_permissions', page_site_id='$page_site_id', parent_page='$parent_page' WHERE page_id='$page_id'";
+		$query = "UPDATE " . PVDatabase::getPagesTableName() . " SET page_name='$page_name', page_title='$page_title', page_description='$page_description', page_alias='$page_alias', frontpage='$frontpage', page_enabled='$page_enabled', page_ordering='$page_ordering', page_url='$page_url', page_short_url='$page_short_url', page_params='$page_params', page_permissions='$page_permissions', page_site_id='$page_site_id', parent_page='$parent_page', page_text='$page_text', page_access_level='$page_access_level' WHERE page_id='$page_id'";
 		PVDatabase::query($query);
 		self::_notify(get_class() . '::' . __FUNCTION__, $args);
 
