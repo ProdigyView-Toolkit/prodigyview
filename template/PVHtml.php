@@ -151,6 +151,66 @@ class PVHtml extends PVStaticObject {
 		return $tag;
 
 	}//end getImageDisplay
+	
+	/**
+	 * Generate an html element for displaying an iframe.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $time A time value
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * 				-'frameborder' _string_: Tags to go in the frameborder
+	 * 				-'marginheight' _string_: Tags to go in the marginheight
+	 * 				-'marginwidth' _string_: Tags to go in the marginweidth
+	 * 				-'scrolling' _string_: Tags to go in the scrolling
+	 * 				-'longdesc' _string_: Tags to go in the longdesc
+	 *
+	 * @return string $iframe The iframe taged returned a time
+	 * @access public
+	 */
+	public static function iframe($src, $data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $time, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('time' => $time, 'options' => $options), array('event' => 'args'));
+		$time = $filtered['time'];
+		$options = $filtered['options'];
+
+		$tag = '<iframe src="' . $src . '" ';
+
+		if (isset($options['frameborder']) && !empty($options['frameborder'])) {
+			$tag .= 'frameborder="' . $options['frameborder'] . '" ';
+		}
+
+		if (isset($options['marginheight']) && !empty($options['marginheight'])) {
+			$tag .= 'marginheight="' . $options['marginheight'] . '" ';
+		}
+		
+		if (isset($options['marginwidth']) && !empty($options['marginwidth'])) {
+			$tag .= 'marginwidth="' . $options['marginwidth'] . '" ';
+		}
+		
+		if (isset($options['scrolling']) && !empty($options['scrolling'])) {
+			$tag .= 'scrolling="' . $options['scrolling'] . '" ';
+		}
+		
+		if (isset($options['longdesc']) && !empty($options['longdesc'])) {
+			$tag .= 'longdesc="' . $options['longdesc'] . '" ';
+		}
+
+		$tag .= self::getStandardAttributes($options);
+		$tag .= self::getEventAttributes($options);
+
+		$tag .= '>' . $data . '</iframe>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $time, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+
+	}//end getImageDisplay
 
 	/**
 	 * Display an ahref links
@@ -539,16 +599,419 @@ class PVHtml extends PVStaticObject {
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
-		$tag = '<div ';
-		$tag .= self::getStandardAttributes($options);
-		$tag .= self::getEventAttributes($options);
-		$tag .= '>' . $data . '</div>';
+		$tag = self::generateHtmlTag('div', $data, $options);
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a <h1></h1> to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the heaader tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The header element that was generated
+	 * @access public
+	 */
+	public static function h1($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('h1', $data, $options);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
 		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
+	
+	/**
+	 * Creates a <h2></h2> to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the heaader tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The header element that was generated
+	 * @access public
+	 */
+	public static function h2($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('h2', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a <h3></h3> to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the heaader tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The header element that was generated
+	 * @access public
+	 */
+	public static function h3($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('h3', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a <h4></h4> to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the heaader tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The header element that was generated
+	 * @access public
+	 */
+	public static function h4($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('h4', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a <h5></h5> to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the heaader tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The header element that was generated
+	 * @access public
+	 */
+	public static function h5($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('h5', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a <h6></h6> to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the heaader tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The header element that was generated
+	 * @access public
+	 */
+	public static function h6($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('h6', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a paragraph tag ,<p></p>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the paragraph tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The paragraph element that was generated
+	 * @access public
+	 */
+	public static function p($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('p', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a span tag ,<span></span>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the span tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The span element that was generated
+	 * @access public
+	 */
+	public static function span($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('span', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a legend tag ,<legend></legend>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the legend tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The legend element that was generated
+	 * @access public
+	 */
+	public static function legend($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('legend', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a article tag ,<article></article>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the article tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $article The article element that was generated
+	 * @access public
+	 */
+	public static function article($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('article', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a strong tag ,<strong></strong>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the strong tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $strong The strong element that was generated
+	 * @access public
+	 */
+	public static function strong($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('strong', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a summary tag ,<summary></ssummary>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the strong tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $summary The summary element that was generated
+	 * @access public
+	 */
+	public static function summary($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('summary', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a details tag ,<details></details>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the details tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $details The details element that was generated
+	 * @access public
+	 */
+	public static function details($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('details', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a aside tag ,<aside></aside>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the aside tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $aside The aside element that was generated
+	 * @access public
+	 */
+	public static function aside($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('aside', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
 
 	/**
 	 * Standard attributes that are present in many html tags. This functionisused for assigning those attribute by passing
@@ -660,6 +1123,27 @@ class PVHtml extends PVStaticObject {
 		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
 
 		return $return_attributes;
+	}
+	
+	public static function generateHtmlTag($tag, $data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $tag, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('tag'=> $tag, 'data' => $data, 'options' => $options), array('event' => 'args'));
+		$tag = $filtered['tag'];
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$generated_tag = '<' . $tag . ' ';
+		$generated_tag .= self::getStandardAttributes($options);
+		$generated_tag .= self::getEventAttributes($options);
+		$generated_tag .= '>' . $data . '</'.$tag.'>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $generated_tag, $tag, $data, $options);
+		$generated_tag = self::_applyFilter(get_class(), __FUNCTION__, $generated_tag, array('event' => 'return'));
+
+		return $generated_tag;
 	}
 
 	private static function audioContentURL($url) {
