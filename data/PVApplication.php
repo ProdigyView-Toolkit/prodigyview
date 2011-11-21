@@ -47,12 +47,24 @@ abstract class PVApplication extends PVObject {
 		foreach ($args as $key => &$arg) {
 			$passable_args[$key] = &$arg;
 		}
+		
+		if ($this->_hasAdapter(get_called_class(), __FUNCTION__))
+			return $this->_callAdapter(get_called_class(), __FUNCTION__, $command, $passable_args);
+		
+		$filtered = $this->_applyFilter(get_called_class(), __FUNCTION__, array('command' => $command, 'passable_args' => $passable_args), array('event' => 'args'));
+		$command = $filtered['command'];
+		$passable_args= $filtered['passable_args'];
 
 		if (method_exists($this, $command)) {
-			return $this -> _invokeMethod($this, $command, $passable_args);
+			$value = $this -> _invokeMethod($this, $command, $passable_args);
 		} else {
-			return $this -> _invokeMethod($this, 'defaultFunction', $passable_args);
+			$value = $this -> _invokeMethod($this, 'defaultFunction', $passable_args);
 		}
+		
+		$this->_notify(get_called_class() . '::' . __FUNCTION__, $value, $command, $passable_args);
+		$value = $this->_applyFilter(get_called_class(), __FUNCTION__, $value, array('event' => 'return'));
+		
+		return $value;
 	}
 
 	/**
