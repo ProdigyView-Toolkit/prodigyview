@@ -3531,7 +3531,7 @@ class PVContent extends PVStaticObject {
 		}
 
 		if ($join_content) {
-			$CATEGORY_JOIN .= ' JOIN ' . PVDatabase::getContentCategoryRelationsTableName() . ' ON ' . PVDatabase::getContentCategoryRelationsTableName() . '.category_id=$table_name.category_id 
+			$CATEGORY_JOIN .= ' JOIN ' . PVDatabase::getContentCategoryRelationsTableName() . ' ON ' . PVDatabase::getContentCategoryRelationsTableName() . '.category_id=' . PVDatabase::getContentCategoriesTableName() . '.category_id 
 			JOIN ' . PVDatabase::getContentTableName() . ' ON ' . PVDatabase::getContentCategoryRelationsTableName() . '.content_id=' . PVDatabase::getContentTableName() . '.content_id ';
 		}
 
