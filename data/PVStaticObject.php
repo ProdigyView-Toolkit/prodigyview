@@ -111,7 +111,7 @@ class PVStaticObject extends PVStaticPatterns {
   		if(isset(self::$_methods[$method]))
   			$value = call_user_func_array(self::$_methods[$method] , $args);
 		else 
-			$value = null;
+			throw new BadMethodCallException('Method \''.$method. '\' was not found in class '.get_called_class());
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $value, $method, $args);
 		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
