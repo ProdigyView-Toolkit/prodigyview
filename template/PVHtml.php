@@ -1012,6 +1012,35 @@ class PVHtml extends PVStaticObject {
 		return $tag;
 	}
 	
+	/**
+	 * Creates a canvas tag ,<canvas></canvas>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the canvas tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $aside The canvas element that was generated
+	 * @access public
+	 */
+	public static function canvas($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('canvas', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
 
 	/**
 	 * Standard attributes that are present in many html tags. This functionisused for assigning those attribute by passing
