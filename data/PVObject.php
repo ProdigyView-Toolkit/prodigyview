@@ -80,7 +80,7 @@ class PVObject extends PVPatterns {
   		if(isset($this->_methods[$method]))
   			$value = call_user_func_array($this->_methods[$method] , $args);
 		else 
-			$value = null;
+			throw new BadMethodCallException('Method \''.$method. '\' was not found in class '.get_called_class());
 		
 		$this->_notify(get_class() . '::' . __FUNCTION__, $value, $method, $args);
 		$value = $this->_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
