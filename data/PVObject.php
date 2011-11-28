@@ -33,6 +33,17 @@ class PVObject extends PVPatterns {
 	
 	protected $_methods = array();
 
+	/**
+	 * Adds a value to the classes Collection. By default the collection is stored
+	 * in the public collection. The stored instance can be retrieved later by called
+	 * in it's key value.
+	 *
+	 * @param string $index The key or index to store the value at
+	 * @param mixed $value A mixed value that can be any type
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public function __set($index, $value) {
 		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
@@ -49,6 +60,15 @@ class PVObject extends PVPatterns {
 		$this->_notify(get_class() . '::' . __FUNCTION__, $index, $value);
 	}
 
+	/**
+	 * Retrieves a value that is in the public data collection or was pass through
+	 * by the set method.
+	 *
+	 * @param string $index The index to retrieve a value from
+	 *
+	 * @return mixed $data The data that was stored at that index
+	 * @access public
+	 */
 	public function __get($index) {
 		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
@@ -68,6 +88,17 @@ class PVObject extends PVPatterns {
 		return $value;
 	}
 	
+	/**
+	 * Uses the magic method __call and executes a closure/anonymous function that has been added
+	 * to the classes $_methods using the addMethod()  method.
+	 * 
+	 * @param string $method The key/name assigned to the method when added
+	 * @param mixed $args Arguements to pass to the annoymous function. The function is called using
+	 * 				call_user_func_array.
+	 * 
+	 * @return mixed $value The value returned is the value the stored function returns
+	 * @access public
+	 */
 	public function __call($method,$args = array()) {
   			
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
@@ -88,6 +119,15 @@ class PVObject extends PVPatterns {
 		return $value;
 	}
 
+	/**
+	 * Adds a data to the public collection, index will be assigned automatically. Primarily used for adding
+	 * launch quanties of data to the collection
+	 *
+	 * @param mixed $data Any data type( Object, Array, int, etc) to add to the public data collection
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public function addToCollection($data) {
 		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
@@ -102,6 +142,17 @@ class PVObject extends PVPatterns {
 		$this->_notify(get_class() . '::' . __FUNCTION__, $data);
 	}//end
 
+	/**
+	 * Adds data to the public collection. The data is assigned a key/index. If the key/index is already set, new information
+	 * will override the old one.
+	 *
+	 * @param string $name The key/index to assign the value to
+	 * @param mixed $data Data to be stored in the collection
+	 * 
+	 * @return void
+	 * @access public
+	 * @todo check the relevance of get and set
+	 */
 	public function addToCollectionWithName($name, $data) {
 		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
@@ -118,6 +169,12 @@ class PVObject extends PVPatterns {
 		$this->_notify(get_class() . '::' . __FUNCTION__, $name, $data);
 	}//end
 
+	/**
+	 * Returns the iterator for iterating through the values stored in the classes collection.
+	 * 
+	 * @return PVIterator $iterator The classes collection in an iteratable form
+	 * #access public
+	 */
 	public function getIterator() {
 		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
@@ -129,6 +186,15 @@ class PVObject extends PVPatterns {
 		return $this -> _collection -> getIterator();
 	}
 	
+	/**
+	 * Adds a closure/anonymous function to the object that can be called.
+	 * 
+	 * @param string $method The key/value that will be used to call the function
+	 * @param function $closure The anonymous function/closure to be added
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public function addMethod($method, $closure) {
 		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))

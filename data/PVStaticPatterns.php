@@ -94,7 +94,7 @@ class PVStaticPatterns {
 		$options = self::$_adapters[$class][$method];
 		
 		if($options['type'] == 'closure')
-			return call_user_func_array( $options['call_method'], $passable_args);
+			return call_user_func_array( $options['call_class'], $passable_args);
 		else if ($options['object'] == 'instance')
 			return self::_invokeMethod($options['call_class'], $options['call_method'], $passable_args);
 		else
