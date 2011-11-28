@@ -33,9 +33,12 @@ class PVCollection implements IteratorAggregate {
 
 	/**
 	 * The constructor of this class takes in an array and passes
-	 * it the collection.
+	 * it to the collection as the initial data.
 	 *
 	 * @param array $array An array of data
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public function __construct($data = array()) {
 		$this -> dataset = $data;
@@ -44,7 +47,7 @@ class PVCollection implements IteratorAggregate {
 	/**
 	 * Returns an iterable object that can iteratered over in a loop.
 	 *
-	 * @return PVIterator $iterable
+	 * @return PVIterator $iterable An iterable object
 	 * @access public
 	 */
 	public function getIterator() {
@@ -52,7 +55,7 @@ class PVCollection implements IteratorAggregate {
 	}
 
 	/**
-	 * Adds the passed data to an index in the collection to be
+	 * Adds the passed data to an index in the collection that can be
 	 * retrieved later.
 	 *
 	 * @param mixed $data Passed data can be an array, object and any other value.
@@ -73,9 +76,9 @@ class PVCollection implements IteratorAggregate {
 	 * PHP magic function that returns an index if it is
 	 * in the collection.
 	 *
-	 * @param string $index An index/key that will pull a value if present
+	 * @param string $index An index/key that will be used to find the value, if present
 	 *
-	 * @return void
+	 * @return $value  The returned value if found in the index
 	 * @access public
 	 */
 	public function __get($index) {
@@ -93,8 +96,8 @@ class PVCollection implements IteratorAggregate {
 	}
 
 	/**
-	 * Adds a value to the collectionn but defines the index
-	 * that it will be sent it.
+	 * Adds a value to the collection but also defines the index/key in which the value
+	 * will be placed at
 	 *
 	 * @param string $name The name/index/key that will be associated with the passed value
 	 * @param mixed $data The data the will be story associated with thhat key.
@@ -114,11 +117,11 @@ class PVCollection implements IteratorAggregate {
 	}//end add
 
 	/**
-	 * Remove a value the index that the item is currently location.
+	 * Remove a value from the collection based on the key/index.
 	 *
 	 * @param mixed $index The index can either be a int or string
 	 *
-	 * @return voic
+	 * @return void
 	 * @access public
 	 */
 	public function remove($index) {
@@ -135,7 +138,7 @@ class PVIterator implements Iterator {
 	 * Initializes the iterater of information to
 	 * iterate through.
 	 *
-	 * @param array $array An array of information to make iterabl.e
+	 * @param array $array An array of information to make iterable
 	 *
 	 * @return void
 	 * @access public
@@ -160,7 +163,7 @@ class PVIterator implements Iterator {
 	 * Moves the pointer to the last index in the array and returns
 	 * the value of the last index
 	 *
-	 * @return mixed $value
+	 * @return mixed $value The value of the last index
 	 * @access public
 	 */
 	public function last() {
@@ -170,7 +173,7 @@ class PVIterator implements Iterator {
 	/**
 	 * Returns the value of the current index in the array.
 	 *
-	 * @return mixed $value
+	 * @return mixed $value The data stored in the current index
 	 * @access public
 	 */
 	public function current() {
@@ -192,7 +195,7 @@ class PVIterator implements Iterator {
 	/**
 	 * Returns the value of the next pointer in the array
 	 *
-	 * @return mixed $value
+	 * @return mixed $value The data at the location of the next pointer
 	 * @access public
 	 */
 	public function next() {
@@ -203,7 +206,7 @@ class PVIterator implements Iterator {
 	/**
 	 * Returns the value of the previous pointer in the array
 	 *
-	 * @return mixed $value
+	 * @return mixed $value The data at the location of the previous pointer
 	 * @access public
 	 */
 	public function previous() {
@@ -214,7 +217,7 @@ class PVIterator implements Iterator {
 	/**
 	 * Determines if the key exist, and then returns the associated data
 	 *
-	 * @return mixed $value
+	 * @return mixed $value The validated data
 	 * @access public
 	 */
 	public function valid() {
