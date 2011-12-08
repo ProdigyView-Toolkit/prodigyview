@@ -31,12 +31,12 @@ abstract class PVApplication extends PVObject {
 
 	/**
 	 * Takes in a command and arguements and if the command exist, will pass that command to
-	 * a function with the same name.
+	 * a function with the same name. Otherwise, the default function is called.
 	 *
-	 * @param string $command The name of the function to be called
-	 * @param mixed $args An infinate amount of parameters that can be passed. to a function.
+	 * @param string $command The name of the method to be called
+	 * @param mixed $args An infinite amount of parameters that can be passed to a method.
 	 *
-	 * @return mixed $return Returns the value of the function that is called
+	 * @return mixed $return Returns a value the the called method returns
 	 * @access public
 	 */
 	public function commandInterpreter($command) {
@@ -68,7 +68,7 @@ abstract class PVApplication extends PVObject {
 	}
 
 	/**
-	 * The default function that must be implemented. If the commandIntepreter cannot find a correspoding
+	 * The default function and abstract that must be implemented. If the commandIntepreter cannot find a correspoding
 	 * function, this function will be called.
 	 */
 	abstract function defaultFunction($params = array());
