@@ -279,7 +279,7 @@ class PVFileManager extends PVStaticObject {
 
 		$returnData = '';
 
-		if (floatval(phpversion()) >= 4.3) {
+		if (file_exists($file) && floatval(phpversion()) >= 4.3) {
 			$returnData = file_get_contents($file);
 		} else {
 			if (!file_exists($file)) {
