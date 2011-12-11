@@ -44,15 +44,15 @@ class PVSession extends PVStaticObject {
 	private static $hash_session = false;
 
 	/**
-	 * Initializes the static class PVSessions. Values passed can be
+	 * Initializes the static class PVSession. Values passed can be
 	 * used to set the default cookie options and the default session
 	 * options.
 	 *
 	 * @param array $session_vars An array of values that set how the class functions.
 	 * 			-'cookie_path' _string_: The path where the cookie is to be stored
 	 * 			-'cookie_domain' _string_: The domain the that the cookie resides on
-	 * 			-'cookie_secure' _boolean_:
-	 * 			-'cookie_httponly' _boolean_:
+	 * 			-'cookie_secure' _boolean_: Access the cookie only over an secure connection
+	 * 			-'cookie_httponly' _boolean_: Write to the cookie only over an http(s) connection
 	 * 			-'cookie_lifetime' _int_: The amount of time the cookie is active for
 	 * 			-'hash_cookie' _boolean_ :Hash the cookie to its value is not easily readable
 	 * 			-'hash_session' _boolean: Has a season so its value is not easily readable
@@ -60,8 +60,8 @@ class PVSession extends PVStaticObject {
 	 * 			-'session_lifetime' _int_: The life time of the session, in seconds
 	 * 			-'session_path' _string_: The path of the session.
 	 * 			-'session_domain' _string_: The domain of the session. Default is current.
-	 * 			-'session_secure'_boolean_: Sets if session is secure
-	 * 			-'session_httponly' _boolean: Allows a session only over http
+	 * 			-'session_secure'_boolean_: Access the session only over a secure connection
+	 * 			-'session_httponly' _boolean: Writes to the session only over an http connection
 	 * @return void
 	 */
 	public static function init($session_vars = array()) {
@@ -115,20 +115,20 @@ class PVSession extends PVStaticObject {
 	}
 
 	/**
-	 * Write a cookie. Will use default options set in class. otherwise
+	 * Write a cookie. Will use default options set in the init. Otherwise
 	 * cookie parameters can be defined. Objects and arrays passed as values
 	 * will be serialized.
 	 *
-	 * @param string $name Key for the value to be written has a cookie
+	 * @param string $name Key for the value to be written as a cookie
 	 * @param string $value The value to be stored in a cookie.
 	 * @param array $options Options that can change how the cookie is stored.
-	 * 		  The options passed will override the default options pased in the init
+	 * 		  The options passed will override the default options passed in the init
 	 * 			-'cookie_path' _string_: The path where the cookie is to be stored
 	 * 			-'cookie_domain' _string_: The domain the that the cookie resides on
-	 * 			-'cookie_secure' _boolean_:
-	 * 			-'cookie_httponly' _boolean_:
-	 * 			-'cookie_lifetime' _int_: The amount of time the cookie is active for
-	 * 			-'hash_cookie' _boolean_ :Hash the cookie to its value is not easily readable
+	 * 			-'cookie_secure' _boolean_: If the cookie is only writable over a secure connection
+	 * 			-'cookie_httponly' _boolean_: If the cookie is only accesible over an http connection
+	 * 			-'cookie_lifetime' _int_: The amount of time the cookie is active for in seconds
+	 * 			-'hash_cookie' _boolean_ :Hash the cookie key and its value is not easily readable
 	 *
 	 * @return void
 	 */
@@ -161,9 +161,12 @@ class PVSession extends PVStaticObject {
 	 * Read a value set in a cookie. Objects and arrays thats were
 	 * serilizaed will be unserialzed and returned.
 	 *
-	 * @param string name
+	 * @param string $name The key the cookie was saved as
+	 * @param array $options Options thats configure reading the cookie
+	 * 			-hash_cookie _boolean_: If the cookie was hashed, set the value to true
 	 *
-	 * @return mixed stored_value
+	 * @return mixed $value The value retrieved from the cookie. Arrays and objects serialized will be unseralized and returned.
+	 * @access public
 	 */
 	public static function readCookie($name, $options = array()) {
 
