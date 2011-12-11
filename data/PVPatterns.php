@@ -44,13 +44,13 @@ class PVPatterns {
 	 *
 	 * @param string $trigger_class  The class that contains the function the adapter will respond too
 	 * @param string $trigger_method The method called that will have the adapter to be called.
-	 * @param string $call_call The new class to be called that has the same method name
+	 * @param string $call_class The new class to be called that has the same method name
 	 * @param array $options An array of options that be called
-	 * 			-'object' _string_ : Assumes that default method in the class to be called is static. If called
-	 * 			needs to be instantiated, change to instance and one will be created before the adapter calld the function
+	 * 			-'object' _string_ : Assumes that default method in the class to be called is static. If called object
+	 * 			needs to be instantiated, change to object to 'instance' and one will be created before the adapter calls the function
 	 * 			-'call_method' _string_: By default the method to be called to override the current one should be the
 	 * 			same name. But this can be ovveridden to call a different method.
-	 * 			-'type' _string_: The type of function being called. Default is class_method but if the function is a closure,
+	 * 			-'type' _string_: The type of method being called. Default is class_method but if the method is a closure,
 	 * 			set the type to be 'closure' and make the $trigger_method the closure
 	 *
 	 * @return void
@@ -77,8 +77,8 @@ class PVPatterns {
 	 * can be passed to the adapter BUT the parameters should be the same as the parents.
 	 *
 	 * @param string $class The name of the class the adapter is in
-	 * @param string $method THe name of the method the class is being called from.
-	 * @param mixed $args An infiniate amout of parameters to passed to this class.
+	 * @param string $method The name of the method that is being adapted.
+	 * @param mixed $args An infinite amout of parameters to passed to this method.
 	 *
 	 * @return mixed $value A value that the adapter returns
 	 * @access protected
@@ -105,12 +105,12 @@ class PVPatterns {
 	}//end _callAdapter
 
 	/**
-	 * Checks if an adapter is set for the function.
+	 * Checks if an adapter is set in a class, method combination.
 	 *
-	 * @param string class The associated class the function is calling
-	 * @param string $method The associated method
+	 * @param string $class The associated class to check if it has an adapter 
+	 * @param string $method The associated method to check if it has an adapter
 	 *
-	 * @return boolea $hasAdapter Returns true if it has an adapter or false if it doesn not
+	 * @return boolean $hasAdapter Returns true if it has an adapter or false if it does not
 	 * @access protected
 	 */
 	protected function _hasAdapter($class, $method) {
@@ -153,7 +153,7 @@ class PVPatterns {
 	 * Calls any functions that have been added to the observer if the event is present in the
 	 * observers array.
 	 *
-	 * @param string $event The name of the even that occured that will trigger notifies
+	 * @param string $event The name of the event that will trigger notifiers
 	 * @param mixed $args An array of infinite arguements that will passed to each function related to the event
 	 *
 	 * @return void
@@ -183,7 +183,7 @@ class PVPatterns {
 
 	/**
 	 * Adds a filter to the class. Filters are for modifying a value within a class and should not
-	 * interpet the normal flow within the method.
+	 * interupt the normal flow within the method(IE: They should not be used as adapters).
 	 *
 	 * @param string $class The name of the class the filter is going in
 	 * @param string $method The name of the method the filter is in

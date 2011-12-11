@@ -38,18 +38,19 @@ class PVStaticPatterns {
 	protected static $_filters = array();
 
 	/**
-	 * Adapters allows completely override the method of another class by calling a different class
-	 * with the same function name.
+	 * Adapters allows a method to be completely overwritten by calling a different class
+	 * with the same method name. Adapters can also be used with closures. The adapter uses
+	 * a strategy/adapter design pattern.
 	 *
 	 * @param string $trigger_class  The class that contains the function the adapter will respond too
 	 * @param string $trigger_method The method called that will have the adapter to be called.
-	 * @param string $call_call The new class to be called that has the same method name
+	 * @param string $call_class The new class to be called that has the same method name
 	 * @param array $options An array of options that be called
-	 * 			-'object' _string_ : Assumes that default method in the class to be called is static. If called
-	 * 			needs to be instantiated, change to instance and one will be created before the adapter calld the function
+	 * 			-'object' _string_ : Assumes that default method in the class to be called is static. If called object
+	 * 			needs to be instantiated, change to object to 'instance' and one will be created before the adapter calls the function
 	 * 			-'call_method' _string_: By default the method to be called to override the current one should be the
 	 * 			same name. But this can be ovveridden to call a different method.
-	 * 			-'type' _string_: The type of function being called. Default is class_method but if the function is a closure,
+	 * 			-'type' _string_: The type of method being called. Default is class_method but if the method is a closure,
 	 * 			set the type to be 'closure' and make the $trigger_method the closure
 	 *
 	 * @return void
