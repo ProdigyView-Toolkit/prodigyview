@@ -64,6 +64,7 @@ class PVBootstrap extends PVStaticObject {
 			'initialize_validator' => true, 
 			'initialize_security' => true, 
 			'initialize_session' => true, 
+			'initialize_cache' => true, 
 			'load_plugins' => true, 
 			'load_libraries' => true, 
 			'load_configuration' => true,
@@ -110,6 +111,9 @@ class PVBootstrap extends PVStaticObject {
 
 		if ($args['initialize_session'])
 			PVSession::init($config);
+		
+		if ($args['initialize_cache'])
+			PVCache::init($config);
 
 		self::removeMagicQuotes();
 
