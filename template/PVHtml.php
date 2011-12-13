@@ -839,35 +839,6 @@ class PVHtml extends PVStaticObject {
 	}
 	
 	/**
-	 * Creates a legend tag ,<legend></legend>, to display.
-	 *
-	 * @see self::getEventAttributes()
-	 * @see self::getStandardAttributes()
-	 *
-	 * @param string $data The information that will be displayed inside the legend tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
-	 *
-	 * @return string $header The legend element that was generated
-	 * @access public
-	 */
-	public static function legend($data, $options = array()) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
-
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
-		$data = $filtered['data'];
-		$options = $filtered['options'];
-
-		$tag = self::generateHtmlTag('legend', $data, $options);
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
-
-		return $tag;
-	}
-	
-	/**
 	 * Creates a article tag ,<article></article>, to display.
 	 *
 	 * @see self::getEventAttributes()
@@ -889,6 +860,35 @@ class PVHtml extends PVStaticObject {
 		$options = $filtered['options'];
 
 		$tag = self::generateHtmlTag('article', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a address tag ,<address></address>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the address tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $address The address element that was generated
+	 * @access public
+	 */
+	public static function address($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('address', $data, $options);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
 		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
@@ -1039,6 +1039,135 @@ class PVHtml extends PVStaticObject {
 		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
+	}
+	
+	/**
+	 * Creates a strong li ,<li></li>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the li tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $strong The strong element that was generated
+	 * @access public
+	 */
+	public static function li($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('li', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a strong ul ,<ul></ul>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the ul tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $strong The strong element that was generated
+	 * @access public
+	 */
+	public static function ul($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('ul', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a strong ol ,<ol></ol>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the ol tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $strong The strong element that was generated
+	 * @access public
+	 */
+	public static function ol($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = self::generateHtmlTag('ol', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a progress input element with options passed too it.
+	 *
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 *
+	 * @param string $value The current value for the progress bar
+	 * @param string $max The max value for the progress bar
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 *
+	 * @return string $element The string that creates the element
+	 * @access public
+	 */
+	public static function progress($value, $max, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('value' => $value, 'max' => $max, 'options' => $options), array('event' => 'args'));
+		$value = $filtered['value'];
+		$max = $filtered['max'];
+		$options = $filtered['options'];
+
+		$label = '<progress ';
+		$label .= 'value="' . $value . '" ';
+		$label .= 'max="' . $max . '" ';
+		
+		$label .= PVHtml::getStandardAttributes($options);
+		$label .= PVHtml::getEventAttributes($options);
+
+		$label .= '></progress>';
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $label, $value, $max, $options);
+		$label = self::_applyFilter(get_class(), __FUNCTION__, $label, array('event' => 'return'));
+
+		return $label;
 	}
 	
 
