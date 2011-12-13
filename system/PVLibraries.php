@@ -58,7 +58,7 @@ class PVLibraries extends PVStaticObject {
 	 * Adds javascript files to a queue of javascript files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string $script
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
 	 *
 	 * @return void
 	 * @access public
@@ -77,7 +77,7 @@ class PVLibraries extends PVStaticObject {
 	 * Adds jquery files to a queue of jquery files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string script
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
 	 *
 	 * @return void
 	 * @access public
@@ -96,7 +96,10 @@ class PVLibraries extends PVStaticObject {
 	 * Adds prototype files to a queue of prototype files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string script
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public static function enqueuePrototype($script) {
 
@@ -112,7 +115,10 @@ class PVLibraries extends PVStaticObject {
 	 * Adds mootools files to a queue of mootools files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string script
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public static function enqueueMootools($script) {
 
@@ -128,7 +134,10 @@ class PVLibraries extends PVStaticObject {
 	 * Adds css files to a queue of css files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string script
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public static function enqueueCss($script) {
 
@@ -141,14 +150,14 @@ class PVLibraries extends PVStaticObject {
 	}
 
 	/**
-	 * Adds a script directly into a buffer to be outputted later.
-	 * The script should be input with opening and closing tags.
+	 * Adds a script directly into a queue to be outputted later.The script should be inputted with opening
+	 * and closing tags as it would appear when the output occurs
+	 * 
 	 *
-	 * Example
-	 * $string='<script type="text/javascript">alert("Test");</script>';
-	 * PVLibraries::enqueue_openscript($string);
-	 *
-	 * @param string $script
+	 * @param string $script The string to be added to a queue. The string does not have a key and cannot be removed once added.
+	 * 
+	 * @return void
+	 * @access public
 	 */
 	public static function enqueueOpenscript($script) {
 
@@ -164,7 +173,8 @@ class PVLibraries extends PVStaticObject {
 	 * Returns javascript file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array script_array
+	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @access public
 	 */
 	public static function getJavascriptQueue() {
 
@@ -178,10 +188,11 @@ class PVLibraries extends PVStaticObject {
 	}
 
 	/**
-	 * Returns jquery file locations that have been inserted
+	 * Returns JQuery file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array script_array
+	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @access public
 	 */
 	public static function getJqueryQueue() {
 
@@ -195,10 +206,11 @@ class PVLibraries extends PVStaticObject {
 	}
 
 	/**
-	 * Returns prototype file locations that have been inserted
+	 * Returns Prototype file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array script_array
+	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @access public
 	 */
 	public static function getPrototypeQueue() {
 
@@ -215,7 +227,8 @@ class PVLibraries extends PVStaticObject {
 	 * Returns mootools file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array script_array
+	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @access public
 	 */
 	public static function getMootoolsQueue() {
 
@@ -232,7 +245,8 @@ class PVLibraries extends PVStaticObject {
 	 * Returns css file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array script_array
+	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @access public
 	 */
 	public static function getCssQueue() {
 
@@ -245,6 +259,12 @@ class PVLibraries extends PVStaticObject {
 		return $script;
 	}
 
+	/**
+	 * Returns the open scripts that were previously added to the open script queue.
+	 * 
+	 * @return string $script The scripts added will be returned in one unified string
+	 * @access public
+	 */
 	public static function getOpenscriptQueue() {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -288,7 +308,7 @@ class PVLibraries extends PVStaticObject {
 
 	/**
 	 * Looks through any libraries that have been added through addLibrary function. If there ae libraries
-	 * and their autoload is set to true, the libraries foiles or included.
+	 * and their autoload is set to true, the library's file and folders will be included and made accessible.
 	 *
 	 * @return void
 	 * @access public
@@ -312,13 +332,13 @@ class PVLibraries extends PVStaticObject {
 	}//end loadLibraries
 
 	/**
-	 * Explicity load a library, even if autoload is set to false. If the library is already loaded, the files will not be
-	 * re-included.
+	 * Explicity loads a specfic library, even if autoload is set to false. If the library is already loaded, the files that have already
+	 * been included WILL NOT be re-included.
 	 *
 	 * @param string $library_name The name of the library to be load. Will be the same name passed when addLibrary was used.
 	 *
 	 * @return void
-	 * @access publix
+	 * @access public
 	 */
 	public static function loadLibrary($library_name) {
 
@@ -336,7 +356,7 @@ class PVLibraries extends PVStaticObject {
 	}//end
 
 	/**
-	 * Loads the library that is passed through.
+	 * Loads the library that is passed through. Uses include_once when including a file.
 	 *
 	 * @param array $library An array of the library that contains directores, files, and file information
 	 * @param array $allowed_extensions The allowed extensions
