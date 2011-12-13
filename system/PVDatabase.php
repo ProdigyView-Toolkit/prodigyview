@@ -186,9 +186,11 @@ class PVDatabase extends PVStaticObject {
 		// Connect to the database
 		if (self::$dbtype == self::$mySQLConnection) {
 			mysqli_report(self::$mysql_error_report);
-			self::$link = new mysqli(self::$dbhost, self::$dbuser, self::$dbpass, self::$dbname);
+			$port = !empty(self::$dbport) ? self::$dbport : 3306;
+			self::$link = new mysqli(self::$dbhost, self::$dbuser, self::$dbpass, self::$dbname, $port);
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
-			self::$link = pg_connect("host=" . self::$dbhost . " port=" . self::$dbport . " dbname=" . self::$dbname . " user=" . self::$dbuser . " password=" . self::$dbpass . " ");
+			$port = !empty(self::$dbport) ? self::$dbport : 5432;
+			self::$link = pg_connect('host=' . self::$dbhost . ' port=' . $port . ' dbname=' . self::$dbname . ' user=' . self::$dbuser . ' password=' . self::$dbpass );
 		} else if (self::$dbtype == self::$msSQLConnection) {
 			self::$link = sqlsrv_connect(self::$dbhost, array("UID" => self::$dbuser, "PWD" => self::$dbpass, "Database" => self::$dbname, 'ReturnDatesAsStrings' => true));
 		} else if (self::$dbtype == self::$sqLiteConnection) {
