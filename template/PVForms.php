@@ -876,6 +876,64 @@ class PVForms extends PVStaticObject {
 	}
 
 	/**
+	 * Creates a fieldset,<fieldset></feildset>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the fieldset tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $strong The strong element that was generated
+	 * @access public
+	 */
+	public static function fieldset($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = PVHtml::generateHtmlTag('fieldset', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+	
+	/**
+	 * Creates a legend tag ,<legend></legend>, to display.
+	 *
+	 * @see self::getEventAttributes()
+	 * @see self::getStandardAttributes()
+	 *
+	 * @param string $data The information that will be displayed inside the legend tag
+	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 *
+	 * @return string $header The legend element that was generated
+	 * @access public
+	 */
+	public static function legend($data, $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+
+		$tag = PVHtml::generateHtmlTag('legend', $data, $options);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+
+		return $tag;
+	}
+
+	/**
 	 * Creates a checkbox input element with options passed too it.
 	 *
 	 * @see PVHTML::getStandardAttributes()
