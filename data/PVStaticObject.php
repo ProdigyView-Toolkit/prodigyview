@@ -53,11 +53,11 @@ class PVStaticObject extends PVStaticPatterns {
 		$index = $filtered['index'];
 		$value = $filtered['value'];
 		
-		if (self::$_collection == null) {
-			self::$_collection = new PVCollection();
+		if (self::$_collection[get_called_class()] == null) {
+			self::$_collection[get_called_class()] = new PVCollection();
 		}
 
-		self::$_collection -> addWithName($index, $value);
+		self::$_collection[get_called_class()] -> addWithName($index, $value);
 		self::_notify(get_class() . '::' . __FUNCTION__, $index, $value);
 	}
 
@@ -77,11 +77,11 @@ class PVStaticObject extends PVStaticPatterns {
 		
 		$index = self::_applyFilter(get_class(), __FUNCTION__, $index, array('event' => 'args'));
 		
-		if (self::$_collection == null) {
-			self::$_collection = new PVCollection();
+		if (self::$_collection[get_called_class()] == null) {
+			self::$_collection[get_called_class()] = new PVCollection();
 		}
 		
-		$value = self::$_collection -> $index;
+		$value = self::$_collection[get_called_class()] -> $index;
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $value, $index);
 		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
@@ -109,8 +109,8 @@ class PVStaticObject extends PVStaticPatterns {
 		$method = $filtered['method'];
 		$args = $filtered['args'];
 		
-  		if(isset(self::$_methods[$method]))
-  			$value = call_user_func_array(self::$_methods[$method] , $args);
+  		if(isset(self::$_methods[get_called_class()][$method]))
+  			$value = call_user_func_array(self::$_methods[get_called_class()][$method] , $args);
 		else 
 			throw new BadMethodCallException('Method \''.$method. '\' was not found in class '.get_called_class());
 		
@@ -135,10 +135,10 @@ class PVStaticObject extends PVStaticPatterns {
 			return self::_callAdapter(get_class(), __FUNCTION__, $data);
 		
 		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'args'));
-		if (self::$_collection == null) {
-			self::$_collection = new PVCollection();
+		if (self::$_collection[get_called_class()] == null) {
+			self::$_collection[get_called_class()] = new PVCollection();
 		}
-		self::$_collection -> add($data);
+		self::$_collection[get_called_class()] -> add($data);
 		self::_notify(get_class() . '::' . __FUNCTION__, $data);
 	}//end
 
@@ -162,10 +162,10 @@ class PVStaticObject extends PVStaticPatterns {
 		$name = $filtered['name'];
 		$data = $filtered['data'];
 		
-		if (self::$_collection == null) {
-			self::$_collection = new PVCollection();
+		if (self::$_collection[get_called_class()] == null) {
+			self::$_collection[get_called_class()] = new PVCollection();
 		}
-		self::$_collection -> addWithName($name, $data);
+		self::$_collection[get_called_class()] -> addWithName($name, $data);
 		self::_notify(get_class() . '::' . __FUNCTION__, $name, $data);
 	}//end
 
@@ -180,10 +180,10 @@ class PVStaticObject extends PVStaticPatterns {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 		
-		if (self::$_collection == null) {
-			self::$_collection = new PVCollection();
+		if (self::$_collection[get_called_class()] == null) {
+			self::$_collection[get_called_class()] = new PVCollection();
 		}
-		return self::$_collection -> getIterator();
+		return self::$_collection[get_called_class()] -> getIterator();
 	}
 	
 	/**
@@ -204,7 +204,7 @@ class PVStaticObject extends PVStaticPatterns {
 		$method = $filtered['method'];
 		$closure = $filtered['closure'];
 		
-		self::$_methods[$method]=$closure;
+		self::$_methods[get_called_class()][$method]=$closure;
 		self::_notify(get_class() . '::' . __FUNCTION__, $method, $closure);
 	}
 
