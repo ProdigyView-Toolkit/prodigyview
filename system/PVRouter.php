@@ -94,13 +94,13 @@ class PVRouter extends PVStaticObject {
 
 		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
 
-		if ($_SERVER["HTTPS"] != "on") {
+		if ($_SERVER['HTTPS'] != 'on') {
 			$url = 'https://';
 
-			if ($_SERVER["SERVER_PORT"] != "80") {
-				$url .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
+			if ($_SERVER['SERVER_PORT'] != '80') {
+				$url .= $_SERVER['SERVER_NAME'] . ":" . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
 			} else {
-				$url .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+				$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			}
 
 			self::_notify(get_class() . '::' . __FUNCTION__, $url);
@@ -123,17 +123,17 @@ class PVRouter extends PVStaticObject {
 
 		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
 
-		if ($_SERVER["HTTPS"] == "on") {
+		if ($_SERVER['HTTPS'] == 'on') {
 			$url = 'http://';
 
-			if ($_SERVER["SERVER_PORT"] != "80") {
-				$url .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
+			if ($_SERVER['SERVER_PORT'] != '80') {
+				$url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
 			} else {
-				$url .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+				$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			}
 
 			self::_notify(get_class() . '::' . __FUNCTION__, $url);
-			header("Location: $url ");
+			header('Location: ' . $url);
 		}//end https is on
 
 	}//end activateSSL
@@ -165,7 +165,9 @@ class PVRouter extends PVStaticObject {
 			'access_level_redirect' => null, 
 			'user_roles' => null, 
 			'user_roles_redirect' => null, 
-			'rule' => null
+			'rule' => null,
+			'activate_ssl' => false,
+			'deactivate_ssl' => false
 		);
 
 		if (!is_array($route)) {
@@ -257,6 +259,14 @@ class PVRouter extends PVStaticObject {
 		self::$route_options = $route_options;
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $final_route, $route_options);
+		
+		if(!empty($route_options['activate_ssl']) && $route_options['activate_ssl'] && !self::isSecureConnection()) {
+			self::activateSSL();
+		}
+		
+		else if(!empty($route_options['deactivate_ssl']) && $route_options['deactivate_ssl'] && self::isSecureConnection()) {
+			self::deactivateSSL();
+		}
 
 		if (!empty($route_options['access_level'])) {
 			if (!PVSecurity::checkUserAccessLevel(PVUsers::getUserID(), $route_options['access_level']) && !empty($route_options['access_level_redirect'])) {
@@ -412,6 +422,17 @@ class PVRouter extends PVStaticObject {
 			self::setRoute($url);
 			header('Location: ' . self::url($url));
 		}
+	}
+	
+	public static function isSecureConnection(){
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		if ($_SERVER['HTTPS'] != 'on')
+			return false;
+		
+		return true;
 	}
 
 }//end class
