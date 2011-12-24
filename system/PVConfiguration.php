@@ -28,6 +28,10 @@
  */
 
 class PVConfiguration extends PVStaticObject {
+	
+	protected static $_environment = '';
+	protected static $_configurations = '';
+	
 
 	/**
 	 * Initializes the configuration class by adding values to the collection
@@ -45,10 +49,15 @@ class PVConfiguration extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 
 		$args = self::_applyFilter(get_class(), __FUNCTION__, $args, array('event' => 'args'));
-
+		
+		if(isset($args['environment'])) {
+			self::$_environment = $args['environment'];
+			unset($args['environment']);
+		}
+		
 		if (!empty($args)) {
 			foreach ($args as $key => $value) {
-				self::addToCollectionWithName($key, $value);
+				self::addToCollectionWithName($key.'_'.self::$_environment , $value);
 			}
 		}
 
@@ -65,16 +74,22 @@ class PVConfiguration extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	public static function addConfiguration($key, $value) {
+	public static function addConfiguration($key, $value, $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $value);
+		
+		$defaults = array('environment' => self::$_environment);
+		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'value' => $value), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'value' => $value, 'options' => $options), array('event' => 'args'));
 		$key = $filtered['key'];
 		$value = $filtered['value'];
+		$options = $filtered['options'];
+		
+		$environment = $options['environment'];
 
-		self::addToCollectionWithName($key, $value);
+		self::addToCollectionWithName($key.'_'.$environment , $value);
 		self::_notify(get_class() . '::' . __FUNCTION__, $key, $value);
 	}
 
@@ -87,14 +102,21 @@ class PVConfiguration extends PVStaticObject {
 	 * @return string $configuration
 	 * @access pulbic
 	 */
-	public static function getConfiguration($key) {
+	public static function getConfiguration($key, $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key);
+		
+		$defaults = array('environment' => self::$_environment);
+		$options += $defaults;
 
-		$key = self::_applyFilter(get_class(), __FUNCTION__, $key, array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'options' => $options), array('event' => 'args'));
+		$key = $filtered['key'];
+		$options = $filtered['options'];
+		
+		$environment = $options['environment'];
 
-		$value = parent::get($key);
+		$value = parent::get($key.'_'.$environment);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $key, $value);
 		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
