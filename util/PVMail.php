@@ -28,6 +28,56 @@
 */
 class PVMail extends PVStaticObject {
 	
+	protected static $_smtp_host;
+	protected static $_smtp_username;
+	protected static $_smtp_password;
+	protected static $_smtp_port;
+	protected static $_mailer = 'php';
+	protected static $_default_sender = '';
+	
+	/**
+	 * Configure the mail class with default options to be used.
+	 * 
+	 * @param array $config The options that will configure the class
+	 * 		-'smtp_host' _string_: The stmp host for sending email over smtp
+	 * 		-'smtp_username' _string_: The username for sending email using smtp
+	 * 		-'smtp_password' _string_: The password for the user sending email over smtp
+	 * 		-'smtp_port' _int_: The port for sending email over smtp
+	 * 		-'mailer' _string_: The email client used for sending email. Default is 'php' but if the email
+	 * 		client is smtp, the value should be 'smtp'
+	 * 		-'default_sender '_string_: The email address that will be used to send an email if none is defined.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function init($config = array()) {
+		
+		if(self::_hasAdapter(get_class(), __FUNCTION__) )
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		
+		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config , array('event'=>'args'));
+		
+		$defaults = array(
+			'smtp_host' => '',
+			'smtp_username' => '',
+			'smtp_password' => '',
+			'smtp_port' => '',
+			'mailer' => 'php',
+			'default_sender' => ''
+		);
+		
+		$config += $defaults;
+		
+		self::$_smtp_host= $config['smtp_host'];
+		self::$_smtp_username= $config['smtp_username'];
+		self::$_smtp_password= $config['smtp_password'];
+		self::$_smtp_port= $config['smtp_port'];
+		self::$_mailer = $config['mailer'];
+		self::$_default_sender = $config['default_sender'];
+		
+		self::_notify(get_class().'::'.__FUNCTION__, $config);
+	}
+	
 	/**
 	 * Sends an email to a location. The is function uses the optionsset in the configuration file for determing how the
 	 * email will be sent.
@@ -55,8 +105,7 @@ class PVMail extends PVStaticObject {
 		
 		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
 		
-		$config=pv_getSiteEmailConfiguration();
-		if($config['mailer']=='smtp'){
+		if(self::$_mailer == 'smtp'){
 			self::sendEMailSMTP($args);
 		}
 		else{
@@ -231,22 +280,20 @@ Content-Disposition: attachment
 			
 			extract($args);
 			
-			$config=pv_getSiteEmailConfiguration();
-			
 			if(empty($smtp_username)){
-				$smtp_username=$config['smtp_username'];
+				$smtp_username=self::$_smtp_username;
 			}
 			
 			if(empty($smtp_password)){
-				$smtp_password=$config['smtp_password'];
+				$smtp_password=self::$_smtp_password;
 			}
 			
 			if(empty($smtp_host)){
-				$smtp_host=$config['smtp_host'];
+				$smtp_host=self::$_smtp_host;
 			}
 			
 			if(empty($smtp_port)){
-				$smtp_port=$config['smtp_port'];
+				$smtp_port=self::$_smtp_port;
 			}
 			
 			require_once "Mail.php";
@@ -332,7 +379,7 @@ Content-Disposition: attachment
 	private static function getEmailDefaults() {
 		$defaults=array(
 			'receiver'=>'',
-			'sender'=>'',
+			'sender'=>self::$_default_sender,
 			'carboncopy'=>'',
 			'blindcopy'=>'',
 			'reply_to'=>'',
