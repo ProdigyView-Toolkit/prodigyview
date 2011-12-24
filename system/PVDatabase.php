@@ -35,11 +35,12 @@ class PVDatabase extends PVStaticObject {
 
 	//Assigns the connection types values
 	//Important for deciding which database to connect to
-	private static $mySQLConnection = "mysql";
-	private static $postgreSQLConnection = "postgresql";
-	private static $oracleConnection = "oracle";
-	private static $msSQLConnection = "mssql";
-	private static $sqLiteConnection = "sqlite";
+	private static $mySQLConnection = 'mysql';
+	private static $postgreSQLConnection = 'postgresql';
+	private static $oracleConnection = 'oracle';
+	private static $msSQLConnection = 'mssql';
+	private static $sqLiteConnection = 'sqlite';
+	private static $mongoConnection = 'mongo';
 
 	private static $connections = array();
 
@@ -198,6 +199,10 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$oracleConnection) {
 			self::$link = oci_connect($user, $pass, $host);
 			$d = new PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
+		} else if (self::$dbtype == self::$mongoConnection) {
+			self::$link = new Mongo(self::$dbhost);
+			$database = self::$dbname;
+			self::$link ->$datbase;
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__);
@@ -1027,6 +1032,9 @@ class PVDatabase extends PVStaticObject {
 			$stmt = sqlsrv_prepare(self::$link, $query, $data);
 
 			return sqlsrv_execute($stmt);
+		} else if (self::$dbtype == self::$mongoConnection) {
+			$collection = self::$link->$table_name;
+			$collection -> insert($data);
 		}
 
 	}//end preparedInsert
@@ -1117,6 +1125,9 @@ class PVDatabase extends PVStaticObject {
 			$row = self::fetchArray($result);
 			$field_value = $row[$returnField];
 			$id = $field_value;
+		} else if (self::$dbtype == self::$mongoConnection) {
+			$collection = self::$link->$table_name;
+			$id = $collection -> insert($data);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $id, $table_name, $returnField, $returnTable, $data, $formats);
@@ -1271,6 +1282,9 @@ class PVDatabase extends PVStaticObject {
 			$stmt = sqlsrv_prepare(self::$link, $query, $params);
 
 			$result = sqlsrv_execute($stmt);
+		} else if (self::$dbtype == self::$mongoConnection) {
+			$collection = self::$link -> $table;
+			$result = $collection -> update($wherelist, $data);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $formats, $whereformats);
@@ -1342,7 +1356,11 @@ class PVDatabase extends PVStaticObject {
 
 			$stmt = sqlsrv_prepare(self::$link, $query, $wherelist);
 			$result = sqlsrv_execute($stmt);
+		} else if (self::$dbtype == self::$mongoConnection) {
+			$collection = self::$link -> $table;
+			$collection -> remove($wherelist, true);
 		}
+		
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $wherelist, $whereformats);
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
