@@ -94,7 +94,6 @@ class PVTools extends PVStaticObject {
 			$string = strip_tags($string, $allowed_tags);
 		}
 
-		$length -= mb_strlen($trailing);
 		$truncated = '';
 
 		if (mb_strlen($string) > $length) {
