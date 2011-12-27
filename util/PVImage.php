@@ -26,7 +26,7 @@
  *authors and should not be interpreted as representing official policies, either expressed
  *or implied, of ProdigyView LLC.
  */
-class PVImageRenderer extends PVStaticObject {
+class PVImage extends PVStaticObject {
 
 	function scaleImageByWidth($image_file, $new_width) {
 
