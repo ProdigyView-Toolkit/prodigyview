@@ -26,7 +26,7 @@
  *authors and should not be interpreted as representing official policies, either expressed
  *or implied, of ProdigyView LLC.
  */
-class PVVideoRenderer extends PVStaticObject {
+class PVVideo extends PVStaticObject {
 
 	protected static $converter = 'ffmpeg';
 
