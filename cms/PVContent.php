@@ -262,7 +262,7 @@ class PVContent extends PVStaticObject {
 		extract($args, EXTR_SKIP);
 
 		if (!empty($content_id)) {
-			$return = PVImageRenderer::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width, $image_height, $thumb_width, $thumb_height, $image_src);
+			$return = PVImage::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width, $image_height, $thumb_width, $thumb_height, $image_src);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $content_id, $args);
@@ -326,7 +326,7 @@ class PVContent extends PVStaticObject {
 
 	/**
 	 * Create content with additional parameters with a video file. Is an extension of the base content when using createContent.
-	 * File can be converted using the options the PVVideoRenderer accepts.
+	 * File can be converted using the options the PVVideo accepts.
 	 *
 	 * @param array $args An array of arguements that defines that base content as well as video content.
 	 * 			-'video_type' _string_: The type of video
@@ -360,7 +360,7 @@ class PVContent extends PVStaticObject {
 
 		if (!empty($content_id)) {
 			$args['content_id'] = $content_id;
-			PVVideoRenderer::updateVideoContent($args);
+			PVVideo::updateVideoContent($args);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $content_id, $args);
@@ -468,7 +468,7 @@ class PVContent extends PVStaticObject {
 		$content_id = self::createContent($args);
 		$args['content_id'] = $content_id;
 
-		PVAudioRenderer::uploadAudioFileToContent($args);
+		PVAudio::uploadAudioFileToContent($args);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $content_id, $args);
 		$content_id = self::_applyFilter(get_class(), __FUNCTION__, $content_id, array('event' => 'return'));
@@ -4124,7 +4124,7 @@ class PVContent extends PVStaticObject {
 		extract($args, EXTR_SKIP);
 
 		if (!empty($content_id)) {
-			$return = PVImageRenderer::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width, $image_height, $thumbnailwidth, $thumbnailheight, $image_src);
+			$return = PVImage::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width, $image_height, $thumbnailwidth, $thumbnailheight, $image_src);
 		}
 		self::_notify(get_class() . '::' . __FUNCTION__, $args);
 		return $content_id;
