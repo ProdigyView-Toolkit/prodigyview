@@ -285,7 +285,7 @@ class PVVideo extends PVStaticObject {
 		$input_options = self::setEncodingOptions($options, 'input_');
 		$output_options = self::setEncodingOptions($options, 'output_');
 
-		exec("$converter -i $current_file_location $input_options $new_file_location $output_options");
+		exec("$converter -i $input_options $current_file_location $output_options $new_file_location");
 		self::_notify(get_class() . '::' . __FUNCTION__, $current_file_location, $new_file_location, $options, $input_options, $output_options);
 	}//end convertVideoFile
 
