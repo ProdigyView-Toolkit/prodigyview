@@ -27,7 +27,7 @@
  *or implied, of ProdigyView LLC.
  */
 
-class PVAudioRenderer extends PVStaticObject {
+class PVAudio extends PVStaticObject {
 
 	protected static $converter = 'ffmpeg';
 
