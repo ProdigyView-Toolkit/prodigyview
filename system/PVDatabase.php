@@ -200,9 +200,9 @@ class PVDatabase extends PVStaticObject {
 			self::$link = oci_connect($user, $pass, $host);
 			$d = new PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
 		} else if (self::$dbtype == self::$mongoConnection) {
-			self::$link = new Mongo(self::$dbhost);
+			self::$link = new Mongo('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
 			$database = self::$dbname;
-			self::$link ->$datbase;
+			self::$link = self::$link ->selectDB($database);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__);
@@ -902,37 +902,276 @@ class PVDatabase extends PVStaticObject {
 	 *
 	 * @return void
 	 */
-	public static function insertIntoDatabase($table_name, $data, $data_types = '') {
+	public static function insertStatement($table_name, $data, $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $data, $data_types);
-
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'data' => $data, 'data_types' => $data_types), array('event' => 'args'));
+			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $data, $options);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'data' => $data, 'options' => $options), array('event' => 'args'));
 		$table_name = $filtered['table_name'];
 		$data = $filtered['data'];
-		$data_types = $filtered['data_types'];
+		$options = $filtered['options'];
+		
+		if (self::$dbtype == self::$mySQLConnection || self::$dbtype == self::$postgreSQLConnection || self::$dbtype == self::$msSQLConnection) {
+			
+			$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'data' => $data, 'options' => $options), array('event' => 'args'));
+			$table_name = $filtered['table_name'];
+			$data = $filtered['data'];
+			$options = $filtered['options'];
+	
+			if (!empty($table_name)) {
+				$data = self::makeSafe($data);
+				$first = 1;
+				foreach ($data as $key => $value) {
+	
+					if ($first == 0) {
+						$columns .= ' ,' . $key;
+						$values .= ' ,\'' . self::makeSafe( $value ) . '\' ';
+					} else {
+						$columns = $key;
+						$values = ' \'' . self::makeSafe($value) . '\' ';
+					}
+	
+					$first = 0;
+				}//end foreach
+	
+				$query = 'INSERT INTO ' . $table_name . '(' . $columns . ') VALUES(' . $values . ')';
+				$result = self::query($query);
+			}
+		} else if (self::$dbtype == self::$mongoConnection) {
+			$collection = self::$link -> $table_name;
+			$result = $collection -> insert($data);
+		}
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table_name, $data, $options);
+		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
+		
+		return $result;
+	}//end insertIntoDatabase
+	
+	public static function updateStatement($table, $data, $wherelist, $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $table, $data, $wherelist, $options);
 
-		if (!empty($table_name)) {
-			$data = self::makeSafe($data);
-			$first = 1;
-			foreach ($data as $key => $value) {
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table' => $table, 'data' => $data, 'wherelist' => $wherelist, 'options' => $options), array('event' => 'args'));
+		$table = $filtered['table'];
+		$data = $filtered['data'];
+		$options = $filtered['options'];
+		$wherelist = $filtered['wherelist'];
 
-				if ($first == 0) {
-					$columns .= ' ,' . $key;
-					$values .= ' ,\'' . $value . '\' ';
-				} else {
-					$columns = $key;
-					$values = ' \'' . $value . '\' ';
-				}
-
-				$first = 0;
-			}//end foreach
-
-			$query = 'INSERT INTO ' . $table_name . '(' . $columns . ') VALUES(' . $values . ')';
-			self::query($query);
+		if (self::$dbtype == self::$mySQLConnection || self::$dbtype == self::$postgreSQLConnection || self::$dbtype == self::$msSQLConnection) {
+			$query = 'UPDATE ' . $table . ' SET ';
+			$params = array();
+			$params_holder = array();
+			
+			if(is_array($data)) {
+				foreach ($data as $key => $value) {
+					$query .= $key. ' = \''.self::makeSafe($value).'\'';
+				}//end foreach
+			
+			} else {
+				$query.= $data;
+			}
+	
+			if (is_array($wherelist) && !empty($wherelist)) {
+				$query .= ' WHERE ';
+				$first = true;
+				
+				foreach($wherelist as $key => $value) {
+					if(is_array($value))
+						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
+					else {
+						if($first)
+							$query .= $key.' = \''.self::makeSafe($value).'\'';
+						else {
+							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
+						}
+					}
+						
+					$first = false;
+				}//end foreach
+				
+			} else if (!empty($wherelist)) {
+				$query .= ' WHERE '.$wherelist;
+			}
+		
+			$result = self::query($query);
+		
+		} else if (self::$dbtype == self::$mongoConnection) {
+			$collection = self::$link-> $table;
+			$result = $collection -> update($wherelist, $data);
 		}
 
-	}//end insertIntoDatabase
+		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $options);
+		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
+
+		return $result;
+
+	}//edn preparedUpdate
+	
+	public static function selectStatement(array $args, array $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $args, $options);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('args' => $args, 'options' => $options), array('event' => 'args'));
+		$args= $filtered['args'];
+		$options = $filtered['options'];
+		
+		if (self::$dbtype == self::$mySQLConnection || self::$dbtype == self::$postgreSQLConnection || self::$dbtype == self::$msSQLConnection) {
+			$default = array(
+				'fields'=>'*',
+				'where' => '',
+				'into' => '',
+				'from' => '',
+				'join' => '',
+				'group_by' => '',
+				'having' => '',
+				'order_by' => '',
+				'limit' => '',
+				'offset' => '',
+			);
+			
+			$args += $default;
+			
+			$query = '';
+			
+			if(is_array($args['fields'])) {
+				$fields = implode(',', $args['fields']);
+			} else {
+				$fields = $args['fields'];
+			}
+			
+			$query .= 'SELECT ' . $fields . ' ';
+			
+			$query .= ' FROM '.$args['table'] . ' ';
+			
+			if(is_array($args['join'])) {
+				foreach($args['join'] as $key => $value) {
+					if(is_array($value)){
+						$type = isset($value['type']) ? $value['type'] : ' NATURAL JOIN ';
+						$table = isset($value['table']) ? $value['table'] : $key ;
+						$on = isset($value['on']) ? $value['on'] : '' ;
+						
+						$query .= $type. ' ' . $table. ' ' .$on;
+					} else {
+						$query .= ' JOIN '.$value;
+					}
+				}
+			} else {
+				$query .= ' '.$args['join'];
+			}
+			
+			if(!empty($args['where']) && !is_array($args['where']))
+				$query .= ' WHERE '.$args['where'];
+			else if(is_array($args['where']) && !empty($args['where'])) {
+				$query .= ' WHERE ';
+				$first = true;
+				foreach($args['where'] as $key => $value) {
+					if(is_array($value))
+						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
+					else {
+						if($first)
+							$query .= $key.' = \''.self::makeSafe($value).'\'';
+						else {
+							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
+						}
+					}
+					
+					$first = false;
+				}
+			}
+			
+			
+			if(!empty($args['order_by']) && is_array($args['order_by'])) {
+				$query .= ' ORDER BY '.implode(',', $args['order_by']);
+			} else if(!empty($args['order_by'])) {
+				$query .= ' ORDER BY '. $args['order_by'];
+			}
+			
+			$result = PVDatabase::query($query);	
+		} else if(self::$dbtype == self::$mongoConnection) {
+			$where = (!empty($args['where'])) ? $args['where'] : array();
+			$collection = self::$link-> $args['table'];
+			$result = $collection -> find($where);
+		}
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
+		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
+		
+		return $result;
+	}
+
+
+	public static function deleteStatement(array $args, array $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $args, $options);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('args' => $args, 'options' => $options), array('event' => 'args'));
+		$args= $filtered['args'];
+		$options = $filtered['options'];
+		
+		if (self::$dbtype == self::$mySQLConnection || self::$dbtype == self::$postgreSQLConnection || self::$dbtype == self::$msSQLConnection) {
+			$default = array(
+				'where' => '',
+				'into' => '',
+				'from' => '',
+				'join' => '',
+				'group_by' => '',
+				'having' => '',
+				'order_by' => '',
+				'limit' => '',
+				'offset' => '',
+			);
+			
+			$args += $default;
+			
+			$query = '';
+			
+			$query .= 'DELETE FROM FROM '.$args['table'] . ' ';
+			
+			if(is_array($args['join'])) {
+				$query .= implode(',', $args['join']);
+			} else {
+				$query .= ' '.$args['join'];
+			}
+			
+			if(!empty($args['where']))
+				$query .= ' WHERE ';
+			if(is_array($args['where'])) {
+				$first = true;
+				foreach($args['where'] as $key => $value) {
+					if(is_array($value))
+						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
+					else {
+						if($first)
+							$query .= $key.' = \''.self::makeSafe($value).'\'';
+						else {
+							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
+						}
+					}
+					
+					$first = false;
+				}
+			} else {
+				$query .= $args['where'];
+			}
+			
+			echo $query;
+			$result = PVDatabase::query($query);	
+		} else if(self::$dbtype == self::$mongoConnection) {
+			$collection = self::$link->$args['table'];
+			print_r($args['where']);
+			$result = $collection -> remove($args['where']);
+		}
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
+		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
+		
+		return $result;
+	}
 
 	/**
 	 * Executes a prepared Query that will be inserted into the database. Function still needs
@@ -1199,6 +1438,89 @@ class PVDatabase extends PVStaticObject {
 		return $result;
 
 	}//end preparedSelect
+	
+	public static function selectPreparedStatement(array $args, array $options = array()){
+		
+		if (self::$dbtype == self::$mySQLConnection || self::$dbtype == self::$postgreSQLConnection || self::$dbtype == self::$msSQLConnection) {
+			$default = array(
+				'fields'=>'*',
+				'where' => '',
+				'into' => '',
+				'from' => '',
+				'join' => '',
+				'group_by' => '',
+				'having' => '',
+				'order_by' => '',
+				'limit' => '',
+				'offset' => '',
+			);
+			
+			$args += $default;
+			
+			$query = '';
+			
+			if(is_array($args['fields'])) {
+				$fields = implode(',', $args['fields']);
+			} else {
+				$fields = $args['fields'];
+			}
+			
+			$query .= 'SELECT ' . $fields . ' ';
+			
+			$query .= ' FROM '.$args['table'] . ' ';
+			
+			if(is_array($args['join'])) {
+				foreach($args['join'] as $key => $value) {
+					if(is_array($value)){
+						$type = isset($value['type']) ? $value['type'] : ' NATURAL JOIN ';
+						$table = isset($value['table']) ? $value['table'] : $key ;
+						
+						$query .= $type. ' ' . $table;
+					} else {
+						$query .= ' JOIN '.$value;
+					}
+				}
+			} else {
+				$query .= ' '.$args['join'];
+			}
+			
+			if(!empty($args['where']))
+				$query .= ' WHERE ';
+			if(is_array($args['where'])) {
+				$first = true;
+				foreach($args['where'] as $key => $value) {
+					if(is_array($value))
+						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
+					else {
+						if($first)
+							$query .= $key.' = \''.self::makeSafe($value).'\'';
+						else {
+							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
+						}
+					}
+					
+					$first = false;
+				}
+			} else {
+				$query .= $args['where'];
+			}
+			
+			if(!empty($args['order_by']) && is_array($args['order_by'])) {
+				$query .= ' ORDER BY '.implode(',', $args['order_by']);
+			} else if(!empty($args['order_by'])) {
+				$query .= ' ORDER BY '. $args['order_by'];
+			}
+			echo $query;
+			$result = PVDatabase::query($query);	
+		} else if(self::$dbtype == self::$mongoConnection) {
+			$collection = self::$link->$table_name;
+			$result = $collection -> find($args);
+		}
+		
+		return $result;
+	}
+	
+	
 
 	/**
 	 *  Updates a tables data using a prepared query.
@@ -1418,6 +1740,44 @@ class PVDatabase extends PVStaticObject {
 		return $table_name;
 
 	}//end  getApplicationPermissionsTable
+	
+	protected static function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true){
+		
+		$query = '';
+		if(PVValidator::isInteger($key))
+			$key = 'AND';
+		
+		foreach($args as $subkey => $arg) {
+			
+			if(($subkey == '>=' ||  $subkey ==  '>' || $subkey ==  '<' || $subkey ==  '<=') && !PVValidator::isInteger($subkey)) 
+					$operator = $subkey;
+			else if(!PVValidator::isInteger($subkey))
+				$key = $subkey;
+			
+			if(is_array($arg)) {
+				
+				if($subkey == '=>' ||  $subkey ==  '>' || $subkey ==  '<=' || $subkey ==  '<=') 
+					$operator = $subkey;
+				
+				else if(PVValidator::isInteger($subkey))
+					$subkey = 'AND';
+				
+					$query.= self::parseOperators($column, $arg, $subkey, $operator, $first);
+			} else {
+			
+				 if(!$first) {
+					$query .=  ' '.$key . ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
+				 } else  {
+				 	$query .=  ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
+				 }
+			 
+			}
+			
+			$first = false;	
+		}//end foreach
+		
+		return $query;
+	}
 
 	private static function bindParameters(&$statement, &$params) {
 
