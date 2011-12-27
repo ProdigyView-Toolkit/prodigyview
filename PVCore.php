@@ -2052,15 +2052,15 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	 */
 	
 	function pv_uploadImage($file_name, $tmp_name, $file_size, $file_type, $image_width=300 , $image_height=300 , $thumbnailwidth=150, $thumbnailheight=150){
-		return PVImageRenderer::uploadImage($file_name, $tmp_name, $file_size, $file_type, $image_width , $image_height , $thumbnailwidth, $thumbnailheight);
+		return PVImage::uploadImage($file_name, $tmp_name, $file_size, $file_type, $image_width , $image_height , $thumbnailwidth, $thumbnailheight);
 	}//end pv_isInteger($int)
 	
 	function pv_updateImage($content_id,  $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width=300 , $image_height=300 , $thumbnailwidth=150, $thumbnailheight=150){
-		return PVImageRenderer::updateImage($content_id,  $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width=300 , $image_height=300 , $thumbnailwidth=150, $thumbnailheight=150);
+		return PVImage::updateImage($content_id,  $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width=300 , $image_height=300 , $thumbnailwidth=150, $thumbnailheight=150);
 	}//end pv_isInteger($int)
 	
 	function pv_resizeImageGD($name,$filename,$new_w=150,$new_h=150){
-		return PVImageRenderer::resizeImageGD($name,$filename,$new_w=150,$new_h=150);
+		return PVImage::resizeImageGD($name,$filename,$new_w=150,$new_h=150);
 	}//end pv_isInteger($int)
 	
 	/**
