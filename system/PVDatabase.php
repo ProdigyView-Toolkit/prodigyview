@@ -940,7 +940,7 @@ class PVDatabase extends PVStaticObject {
 			}
 		} else if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::$link -> $table_name;
-			$result = $collection -> insert($data);
+			$result = $collection -> insert($data, $options);
 		}
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table_name, $data, $options);
@@ -1000,7 +1000,7 @@ class PVDatabase extends PVStaticObject {
 		
 		} else if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::$link-> $table;
-			$result = $collection -> update($wherelist, $data);
+			$result = $collection -> update($wherelist, $data, $options);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $options);
@@ -1093,8 +1093,9 @@ class PVDatabase extends PVStaticObject {
 			$result = PVDatabase::query($query);	
 		} else if(self::$dbtype == self::$mongoConnection) {
 			$where = (!empty($args['where'])) ? $args['where'] : array();
+			$fields = (!empty($args['fields']) && $args['fields'] != '*' ) ? $args['where'] : array();
 			$collection = self::$link-> $args['table'];
-			$result = $collection -> find($where);
+			$result = $collection -> find($where, $fields);
 		}
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
@@ -1159,12 +1160,11 @@ class PVDatabase extends PVStaticObject {
 				$query .= $args['where'];
 			}
 			
-			echo $query;
 			$result = PVDatabase::query($query);	
 		} else if(self::$dbtype == self::$mongoConnection) {
 			$collection = self::$link->$args['table'];
-			print_r($args['where']);
-			$result = $collection -> remove($args['where']);
+			$where = (!empty($args['where'])) ? $args['where'] : array();
+			$result = $collection -> remove($where, $options);
 		}
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
@@ -1510,7 +1510,7 @@ class PVDatabase extends PVStaticObject {
 			} else if(!empty($args['order_by'])) {
 				$query .= ' ORDER BY '. $args['order_by'];
 			}
-			echo $query;
+			
 			$result = PVDatabase::query($query);	
 		} else if(self::$dbtype == self::$mongoConnection) {
 			$collection = self::$link->$table_name;
