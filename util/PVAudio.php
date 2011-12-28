@@ -392,6 +392,22 @@ class PVAudio extends PVStaticObject {
 		$options = $filtered['options'];
 
 		$input_options = '';
+		
+		if (isset($options[$input_type . 'f'])) {
+			$input_options .= ' -f ' . $options[$input_type . 'f'];
+		}
+		
+		if (isset($options[$input_type . 't'])) {
+			$input_options .= ' -t ' . $options[$input_type . 't'];
+		}
+		
+		if (isset($options[$input_type . 'fs'])) {
+			$input_options .= ' -fs ' . $options[$input_type . 'fs'];
+		}
+		
+		if (isset($options[$input_type . 'ss'])) {
+			$input_options .= ' -ss ' . $options[$input_type . 'ss'];
+		}
 
 		if (isset($options[$input_type . 'aframes'])) {
 			$input_options .= ' -aframes ' . $options[$input_type . 'aframes'];
