@@ -174,8 +174,9 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $time, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('time' => $time, 'options' => $options), array('event' => 'args'));
-		$time = $filtered['time'];
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('src' => $src, 'data' => $data , 'options' => $options), array('event' => 'args'));
+		$src = $filtered['src'];
+		$data = $filtered['data'];
 		$options = $filtered['options'];
 
 		$tag = '<iframe src="' . $src . '" ';
@@ -205,7 +206,7 @@ class PVHtml extends PVStaticObject {
 
 		$tag .= '>' . $data . '</iframe>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $time, $options);
+		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $src, $data, $options);
 		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
@@ -337,6 +338,10 @@ class PVHtml extends PVStaticObject {
 
 		if (!empty($options['rel'])) {
 			$link .= 'rel="' . $options['rel'] . '" ';
+		}
+		
+		if (!empty($options['type'])) {
+			$link .= 'type="' . $options['type'] . '" ';
 		}
 
 		if (!empty($options['sizes'])) {
