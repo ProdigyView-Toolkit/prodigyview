@@ -195,7 +195,7 @@ class PVFileManager extends PVStaticObject {
 					$file_array[$directory . $file . DS] = self::getFilesInDirectory($directory . $file . DS, $options);
 
 				} else if (is_dir($directory . $file . DS) && $options['verbose']) {
-					$file_array[$directory . $file . DS] = array('type' => 'folder', 'files' => self::getFilesInDirectory($directory . $file . DS, $options));
+					$file_array[$directory . $file . DS] = array('type' => 'folder', 'directory' => $directory.$file.DS, 'files' => self::getFilesInDirectory($directory . $file . DS, $options));
 				} else if ($options['verbose']) {
 					$info = array('type' => 'file', 'basename' => pathinfo($file, PATHINFO_BASENAME), 'extension' => pathinfo($file, PATHINFO_EXTENSION), 'mime_type' => self::getFileMimeType($directory . $file, $options));
 
@@ -678,4 +678,3 @@ class PVFileManager extends PVStaticObject {
 	}
 
 }//end class
-?>
