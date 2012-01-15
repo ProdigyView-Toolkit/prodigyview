@@ -66,6 +66,9 @@ class PVBootstrap extends PVStaticObject {
 			'initialize_session' => true, 
 			'initialize_cache' => true, 
 			'initialize_mail' => true,
+			'initialize_video' => true,
+			'initialize_audio' => true,
+			'initialize_image' => true,
 			'load_plugins' => true, 
 			'load_libraries' => true, 
 			'load_configuration' => true,
@@ -118,6 +121,15 @@ class PVBootstrap extends PVStaticObject {
 		
 		if ($args['initialize_mail'])
 			PVMail::init($config);
+			
+		if ($args['initialize_video'])
+			PVVideo::init($config);
+		
+		if ($args['initialize_audio'])
+			PVAudio::init($config);
+		
+		if ($args['initialize_image'])
+			PVImage::init($config);
 
 		self::removeMagicQuotes();
 
