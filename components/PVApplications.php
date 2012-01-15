@@ -328,7 +328,7 @@ class PVApplications extends PVStaticObject {
 		$result = PVDatabase::query($query);
 
 		if (PVDatabase::resultRowCount($result) <= 0) {
-			$query = "INSERT INTO " . PVDatabase::getApplicationsTableName() . "(app_name , app_file , app_directory , app_unique_id , app_parameters , app_object , jquery_libraries , javascript_libraries , show_admin , admin_directory , admin_file , admin_object , backend_app , admin_jquery_libraries , admin_javascript_libraries , admin_mootools_libraries , prototype_libraries , admin_prototype_libraries , app_default_page , app_version , app_description , mootools_libraries , css_files , admin_css_files , uninstall_file , has_module, app_icon, app_preferences, is_application_editable, app_license, application_type, application_language, app_site, app_author ) VALUES('$app_name' , '$app_file' , '$app_directory' , '$app_unique_id' , '$app_paramters' , '$app_object' , '$jquery_libraries' , '$javascript_libraries' , '$show_admin' , '$admin_directory' , '$admin_file' , '$admin_object' , '$backend_app' , '$admin_jquery_libraries' , '$admin_javascript_libraries' , '$admin_mootools_libraries' , '$prototype_libraries' , '$admin_prototype_libraries' , '$app_default_page' , '$app_version' , '$app_description' , '$mootools_libraries' , '$css_files' , '$admin_css_files' , '$uninstall_file' , '$has_module', '$app_icon' , '$app_preferences', '$is_application_editable', '$app_license', '$application_type' , '$application_language', '$app_site', '$app_author') ";
+			$query = "INSERT INTO " . PVDatabase::getApplicationsTableName() . "(app_name , app_file , app_directory , app_unique_id , app_parameters , app_object , jquery_libraries , javascript_libraries , show_admin , admin_directory , admin_file , admin_object , backend_app , admin_jquery_libraries , admin_javascript_libraries , admin_mootools_libraries , prototype_libraries , admin_prototype_libraries , app_default_page , app_version , app_description , mootools_libraries , css_files , admin_css_files , uninstall_file , has_module, app_icon, app_preferences, is_application_editable, app_license, application_type, application_language, app_site, app_author ) VALUES('$app_name' , '$app_file' , '$app_directory' , '$app_unique_id' , '$app_parameters' , '$app_object' , '$jquery_libraries' , '$javascript_libraries' , '$show_admin' , '$admin_directory' , '$admin_file' , '$admin_object' , '$backend_app' , '$admin_jquery_libraries' , '$admin_javascript_libraries' , '$admin_mootools_libraries' , '$prototype_libraries' , '$admin_prototype_libraries' , '$app_default_page' , '$app_version' , '$app_description' , '$mootools_libraries' , '$css_files' , '$admin_css_files' , '$uninstall_file' , '$has_module', '$app_icon' , '$app_preferences', '$is_application_editable', '$app_license', '$application_type' , '$application_language', '$app_site', '$app_author') ";
 			$app_id = PVDatabase::return_last_insert_query($query, "app_id", PVDatabase::getApplicationsTableName());
 		} else {
 			$query = "UPDATE " . PVDatabase::getApplicationsTableName() . " SET app_name='$app_name' , app_file='$app_file' , app_directory='$app_directory' , app_unique_id='$app_unique_id' , app_object='$app_object' , jquery_libraries='$jquery_libraries' , javascript_libraries='$javascript_libraries' , show_admin='$show_admin' , admin_directory='$admin_directory' , admin_file='$admin_file' , admin_object='$admin_object' , backend_app='$backend_app' , admin_jquery_libraries='$admin_jquery_libraries' , admin_javascript_libraries='$admin_javascript_libraries' , admin_mootools_libraries='$admin_mootools_libraries' , prototype_libraries='$prototype_libraries' , admin_prototype_libraries='$admin_prototype_libraries' , app_default_page='$app_default_page' , app_version='$app_version' , app_description='$app_description' , mootools_libraries='$mootools_libraries' , css_files='$css_files' , admin_css_files='$admin_css_files' , uninstall_file='$uninstall_file' , has_module='$has_module', app_icon='$app_icon', app_preferences='$app_preferences', is_application_editable='$is_application_editable', app_license='$app_license', application_type='$application_type', application_language='$application_language', app_site='$app_site', app_author='$app_author' WHERE app_unique_id='$app_unique_id' ";
@@ -1343,6 +1343,7 @@ class PVApplications extends PVStaticObject {
 			'jquery_libraries' => '', 
 			'javascript_libraries' => '', 
 			'prototype_libraries' => '', 
+			'mootools_libraries' => '',
 			'css_files' => '', 
 			'show_admin' => 0, 
 			'admin_directory' => '', 
@@ -1364,7 +1365,9 @@ class PVApplications extends PVStaticObject {
 			'application_type' => '', 
 			'application_language' => '', 
 			'app_site' => '', 
-			'app_author' => ''
+			'app_author' => '',
+			'app_default_page' => '',
+			'app_description' => ''
 		);
 
 		$defaults = self::_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
