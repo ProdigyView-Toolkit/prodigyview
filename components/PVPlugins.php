@@ -794,7 +794,8 @@ class PVPlugins extends PVStaticObject {
 			'is_frontend_plugin' => 0, 
 			'is_admin_plugin' => 0, 
 			'plugin_object' => '', 
-			'plugin_language' => ''
+			'plugin_language' => '',
+			'plugin_preferences'=> ''
 		);
 
 		$defaults = self::_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
