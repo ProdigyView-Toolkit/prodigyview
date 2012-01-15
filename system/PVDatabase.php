@@ -384,6 +384,8 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$oracleConnection) {
 			$stid = oci_parse(self::$link, $result);
 			$array = oci_fetch_array($stid, OCI_ASSOC);
+		} else {
+			$array = $result;
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $array, $result);
@@ -429,7 +431,7 @@ class PVDatabase extends PVStaticObject {
 
 			$fields = $result_set;
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
-			$fields = pg_fetch_array($result);
+			$fields = pg_fetch_assoc($result);
 		} else if (self::$dbtype == self::$msSQLConnection && !empty($result)) {
 			$fields = sqlsrv_fetch_array($result);
 		} else if (self::$dbtype == self::$sqLiteConnection) {
@@ -556,15 +558,17 @@ class PVDatabase extends PVStaticObject {
 	 * @return string $schema Returns the name of the current schema.
 	 * @access public
 	 */
-	public static function getSchema() {
+	public static function getSchema($append_period = true) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		if (empty(self::$dbschema)) {
 			$schema = '';
-		} else {
+		} else if($append_period) {
 			$schema = self::$dbschema . ".";
+		} else {
+			$schema = self::$dbschema;
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $schema);
@@ -612,7 +616,7 @@ class PVDatabase extends PVStaticObject {
 	 * @return boolean $exist Will be true if the tabe exist, else false;
 	 * @access public
 	 */
-	public static function tableExist($tablename) {
+	public static function tableExist($tablename, $schema = '') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $tablename);
@@ -624,7 +628,9 @@ class PVDatabase extends PVStaticObject {
 		if (self::$dbtype == self::$mySQLConnection) {
 			$query = "show tables like \"$tablename\";";
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
-			$query = "SELECT relname FROM pg_class  WHERE relname = '$tablename';";
+			$query = "select * from information_schema.tables where table_name  = '$tablename' ";
+			if(!empty($schema))
+				$query.= "AND table_schema = '$schema'";
 		} else if (self::$dbtype == self::$sqLiteConnection) {
 			$query = "SELECT name FROM sqlite_master WHERE type='table' AND name='$tablename'; ";
 		} else if (self::$dbtype == self::$msSQLConnection) {
@@ -632,12 +638,12 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$oracleConnection) {
 			//To be Filed in
 		}
-
+		
 		$result = self::query($query);
 		$count = self::resultRowCount($result);
 		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result, $tablename);
-
-		if ($count <= 0) {
+		
+		if ($count <= 0 && empty($count)) {
 			return FALSE;
 		}
 
@@ -670,7 +676,7 @@ class PVDatabase extends PVStaticObject {
 		if (self::$dbtype == self::$mySQLConnection) {
 			$query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = '" . self::$dbname . "' AND table_name = '$table_name' AND column_name = '$field_name' ";
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
-			$query = "SELECT attname FROM pg_attribute WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = '$table_name') AND attname = '$field_name';";
+			$query = "SELECT * FROM information_schema.columns WHERE table_schema = '".self::getSchema(false)."' AND table_name = '$table_name' AND column_name = '$field_name';";
 		} else if (self::$dbtype == self::$msSQLConnection) {
 			$query = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='$table_name' AND COLUMN_NAME='$field_name';";
 		} else if (self::$dbtype == self::$oracleConnection) {
@@ -886,7 +892,7 @@ class PVDatabase extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $link);
+		self::_notify(get_class() . '::' . __FUNCTION__, self::$link);
 		$link = self::_applyFilter(get_class(), __FUNCTION__, self::$link, array('event' => 'return'));
 
 		return $link;
@@ -898,9 +904,10 @@ class PVDatabase extends PVStaticObject {
 	 *
 	 * @param string table_name: The name of the information is being inserted into.
 	 * @param array data: Information to be inserted into that table.The key is the column and the key's value is the colums value.
-	 * @param array data_types.: Still being worked on.
+	 * @param array options: Options that can be used for altering the connection.
 	 *
 	 * @return void
+	 * @access public
 	 */
 	public static function insertStatement($table_name, $data, $options = array()) {
 
@@ -920,7 +927,6 @@ class PVDatabase extends PVStaticObject {
 			$options = $filtered['options'];
 	
 			if (!empty($table_name)) {
-				$data = self::makeSafe($data);
 				$first = 1;
 				foreach ($data as $key => $value) {
 	
@@ -939,8 +945,19 @@ class PVDatabase extends PVStaticObject {
 				$result = self::query($query);
 			}
 		} else if (self::$dbtype == self::$mongoConnection) {
-			$collection = self::$link -> $table_name;
-			$result = $collection -> insert($data, $options);
+			$collection = self::_setMongoCollection($table_name, $options);
+			
+			if(isset($options['batchInsert']) && $options['batchInsert'])
+				$result = $collection -> batchInsert($data, $options);
+			else if( isset($options['gridFS']) &&  $options['gridFS'] && isset($options['file']))
+				$result = $collection -> storeFile($options['file'] ,$data, $options);
+			else
+				$result = $collection -> insert($data, $options);
+			
+			if(isset($options['batchInsert']) && $options['batchInsert'])
+				$result = $data;
+			else if(!(isset($options['gridFS']) &&  $options['gridFS'] && isset($options['file'])))
+				$result = $data['_id'];
 		}
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table_name, $data, $options);
@@ -949,6 +966,17 @@ class PVDatabase extends PVStaticObject {
 		return $result;
 	}//end insertIntoDatabase
 	
+	/**
+	 * Update record(s) in the database depending on the arguements specified in the wherelist
+	 * 
+	 * @param string $table The name of the table to update
+	 * @param array $data The data to update in key => value ( column => value ) format
+	 * @param array $wherelist Options defined on where to update the value
+	 * @param array $options Extra options when updating a table
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function updateStatement($table, $data, $wherelist, $options = array()) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -999,7 +1027,7 @@ class PVDatabase extends PVStaticObject {
 			$result = self::query($query);
 		
 		} else if (self::$dbtype == self::$mongoConnection) {
-			$collection = self::$link-> $table;
+			$collection = self::_setMongoCollection($table, $options);
 			$result = $collection -> update($wherelist, $data, $options);
 		}
 
@@ -1010,6 +1038,15 @@ class PVDatabase extends PVStaticObject {
 
 	}//edn preparedUpdate
 	
+	/**
+	 * Creates a select statement to query data in the database.
+	 * 
+	 * @param array $args An array of arguement that define the select statement
+	 * @param array $options Options to alter the select statement
+	 * 
+	 * @return $mixed $results 
+	 * @access public
+	 */
 	public static function selectStatement(array $args, array $options = array()) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -1031,6 +1068,9 @@ class PVDatabase extends PVStaticObject {
 				'order_by' => '',
 				'limit' => '',
 				'offset' => '',
+				'paged' => false,
+				'results_per_page' => 10,
+				'current_page' => 0
 			);
 			
 			$args += $default;
@@ -1094,8 +1134,24 @@ class PVDatabase extends PVStaticObject {
 		} else if(self::$dbtype == self::$mongoConnection) {
 			$where = (!empty($args['where'])) ? $args['where'] : array();
 			$fields = (!empty($args['fields']) && $args['fields'] != '*' ) ? $args['where'] : array();
-			$collection = self::$link-> $args['table'];
-			$result = $collection -> find($where, $fields);
+			
+			$collection = self::_setMongoCollection($args['table'], $options);
+			if(isset($options['findOne']) && $options['findOne'] )
+				$result = $collection -> findOne($where, $fields);
+			else 
+				$result = $collection -> find($where, $fields);
+			
+				if(!empty($args['order_by'])) {
+					$result = $result -> sort($args['order_by']);
+				}
+				
+				if(!empty($args['limit'])) {
+					$result = $result -> limit($args['limit']);
+				}
+				
+				if(!empty($args['offset'])) {
+					$result = $result -> skip($args['offset']);
+				}
 		}
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
@@ -1162,7 +1218,7 @@ class PVDatabase extends PVStaticObject {
 			
 			$result = PVDatabase::query($query);	
 		} else if(self::$dbtype == self::$mongoConnection) {
-			$collection = self::$link->$args['table'];
+			$collection = self::_setMongoCollection($args['table'], $options);
 			$where = (!empty($args['where'])) ? $args['where'] : array();
 			$result = $collection -> remove($where, $options);
 		}
@@ -1291,82 +1347,93 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 * @todo write better code
 	 */
-	public static function preparedReturnLastInsert($table_name, $returnField, $returnTable, $data, $formats = array()) {
+	public static function preparedReturnLastInsert($table_name, $returnField, $returnTable, $data, $formats = array(), $options = array() ) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $returnField, $returnTable, $data, $formats);
-
+		
 		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'data' => $data, 'returnField' => $returnField, 'returnTable' => $returnTable, 'formats' => $formats), array('event' => 'args'));
 		$table_name = $filtered['table_name'];
 		$returnField = $filtered['returnField'];
 		$returnTable = $filtered['returnTable'];
 		$data = $filtered['data'];
 		$formats = $filtered['formats'];
+		
+		if(self::getDatabaseType() == 'mongo' ) {
+			$collection = self::_setMongoCollection($table_name, $options);
+			
+			if(isset($options['batchInsert']) && $options['batchInsert'])
+				$collection -> batchInsert($data, $options);
+			else if(isset($options['gridFS']) && isset($options['file']) && $options['gridFS'])
+				$collection -> storeFile($options['file'] ,$data, $options);
+			else
+				$collection -> insert($data, $options);
+			
+			$id = $data['_id'];
+		} else {
 
-		$query = 'INSERT INTO ' . $table_name;
-
-		$values = '';
-		$placeholders = ' VALUES';
-
-		if (!empty($data)) {
-			$values .= '(';
-			$placeholders .= '(';
-		}//end if
-
-		$first = 1;
-		$params = array();
-		$count = 0;
-		foreach ($data as $key => $value) {
-			if ($first) {
-				$values .= $key;
-				$placeholders .= ' ' . self::getPreparedPlaceHolder($count + 1) . ' ';
-			} else {
-				$values .= ' , ' . $key;
-				$placeholders .= ', ' . self::getPreparedPlaceHolder($count + 1) . ' ';
-			}
-
-			$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
-			$count++;
-			$first = 0;
-		}//end foreach
-
-		if (!empty($data)) {
-			$values .= ')';
-			$placeholders .= ')';
-		}//end if
-
-		$query .= $values . $placeholders;
-
-		if (self::$dbtype == self::$mySQLConnection) {
-			$stmt = self::$link -> prepare($query);
-			self::bindParameters($stmt, $params);
+			$query = 'INSERT INTO ' . $table_name;
+			$values = '';
+			$placeholders = ' VALUES';
+	
+			if (!empty($data)) {
+				$values .= '(';
+				$placeholders .= '(';
+			}//end if
+	
+			$first = 1;
+			$params = array();
+			$count = 0;
 			foreach ($data as $key => $value) {
-				$params[$key] = $value;
+				if ($first) {
+					$values .= $key;
+					$placeholders .= ' ' . self::getPreparedPlaceHolder($count + 1) . ' ';
+				} else {
+					$values .= ' , ' . $key;
+					$placeholders .= ', ' . self::getPreparedPlaceHolder($count + 1) . ' ';
+				}
+	
+				$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
+				$count++;
+				$first = 0;
+			}//end foreach
+	
+			if (!empty($data)) {
+				$values .= ')';
+				$placeholders .= ')';
+			}//end if
+	
+			$query .= $values . $placeholders;
+	
+			if (self::$dbtype == self::$mySQLConnection) {
+				$stmt = self::$link -> prepare($query);
+				self::bindParameters($stmt, $params);
+				foreach ($data as $key => $value) {
+					$params[$key] = $value;
+				}
+				$stmt -> execute();
+				$id = self::$link -> insert_id;
+	
+			} else if (self::$dbtype == self::$postgreSQLConnection) {
+				$result = pg_prepare(self::$link, '', $query . " RETURNING $returnField ");
+				$result = pg_execute(self::$link, '', $data);
+				$row = self::fetchArray($result);
+				
+				$id = $row[$returnField];
+			} else if (self::$dbtype == self::$oracleConnection) {
+	
+			} else if (self::$dbtype == self::$msSQLConnection) {
+	
+				$stmt = sqlsrv_prepare(self::$link, $query, $data);
+	
+				sqlsrv_execute($stmt);
+	
+				$query = "SELECT @@IDENTITY AS $returnField FROM $returnTable;";
+				$result = self::query($query);
+				$row = self::fetchArray($result);
+				$field_value = $row[$returnField];
+				$id = $field_value;
 			}
-			$stmt -> execute();
-			$id = self::$link -> insert_id;
-
-		} else if (self::$dbtype == self::$postgreSQLConnection) {
-			$result = pg_prepare(self::$link, '', $query . " RETURNING $returnField ");
-			$result = pg_execute(self::$link, '', $data);
-			$row = self::fetchArray($result);
-			$id = $row[$returnField];
-		} else if (self::$dbtype == self::$oracleConnection) {
-
-		} else if (self::$dbtype == self::$msSQLConnection) {
-
-			$stmt = sqlsrv_prepare(self::$link, $query, $data);
-
-			sqlsrv_execute($stmt);
-
-			$query = "SELECT @@IDENTITY AS $returnField FROM $returnTable;";
-			$result = self::query($query);
-			$row = self::fetchArray($result);
-			$field_value = $row[$returnField];
-			$id = $field_value;
-		} else if (self::$dbtype == self::$mongoConnection) {
-			$collection = self::$link->$table_name;
-			$id = $collection -> insert($data);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $id, $table_name, $returnField, $returnTable, $data, $formats);
@@ -1422,7 +1489,6 @@ class PVDatabase extends PVStaticObject {
 			self::stmt_bind_assoc($stmt, self::$row);
 			$result = $stmt;
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
-
 			$result = pg_prepare(self::$link, '', $query);
 			$result = pg_execute(self::$link, '', $data);
 		} else if (self::$dbtype == self::$oracleConnection) {
@@ -1532,8 +1598,8 @@ class PVDatabase extends PVStaticObject {
 	 * @access public
 	 * @todo write better code
 	 */
-	public static function preparedUpdate($table, $data, $wherelist, $formats = array(), $whereformats = array()) {
-
+	public static function preparedUpdate($table, $data, $wherelist, $formats = array(), $whereformats = array(), $options = array()) {
+		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table, $data, $wherelist, $formats, $whereformats);
 
@@ -1543,72 +1609,73 @@ class PVDatabase extends PVStaticObject {
 		$formats = $filtered['formats'];
 		$wherelist = $filtered['wherelist'];
 		$whereformats = $filtered['whereformats'];
+		
+		if(self::getDatabaseType() == 'mongo' ) {
+			$collection = self::_setMongoCollection($table, $options);
+			$result = $collection -> update($wherelist, $data, $options);
+		} else {
 
-		$query = 'UPDATE ' . $table . ' SET ';
-		$params = array();
-		$params_holder = array();
-
-		$first = 1;
-		$count = 0;
-		foreach ($data as $key => $value) {
-			$params[] = (isset($formats[$count])) ? $formats[$count] : 's';
-			$params_holder[] = $value;
-
-			if ($first) {
-				$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-			} else {
-				$query .= ',' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-			}
-			$count++;
-			$first = 0;
-		}//end foreach
-
-		$first = 1;
-		if (is_array($wherelist) && !empty($wherelist)) {
-			$query .= ' WHERE ';
-			$count2 = 0;
-			foreach ($wherelist as $key => $value) {
-				$params[] = (isset($wherelist[$count2])) ? $formats[$count2] : 's';
+			$query = 'UPDATE ' . $table . ' SET ';
+			$params = array();
+			$params_holder = array();
+	
+			$first = 1;
+			$count = 0;
+			foreach ($data as $key => $value) {
+				$params[] = (isset($formats[$count])) ? $formats[$count] : 's';
 				$params_holder[] = $value;
-
+	
 				if ($first) {
 					$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
 				} else {
-					$query .= ' AND ' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					$query .= ',' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
 				}
 				$count++;
-				$count2++;
 				$first = 0;
 			}//end foreach
-		}//end if is_array and not emptys
-		
-		if (self::$dbtype == self::$mySQLConnection) {
-
-			$stmt = self::$link -> prepare($query);
-			self::bindParameters($stmt, $params);
+	
+			$first = 1;
+			if (is_array($wherelist) && !empty($wherelist)) {
+				$query .= ' WHERE ';
+				$count2 = 0;
+				foreach ($wherelist as $key => $value) {
+					$params[] = (isset($wherelist[$count2])) ? $formats[$count2] : 's';
+					$params_holder[] = $value;
+	
+					if ($first) {
+						$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					} else {
+						$query .= ' AND ' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					}
+					$count++;
+					$count2++;
+					$first = 0;
+				}//end foreach
+			}//end if is_array and not emptys
 			
-			foreach ($params_holder as $key => $value) {
-				$params[$key] = $value;
-			}
+			if (self::$dbtype == self::$mySQLConnection) {
+	
+				$stmt = self::$link -> prepare($query);
+				self::bindParameters($stmt, $params);
+				
+				foreach ($params_holder as $key => $value) {
+					$params[$key] = $value;
+				}
+			
+				$result = $stmt -> execute();
+			} else if (self::$dbtype == self::$postgreSQLConnection) {
+	
+				$result = pg_prepare(self::$link, '', $query);
+				$result = pg_execute(self::$link, '', $params_holder);
+	
+			} else if (self::$dbtype == self::$oracleConnection) {
+	
+			} else if (self::$dbtype == self::$msSQLConnection) {
+				$stmt = sqlsrv_prepare(self::$link, $query, $params);
+				$result = sqlsrv_execute($stmt);
+			} 
 		
-			$result = $stmt -> execute();
-		} else if (self::$dbtype == self::$postgreSQLConnection) {
-
-			$result = pg_prepare(self::$link, '', $query);
-			$result = pg_execute(self::$link, '', $params_holder);
-
-		} else if (self::$dbtype == self::$oracleConnection) {
-
-		} else if (self::$dbtype == self::$msSQLConnection) {
-
-			$stmt = sqlsrv_prepare(self::$link, $query, $params);
-
-			$result = sqlsrv_execute($stmt);
-		} else if (self::$dbtype == self::$mongoConnection) {
-			$collection = self::$link -> $table;
-			$result = $collection -> update($wherelist, $data);
 		}
-
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $formats, $whereformats);
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
 
@@ -1679,11 +1746,10 @@ class PVDatabase extends PVStaticObject {
 			$stmt = sqlsrv_prepare(self::$link, $query, $wherelist);
 			$result = sqlsrv_execute($stmt);
 		} else if (self::$dbtype == self::$mongoConnection) {
-			$collection = self::$link -> $table;
+			$collection = self::_setMongoCollection($table, $options);
 			$collection -> remove($wherelist, true);
 		}
 		
-
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $wherelist, $whereformats);
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
 
@@ -1722,7 +1788,7 @@ class PVDatabase extends PVStaticObject {
 	 * @return string $table_name The name of the table with the values appened in front of it
 	 * @access public
 	 */
-	public static function formatTableName($table_name) {
+	public static function formatTableName($table_name, $append_schema = true, $append_prefix = true) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name);
@@ -1730,7 +1796,7 @@ class PVDatabase extends PVStaticObject {
 		$table_name = self::_applyFilter(get_class(), __FUNCTION__, $table_name, array('event' => 'args'));
 		$table_name = self::$dbprefix . $table_name;
 
-		if (!empty(self::$dbschema)) {
+		if (!empty(self::$dbschema) && $append_schema ) {
 			$table_name = self::$dbschema . '.' . $table_name;
 		}
 
@@ -1865,7 +1931,7 @@ class PVDatabase extends PVStaticObject {
 		if (self::$dbtype == self::$mySQLConnection) {
 			$query = 'CREATE TABLE ' . $table_name . ' ' . $column_query . ';';
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
-			$query = 'CREATE TABLE ' . $table_name . ' ;';
+			$query = 'CREATE TABLE ' . $table_name . '();';
 		} else if (self::$dbtype == self::$msSQLConnection) {
 			$query = 'CREATE TABLE ' . $table_name . ' ;';
 		}
@@ -2168,6 +2234,22 @@ class PVDatabase extends PVStaticObject {
 
 		if ($options['return_query'])
 			return $query;
+	}
+
+	protected static function _setMongoCollection($table_name, $options = array()){
+		
+		$defaults = array(
+			'gridFS' => false
+		);
+		
+		$options += $defaults;
+		
+		if($options['gridFS'])
+			$collection = self::$link -> getGridFS( $table_name );
+		else
+			$collection = self::$link -> $table_name;
+		
+		return $collection;
 	}
 
 	/**
@@ -2945,4 +3027,3 @@ class PVDatabase extends PVStaticObject {
 	}//end  getApplicationPermissionsTable
 
 }//end class
-?>
