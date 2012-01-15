@@ -4124,7 +4124,7 @@ class PVContent extends PVStaticObject {
 		extract($args, EXTR_SKIP);
 
 		if (!empty($content_id)) {
-			$return = PVImage::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width, $image_height, $thumbnailwidth, $thumbnailheight, $image_src);
+			$return = PVImage::updateImageFromContent($content_id, $content_type, $file_name, $tmp_name, $file_size, $file_type, $image_width, $image_height, $thumb_width, $thumb_height, $image_src);
 		}
 		self::_notify(get_class() . '::' . __FUNCTION__, $args);
 		return $content_id;
