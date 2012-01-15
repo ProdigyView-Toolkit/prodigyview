@@ -912,77 +912,106 @@ class PVTools extends PVStaticObject {
 
 		return $SQL;
 	}//end parseSQLArrayOperators
-
-	public static function parseSQLOperators($string, $content_term, $encapsulate = TRUE) {
+	
+	/**
+	 * Parse a string into valid SQL WHERE CLAUSE based on passed parameters.
+	 * 
+	 * @param string $string A string of parameters to parse and derive a sql arguement from
+	 * @param string $content_term The parameters in the query that will relate to the values in the string
+	 * @param boolean $encapsulate Wrap the arguements in ()
+	 * @param string $sytnax The syntax that will be used for parsing the string. Standrd uses ProdigyView implementation of marsk suchas
+	 * 			',', '!','+' for parsing content. Otherwise a more sql way is used.
+	 * 
+	 * @return string $string a SQL string to place in a where clause
+	 * @access public
+	 */
+	public static function parseSQLOperators($string, $content_term, $encapsulate = TRUE, $syntax = 'standard') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string, $content_term, $encapsulate);
+			return self::_callAdapter(get_class(), __FUNCTION__, $string, $content_term, $encapsulate, $syntax);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('string' => $string, 'content_term' => $content_term, 'encapsulate' => $encapsulate), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('string' => $string, 'content_term' => $content_term, 'encapsulate' => $encapsulate, 'syntax' => $syntax), array('event' => 'args'));
 		$string = $filtered['string'];
 		$content_term = $filtered['content_term'];
 		$encapsulate = $filtered['encapsulate'];
+		$syntax = $filtered['syntax'];
+		
+		if($syntax == 'standard') {
 
-		$string = trim($string);
-		$string = PVDatabase::makeSafe($string);
-
-		//$string.=$content_term
-		/*
-		 if( strstr($string, '!') != 1){
-		 $string=$content_term.'='
-		 }
-		 $string=str_replace('+', ' AND '.$content_term.'=', $string );
-		 $string=str_replace(',', ' OR '.$content_term.'=', $string );*/
-
-		$length = strlen($string);
-
-		$ADD_PREFIX = true;
-		$output = '';
-		for ($i = 0; $i < $length; $i++) {
-
-			if ($string[$i] == '!') {
-
-				$output .= ' ' . $content_term . '!=\'';
-
-				if ($i == 0) {
-					$ADD_PREFIX = false;
+			$string = trim($string);
+			$string = PVDatabase::makeSafe($string);
+	
+			//$string.=$content_term
+			/*
+			 if( strstr($string, '!') != 1){
+			 $string=$content_term.'='
+			 }
+			 $string=str_replace('+', ' AND '.$content_term.'=', $string );
+			 $string=str_replace(',', ' OR '.$content_term.'=', $string );*/
+	
+			$length = strlen($string);
+	
+			$ADD_PREFIX = true;
+			$output = '';
+			for ($i = 0; $i < $length; $i++) {
+	
+				if ($string[$i] == '!') {
+	
+					$output .= ' ' . $content_term . '!=\'';
+	
+					if ($i == 0) {
+						$ADD_PREFIX = false;
+					}
+				} else if ($string[$i] == '+') {
+					if (@$string[$i + 1] != '!') {
+						$output .= ' AND ' . $content_term . '=\'';
+					} else {
+						$output .= ' AND ';
+					}
+				} else if ($string[$i] == ',') {
+					if (@$string[$i + 1] != '!') {
+						$output .= ' OR ' . $content_term . '=\'';
+	
+					} else {
+						$output .= ' OR ';
+					}
+	
 				}
-			} else if ($string[$i] == '+') {
-				if (@$string[$i + 1] != '!') {
-					$output .= ' AND ' . $content_term . '=\'';
-				} else {
-					$output .= ' AND ';
+	
+				if ($string[$i] != '!' && $string[$i] != '+' && $string[$i] != ',') {
+	
+					$output .= $string[$i];
+	
+					if (@$string[$i + 1] == ',' || @$string[$i + 1] == '+' || @$string[$i + 1] == '!' || $i == $length || $i == $length - 1) {
+						$output .= '\'';
+					}
 				}
-			} else if ($string[$i] == ',') {
-				if (@$string[$i + 1] != '!') {
-					$output .= ' OR ' . $content_term . '=\'';
-
-				} else {
-					$output .= ' OR ';
-				}
-
+			}//end for
+	
+			if ($ADD_PREFIX == true) {
+				$output = $content_term . '=\'' . $output;
 			}
-
-			if ($string[$i] != '!' && $string[$i] != '+' && $string[$i] != ',') {
-
-				$output .= $string[$i];
-
-				if (@$string[$i + 1] == ',' || @$string[$i + 1] == '+' || @$string[$i + 1] == '!' || $i == $length || $i == $length - 1) {
-					$output .= '\'';
-				}
+	
+			if ($encapsulate) {
+				$output = '(' . $output . ')';
 			}
-		}//end for
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $output, $string, $content_term, $encapsulate);
+			$output = self::_applyFilter(get_class(), __FUNCTION__, $output, array('event' => 'return'));
+		} else {
+			
+            $string = preg_replace('/[A-Za-z0-9%_-]+/', "'$0'", $string);
 
-		if ($ADD_PREFIX == true) {
-			$output = $content_term . '=\'' . $output;
+            $string = preg_replace('/\=|\!\=|<>|<|<=|>|>=|~/', "$content_term $0 ", $string);
+			
+            $string = str_replace('~', 'LIKE', $string);
+			
+            $string = preg_replace('/\&|\,/', ' AND ', $string);
+			
+            $string = str_replace('|', ' OR ', $string);
+
+            $output = $string;
 		}
-
-		if ($encapsulate) {
-			$output = '(' . $output . ')';
-		}
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $output, $string, $content_term, $encapsulate);
-		$output = self::_applyFilter(get_class(), __FUNCTION__, $output, array('event' => 'return'));
 
 		return $output;
 	}//end parseSQLOperator
