@@ -53,7 +53,7 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $location, $options);
 
-		$defaults = array('alt' => '');
+		$defaults = array('alt' => '', 'append_location' => true);
 		$options += $defaults;
 
 		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('location' => $location, 'options' => $options), array('event' => 'args'));
@@ -64,8 +64,10 @@ class PVHtml extends PVStaticObject {
 
 		if (PVValidator::isValidUrl($location)) {
 			$image .= 'src="' . $location . '" ';
-		} else {
+		} else if ($options['append_location']) {
 			$image .= 'src="' . PVRouter::url(PV_IMAGE . $location) . '" ';
+		} else {
+			$image .= 'src="' . PVRouter::url($location) . '" ';
 		}
 
 		if (!empty($options['image_width'])) {
@@ -436,7 +438,7 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
 
-		$defaults = array('controls' => 'controls', 'error' => 'Sorry but your browser cannot play this HTML5 Element');
+		$defaults = array('controls' => 'controls', 'error' => 'Sorry but your browser cannot play this HTML5 Element', 'append_location' => true);
 		$options += $defaults;
 
 		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('src' => $src, 'options' => $options), array('event' => 'args'));
@@ -446,7 +448,7 @@ class PVHtml extends PVStaticObject {
 		$video = '<video ';
 
 		if (!empty($src)) {
-			$video .= 'src="' . self::videoContentURL($src) . '" ';
+			$video .= 'src="' . self::videoContentURL($src, $options['append_location']) . '" ';
 		}
 
 		if (!empty($options['height'])) {
@@ -527,7 +529,7 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
 
-		$defaults = array('controls' => 'controls', 'error' => 'Sorry but your browser cannot play this HTML5 Element');
+		$defaults = array('controls' => 'controls', 'error' => 'Sorry but your browser cannot play this HTML5 Element', 'append_location' => true);
 		$options += $defaults;
 
 		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('src' => $src, 'options' => $options), array('event' => 'args'));
@@ -537,7 +539,7 @@ class PVHtml extends PVStaticObject {
 		$audio = '<audio ';
 
 		if (!empty($src)) {
-			$audio .= 'src="' . self::audioContentURL($src) . '" ';
+			$audio .= 'src="' . self::audioContentURL($src, $options['append_location']) . '" ';
 		}
 
 		if (!empty($options['controls'])) {
@@ -1309,27 +1311,27 @@ class PVHtml extends PVStaticObject {
 		return $generated_tag;
 	}
 
-	private static function audioContentURL($url) {
+	private static function audioContentURL($url, $append_location = true) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url);
 
 		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
 
-		if (!PVValidator::isValidURL($url)) {
+		if (!PVValidator::isValidURL($url) && $append_location) {
 			$url = PV_AUDIO . $url;
 		}
 		return PVRouter::url($url);
 	}
 
-	private static function videoContentURL($url) {
+	private static function videoContentURL($url, $append_location = true) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url);
 
 		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
 
-		if (!PVValidator::isValidURL($url)) {
+		if (!PVValidator::isValidURL($url) && $append_location) {
 			$url = PV_VIDEO . $url;
 		}
 		return PVRouter::url($url);
