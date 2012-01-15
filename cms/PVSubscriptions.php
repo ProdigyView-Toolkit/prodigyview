@@ -425,7 +425,6 @@ class PVSubscriptions extends PVStaticObject {
 			$query = "SELECT * FROM " . PVDatabase::getSubscriptionTableName() . " WHERE subscription_id='$subscription_id' ";
 			$result = PVDatabase::query($query);
 			$row = PVDatabase::fetchArray($result);
-			$row = PVDatabase::fetchArray($row);
 			self::_notify('PVSubscriptions::getSubscription', $row);
 			$row = self::_applyFilter(get_class(), __FUNCTION__, $row, array('event' => 'return'));
 
