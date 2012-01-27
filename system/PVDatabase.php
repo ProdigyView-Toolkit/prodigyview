@@ -1694,7 +1694,7 @@ class PVDatabase extends PVStaticObject {
 	 *
 	 * @return void
 	 */
-	public static function preparedDelete($table, $wherelist = array(), $whereformats = array()) {
+	public static function preparedDelete($table, $wherelist = array(), $whereformats = array(), $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table, $wherelist, $whereformats);
@@ -1704,52 +1704,54 @@ class PVDatabase extends PVStaticObject {
 		$wherelist = $filtered['wherelist'];
 		$whereformats = $filtered['whereformats'];
 
-		$query = 'DELETE FROM ' . $table;
-
-		if (is_array($wherelist) && !empty($wherelist)) {
-			$params = array();
-			$query .= ' WHERE ';
-			$count = 0;
-			$first = 1;
-			foreach ($wherelist as $key => $value) {
-				$params[$key] = (isset($wherelist[$count])) ? $formats[$count] : 's';
-				if ($first) {
-					$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-				} else {
-					$query .= ' AND ' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-				}
-
-				$first = 0;
-				$count++;
-			}//end foreach
-		}
-
-		if (self::$dbtype == self::$mySQLConnection) {
-
-			$stmt = self::$link -> prepare($query);
-			self::bindParameters($stmt, $params);
-			foreach ($wherelist as $key => $value) {
-				$params[$key] = $value;
-			}
-
-			$result = $stmt -> execute();
-
-		} else if (self::$dbtype == self::$postgreSQLConnection) {
-
-			$result = pg_prepare(self::$link, '', $query);
-			$result = pg_execute(self::$link, '', $wherelist);
-
-		} else if (self::$dbtype == self::$oracleConnection) {
-
-		} else if (self::$dbtype == self::$msSQLConnection) {
-
-			$stmt = sqlsrv_prepare(self::$link, $query, $wherelist);
-			$result = sqlsrv_execute($stmt);
-		} else if (self::$dbtype == self::$mongoConnection) {
+		if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($table, $options);
-			$collection -> remove($wherelist, true);
+			$result = $collection -> remove($wherelist, true);
+		} else {
+			$query = 'DELETE FROM ' . $table;
+	
+			if (is_array($wherelist) && !empty($wherelist)) {
+				$params = array();
+				$query .= ' WHERE ';
+				$count = 0;
+				$first = 1;
+				foreach ($wherelist as $key => $value) {
+					$params[$key] = (isset($wherelist[$count])) ? $formats[$count] : 's';
+					if ($first) {
+						$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					} else {
+						$query .= ' AND ' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					}
+	
+					$first = 0;
+					$count++;
+				}//end foreach
+			}
+	
+			if (self::$dbtype == self::$mySQLConnection) {
+	
+				$stmt = self::$link -> prepare($query);
+				self::bindParameters($stmt, $params);
+				foreach ($wherelist as $key => $value) {
+					$params[$key] = $value;
+				}
+	
+				$result = $stmt -> execute();
+	
+			} else if (self::$dbtype == self::$postgreSQLConnection) {
+	
+				$result = pg_prepare(self::$link, '', $query);
+				$result = pg_execute(self::$link, '', $wherelist);
+	
+			} else if (self::$dbtype == self::$oracleConnection) {
+	
+			} else if (self::$dbtype == self::$msSQLConnection) {
+	
+				$stmt = sqlsrv_prepare(self::$link, $query, $wherelist);
+				$result = sqlsrv_execute($stmt);
+			} 
 		}
-		
+
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $wherelist, $whereformats);
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
 
