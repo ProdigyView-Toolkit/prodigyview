@@ -37,7 +37,7 @@ class PVValidator extends PVStaticObject {
 	 * @return void
 	 * @access public
 	 */
-	function init($config = array()) {
+	public static function init($config = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
