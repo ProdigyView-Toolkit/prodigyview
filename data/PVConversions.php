@@ -45,12 +45,8 @@ class PVConversions {
 
 		if (is_array($data) && count($data) > 0) {
 
-			foreach ($data as $name => $value) {
-				$name = strtolower(trim($name));
-				if (!empty($name)) {
-					$object -> $name = self::arrayToObject($value);
-				}
-			}//end foreach
+			foreach ($data as $name => $value)
+				$object -> $name = self::arrayToObject($value);
 
 			return $object;
 		} else {
