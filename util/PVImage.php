@@ -113,7 +113,7 @@ class PVImage extends PVStaticObject {
 			if (empty($file_size)) {
 				$file_size = 0;
 			}
-
+			
 			if (move_uploaded_file($tmp_name, PV_ROOT . $save_name)) {
 
 				$thumb_url = "";
@@ -156,12 +156,12 @@ class PVImage extends PVStaticObject {
 		$randomFileName = substr($basename, 0, strrpos($basename, '.'));
 
 		$image_types = array("image/bmp", "image/jpeg", "image/pjpeg", "image/gif", "image/x-png", "image/pjpeg");
-
+		
 		if (pv_isImageFile($file_type)) {
-
+			
 			if (empty($randomFileName)) {
-
-				if (in_array(strtolower($file_type), $image_types)) {
+				
+				if (pv_isImageFile($file_type)) {
 					$randomFileName = pv_generateRandomString(20, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890');
 					$image_exist = true;
 
@@ -173,7 +173,7 @@ class PVImage extends PVStaticObject {
 				}
 
 			}
-
+			
 			if ($file_type == 'image/bmp') {
 				$save_name = "$image_folder_url$randomFileName.bmp";
 				$save_location = $randomFileName . '.bmp';
@@ -239,7 +239,7 @@ class PVImage extends PVStaticObject {
 
 				$query = "UPDATE " . pv_getImageContentTableName() . " SET image_type='$file_type', image_size='$file_size', image_url='$save_location', thumb_url='$thumb_name', image_width='$image_width', image_height='$image_height', thumb_width='$thumbnailwidth', thumb_height='$thumbnailheight', image_src='$image_src' WHERE  image_id='$content_id' ";
 				PVDatabase::query($query);
-
+				
 				return 1;
 			} else {
 				echo "Not able to move file";
@@ -253,7 +253,7 @@ class PVImage extends PVStaticObject {
 
 	public static function updateImage($current_file_name, $file_name, $tmp_name, $file_size, $file_type, $image_width = 300, $image_height = 300, $thumbnailwidth = 150, $thumbnailheight = 150) {
 
-		$image_folder_url = "/media/images/";
+		$image_folder_url = PV_IMAGE ;
 		$save_name = "";
 
 		$basename = basename($current_file_name);
