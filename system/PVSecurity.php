@@ -1896,7 +1896,7 @@ class PVSecurity extends PVStaticObject {
 				if($options['save_cookie'] && in_array($key, $options['cookie_fields']))
 					PVSession::writeCookie($key, $value);
 				if($options['save_session'] && in_array($key, $options['session_fields']))
-					PVSession::writeCookie($key, $value);
+					PVSession::writeSession($key, $value);
 			}
 		}
 		
