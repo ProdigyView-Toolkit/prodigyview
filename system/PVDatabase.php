@@ -1365,11 +1365,15 @@ class PVDatabase extends PVStaticObject {
 			if(isset($options['batchInsert']) && $options['batchInsert'])
 				$collection -> batchInsert($data, $options);
 			else if(isset($options['gridFS']) && isset($options['file']) && $options['gridFS'])
-				$collection -> storeFile($options['file'] ,$data, $options);
+				$id = $collection -> storeFile($options['file'] ,$data, $options);
 			else
 				$collection -> insert($data, $options);
 			
-			$id = $data['_id'];
+			if(isset($options['batchInsert']) && $options['batchInsert'])
+				$id = $data;
+			else if(isset($options['gridFS']) == false)
+				$id = $data['_id'];
+				
 		} else {
 
 			$query = 'INSERT INTO ' . $table_name;
@@ -1438,6 +1442,7 @@ class PVDatabase extends PVStaticObject {
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $id, $table_name, $returnField, $returnTable, $data, $formats);
 		$id = self::_applyFilter(get_class(), __FUNCTION__, $id, array('event' => 'return'));
+		
 		return $id;
 	}//end preparedReturnLastInsert
 
