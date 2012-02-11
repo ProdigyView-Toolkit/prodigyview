@@ -36,12 +36,28 @@ class PVLibraries extends PVStaticObject {
 	private static $css_files_array;
 	private static $open_javascript;
 	private static $libraries;
-
+	private static $_autoloadClasses;
+	private static $_namespaced;
+	
+	
+	/**
+	 * Initialize the library class in preparotion for loading libraries. Needs to be configured if namespaces
+	 * are going to be used.
+	 * 
+	 * @param array $config A configuration that can be used for setting how the class works
+	 * 			-'namespaced' _boolean_: Default is false. If set to true, classes will be treated and react as if they are namespaced
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function init($config = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
-
+		
+		$defaults = array('namespaced' => false);
+		
+		$config += $defaults;
 		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
 
 		self::$javascript_libraries_array = array();
@@ -50,6 +66,10 @@ class PVLibraries extends PVStaticObject {
 		self::$motools_libraries_array = array();
 		self::$css_files_array = array();
 		self::$libraries = array();
+		self::$_autoloadClasses = array();
+		self::$_namespaced = $config['namespaced'];
+		
+		spl_autoload_register( array( 'PVLibraries', '_autoload' ) );
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $config);
 	}
@@ -97,7 +117,7 @@ class PVLibraries extends PVStaticObject {
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
 	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
-	 * 
+	 *
 	 * @return void
 	 * @access public
 	 */
@@ -116,7 +136,7 @@ class PVLibraries extends PVStaticObject {
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
 	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
-	 * 
+	 *
 	 * @return void
 	 * @access public
 	 */
@@ -135,7 +155,7 @@ class PVLibraries extends PVStaticObject {
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
 	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
-	 * 
+	 *
 	 * @return void
 	 * @access public
 	 */
@@ -152,10 +172,10 @@ class PVLibraries extends PVStaticObject {
 	/**
 	 * Adds a script directly into a queue to be outputted later.The script should be inputted with opening
 	 * and closing tags as it would appear when the output occurs
-	 * 
+	 *
 	 *
 	 * @param string $script The string to be added to a queue. The string does not have a key and cannot be removed once added.
-	 * 
+	 *
 	 * @return void
 	 * @access public
 	 */
@@ -261,7 +281,7 @@ class PVLibraries extends PVStaticObject {
 
 	/**
 	 * Returns the open scripts that were previously added to the open script queue.
-	 * 
+	 *
 	 * @return string $script The scripts added will be returned in one unified string
 	 * @access public
 	 */
@@ -284,7 +304,8 @@ class PVLibraries extends PVStaticObject {
 	 * 		  DEFINE location. Also acts as the library name when being referenced
 	 * @param array $options Options than can be used to configure the library that will be loaded
 	 * 			-'path' _string_: The path to the library. The default path is PV_LIBRARIES.$folder_name.DS
-	 * 			-'autoload' _boolean_: When true, library will be automatically loaded when loadLibraries is called. Default is true.
+	 * 			-'auto_load' _boolean_: When true, library will become part of the spl_autoload. Default is true. Other the library will not be auto_loaded
+	 * 			-'explicit_load' _boolean_: Default is false. If set to false
 	 * 			-'extensions' _array_: An array of allowed file extensions that will be included when the library loads. Default is .php
 	 *
 	 * @return void
@@ -295,7 +316,7 @@ class PVLibraries extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $folder_name, $options);
 
-		$defaults = array('path' => PV_LIBRARIES . $folder_name . DS, 'autoload' => true, 'extensions' => array('.php'));
+		$defaults = array('path' => PV_LIBRARIES . $folder_name . DS, 'auto_load' => true, 'explicit_load' => false, 'extensions' => array('.php'));
 
 		$options += $defaults;
 		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('folder_name' => $folder_name, 'options' => $options), array('event' => 'args'));
@@ -317,11 +338,13 @@ class PVLibraries extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		self:: _buildAutoLoads();
 
 		if (!empty(self::$libraries)) {
 
 			foreach (self::$libraries as $key => $value) {
-				if ($value['autoload']) {
+				if ($value['explicit_load']) {
 					$library = PVFileManager::getFilesInDirectory($value['path'], array('verbose' => true));
 					self::_loadLibrary($library, $value['extensions']);
 				}
@@ -349,7 +372,13 @@ class PVLibraries extends PVStaticObject {
 
 		if (isset(self::$libraries[$library_name])) {
 			$library = PVFileManager::getFilesInDirectory(self::$libraries[$library_name]['path'], array('verbose' => true));
-			self::_loadLibrary($library, self::$libraries[$library_name]['extensions']);
+			
+			if(self::$libraries[$library_name]['auto_load'])
+				self::_buildAutoLoads();
+			
+			if(self::$libraries[$library_name]['explicit_load'])
+				self::_loadLibrary($library, self::$libraries[$library_name]['extensions']);
+			
 			self::_notify(get_class() . '::' . __FUNCTION__, $library_name);
 		}//end loadLibrary
 
@@ -380,9 +409,13 @@ class PVLibraries extends PVStaticObject {
 				if (empty($allow_extensions)) {
 					include_once ($key);
 				} else {
-					$extensions_allowed = implode($allow_extensions, '|');
-					if (preg_match('/' . $extensions_allowed . '/', $value['basename'], $matches))
+					$extensions_allowed = (is_array($allow_extensions)) ? implode($allow_extensions, '|') : $allow_extensions;
+				
+					if (preg_match('/' . $extensions_allowed . '/', $value['basename'], $matches)) {
+					
+						$key =  str_replace('\\', '/', $key);
 						include_once ($key);
+					}
 				}
 			}//end else
 		}//end foreach
@@ -390,4 +423,60 @@ class PVLibraries extends PVStaticObject {
 		self::_notify(get_class() . '::' . __FUNCTION__, $library, $allow_extensions);
 	}//end _loadLibrary
 
+	/**
+	 * Build an array of the classes to autoload through spl_autoload if thec classes are not automatically included.
+	 * 
+	 * @return void
+	 * @access public
+	 * @todo Find a faster method for autloading
+	 */
+	protected static function _buildAutoLoads() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		foreach (self::$libraries as $library) {
+			
+			if($library['auto_load']) {
+				$allow_extensions = $library['extensions'];
+				
+				$directory_iterator = new RecursiveDirectoryIterator($library['path']);
+				$iterator_iterator = new RecursiveIteratorIterator($directory_iterator, RecursiveIteratorIterator::SELF_FIRST);
+				foreach ($iterator_iterator as $file) {
+					$extensions_allowed = (is_array($allow_extensions)) ? implode($allow_extensions, '|') : $allow_extensions;
+					
+					if (false === strpos($file -> getFilename(), '~') && 0 < strpos($file -> getFilename(), '.php') && preg_match('/' . $extensions_allowed . '/', $file -> getBasename(), $matches)) {
+						
+						if(self::$_namespaced) {
+							$namespace = str_replace(PV_LIBRARIES, '', $file -> getPathname());
+							$namespace = str_replace($matches[0], '', $namespace);
+							self::$_autoloadClasses[$namespace] = $file -> getPathname();
+						} else {
+							self::$_autoloadClasses[$file -> getBasename($matches[0])] = $file -> getPathname();
+						}
+					}
+				}//end inter foreach
+			}//end if autoload
+		}//endforeach
+		
+	}
+	
+	/**
+	 * Will attempt to autoload the classes if a class cannot be found. Works with namespaced classes also.
+	 * 
+	 * @param $classname The name of the class to autoload
+	 * 
+	 * @return void
+	 * @access protected
+	 * @todo Fix for dealing with namespaces
+	 */
+	protected static function _autoload($classname) {
+		
+		$classname =  str_replace('\\', '/', $classname);
+		
+		if (isset(self::$_autoloadClasses[$classname]) && is_readable(self::$_autoloadClasses[$classname])) {
+			include_once self::$_autoloadClasses[$classname];
+		}
+	}
+	
 }//end class
