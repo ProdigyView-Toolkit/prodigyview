@@ -5,6 +5,9 @@ spl_autoload_register(null, false);
 spl_autoload_extensions('.php');
 
 function systemLoader($class) {
+	
+	$class =  str_replace('\\', '/', $class);
+	
 	$filename = $class . '.php';
 	$file = PV_CORE . DS . 'system' . DS . $filename;
 	if (!file_exists($file)) {
@@ -14,6 +17,9 @@ function systemLoader($class) {
 }
 
 function cmsLoader($class) {
+	
+	$class =  str_replace('\\', '/', $class);
+	
 	$filename = $class . '.php';
 	$file = PV_CORE . DS . 'cms' . DS . $filename;
 	if (!file_exists($file)) {
@@ -23,6 +29,9 @@ function cmsLoader($class) {
 }
 
 function componentsLoader($class) {
+	
+	$class =  str_replace('\\', '/', $class);
+	
 	$filename = $class . '.php';
 	$file = PV_CORE . DS . 'components' . DS . $filename;
 	if (!file_exists($file)) {
@@ -32,6 +41,9 @@ function componentsLoader($class) {
 }
 
 function templateLoader($class) {
+	
+	$class =  str_replace('\\', '/', $class);
+	
 	$filename = $class . '.php';
 	$file = PV_CORE . DS . 'template' . DS . $filename;
 	if (!file_exists($file)) {
@@ -41,6 +53,9 @@ function templateLoader($class) {
 }
 
 function utilLoader($class) {
+	
+	$class =  str_replace('\\', '/', $class);
+	
 	$filename = $class . '.php';
 	$file = PV_CORE . DS . 'util' . DS . $filename;
 	if (!file_exists($file)) {
@@ -50,6 +65,9 @@ function utilLoader($class) {
 }
 
 function dataLoader($class) {
+	
+	$class =  str_replace('\\', '/', $class);
+	
 	$filename = $class . '.php';
 	$file = PV_CORE . DS . 'data' . DS . $filename;
 	if (!file_exists($file)) {
