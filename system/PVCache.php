@@ -127,7 +127,7 @@ class PVCache extends PVStaticObject {
 	public static function writeCache($key, $content, $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $content, $expire, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__, $key, $content, $options);
 		
 		$defaults = array(
 			'cache_format' => self::$_cache_format, 
