@@ -36,6 +36,13 @@ class PVStaticPatterns {
 	protected static $_instances = array();
 
 	protected static $_filters = array();
+	
+	private static $_traceAdapters = false;
+	
+	private static $_traceFilters = false;
+	
+	private static $_traceObservers = false;
+	
 
 	/**
 	 * Adapters allows a method to be completely overwritten by calling a different class
@@ -93,6 +100,12 @@ class PVStaticPatterns {
 		}
 
 		$options = self::$_adapters[$class][$method];
+		
+		if(self::$_traceAdapters){
+			$trace = debug_backtrace();
+			$options['trace'] = $trace[1]['class'].'::'.$trace[1]['function'];
+			self::_logAdapter( $options );
+		}
 		
 		if($options['type'] == 'closure')
 			return call_user_func_array( $options['call_class'], $passable_args);
@@ -170,6 +183,12 @@ class PVStaticPatterns {
 		if (isset(self::$_observers[$event])) {
 			foreach (self::$_observers[$event] as $options) {
 				
+				if(self::$_traceObservers){
+					$trace = debug_backtrace();
+					$options['trace'] = $trace[1]['class'].'::'.$trace[1]['function'];
+					self::_logObserver($options);
+				}
+								
 				if($options['type'] == 'closure') 
 					call_user_func_array( $options['method'], $passable_args);
 				else if ($options['object'] == 'instance')
@@ -243,10 +262,17 @@ class PVStaticPatterns {
 
 		foreach (self::$_filters[$class][$method] as $function) {
 			
-			if($function['type'] == 'closure' && $function['event'] == $options['event']) {
-				$passable_args[0] = call_user_func_array( $function['method'], $passable_args);
-			} else if ($function['event'] == $options['event']) {
-				if ($function['object'] == 'instance')
+			if ($function['event'] == $options['event']) {
+				
+				if(self::$_traceFilters) {
+					$trace = debug_backtrace();
+					$function['trace'] = $trace[1]['class'].'::'.$trace[1]['function'];
+					self::_logFilter($function);
+				}
+				
+				if($function['type'] == 'closure')
+					$passable_args[0] = call_user_func_array( $function['method'], $passable_args);
+				else if ($function['object'] == 'instance')
 					$passable_args[0] = self::_invokeMethod($function['class'], $function['method'], $passable_args);
 				else
 					$passable_args[0] = self::_invokeStaticMethod($function['class'], $function['method'], $passable_args);
@@ -289,6 +315,45 @@ class PVStaticPatterns {
 		$object = self::_applyFilter(get_class(), __FUNCTION__, $object, array('event' => 'return'));
 		
 		return $object;
+	}
+	
+	/**
+	 * Turn on/off the ability to trace an adapter.Turning on will log
+	 * an adapter using PVLog when adapter is executed.
+	 * 
+	 * @param boolean $trace Default is false. If set to true, will trace adatper.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function setAdapterTrace($trace = false) {
+		self::$_traceAdapters = $trace;
+	}
+	
+	/**
+	 * Turn on/off the ability to trace an filter.Turning on will log
+	 * a filter using PVLog when filter is executed.
+	 * 
+	 * @param boolean $trace Default is false. If set to true, will trace filter.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function setFilterTrace($trace = false) {
+		self::$_traceFilters = $trace;
+	}
+	
+	/**
+	 * Turn on/off the ability to trace an observer.Turning on will log
+	 * an observer using PVLog when the observer is executed.
+	 * 
+	 * @param boolean $trace Default is false. If set to true, will trace observer.
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function setObserverTrace($trace = false) {
+		self::$_traceObservers = $trace;	
 	}
 
 	/**
@@ -369,5 +434,74 @@ class PVStaticPatterns {
 		endswitch;
 
 	}//end _invokeMethod
+	
+	/**
+	 * Write out the contents of adapters used to a log
+	 * 
+	 * @param array $data The data in the adapter
+	 * 
+	 * @return void
+	 * @access private
+	 */
+	private static function _logAdapter( $data ) {
+		$message = self::_prepareLogData($data);
+		PVLog::writeLog('adapter', $message);
+	}
+	
+	/**
+	 * Write out the contents of a filter used to a log
+	 * 
+	 * @param array $data The data in the filter
+	 * 
+	 * @return void
+	 * @access private
+	 */
+	private static function _logFilter( $data ) {
+		$message = self::_prepareLogData($data);
+		PVLog::writeLog('filter', $message);
+	}
+	
+	/**
+	 * Write out the contents of an observer to a log.
+	 * 
+	 * @param array $data The data in the observer
+	 * 
+	 * @return void
+	 * @access private
+	 */
+	private static function _logObserver( $data ) {
+		$message = self::_prepareLogData($data);
+		PVLog::writeLog('observer', $message);
+	}
+	
+	/**
+	 * Breaks down the data to be logged from an adapter, filter or observer.
+	 * 
+	 * @param array $data
+	 * 
+	 * @return string $message JSON encode message of information about the data
+	 * @access private
+	 */
+	private static function _prepareLogData($data) {
+		
+		foreach($data as $key => $value) {
+			if($value instanceof Closure) {
+				$closure = new ReflectionFunction($value);
+				$data[$key] = $closure -> getFileName();
+				$data['start_line'] = $closure -> getStartLine();
+				$data['end_line'] = $closure -> getEndLine();
+			} else if(is_object($value)) {
+				$object = new ReflectionClass($value);
+				$data[$key] = $object -> getFileName();
+				$data['start_line'] = $object -> getStartLine();
+				$data['end_line'] = $object -> getEndLine();
+			} else if(!is_string($value)) {
+				unset($data[$key]);
+			}
+			
+		}
+		
+		return json_encode($data);
+	}
 
 }
