@@ -76,6 +76,19 @@ function dataLoader($class) {
 	require_once $file;
 }
 
+function mediaLoader($class) {
+	
+	$class =  str_replace('\\', '/', $class);
+	
+	$filename = $class . '.php';
+	$file = PV_CORE . DS . 'media' . DS . $filename;
+	if (!file_exists($file)) {
+		return false;
+	}
+	require_once $file;
+}
+
+
 /*** register the loader functions ***/
 spl_autoload_register('systemLoader');
 spl_autoload_register('cmsLoader');
@@ -83,6 +96,7 @@ spl_autoload_register('componentsLoader');
 spl_autoload_register('templateLoader');
 spl_autoload_register('utilLoader');
 spl_autoload_register('dataLoader');
+spl_autoload_register('mediaLoader');
 
 //Include the Core
 require_once (PV_CORE . 'PVCore.php');
