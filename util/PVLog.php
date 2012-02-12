@@ -59,7 +59,7 @@ class PVLog extends PVStaticObject {
 			'directory' => DS.'tmp'.DS,
 			'file' => '',
 			'timestamp_format' => 'Y-m-d H:i:s',
-			'log_format' => '{priority} {timestamp} {message}\n'
+			'log_format' => '{priority} {timestamp} {message}'."\n"
 		);
 		
 		$config += $defaults;
@@ -167,7 +167,7 @@ class PVLog extends PVStaticObject {
 		
 		$defaults = array(
 			'directory' => self::$_logDirectory,
-			'file' => (self::$_logFile) ?: $priority.'log' ,
+			'file' => (self::$_logFile) ?: $priority.'.log' ,
 			'timestamp_format' => self::$_timestampFormat,
 			'log_format' => self::$_logFormat
 		);
