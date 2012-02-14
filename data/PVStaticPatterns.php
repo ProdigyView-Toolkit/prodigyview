@@ -62,6 +62,7 @@ class PVStaticPatterns {
 	 *
 	 * @return void
 	 * @access public
+	 * @todo add ability to adapt singleton class
 	 */
 	public static function addAdapter($trigger_class, $trigger_method, $call_class, $options = array()) {
 		$defaults = array(
@@ -73,8 +74,52 @@ class PVStaticPatterns {
 			'type' => 'class_method'
 		);
 		$options += $defaults;
-
+		
 		self::$_adapters[$trigger_class][$trigger_method] = $options;
+	}
+	
+	/**
+	 * Will add an adapter for every method in the trigger_class to another class. The method will only be adapted to another class
+	 * if the method in the trigger class has an adapter. This functionality can be very similiar to DI.
+	 * 
+	 * @param mixed $trigger_class This can either be the name of the class or an object whose methods will be adapted to another class.
+	 * 		  The class should be included or be autoloaded by this point.
+	 * @param string $call_class The call class is the classes methods that will be called in place of the methods in the trigger_class.
+	 * 		  These class does not have to be included as this point.
+	 * @param array $options Options that be used to further distinguish the behavior of the adapters added
+	 * 			-'object' _string_: Determines if the object being adapted to is static or an instance.Default is static
+	 * 			-'call_class' _string_: The name of the class that the methods will be adapted too.
+	 * 			-'class' _string_: The name of the whose methods will be adapted to another class
+	 * 
+	 * @return void
+	 * @access public
+	 * @todo Add ability to use singleton classes
+	 */
+	public static function addClassAdapter($trigger_class, $call_class, $options = array()) {
+		
+		$defaults = array(
+			'object' => 'static', 
+			'call_class' => $call_class, 
+			'class' => $trigger_class, 
+		);
+		$options += $defaults;
+		
+		if($options['object'] == 'instance' && !is_object($call_class))
+			$call_class = new $call_class();
+		
+		if(class_exists($trigger_class) || is_object($trigger_class)) {
+			
+			$reflection = new ReflectionClass($trigger_class);
+			
+			foreach($reflection->getMethods() as $method) {
+					
+				if($method -> class == $trigger_class && $options['object'] == 'static')
+					$call_class::addAdapter($trigger_class, $method -> name, $call_class, $options);
+				else if($method -> class == $trigger_class && $options['object'] == 'instance')
+					$call_class -> addAdapter($trigger_class, $method -> name, $call_class, $options);
+				
+			}//end foreach
+		}
 	}
 
 	/**
@@ -130,6 +175,31 @@ class PVStaticPatterns {
 			return TRUE;
 		}
 		return FALSE;
+	}
+	
+	/**
+	 * Removes an adapter.
+	 *
+	 * @param string class The associated class the function is calling
+	 * @param string $method The associated method
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public static function removeAdapter($class, $method) {
+		unset(self::$_adapters[$class][$method]);
+	}
+	
+	/**
+	 * Removes an adapter for an entire class.
+	 *
+	 * @param string class The associated class the function is calling
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public static function removeClassAdapter($class) {
+		unset(self::$_adapters[$class]);
 	}
 
 	/**
@@ -199,6 +269,18 @@ class PVStaticPatterns {
 		}
 
 	}//end _notify
+	
+	/**
+	 * Removes all the observers assoicated with an event.
+	 * 
+	 * @param string $event The event to remove all the observers from
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function clearObservers($event) {
+		unset(self::$_observers[$event]);
+	}
 
 	/**
 	 * Adds a filter to the class. Filters are for modifying a value within a class and should not
@@ -291,6 +373,19 @@ class PVStaticPatterns {
 		if (isset(self::$_filters[$class][$method]))
 			return TRUE;
 		return false;
+	}
+	
+	/**
+	 * Remove all the filters from a class.
+	 * 
+	 * @param string $class The class the filter is in
+	 * @param string $method The method of the class that the filter is in
+	 * 
+	 * @return void
+	 * @access public
+	 */
+	public static function clearFilters($class, $method) {
+		unset(self::$_filters[$class][$method]);
 	}
 	
 	/**
