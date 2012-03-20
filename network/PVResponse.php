@@ -1,16 +1,22 @@
 <?php
 
-class PVResponse {
+class PVResponse extends PVStaticObject {
 
 	protected static $_statusMessages;
 
 	public function init($config = array()) {
 		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		
 		$default = array('status_messages' => self::getDefaultStatusMessages());
 		
 		$config += $default;
+		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
 		
 		self::$_statusMessages = $config['status_messages'];
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $config);
 	}
 
 	/**
@@ -18,7 +24,7 @@ class PVResponse {
 	 * to a value other than an empty string.
 	 *
 	 * @param int $status The status is the status code that will be sent as a header
-	 * @param string $body The body of that will be displayed to the user. If no body is set, a default html template will be display with the status code
+	 * @param string $content The content of that will be displayed to the user. If no body is set, a default html template will be display with the status code
 	 * @param array $options An array of options that define how content will be displayed
 	 * 			-'content_type' _string_: The type of content that will be displayed. Default is text/html
 	 * 			-'message' _string_: A message that can be displayed us no body is set. Default is empty string.
@@ -26,11 +32,19 @@ class PVResponse {
 	 * @return string $response A response generated based on the variables
 	 * @access public
 	 */
-	public static function createResponse($status, $body = '', $options = array()) {
+	public static function createResponse($status, $content = '', $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $status, $body, $options);
 
 		$defaults = array('content_type' => 'text/html', 'message' => '', 'status_header' => 'HTTP/1.1 ' );
 
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('status' => $status, 'content' => $content, 'options' => $options), array('event' => 'args'));
+		$status = $filtered['status'];
+		$content = $filtered['content'];
+		$options = $filtered['options'];
 		extract($options);
 
 		$status_header = $options['status_header'] . $status . ' ' . self::getStatusMessage($status);
@@ -38,13 +52,11 @@ class PVResponse {
 		header($status_header);
 		header('Content-type: ' . $content_type);
 
-		if ($body != '') {
-			return $body;
-		} else {
+		if ($content == '') {
 
 			$signature = ($_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : $_SERVER['SERVER_SIGNATURE'];
 
-			$body = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+			$content = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 						<html>
 							<head>
 								<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -57,9 +69,12 @@ class PVResponse {
 								<address>' . $signature . '</address>
 							</body>
 						</html>';
-
-			return $body;
 		}
+		
+		$content = self::_applyFilter(get_class(), __FUNCTION__, $content , array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $content, $status, $options);
+		
+		return $content;
 	}
 
 	/**
@@ -74,14 +89,22 @@ class PVResponse {
 	 * @access public
 	 */
 	public static function setStatusMessages($messages, $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $messages, $options);
 
 		$defaults = array('use_message_defaults' => true);
 		$options += $defaults;
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('messages' => $messages, 'content' => $content, 'options' => $options), array('event' => 'args'));
+		$messages = $filtered['messages'];
+		$options = $filtered['options'];
 
 		if ($options['use_message_defaults'])
 			$messages += self::getDefaultStatusMessages();
 
 		$this -> _statusMessages = $messages;
+		self::_notify(get_class() . '::' . __FUNCTION__, $messages, $options);
 	}
 
 	/**
@@ -93,16 +116,50 @@ class PVResponse {
 	 * @access public
 	 */
 	public static function getStatusMessage($status) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $status);
+		
+		$status = self::_applyFilter(get_class(), __FUNCTION__, $status, array('event' => 'args'));
 
-		return (isset($this -> _statusMessages[$status])) ? $this -> _statusMessages[$status] : '';
+		$message = (isset(self::$_statusMessages[$status])) ? self::$_statusMessages[$status] : '';
+		
+		$message = self::_applyFilter(get_class(), __FUNCTION__, $message , array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $message, $status);
+		
+		return $message;
 	}
 	
+	/**
+	 * Writes PHP headers.Should be called before any content is outputted.
+	 * 
+	 * @param array $headers An array of headers in $key value format or an array of arrays. If array of arrays is passed,
+	 * 				the values in the array should be this:
+	 * 				-'header' _string_: The string to be passed as the header.
+	 * 				-'http_response_code' _int_: The http response code, default value is null.
+	 * 				-'replace' _boolean_: Indicates if the header passed should replace a previously passed header. Default is true.
+	 * 
+	 * @return void
+	 * @access public
+	 */
 	public static function writeHeader($headers = array()) {
 		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $headers);
+		
+		$headers = self::_applyFilter(get_class(), __FUNCTION__, $headers, array('event' => 'args'));
+		
+		$header_defaults = array('http_response_code' => null, 'replace' => true);
 		foreach($headers as $key => $value) {
-			header($value);
+			if(is_array($value)) {
+				$value += $header_defaults;
+				header($value['header'], $value['replace'], $value['http_response_code']);
+			} else {
+				header($value);
+			}
 		}
 		
+		self::_notify(get_class() . '::' . __FUNCTION__, $headers);
 	}
 
 	/**
@@ -112,9 +169,15 @@ class PVResponse {
 	 * @access public
 	 */
 	protected static function getDefaultStatusMessages() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		$status = Array(100 => 'Continue', 101 => 'Switching Protocols', 200 => 'OK', 201 => 'Created', 202 => 'Accepted', 203 => 'Non-Authoritative Information', 204 => 'No Content', 205 => 'Reset Content', 206 => 'Partial Content', 300 => 'Multiple Choices', 301 => 'Moved Permanently', 302 => 'Found', 303 => 'See Other', 304 => 'Not Modified', 305 => 'Use Proxy', 306 => '(Unused)', 307 => 'Temporary Redirect', 400 => 'Bad Request', 401 => 'Unauthorized', 402 => 'Payment Required', 403 => 'Forbidden', 404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable', 407 => 'Proxy Authentication Required', 408 => 'Request Timeout', 409 => 'Conflict', 410 => 'Gone', 411 => 'Length Required', 412 => 'Precondition Failed', 413 => 'Request Entity Too Large', 414 => 'Request-URI Too Long', 415 => 'Unsupported Media Type', 416 => 'Requested Range Not Satisfiable', 417 => 'Expectation Failed', 500 => 'Internal Server Error', 501 => 'Not Implemented', 502 => 'Bad Gateway', 503 => 'Service Unavailable', 504 => 'Gateway Timeout', 505 => 'HTTP Version Not Supported');
 
+		$status = self::_applyFilter(get_class(), __FUNCTION__, $status , array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $status);
+		
 		return $status;
 	}
 

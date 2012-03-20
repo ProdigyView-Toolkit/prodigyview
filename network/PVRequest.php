@@ -1,14 +1,12 @@
 <?php
 
-class PVRequest {
+class PVRequest extends PVStaticInstance {
 	
 	protected $_request_data;
 	
 	protected $_request_method;
 
 	protected $_http_request;
-	
-	protected $_request_method;
 	
 	protected $_mobile_devices;
 	
@@ -20,15 +18,19 @@ class PVRequest {
 	 */
 	public function __construct(array $options = array()) {
 		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
 		$defaults = array(
 			'process_request' => true,
-			'request_method' => '',
 			'http_accept' =>  (strpos($_SERVER['HTTP_ACCEPT'], 'json')) ? 'json' : 'xml',
 			'request_method' => 'REQUEST_METHOD',
 			'mobile_devices' => "/(nokia|iphone|android|motorola|^mot-|softbank|foma|docomo|kddi|up.browser|up.link|htc|dopod|blazer|netfront|helio|hosin|huawei|novarra|CoolPad|webos|techfaith|palmsource|blackberry|alcatel|amoi|ktouch|nexian|samsung|^sam-|s[cg]h|^lge|ericsson|philips|sagem|wellcom|bunjalloo|maui|symbian|smartphone|midp|wap|phone|windows ce|iemobile|^spice|^bird|^zte-|longcos|pantech|gionee|^sie-|portalmmm|jigs browser|hiptop|^ucweb|^benq|haier|^lct|operas*mobi|opera*mini|320x320|240x320|176x220)/i"		
 			);
 		
 		$options += $defaults;
+		
+		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
 		
 		$this -> _request_data = array();
 		
@@ -44,6 +46,8 @@ class PVRequest {
 			$this -> processRequest();
 		}
 		
+		self::_notify(get_class() . '::' . __FUNCTION__, $this);
+		
 		return $this;
 	}
 	
@@ -57,6 +61,9 @@ class PVRequest {
 	 * @todo make ability to handle 'head', 'delete' and 'continue'
 	 */
 	public function processRequest() {
+			
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		$this -> _request_method = strtolower($_SERVER[$this -> _request_method]);
 		
@@ -95,7 +102,15 @@ class PVRequest {
 	 * @access public
 	 */
 	public function setRequestData($data) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $data);
+		
+		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'args'));
+		
 		$this ->_request_data = $data;
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $data);
 	}
 	
 	/**
@@ -109,6 +124,11 @@ class PVRequest {
 	 */
 	public function getRequestData($format = '') {
 		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $format);
+		
+		$format = self::_applyFilter(get_class(), __FUNCTION__, $format, array('event' => 'args'));
+		
 		switch ($format) {
 			case 'json':
 				$data = json_encode($this ->_request_data);
@@ -117,6 +137,9 @@ class PVRequest {
 				$data = $this ->_request_data;
 				break;
 		}
+		
+		$data = self::_applyFilter(get_class(), __FUNCTION__, $data , array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $data, $format);
 		
 		return $data;
 	}
@@ -128,7 +151,16 @@ class PVRequest {
 	 * @access public
 	 */
 	public function getRequestMethod() {
-		return $this ->_request_method;
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$method =$this ->_request_method;
+		
+		$method = self::_applyFilter(get_class(), __FUNCTION__, $method , array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $method);
+		
+		return $method;
 	}
 	
 	/**
@@ -140,7 +172,14 @@ class PVRequest {
 	 * @access public
 	 */
 	public function setRequestMethod($method) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $method);
+		
+		$method = self::_applyFilter(get_class(), __FUNCTION__, $method, array('event' => 'args'));
+		
 		$this -> _request_method = $method;
+		self::_notify(get_class() . '::' . __FUNCTION__, $method);
 	}
 	
 	/**
@@ -150,6 +189,9 @@ class PVRequest {
 	 * @access public
 	 */
 	public function isMobile(){
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		return (isset($_SERVER['HTTP_X_WAP_PROFILE']) || isset($_SERVER['HTTP_PROFILE']) || preg_match($this -> _mobile_devices, strtolower($_SERVER['HTTP_USER_AGENT'])));
 	}
@@ -161,10 +203,18 @@ class PVRequest {
 	 * @access public
 	 */
 	public function getMobileDevice() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
 			
 		preg_match($this -> _mobile_devices, strtolower($_SERVER['HTTP_USER_AGENT']), $matches);
 		
-		return (isset($matches[0]) && !empty($matches[0])) ? $matches[0] : false;
+		$device = (isset($matches[0]) && !empty($matches[0])) ? $matches[0] : false;
+		
+		$device = self::_applyFilter(get_class(), __FUNCTION__, $device , array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $device);
+		
+		return $device;
 	}
 	
 	/**
@@ -174,6 +224,9 @@ class PVRequest {
 	 * @access public
 	 */
 	public function isAjaxRequest() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		if(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
 			return true;
