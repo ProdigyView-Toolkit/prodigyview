@@ -1132,7 +1132,7 @@ class PVForms extends PVStaticObject {
 
 		$tag = self::formBegin($name, $options);
 		$tag .= $data;
-		$tag .= self::formClose();
+		$tag .= self::formEnd();
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $name, $data, $options);
 		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
