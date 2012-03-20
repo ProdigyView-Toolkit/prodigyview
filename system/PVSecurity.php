@@ -1893,9 +1893,9 @@ class PVSecurity extends PVStaticObject {
 		
 		if(!empty($row) && ($options['save_cookie'] || $options['save_session'])) {
 			foreach($row as $key => $value) {
-				if($options['save_cookie'] && in_array($key, $options['cookie_fields']))
+				if(!is_numeric($key) && $options['save_cookie'] && in_array($key, $options['cookie_fields']))
 					PVSession::writeCookie($key, $value);
-				if($options['save_session'] && in_array($key, $options['session_fields']))
+				if(!is_numeric($key) && $options['save_session'] && in_array($key, $options['session_fields']))
 					PVSession::writeSession($key, $value);
 			}
 		}
@@ -1906,7 +1906,6 @@ class PVSecurity extends PVStaticObject {
 		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
 		
 		return $return;
-		
 	}
 	
 	/**
