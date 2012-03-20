@@ -1925,7 +1925,7 @@ class PVDatabase extends PVStaticObject {
 				$first = 0;
 			}
 		}
-
+		
 		if (!empty($options['primary_key']))
 			$column_query .= ',PRIMARY KEY(' . $options['primary_key'] . ')';
 
@@ -1938,11 +1938,11 @@ class PVDatabase extends PVStaticObject {
 		if (self::$dbtype == self::$mySQLConnection) {
 			$query = 'CREATE TABLE ' . $table_name . ' ' . $column_query . ';';
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
-			$query = 'CREATE TABLE ' . $table_name . '();';
+			$query = 'CREATE TABLE ' . $table_name . ' ' . $column_query . ';';
 		} else if (self::$dbtype == self::$msSQLConnection) {
-			$query = 'CREATE TABLE ' . $table_name . ' ;';
+			$query = 'CREATE TABLE ' . $table_name . ' ' . $column_query . ';';
 		}
-
+		
 		if ($options['execute'])
 			PVDatabase::query($query);
 
@@ -2114,32 +2114,38 @@ class PVDatabase extends PVStaticObject {
 
 		$types = array(
 			'integers' => array(
-				'match' => array('int', 'integer'), 
-				'database' => array('mysql' => 'INT', 'mssql' => 'INT', 'postgresql' => 'INTEGER')), 
+				'match' => array('int', 'integer', 'numeric'), 
+				'database' => array('mysql' => 'INT', 'mssql' => 'INT', 'postgresql' => 'INTEGER', 'sqlite' => 'INTEGER')), 
 			'double' => array(
-				'match' => array('double', 'float'), 
-				'database' => array('mysql' => 'DOUBLE', 'mssql' => 'FLOAT', 'postgresql' => 'DOUBLE PRECISION')), 
+				'match' => array('double', 'float', 'real'), 
+				'database' => array('mysql' => 'DOUBLE', 'mssql' => 'FLOAT', 'postgresql' => 'DOUBLE PRECISION',  'sqlite' => 'REAL')), 
 			'string' => array(
-				'match' => array('string', 'varchar', 'character varying'), 
-				'database' => array('mysql' => 'VARCHAR', 'mssql' => 'VARCHAR', 'postgresql' => 'CHARACTER VARYING')), 
+				'match' => array('string', 'varchar', 'character varying', 'nchar', 'native character', 'nvarchar'), 
+				'database' => array('mysql' => 'VARCHAR', 'mssql' => 'VARCHAR', 'postgresql' => 'CHARACTER VARYING', 'sqlite' => 'TEXT')), 
 			'text' => array(
-				'match' => array('text'), 
-				'database' => array('mysql' => 'TEXT', 'mssql' => 'TEXT', 'postgresql' => 'TEXT')), 
+				'match' => array('text', 'clob'), 
+				'database' => array('mysql' => 'TEXT', 'mssql' => 'TEXT', 'postgresql' => 'TEXT', 'sqlite' => 'TEXT')), 
+			'blob' => array(
+				'match' => array('blob'), 
+				'database' => array('mysql' => 'BLOB', 'mssql' => 'BLOB', 'postgresql' => 'BLOB', 'sqlite' => 'TEXT')),
 			'boolean' => array(
 				'match' => array('boolean'), 
-				'database' => array('mysql' => 'BOOLEAN', 'mssql' => 'BIT', 'postgresql' => 'BOOLEAN')), 
+				'database' => array('mysql' => 'BOOLEAN', 'mssql' => 'BIT', 'postgresql' => 'BOOLEAN', 'sqlite' => 'INTEGER')), 
+			'tinyint' => array(
+				'match' => array('tinyint', 'smallint'), 
+				'database' => array('mysql' => 'tinyint', 'mssql' => 'tinyint', 'postgresql' => 'smallint', 'sqlite' => 'INTEGER')), 
 			'timestamp' => array(
 				'match' => array('timestamp'), 
-				'database' => array('mysql' => 'TIMESTAMP', 'mssql' => 'datetime', 'postgresql' => 'TIMESTAMP')), 
+				'database' => array('mysql' => 'TIMESTAMP', 'mssql' => 'datetime', 'postgresql' => 'TIMESTAMP', 'sqlite' => 'TEXT')), 
 			'date' => array(
-				'match' => array('date', 'date/time'), 
-				'database' => array('mysql' => 'TIMESTAMP', 'mssql' => 'datetime', 'postgresql' => 'TIMESTAMP')), 
+				'match' => array('date', 'date/time', 'datetime'), 
+				'database' => array('mysql' => 'TIMESTAMP', 'mssql' => 'datetime', 'postgresql' => 'TIMESTAMP', 'sqlite' => 'TEXT')), 
 			'serial' => array(
 				'match' => array('serial'), 
-				'database' => array('mysql' => 'SERIAL', 'mssql' => 'unknown', 'postgresql' => 'serial')), 
+				'database' => array('mysql' => 'SERIAL', 'mssql' => 'unknown', 'postgresql' => 'serial', 'sqlite' => 'INTEGER')), 
 			'bigserial' => array(
 				'match' => array('bigserial'), 
-				'database' => array('mysql' => 'unknown', 'mssql' => 'unknown', 'postgresql' => 'bigserial')), 
+				'database' => array('mysql' => 'unknown', 'mssql' => 'unknown', 'postgresql' => 'bigserial', 'sqlite' => 'INTEGER')), 
 			);
 
 		foreach ($types as $key => $value) {
