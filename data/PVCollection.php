@@ -128,6 +128,13 @@ class PVCollection implements IteratorAggregate {
 		if (isset($this -> dataset[$index]))
 			unset($this -> dataset[$index]);
 	}
+	
+	/**
+	 * Returns all the data
+	 */
+	public function getData() {
+		return $this -> dataset;
+	}
 
 }//end class
 
@@ -224,6 +231,14 @@ class PVIterator implements Iterator {
 		$key = key($this -> data);
 		$data = ($key !== NULL && $key !== FALSE);
 		return $data;
+	}
+	
+	/**
+	 * Returns the data as stored in the object
+	 * 
+	 */
+	public function getData() {
+		return $this -> data;
 	}
 
 }
