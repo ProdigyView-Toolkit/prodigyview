@@ -1283,16 +1283,18 @@ class PVDatabase extends PVStaticObject {
 		}//end if
 
 		$first = 1;
+		$count = 0;
 		foreach ($data as $key => $value) {
 			if ($first) {
 				$values .= $key;
-				$placeholders .= ' ? ';
+				$placeholders .= ' ' . self::getPreparedPlaceHolder($count + 1) . ' ';
 			} else {
 				$values .= ' , ' . $key;
-				$placeholders .= ', ? ';
+				$placeholders .= ', ' . self::getPreparedPlaceHolder($count + 1) . ' ';
 			}
 
 			$first = 0;
+			$count++;
 		}//end foreach
 
 		if (!empty($data)) {
@@ -1300,8 +1302,8 @@ class PVDatabase extends PVStaticObject {
 			$placeholders .= ')';
 		}//end if
 
-		$query .= $values . $placeholders;
-
+		$query .= $values . ' VALUES'.$placeholders;
+		
 		if (self::$dbtype == self::$mySQLConnection) {
 
 			self::$link -> prepare($query);
