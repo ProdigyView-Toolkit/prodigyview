@@ -226,7 +226,7 @@ class PVDatabase extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $query);
 
 		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'args'));
-
+		
 		if (self::$dbtype == self::$mySQLConnection) {
 			self::$theQuery = $query;
 			$result = self::$link -> query($query);
@@ -1824,14 +1824,14 @@ class PVDatabase extends PVStaticObject {
 		
 		foreach($args as $subkey => $arg) {
 			
-			if(($subkey == '>=' ||  $subkey ==  '>' || $subkey ==  '<' || $subkey ==  '<=') && !PVValidator::isInteger($subkey)) 
+			if(($subkey == '>=' ||  $subkey ==  '>' || $subkey ==  '<' || $subkey ==  '<=' || $subkey ==  '!=') && !PVValidator::isInteger($subkey)) 
 					$operator = $subkey;
 			else if(!PVValidator::isInteger($subkey))
 				$key = $subkey;
 			
 			if(is_array($arg)) {
 				
-				if($subkey == '=>' ||  $subkey ==  '>' || $subkey ==  '<=' || $subkey ==  '<=') 
+				if($subkey == '=>' ||  $subkey ==  '>' || $subkey ==  '<=' || $subkey ==  '<=' || $subkey ==  '!=') 
 					$operator = $subkey;
 				
 				else if(PVValidator::isInteger($subkey))
@@ -2048,7 +2048,7 @@ class PVDatabase extends PVStaticObject {
 
 		$precision = (!empty($options['precision'])) ? '(' . $options['precision'] . ')' : '';
 		$null = ($options['not_null'] == true) ? 'NOT NULL' : 'NULL';
-		$default = (isset($options['default'])) ? 'DEFAULT ' . $options['default'] : '';
+		$default = (isset($options['default'])) ? 'DEFAULT \'' . $options['default'].'\'' : '';
 		$auto_increment = ($options['auto_increment'] == true) ? self::getAutoIncrement() : '';
 		$unique = ($options['unique'] == true) ? 'UNIQUE' : '';
 
