@@ -234,6 +234,16 @@ class PVIterator implements Iterator {
 	}
 	
 	/**
+	 * Counts the number of elements currently in the iterator.
+	 * 
+	 * @return int count
+	 * @access public
+	 */
+	public function count() {
+		return count($this -> data);
+	}
+	
+	/**
 	 * Returns the data as stored in the object
 	 * 
 	 */
