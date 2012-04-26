@@ -843,7 +843,7 @@ class PVForms extends PVStaticObject {
 	public static function label($text, $options = array(), $css_options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+			return self::_callAdapter(get_class(), __FUNCTION__, $text, $options, $css_options);
 
 		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('text' => $text, 'options' => $options, 'css_options' => $css_options), array('event' => 'args'));
 		$text = $filtered['text'];
@@ -869,7 +869,7 @@ class PVForms extends PVStaticObject {
 			return PVHtml::div($label, $css_options);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $label, $name, $options, $css_options);
+		self::_notify(get_class() . '::' . __FUNCTION__, $label, $text, $options, $css_options);
 		$label = self::_applyFilter(get_class(), __FUNCTION__, $label, array('event' => 'return'));
 
 		return $label;
