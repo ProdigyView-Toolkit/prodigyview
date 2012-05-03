@@ -55,6 +55,7 @@ class PVDatabase extends PVStaticObject {
 	private static $dbschema = '';
 	private static $dbprefix = '';
 	private static $dbport = '';
+	private static $current_connecton = '';
 
 	//Variables
 	private static $row;
@@ -158,7 +159,8 @@ class PVDatabase extends PVStaticObject {
 		self::closeDB();
 
 		$profile_id = self::_applyFilter(get_class(), __FUNCTION__, $profile_id, array('event' => 'args'));
-
+		self:: $current_connecton = $profile_id;
+		
 		self::$dbhost = self::$connections[$profile_id]['dbhost'];
 		self::$dbuser = self::$connections[$profile_id]['dbuser'];
 		self::$dbpass = self::$connections[$profile_id]['dbpass'];
@@ -811,6 +813,22 @@ class PVDatabase extends PVStaticObject {
 		$dbtype = self::_applyFilter(get_class(), __FUNCTION__, self::$dbtype, array('event' => 'return'));
 
 		return $dbtype;
+	}
+	
+	/**
+	 * Returns the name of the current connection being used in the database.
+	 * 
+	 * @return string $connection_name The name of the current connect
+	 * @access public
+	 */
+	public static function getConnectionName() {
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, self::$dbtype);
+		$current_connecton = self::_applyFilter(get_class(), __FUNCTION__, self:: $current_connecton, array('event' => 'return'));
+
+		return $current_connecton;
 	}
 
 	/**
