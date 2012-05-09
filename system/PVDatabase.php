@@ -1602,6 +1602,12 @@ class PVDatabase extends PVStaticObject {
 				$query .= ' ORDER BY '. $args['order_by'];
 			}
 			
+			if(!empty($args['group_by']) && is_array($args['group_by'])) {
+				$query .= ' GROUP BY '.implode(',', $args['group_by']);
+			} else if(!empty($args['group_by'])) {
+				$query .= ' GROUP BY '. $args['group_by'];
+			}
+			
 			$result = PVDatabase::query($query);	
 		} else if(self::$dbtype == self::$mongoConnection) {
 			$collection = self::$link->$table_name;
