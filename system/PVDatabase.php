@@ -1737,7 +1737,7 @@ class PVDatabase extends PVStaticObject {
 
 		if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($table, $options);
-			$result = $collection -> remove($wherelist, true);
+			$result = $collection -> remove($wherelist, $options);
 		} else {
 			$query = 'DELETE FROM ' . $table;
 	
