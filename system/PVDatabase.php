@@ -418,7 +418,11 @@ class PVDatabase extends PVStaticObject {
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'args'));
 
 		if (self::$dbtype == self::$mySQLConnection && get_class($result) == 'mysqli_result') {
-			$fields = $result -> fetch_all(MYSQLI_BOTH);
+			if(method_exists($result, 'fetch_all')) {
+				$fields = $result -> fetch_all(MYSQLI_BOTH);
+			} else {
+				$fields = $result -> fetch_assoc();
+			}
 		} else if (self::$dbtype == self::$mySQLConnection && get_class($result) == 'mysqli_stmt') {
 			$result_set = new PVCollection();
 
