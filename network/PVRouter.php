@@ -404,11 +404,12 @@ class PVRouter extends PVStaticObject {
 	 * Otherwise it is run through the router and actions are taken if needed.
 	 *
 	 * @param string $url A url to be redirected too.
-	 *
+	 * @param boolean $exit Exit script after header is set
+	 * 
 	 * @return void
 	 * @access public
 	 */
-	public static function redirect($url) {
+	public static function redirect($url, $exit = true) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url);
@@ -422,6 +423,9 @@ class PVRouter extends PVStaticObject {
 			self::setRoute($url);
 			header('Location: ' . self::url($url));
 		}
+		
+		if($exist)
+			exit();
 	}
 	
 	public static function isSecureConnection(){
