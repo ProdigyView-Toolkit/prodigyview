@@ -424,7 +424,7 @@ class PVRouter extends PVStaticObject {
 			header('Location: ' . self::url($url));
 		}
 		
-		if($exist)
+		if($exit)
 			exit();
 	}
 	
