@@ -1158,7 +1158,7 @@ class PVDatabase extends PVStaticObject {
 			$result = PVDatabase::query($query);	
 		} else if(self::$dbtype == self::$mongoConnection) {
 			$where = (!empty($args['where'])) ? $args['where'] : array();
-			$fields = (!empty($args['fields']) && $args['fields'] != '*' ) ? $args['where'] : array();
+			$fields = (!empty($args['fields']) && $args['fields'] != '*' ) ? $args['fields'] : array();
 			
 			$collection = self::_setMongoCollection($args['table'], $options);
 			if(isset($options['findOne']) && $options['findOne'] )
