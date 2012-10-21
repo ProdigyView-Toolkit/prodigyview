@@ -1865,19 +1865,13 @@ class PVDatabase extends PVStaticObject {
 				$key = $subkey;
 			
 			if(is_array($arg)) {
-				
-				if($subkey == '=>' ||  $subkey ==  '>' || $subkey ==  '<=' || $subkey ==  '<=' || $subkey ==  '!=') 
-					$operator = $subkey;
-				
-				else if(PVValidator::isInteger($subkey))
-					$subkey = 'AND';
-				
-					$query.= self::parseOperators($column, $arg, $subkey, $operator, $first);
+				$query.= self::parseOperators($column, $arg, $key, $operator, $first);
 			} else {
 			
 				 if(!$first) {
 					$query .=  ' '.$key . ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
 				 } else  {
+				 	
 				 	$query .=  ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
 				 }
 			 
