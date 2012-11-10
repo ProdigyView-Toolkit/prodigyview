@@ -1868,7 +1868,7 @@ class PVDatabase extends PVStaticObject {
 				$query.= self::parseOperators($column, $arg, $key, $operator, $first);
 			} else {
 			
-				if($arg == 'IS NULL' || $arg == 'NOTNULL' || $arg == 'IS TRUE' || $arg == 'IS NOT TRUE' || $arg == 'IS FALSE' || $arg == 'IS NOT FALSE' || $arg == 'IS UNKNOWN' || $arg == 'IS NOT UNKNOWN' ) {
+				if($arg == 'IS NULL' || $arg == 'IS NOT NULL' || $arg == 'IS TRUE' || $arg == 'IS NOT TRUE' || $arg == 'IS FALSE' || $arg == 'IS NOT FALSE' || $arg == 'IS UNKNOWN' || $arg == 'IS NOT UNKNOWN' ) {
 					$operator = '';
 						
 					if(!$first) {
