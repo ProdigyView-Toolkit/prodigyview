@@ -1868,12 +1868,24 @@ class PVDatabase extends PVStaticObject {
 				$query.= self::parseOperators($column, $arg, $key, $operator, $first);
 			} else {
 			
-				 if(!$first) {
-					$query .=  ' '.$key . ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
-				 } else  {
+				if($arg == 'IS NULL' || $arg == 'NOTNULL' || $arg == 'IS TRUE' || $arg == 'IS NOT TRUE' || $arg == 'IS FALSE' || $arg == 'IS NOT FALSE' || $arg == 'IS UNKNOWN' || $arg == 'IS NOT UNKNOWN' ) {
+					$operator = '';
+						
+					if(!$first) {
+						$query .=  ' '.$key . ' '.$column. ' '.$operator.' ' . self::makeSafe($arg).' ';
+				 	} else  {
 				 	
-				 	$query .=  ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
-				 }
+				 		$query .=  ' '.$column. ' '.$operator.' ' . self::makeSafe($arg).' ';
+				 	}
+				} else {
+				
+					if(!$first) {
+						$query .=  ' '.$key . ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
+				 	} else  {
+				 	
+				 		$query .=  ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
+				 	}
+				}
 			 
 			}
 			
