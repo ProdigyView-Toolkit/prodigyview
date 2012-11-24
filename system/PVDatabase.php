@@ -1590,10 +1590,19 @@ class PVDatabase extends PVStaticObject {
 					if(is_array($value))
 						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
 					else {
+						$operator = '=';
+						
+						if($value === 'IS NULL' || $value === 'IS NOT NULL' || $value === 'IS TRUE' || $value === 'IS NOT TRUE' || $value === 'IS FALSE' || $value === 'IS NOT FALSE' || $value === 'IS UNKNOWN' || $value === 'IS NOT UNKNOWN' ) {
+							$operator = '';
+							$value = ' '.self::makeSafe($value).'';
+						} else {
+							$value = ' \''.self::makeSafe($value).'\'';
+						}
+						
 						if($first)
-							$query .= $key.' = \''.self::makeSafe($value).'\'';
+							$query .= $key.' ' . $operator  . $value;
 						else {
-							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
+							$query .= ' AND '.$key.' ' . $operator  . $value;
 						}
 					}
 					
