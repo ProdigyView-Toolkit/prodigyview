@@ -1161,9 +1161,9 @@ class PVDatabase extends PVStaticObject {
 			$fields = (!empty($args['fields']) && $args['fields'] != '*' ) ? $args['fields'] : array();
 			
 			$collection = self::_setMongoCollection($args['table'], $options);
-			if(isset($options['findOne']) && $options['findOne'] )
+			if(isset($options['findOne']) && $options['findOne'] ){
 				$result = $collection -> findOne($where, $fields);
-			else 
+			} else {
 				$result = $collection -> find($where, $fields);
 			
 				if(!empty($args['order_by'])) {
@@ -1177,6 +1177,8 @@ class PVDatabase extends PVStaticObject {
 				if(!empty($args['offset'])) {
 					$result = $result -> skip($args['offset']);
 				}
+				
+			}
 		}
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
