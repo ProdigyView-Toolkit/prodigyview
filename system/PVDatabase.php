@@ -1450,6 +1450,10 @@ class PVDatabase extends PVStaticObject {
 			} else if (self::$dbtype == self::$postgreSQLConnection) {
 				$result = pg_prepare(self::$link, '', $query . " RETURNING $returnField ");
 				$result = pg_execute(self::$link, '', $data);
+				
+				if($result == false) {
+					self::catchDBError();
+				}
 				$row = self::fetchArray($result);
 				
 				$id = $row[$returnField];
@@ -1592,19 +1596,10 @@ class PVDatabase extends PVStaticObject {
 					if(is_array($value))
 						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
 					else {
-						$operator = '=';
-						
-						if($value === 'IS NULL' || $value === 'IS NOT NULL' || $value === 'IS TRUE' || $value === 'IS NOT TRUE' || $value === 'IS FALSE' || $value === 'IS NOT FALSE' || $value === 'IS UNKNOWN' || $value === 'IS NOT UNKNOWN' ) {
-							$operator = '';
-							$value = ' '.self::makeSafe($value).'';
-						} else {
-							$value = ' \''.self::makeSafe($value).'\'';
-						}
-						
 						if($first)
-							$query .= $key.' ' . $operator  . $value;
+							$query .= $key.' = \''.self::makeSafe($value).'\'';
 						else {
-							$query .= ' AND '.$key.' ' . $operator  . $value;
+							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
 						}
 					}
 					
@@ -2046,7 +2041,7 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$msSQLConnection) {
 			$query = 'ALTER TABLE ' . $table_name . ' ADD ' . self::formatColumn($column_name, $column_data) . ';';
 		}
-
+		
 		if ($options['execute'])
 			PVDatabase::query($query);
 
@@ -2073,6 +2068,7 @@ class PVDatabase extends PVStaticObject {
 	 * 			then varchar(10) will be used.
 	 * 			-'default' _string_: The default value for the column
 	 * 			-'auto_increment' _boolean_: Is this column auto incremented. Default is false.
+	 * 			-'execute_default' _boolean_: If the default is a sql executable function, set to true so that the funciton will be executed
 	 *
 	 * @return string $format The column will be returned with arguements formatted to the set database.
 	 * @access public
@@ -2089,7 +2085,8 @@ class PVDatabase extends PVStaticObject {
 			'type' => 'string', 
 			'precision' => '', 
 			'default' => null, 
-			'auto_increment' => false
+			'auto_increment' => false,
+			'execute_default' => false
 		);
 
 		$options += $defaults;
@@ -2100,7 +2097,14 @@ class PVDatabase extends PVStaticObject {
 
 		$precision = (!empty($options['precision'])) ? '(' . $options['precision'] . ')' : '';
 		$null = ($options['not_null'] == true) ? 'NOT NULL' : 'NULL';
-		$default = (isset($options['default'])) ? 'DEFAULT \'' . $options['default'].'\'' : '';
+		
+		if(isset($options['default']) && is_callable($options['default'])) {
+			$default = $options['default']();
+		} else if($options['execute_default']){
+			$default = (isset($options['default'])) ? 'DEFAULT ' . $options['default'].'' : '';
+		} else {
+			$default = (isset($options['default'])) ? 'DEFAULT \'' . $options['default'].'\'' : '';
+		}
 		$auto_increment = ($options['auto_increment'] == true) ? self::getAutoIncrement() : '';
 		$unique = ($options['unique'] == true) ? 'UNIQUE' : '';
 
@@ -2115,10 +2119,10 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$msSQLConnection) {
 			$query = $name . ' ' . self::columnTypeMap($options['type']) . $precision . ' ' . $null . ' ' . $default . ' ' . $auto_increment . ' ' . $unique;
 		}
-
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $query);
 		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
-
+		
 		return $query;
 	}
 
@@ -2170,6 +2174,9 @@ class PVDatabase extends PVStaticObject {
 			'integers' => array(
 				'match' => array('int', 'integer', 'numeric'), 
 				'database' => array('mysql' => 'INT', 'mssql' => 'INT', 'postgresql' => 'INTEGER', 'sqlite' => 'INTEGER')), 
+			'bigintegers' => array(
+				'match' => array('bigint'), 
+				'database' => array('mysql' => 'BIGINT', 'mssql' => 'BIGINT', 'postgresql' => 'BIGINT', 'sqlite' => 'INTEGER')),
 			'double' => array(
 				'match' => array('double', 'float', 'real'), 
 				'database' => array('mysql' => 'DOUBLE', 'mssql' => 'FLOAT', 'postgresql' => 'DOUBLE PRECISION',  'sqlite' => 'REAL')), 
@@ -2200,7 +2207,14 @@ class PVDatabase extends PVStaticObject {
 			'bigserial' => array(
 				'match' => array('bigserial'), 
 				'database' => array('mysql' => 'unknown', 'mssql' => 'unknown', 'postgresql' => 'bigserial', 'sqlite' => 'INTEGER')), 
+			'hstore' => array(
+				'match' => array('hstore'), 
+				'database' => array('mysql' => 'unknown', 'mssql' => 'unknown', 'postgresql' => 'hstore', 'sqlite' => 'unknown')),
+			'uuid' => array(
+				'match' => array('uuid', 'guid'), 
+				'database' => array('mysql' => 'unknown', 'mssql' => 'guid', 'postgresql' => 'uuid', 'sqlite' => 'TEXT')), 
 			);
+			
 
 		foreach ($types as $key => $value) {
 			if (in_array($type, $value['match'])) {
@@ -2318,6 +2332,17 @@ class PVDatabase extends PVStaticObject {
 		
 		return $collection;
 	}
+
+	public static function catchDBError($error = null ) {
+		if (self::$dbtype == self::$mySQLConnection) {
+			$query = 'AUTO_INCREMENT';
+		} else if (self::$dbtype == self::$postgreSQLConnection) {
+			print pg_last_error(self::$link);
+		} else if (self::$dbtype == self::$msSQLConnection) {
+			$query = 'IDENTITY (1,1)';
+		}
+	}
+	
 
 	/**
 	 * Returns the table name for the application's permissions.
@@ -3092,5 +3117,5 @@ class PVDatabase extends PVStaticObject {
 		return $table_name;
 
 	}//end  getApplicationPermissionsTable
-
+	
 }//end class
