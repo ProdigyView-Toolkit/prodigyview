@@ -318,8 +318,29 @@ class PVRouter extends PVStaticObject {
 		}
 	}
 
+	/**
+	 * Returns all the variables that are specified in a route.
+	 * 
+	 * @return array
+	 * @access public
+	 */
+	public static function getRouteVariables() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+
+		
+		$data = self::$route_parameters;
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $data);
+		$data = self::_applyFilter(get_class(), __FUNCTION__, $data , array('event' => 'return'));
+		
+		return $data;
+		
+		
+	}
 	public static function getRouteParameter($parameter) {
-		return self::$route_parameters[self::$route_options['route'][$paremter]];
+		return self::$route_parameters[self::$route_options['route'][$parameter]];
 	}
 
 	/**
