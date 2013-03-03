@@ -2187,8 +2187,8 @@ class PVDatabase extends PVStaticObject {
 				'match' => array('text', 'clob'), 
 				'database' => array('mysql' => 'TEXT', 'mssql' => 'TEXT', 'postgresql' => 'TEXT', 'sqlite' => 'TEXT')), 
 			'blob' => array(
-				'match' => array('blob'), 
-				'database' => array('mysql' => 'BLOB', 'mssql' => 'BLOB', 'postgresql' => 'BLOB', 'sqlite' => 'TEXT')),
+				'match' => array('blob', 'bytea'), 
+				'database' => array('mysql' => 'BLOB', 'mssql' => 'BLOB', 'postgresql' => 'BYTEA', 'sqlite' => 'TEXT')),
 			'boolean' => array(
 				'match' => array('boolean'), 
 				'database' => array('mysql' => 'BOOLEAN', 'mssql' => 'BIT', 'postgresql' => 'BOOLEAN', 'sqlite' => 'INTEGER')), 
