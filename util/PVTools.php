@@ -78,7 +78,7 @@ class PVTools extends PVStaticObject {
 	 * @return string $truncated A The string when truncated
 	 * @access public
 	 */
-	function truncateText($string, $length = 10, $trailing = '...', $strip_tags = TRUE, $allowed_tags = '') {
+	public static function truncateText($string, $length = 10, $trailing = '...', $strip_tags = TRUE, $allowed_tags = '') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string, $length, $trailing, $strip_tags, $allowed_tags);
