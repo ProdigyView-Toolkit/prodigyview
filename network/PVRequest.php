@@ -76,12 +76,10 @@ class PVRequest extends PVStaticInstance {
 				$this -> _request_data = $_POST;
 				break;
 			case 'put' :
-				parse_str(file_get_contents('php://input'), $vars);
-				$this -> _request_data = $vars;
+				$this -> _request_data = file_get_contents('php://input');
 				break;
 			case 'delete' :
-				parse_str(file_get_contents('php://input'), $vars);
-				$this -> _request_data = $vars;
+				$this -> _request_data = file_get_contents('php://input');
 				break;
 			case 'head' :
 				echo 'Run around like a chicken with it\'s head cut off';
