@@ -123,7 +123,7 @@ class PVRouter extends PVStaticObject {
 
 		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
 
-		if ($_SERVER['HTTPS'] == 'on') {
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
 			$url = 'http://';
 
 			if ($_SERVER['SERVER_PORT'] != '80') {
