@@ -1331,6 +1331,8 @@ class PVDatabase extends PVStaticObject {
 
 		$query .= $values . ' VALUES'.$placeholders;
 		
+		$template_name = md5($query);
+		
 		if (self::$dbtype == self::$mySQLConnection) {
 
 			self::$link -> prepare($query);
@@ -1342,11 +1344,15 @@ class PVDatabase extends PVStaticObject {
 
 			return self::$link -> execute();
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
+			
+			$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
 
-			$result = pg_prepare(self::$link, '', $query);
+			if (pg_num_rows($result) == 0) {
+    			$result = pg_prepare(self::$link, $template_name, $query);
+				
+			}
 
-			$result = pg_execute(self::$link, '', $data);
-
+			$result = pg_execute(self::$link, $template_name, $data);
 			return $result;
 
 		} else if (self::$dbtype == self::$oracleConnection) {
@@ -1437,6 +1443,8 @@ class PVDatabase extends PVStaticObject {
 			}//end if
 	
 			$query .= $values . $placeholders;
+			
+			$template_name = md5($query);
 	
 			if (self::$dbtype == self::$mySQLConnection) {
 				$stmt = self::$link -> prepare($query);
@@ -1448,8 +1456,15 @@ class PVDatabase extends PVStaticObject {
 				$id = self::$link -> insert_id;
 	
 			} else if (self::$dbtype == self::$postgreSQLConnection) {
-				$result = pg_prepare(self::$link, '', $query . " RETURNING $returnField ");
-				$result = pg_execute(self::$link, '', $data);
+				$template_name = md5($query . " RETURNING $returnField");
+				
+				$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
+
+				if (pg_num_rows($result) == 0) {
+	    			$result = pg_prepare(self::$link, $template_name , $query . " RETURNING $returnField");
+				}
+			
+				$result = pg_execute(self::$link, $template_name , $data);
 				
 				if($result == false) {
 					self::catchDBError();
@@ -1487,20 +1502,25 @@ class PVDatabase extends PVStaticObject {
 	 * @param string $query A query of formatted data to be inserted into the database.
 	 * @param array $data: Data to be inserted into the database. The key should be the column name and the value
 	 * should be the column's value.
+	 * @param array $formats The formats for a prepared statement
+	 * @param array $options Options than can be used to alter the query and its function
+	 * 			-prequery	_string_: SQL to add before the query
+	 * 			-postquery _string_: Additonal information to add at the end of the normal
 	 *
 	 * @return data result: Retuns a result that will need to be run through fetch process.
 	 * @access public
 	 * @todo write better code
 	 */
-	public static function preparedSelect($query, $data, $formats = array()) {
+	public static function preparedSelect($query, $data, array $formats = array(), array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $query, $data, $formats);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('query' => $query, 'data' => $data, 'formats' => $formats, ), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('query' => $query, 'data' => $data, 'formats' => $formats,  'options' => $options ), array('event' => 'args'));
 		$query = $filtered['query'];
 		$data = $filtered['data'];
 		$formats = $filtered['formats'];
+		$options = $filtered['options'];
 
 		$params = array();
 
@@ -1509,6 +1529,14 @@ class PVDatabase extends PVStaticObject {
 			$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
 			$count++;
 		}//end foreach
+		
+		if(isset($options['prequery']) && !empty($options['prequery'])) {
+			$query = $options['prequery'] . $query;
+		}
+		
+		if(isset($options['postquery']) && !empty($options['postquery'])) {
+			$query = $query. $options['postquery'];
+		}
 
 		if (self::$dbtype == self::$mySQLConnection) {
 
@@ -1557,6 +1585,8 @@ class PVDatabase extends PVStaticObject {
 				'order_by' => '',
 				'limit' => '',
 				'offset' => '',
+				'prequery' => '',
+				'postquery' => '',
 			);
 			
 			$args += $default;
@@ -1625,6 +1655,14 @@ class PVDatabase extends PVStaticObject {
 				$query .= ' LIMIT '. $args['limit'];
 			} 
 			
+			if(isset($options['prequery']) && !empty($options['prequery'])) {
+				$query = $options['prequery'] . $query;
+			}
+		
+			if(isset($options['postquery']) && !empty($options['postquery'])) {
+				$query = $query . $options['postquery'];
+			}
+		
 			$result = PVDatabase::query($query);	
 		} else if(self::$dbtype == self::$mongoConnection) {
 			$collection = self::$link->$table_name;
@@ -1701,6 +1739,8 @@ class PVDatabase extends PVStaticObject {
 				}//end foreach
 			}//end if is_array and not emptys
 			
+			$template_name = md5($query);
+			
 			if (self::$dbtype == self::$mySQLConnection) {
 	
 				$stmt = self::$link -> prepare($query);
@@ -1712,9 +1752,16 @@ class PVDatabase extends PVStaticObject {
 			
 				$result = $stmt -> execute();
 			} else if (self::$dbtype == self::$postgreSQLConnection) {
+				
+				$result = pg_query_params(self::$link, $query, $params_holder);
+
+				$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
+
+				if (pg_num_rows($result) == 0) {
+    				$result = pg_prepare(self::$link, $template_name, $query);
+				}
 	
-				$result = pg_prepare(self::$link, '', $query);
-				$result = pg_execute(self::$link, '', $params_holder);
+				$result = pg_execute(self::$link, $template_name, $params_holder);
 	
 			} else if (self::$dbtype == self::$oracleConnection) {
 	
@@ -1776,6 +1823,8 @@ class PVDatabase extends PVStaticObject {
 				}//end foreach
 			}
 	
+			$template_name = md5($query);
+			
 			if (self::$dbtype == self::$mySQLConnection) {
 	
 				$stmt = self::$link -> prepare($query);
@@ -1787,9 +1836,14 @@ class PVDatabase extends PVStaticObject {
 				$result = $stmt -> execute();
 	
 			} else if (self::$dbtype == self::$postgreSQLConnection) {
+				
+				$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
+
+				if (pg_num_rows($result) == 0) {
+    				$result = pg_prepare(self::$link, $template_name, $query);
+				}
 	
-				$result = pg_prepare(self::$link, '', $query);
-				$result = pg_execute(self::$link, '', $wherelist);
+				$result = pg_execute(self::$link, $template_name, $wherelist);
 	
 			} else if (self::$dbtype == self::$oracleConnection) {
 	
@@ -1805,7 +1859,17 @@ class PVDatabase extends PVStaticObject {
 
 		return $result;
 	}//end preparedDelete
-
+	
+	
+	/**
+	 * The placeholder is a value in preared statements that is suppose to represent a value
+	 * to replaced at exection. Placeholder change depending on the database.
+	 * 
+	 * @param int $count The placeholder spot. Used for postgresql
+	 * 
+	 * @return $string The placeholder for the current database
+	 * @access public
+	 */
 	public static function getPreparedPlaceHolder($count = 1) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -1824,6 +1888,7 @@ class PVDatabase extends PVStaticObject {
 		}
 
 		$placeholder = self::_applyFilter(get_class(), __FUNCTION__, $placeholder, array('event' => 'return'));
+		
 		return $placeholder;
 
 	}//end getPreparedPlaceHolder
