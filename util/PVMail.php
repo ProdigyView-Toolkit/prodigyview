@@ -372,6 +372,8 @@ Content-Disposition: attachment
 			$smtp = Mail::factory('smtp', $stmp_info);
 			$mail = $smtp->send($receiver, $headers, $body);
 			self::_notify(get_class().'::'.__FUNCTION__, $args);
+			
+			return $mail;
 		}
 	
 	}//end sendEmailPHPSMTP
