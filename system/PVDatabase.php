@@ -2277,7 +2277,13 @@ class PVDatabase extends PVStaticObject {
 				'database' => array('mysql' => 'unknown', 'mssql' => 'unknown', 'postgresql' => 'hstore', 'sqlite' => 'unknown')),
 			'uuid' => array(
 				'match' => array('uuid', 'guid'), 
-				'database' => array('mysql' => 'unknown', 'mssql' => 'guid', 'postgresql' => 'uuid', 'sqlite' => 'TEXT')), 
+				'database' => array('mysql' => 'unknown', 'mssql' => 'guid', 'postgresql' => 'uuid', 'sqlite' => 'TEXT')),
+			'ip' => array(
+				'match' => array('ip', 'ipv4'), 
+				'database' => array('mysql' => 'varchar', 'mssql' => 'varchar', 'postgresql' => 'cidr', 'sqlite' => 'TEXT')), 
+			'ipv6' => array(
+				'match' => array('ipv6'), 
+				'database' => array('mysql' => 'varchar', 'mssql' => 'varchar', 'postgresql' => 'inet', 'sqlite' => 'TEXT')),
 			);
 			
 
