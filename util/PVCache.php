@@ -247,6 +247,10 @@ class PVCache extends PVStaticObject {
 		$options = $filtered['options'];
 		extract($options);
 
+		if(!file_exists($cache_location . $key)) {
+			$expired = true;	
+		}
+		
 		$content = PVFileManager::readFile($cache_location . $key);
 
 		if (!empty($content) && preg_match('/\\' . $enclosing_tags[0] . $cache_name . $cache_format_search . $enclosing_tags[1] . '/', $content, $matches)) {
