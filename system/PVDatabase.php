@@ -1639,16 +1639,16 @@ class PVDatabase extends PVStaticObject {
 				$query .= $args['where'];
 			}
 			
-			if(!empty($args['order_by']) && is_array($args['order_by'])) {
-				$query .= ' ORDER BY '.implode(',', $args['order_by']);
-			} else if(!empty($args['order_by'])) {
-				$query .= ' ORDER BY '. $args['order_by'];
-			}
-			
 			if(!empty($args['group_by']) && is_array($args['group_by'])) {
 				$query .= ' GROUP BY '.implode(',', $args['group_by']);
 			} else if(!empty($args['group_by'])) {
 				$query .= ' GROUP BY '. $args['group_by'];
+			}
+			
+			if(!empty($args['order_by']) && is_array($args['order_by'])) {
+				$query .= ' ORDER BY '.implode(',', $args['order_by']);
+			} else if(!empty($args['order_by'])) {
+				$query .= ' ORDER BY '. $args['order_by'];
 			}
 			
 			if(!empty($args['limit'])) {
