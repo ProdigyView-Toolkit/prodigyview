@@ -207,7 +207,23 @@ class PVRouter extends PVStaticObject {
 		}
 
 		$routes = array();
-		$uri_parts = explode('/', $uri);
+		
+		$pos = @strpos('?', $uri);
+		
+                if($pos !== false) {
+                	$uri = substr_replace($uri, '?', $pos , strlen($uri));
+                }
+
+                $uri_parts = explode('/', $uri);
+                
+                foreach($uri_parts as $key => $value) {
+                        if(empty($uri_parts[$key])){
+                                unset($uri_parts[$key]);
+                        }
+                }
+                
+                $uri_parts = array_values($uri_parts);
+                $uri = '/' . implode('/', $uri_parts);
 
 		$assigned_route = array();
 		$default_route = array();
