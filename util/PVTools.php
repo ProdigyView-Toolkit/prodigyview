@@ -129,9 +129,9 @@ class PVTools extends PVStaticObject {
 		$current_page_url .= '://';
 
 		if ($_SERVER['SERVER_PORT'] != '80') {
-			$current_page_url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
+			$current_page_url .= $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
 		} else {
-			$current_page_url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+			$current_page_url .= $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $current_page_url);
@@ -159,9 +159,9 @@ class PVTools extends PVStaticObject {
 		$current_page_url .= '://';
 
 		if ($_SERVER['SERVER_PORT'] != '80') {
-			$current_page_url .= $_SERVER['SERVER_NAME'] . ':' . $_SERVER['SERVER_PORT'];
+			$current_page_url .= $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'];
 		} else {
-			$current_page_url .= $_SERVER['SERVER_NAME'];
+			$current_page_url .= $_SERVER['HTTP_HOST'];
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $current_page_url);
