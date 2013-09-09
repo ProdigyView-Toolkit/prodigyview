@@ -61,7 +61,7 @@ class PVValidator extends PVStaticObject {
 
 		//Image File Validation
 		self::$rules['image_file'] = array('type' => 'validator', 'function' => 'isImageFile');
-		self::$rules['bmp_fie'] = array('type' => 'validator', 'function' => 'isBmpFile');
+		self::$rules['bmp_file'] = array('type' => 'validator', 'function' => 'isBmpFile');
 		self::$rules['jpg_file'] = array('type' => 'validator', 'function' => 'isJpegFile');
 		self::$rules['png_file'] = array('type' => 'validator', 'function' => 'isPngFile');
 		self::$rules['gif_file'] = array('type' => 'validator', 'function' => 'isGifFile');
