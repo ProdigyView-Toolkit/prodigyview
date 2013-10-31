@@ -32,6 +32,7 @@ class PVTemplate extends PVStaticObject {
 	private static $siteTitle;
 	private static $siteMetaTags;
 	private static $siteMetaDescription;
+	private static $siteKeywords;
 
 	/**
 	 * Initilize the class and set the variables for the template.
@@ -75,6 +76,24 @@ class PVTemplate extends PVStaticObject {
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$siteTitle);
 		$value = self::_applyFilter(get_class(), __FUNCTION__, self::$siteTitle, array('event' => 'return'));
+
+		return $value;
+	}
+	
+	/**
+	 * Returns the site keywords.
+	 * Modify the keywords attribute
+	 * 
+	 * @return string
+	 * @access public
+	 */
+	public static function getSiteKeywords() {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+
+		self::_notify(get_class() . '::' . __FUNCTION__, self::$siteKeywords);
+		$value = self::_applyFilter(get_class(), __FUNCTION__, self::$siteKeywords, array('event' => 'return'));
 
 		return $value;
 	}
@@ -128,6 +147,22 @@ class PVTemplate extends PVStaticObject {
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 		self::$siteTitle = $string;
+		self::_notify(get_class() . '::' . __FUNCTION__, $string);
+	}
+	
+	/**
+	 * Sets the site keywords
+	 * 
+	 * @param string keywords: Site keywords
+	 * @access public
+	 */
+	public static function setSiteKeywords($string) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+
+		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		self::$siteKeywords = $string;
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
@@ -1112,7 +1147,8 @@ class PVTemplate extends PVStaticObject {
 		$defaults = array(
 			'site_title' => '{SITE_TITLE}', 
 			'site_keywords' => '{SITE_KEYWORDS}', 
-			'site_description' => '{SITE_DESCRIPTION}', 
+			'site_description' => '{SITE_DESCRIPTION}',
+			'site_meta' => '{SITE_META}',  
 			'header_addition' => '{HEADER_ADDITION}'
 		);
 
@@ -1124,11 +1160,13 @@ class PVTemplate extends PVStaticObject {
 
 		$libraries = self::getHeader($options);
 
-		$buffer = str_replace($options['site_title'], pv_getSiteTitle(), $buffer);
+		$buffer = str_replace($options['site_title'],  PVTemplate::getSiteTitle(), $buffer);
 
-		$buffer = str_replace($options['site_keywords'], pv_getSiteMetaTags(), $buffer);
+		$buffer = str_replace($options['site_keywords'], PVTemplate::getSiteKeywords(), $buffer);
+		
+		$buffer = str_replace($options['site_meta'], PVTemplate::getSiteMetaTags(), $buffer);
 
-		$buffer = str_replace($options['site_description'], pv_getSiteMetaDescription(), $buffer);
+		$buffer = str_replace($options['site_description'], PVTemplate::getSiteMetaDescription(), $buffer);
 
 		$buffer = str_replace($options['header_addition'], $libraries, $buffer);
 
@@ -1177,19 +1215,19 @@ class PVTemplate extends PVStaticObject {
 			$version = '?pvversion=' . $options['version'];
 		}
 
-		if ($siteConfiguration['ajax_enabled'] == 1 && !empty($siteConfiguration['ajax_library'])) {
+		if (isset($siteConfiguration['ajax_enabled']) && $siteConfiguration['ajax_enabled'] == 1 && isset($siteConfiguration['ajax_library']) && !empty($siteConfiguration['ajax_library'])) {
 			$libraries .= '<script type="text/javascript" src="' . $url . $javascript . DS . $siteConfiguration['ajax_library'] . '"></script>';
 		}
 
-		if ($siteConfiguration['jquery_enabled'] == 1 && !empty($siteConfiguration['jquery_library'])) {
+		if (isset($siteConfiguration['jquery_enabled'] ) && $siteConfiguration['jquery_enabled'] == 1 && isset($siteConfiguration['jquery_library']) && !empty($siteConfiguration['jquery_library'])) {
 			$libraries . '<script type="text/javascript" src="' . $url . $jquery . DS . $siteConfiguration['jquery_library'] . '"></script>';
 		}
 
-		if ($siteConfiguration['mootools_enabled'] == 1 && !empty($siteConfiguration['mootools_library'])) {
+		if (isset($siteConfiguration['mootools_enabled']) && $siteConfiguration['mootools_enabled'] == 1 && isset($siteConfiguration['mootools_library']) && !empty($siteConfiguration['mootools_library'])) {
 			$libraries . '<script type="text/javascript" src="' . $url . $mootools . DS . $siteConfiguration['mootools_library'] . '"></script>';
 		}
 
-		if ($siteConfiguration['prototype_enabled'] == 1 && !empty($siteConfiguration['prototype_library'])) {
+		if (isset($siteConfiguration['prototype_enabled']) && $siteConfiguration['prototype_enabled'] == 1 && isset($siteConfiguration['prototype_library']) && !empty($siteConfiguration['prototype_library'])) {
 			$libraries . '<script type="text/javascript" src="' . $url . $prototype . DS . $siteConfiguration['prototype_library'] . '"></script>';
 		}
 
