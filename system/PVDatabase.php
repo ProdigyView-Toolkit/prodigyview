@@ -852,7 +852,7 @@ class PVDatabase extends PVStaticObject {
 	 * @return array results: Returns the
 	 */
 	public static function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '') {
-
+		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
 
@@ -863,12 +863,34 @@ class PVDatabase extends PVStaticObject {
 		$current_page = $filtered['current_page'];
 		$results_per_page = $filtered['results_per_page'];
 		$order_by = $filtered['order_by'];
+		
+		if(!empty($where_clause) && !is_array($where_clause))
+				$where_clause .= ' WHERE '.$args['where'];
+			else if(is_array($where_clause) && !empty($where_clause)) {
+				$query = ' WHERE ';
+				$first = true;
+				foreach($where_clause as $key => $value) {
+					if(is_array($value))
+						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
+					else {
+						if($first)
+							$query .= $key.' = \''.self::makeSafe($value).'\'';
+						else {
+							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
+						}
+					}
+					
+					$first = false;
+				}
+				
+				$where_clause = $query;
+			}
 
-		$query = "SELECT COUNT(*) FROM $table $join_clause $where_clause";
-
+		$query = "SELECT COUNT(*) as count FROM $table $join_clause $where_clause";
+		
 		$result = self::query($query);
 		$total_pages = self::fetchArray($result);
-		$total_pages = $total_pages['COUNT(*)'];
+		$total_pages = $total_pages['count'];
 		$from_clause = '';
 
 		//Get The Start Page
@@ -1665,6 +1687,10 @@ class PVDatabase extends PVStaticObject {
 			
 			if(isset($options['prequery']) && !empty($options['prequery'])) {
 				$query = $options['prequery'] . $query;
+			}
+			
+			if(!empty($args['offset'])) {
+				$query .= ' OFFSET '. $args['offset'];
 			}
 		
 			if(isset($options['postquery']) && !empty($options['postquery'])) {
