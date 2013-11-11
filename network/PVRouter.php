@@ -208,10 +208,10 @@ class PVRouter extends PVStaticObject {
 
 		$routes = array();
 		
-		$pos = @strpos('?', $uri);
+		$pos = @strpos($uri, '?');
 		
                 if($pos !== false) {
-                	$uri = substr_replace($uri, '?', $pos , strlen($uri));
+                	$uri = substr_replace($uri, '', $pos , strlen($uri));
                 }
 
                 $uri_parts = explode('/', $uri);
