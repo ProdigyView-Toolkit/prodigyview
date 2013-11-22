@@ -873,10 +873,18 @@ class PVDatabase extends PVStaticObject {
 					if(is_array($value))
 						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
 					else {
-						if($first)
-							$query .= $key.' = \''.self::makeSafe($value).'\'';
-						else {
-							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
+						if($first) {
+							if(PVValidator::isInteger($key)) {
+								$query .= ' ' .$value.' ';
+							} else {
+								$query .= $key.' = \''.self::makeSafe($value).'\'';
+							}
+						} else {
+							if(PVValidator::isInteger($key)) {
+								$query .= ' AND ' .$value.' ';
+							} else {
+								$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
+							}
 						}
 					}
 					
