@@ -253,70 +253,71 @@ class PVConfiguration extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$filename = PV_CONFIG;
+			
 		$parameter_array = array();
-
-		$doc = new DOMDocument();
-		$doc -> formatOutput = true;
-		$doc -> preserveWhiteSpace = false;
-		$doc -> load($filename);
-		$node_array = $doc -> getElementsByTagName('general');
-
-		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-				}//end foreach
-			}//end if
-		}//end foreach
-
-		$node_array = $doc -> getElementsByTagName('email');
-
-		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		$node_array = $doc -> getElementsByTagName('system');
-
-		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		$node_array = $doc -> getElementsByTagName('libraries');
-
-		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
-				}//end foreach
-			}//end if
-		}//end foreach
-
-		$node_array = $doc -> getElementsByTagName('sessions');
-
-		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
-				}//end foreach
-			}//end if
+		if(defined('PV_CONFIG') && file_exists(PV_CONFIG)) {
+			$filename = PV_CONFIG;
+	
+			$doc = new DOMDocument();
+			$doc -> formatOutput = true;
+			$doc -> preserveWhiteSpace = false;
+			$doc -> load($filename);
+			$node_array = $doc -> getElementsByTagName('general');
+	
+			foreach ($node_array as $node) {
+				if ($node -> childNodes -> length) {
+					foreach ($node->childNodes as $i) {
+						$parameter_array[$i -> nodeName] = $i -> nodeValue;
+					}//end foreach
+				}//end if
+			}//end foreach
+	
+			$node_array = $doc -> getElementsByTagName('email');
+	
+			foreach ($node_array as $node) {
+				if ($node -> childNodes -> length) {
+					foreach ($node->childNodes as $i) {
+						$parameter_array[$i -> nodeName] = $i -> nodeValue;
+						self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					}//end foreach
+				}//end if
+	
+			}//end foreach
+	
+			$node_array = $doc -> getElementsByTagName('system');
+	
+			foreach ($node_array as $node) {
+				if ($node -> childNodes -> length) {
+					foreach ($node->childNodes as $i) {
+						$parameter_array[$i -> nodeName] = $i -> nodeValue;
+						self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					}//end foreach
+				}//end if
+	
+			}//end foreach
+	
+			$node_array = $doc -> getElementsByTagName('libraries');
+	
+			foreach ($node_array as $node) {
+				if ($node -> childNodes -> length) {
+					foreach ($node->childNodes as $i) {
+						$parameter_array[$i -> nodeName] = $i -> nodeValue;
+						self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					}//end foreach
+				}//end if
+			}//end foreach
+	
+			$node_array = $doc -> getElementsByTagName('sessions');
+	
+			foreach ($node_array as $node) {
+				if ($node -> childNodes -> length) {
+					foreach ($node->childNodes as $i) {
+						$parameter_array[$i -> nodeName] = $i -> nodeValue;
+						self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					}//end foreach
+				}//end if
+			}
 		}
-
 		self::_notify(get_class() . '::' . __FUNCTION__, $parameter_array);
 		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
 
