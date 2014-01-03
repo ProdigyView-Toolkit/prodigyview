@@ -2326,6 +2326,9 @@ class PVDatabase extends PVStaticObject {
 			'ipv6' => array(
 				'match' => array('ipv6'), 
 				'database' => array('mysql' => 'varchar', 'mssql' => 'varchar', 'postgresql' => 'inet', 'sqlite' => 'TEXT')),
+			'json' => array(
+				'match' => array('json'), 
+				'database' => array('mysql' => 'TEXT', 'mssql' => 'varchar', 'postgresql' => 'json', 'sqlite' => 'TEXT')),
 			);
 			
 
