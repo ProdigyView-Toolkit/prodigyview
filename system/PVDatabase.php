@@ -851,7 +851,7 @@ class PVDatabase extends PVStaticObject {
 	 *
 	 * @return array results: Returns the
 	 */
-	public static function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '') {
+	public static function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count') {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
@@ -894,7 +894,7 @@ class PVDatabase extends PVStaticObject {
 				$where_clause = $query;
 			}
 
-		$query = "SELECT COUNT(*) as count FROM $table $join_clause $where_clause";
+		$query = "SELECT $fields FROM $table $join_clause $where_clause";
 		
 		$result = self::query($query);
 		$total_pages = self::fetchArray($result);
