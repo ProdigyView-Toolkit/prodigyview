@@ -447,8 +447,12 @@ class PVLibraries extends PVStaticObject {
 					
 					if (false === strpos($file -> getFilename(), '~') && 0 < strpos($file -> getFilename(), '.php') && preg_match('/' . $extensions_allowed . '/', $file -> getBasename(), $matches)) {
 						
-						if(self::$_namespaced) {
-							$namespace = str_replace(PV_LIBRARIES, '', $file -> getPathname());
+						if(self::$_namespaced ||  (isset($library['namespaced']) && $library['namespaced'] ) ) {
+							if(isset($library['path'])){
+                                                                $namespace = basename($library['path']).DS.str_replace($library['path'], '', $file -> getPathna$
+                                                        } else {
+                                                                $namespace = str_replace(PV_LIBRARIES, '', $file -> getPathname());
+                                                        }
 							$namespace = str_replace($matches[0], '', $namespace);
 							self::$_autoloadClasses[$namespace] = $file -> getPathname();
 						} else {
