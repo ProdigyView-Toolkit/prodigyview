@@ -234,7 +234,7 @@ class PVDatabase extends PVStaticObject {
 			$result = self::$link -> query($query);
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
 			self::$theQuery = $query;
-			$result = pg_exec($query);
+			$result = pg_query(self::$link, $query);
 		} else if (self::$dbtype == self::$msSQLConnection) {
 			self::$theQuery = $query;
 			$result = sqlsrv_query(self::$link, $query, array(), array("Scrollable" => SQLSRV_CURSOR_KEYSET));
