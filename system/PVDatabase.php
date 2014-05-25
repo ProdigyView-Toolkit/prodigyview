@@ -490,7 +490,7 @@ class PVDatabase extends PVStaticObject {
 			if (self::$dbtype == self::$mySQLConnection) {
 				$return_array = self::$link -> real_escape_string($string);
 			} else if (self::$dbtype == self::$postgreSQLConnection) {
-				$return_array = pg_escape_string($string);
+				$return_array = pg_escape_string(self::$link, $string);
 			} else if (self::$dbtype == self::$msSQLConnection) {
 
 				if (!isset($string) or empty($string))
