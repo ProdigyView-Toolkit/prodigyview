@@ -202,7 +202,11 @@ class PVDatabase extends PVStaticObject {
 			self::$link = oci_connect($user, $pass, $host);
 			$d = new PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
 		} else if (self::$dbtype == self::$mongoConnection) {
-			self::$link = new Mongo('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+			if(class_exists ('MongoClient')) {
+				self::$link = new MongoClient('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+			} else {
+				self::$link = new Mongo('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+			}
 			$database = self::$dbname;
 			self::$link = self::$link ->selectDB($database);
 		}
