@@ -1369,14 +1369,23 @@ class PVDatabase extends PVStaticObject {
 		
 		if (self::$dbtype == self::$mySQLConnection) {
 
-			self::$link -> prepare($query);
-			$count = 1;
-			foreach ($data as $key => $value) {
-				self::$link -> bindParam($count, $value);
-				$count++;
-			}//end foreach
+		 	$stmt = self::$link -> prepare($query);
+                        if(!$stmt) {
+                                echo 'Error';
+                                exit();
+                        }
 
-			return self::$link -> execute();
+  	                $count = 1;
+                        $refs = array();
+                        $type = '';
+                        foreach($data as $k => $v) {
+                                $refs[$k] = &$data[$k];
+                                $type .= 's';
+         	 	}
+                                       
+                        call_user_func_array(array($stmt, 'bind_param'), array_merge(array($type), $refs));
+
+                        return $stmt  -> execute();
 		} else if (self::$dbtype == self::$postgreSQLConnection) {
 			
 			$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
