@@ -207,11 +207,14 @@ class PVDatabase extends PVStaticObject {
 				self::$link = new MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
 			} else if(class_exists ('MongoClient')) {
 				self::$link = new MongoClient('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+				$database = self::$dbname;
+				self::$link = self::$link ->selectDB($database);
 			} else {
 				self::$link = new Mongo('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+				$database = self::$dbname;
+				self::$link = self::$link ->selectDB($database);
 			}
-			$database = self::$dbname;
-			self::$link = self::$link ->selectDB($database);
+			
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__);
@@ -2499,7 +2502,7 @@ class PVDatabase extends PVStaticObject {
 		$options += $defaults;
 		
 		if(class_exists('\\MongoDB\Collection')) {
-			$collection = new MongoDB\Collection(self::$link, $table_name);
+			$collection = new MongoDB\Collection(self::$link, self::$dbname.'.'.$table_name);
 		} else {
 		
 			if($options['gridFS']) {
