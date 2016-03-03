@@ -202,7 +202,10 @@ class PVDatabase extends PVStaticObject {
 			self::$link = oci_connect($user, $pass, $host);
 			$d = new PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
 		} else if (self::$dbtype == self::$mongoConnection) {
-			if(class_exists ('MongoClient')) {
+			
+			if(class_exists ('\\MongoDB\Driver\Manager')) {	
+				self::$link = new MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+			} else if(class_exists ('MongoClient')) {
 				self::$link = new MongoClient('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
 			} else {
 				self::$link = new Mongo('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
@@ -1006,12 +1009,17 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($table_name, $options);
 			
-			if(isset($options['batchInsert']) && $options['batchInsert'])
+			if(isset($options['batchInsert']) && $options['batchInsert']){
 				$result = $collection -> batchInsert($data, $options);
-			else if( isset($options['gridFS']) &&  $options['gridFS'] && isset($options['file']))
+			} else if( isset($options['gridFS']) &&  $options['gridFS'] && isset($options['file'])) {
 				$result = $collection -> storeFile($options['file'] ,$data, $options);
-			else
-				$result = $collection -> insert($data, $options);
+			} else{
+				if(class_exists('\\MongoDB\Driver\Manager')) {
+					$result = $collection->insertOne($data, $options);
+				} else { 
+					$result = $collection -> insert($data, $options);
+				}
+			}
 			
 			if(isset($options['batchInsert']) && $options['batchInsert'])
 				$result = $data;
@@ -1087,7 +1095,13 @@ class PVDatabase extends PVStaticObject {
 		
 		} else if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($table, $options);
-			$result = $collection -> update($wherelist, $data, $options);
+			
+			if(class_exists('\\MongoDB\Collection')) {
+    			$result = $collection->updateMany($wherelist, $data, $options);
+			} else {
+				$result = $collection -> update($wherelist, $data, $options);
+			}
+			
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $options);
@@ -1195,7 +1209,9 @@ class PVDatabase extends PVStaticObject {
 			$fields = (!empty($args['fields']) && $args['fields'] != '*' ) ? $args['fields'] : array();
 			
 			$collection = self::_setMongoCollection($args['table'], $options);
+			
 			if(isset($options['findOne']) && $options['findOne'] ){
+				
 				$result = $collection -> findOne($where, $fields);
 			} else {
 				$result = $collection -> find($where, $fields);
@@ -1281,7 +1297,12 @@ class PVDatabase extends PVStaticObject {
 		} else if(self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($args['table'], $options);
 			$where = (!empty($args['where'])) ? $args['where'] : array();
-			$result = $collection -> remove($where, $options);
+			
+			if(class_exists('\\MongoDB\Collection')) {
+				$result = $collection -> deleteMany($where, $options);
+			} else {
+				$result = $collection -> remove($where, $options);
+			}
 		}
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
@@ -1406,8 +1427,13 @@ class PVDatabase extends PVStaticObject {
 
 			return sqlsrv_execute($stmt);
 		} else if (self::$dbtype == self::$mongoConnection) {
-			$collection = self::$link->$table_name;
-			$collection -> insert($data);
+			$collection = self::_setMongoCollection($table);
+			
+			if(class_exists('\\MongoDB\Collection')){
+				$collection -> insertOne($data);
+			} else {
+				$collection -> insert($data);
+			}
 		}
 
 	}//end preparedInsert
@@ -1440,17 +1466,25 @@ class PVDatabase extends PVStaticObject {
 		if(self::getDatabaseType() == 'mongo' ) {
 			$collection = self::_setMongoCollection($table_name, $options);
 			
-			if(isset($options['batchInsert']) && $options['batchInsert'])
+			if(isset($options['batchInsert']) && $options['batchInsert']) {
 				$collection -> batchInsert($data, $options);
-			else if(isset($options['gridFS']) && isset($options['file']) && $options['gridFS'])
+			} else if(isset($options['gridFS']) && isset($options['file']) && $options['gridFS']) {
 				$id = $collection -> storeFile($options['file'] ,$data, $options);
-			else
-				$collection -> insert($data, $options);
+			} else {
+				if(class_exists('\\MongoDB\Collection')){
+					$result = $collection -> insertOne($data,$options);
+					$id = $result->getInsertedId();
+				} else {
+					$result = $collection -> insert($data,$options);
+				}
+				
+			}
 			
-			if(isset($options['batchInsert']) && $options['batchInsert'])
+			if(isset($options['batchInsert']) && $options['batchInsert']) {
 				$id = $data;
-			else if(isset($options['gridFS']) == false)
+			} else if(isset($options['gridFS']) == false) {
 				$id = $data['_id'];
+			}
 				
 		} else {
 
@@ -1720,7 +1754,8 @@ class PVDatabase extends PVStaticObject {
 		
 			$result = PVDatabase::query($query);	
 		} else if(self::$dbtype == self::$mongoConnection) {
-			$collection = self::$link->$table_name;
+			$collection = self::_setMongoCollection(self::$link->$table_name);
+			
 			$result = $collection -> find($args);
 		}
 		
@@ -1753,7 +1788,11 @@ class PVDatabase extends PVStaticObject {
 		
 		if(self::getDatabaseType() == 'mongo' ) {
 			$collection = self::_setMongoCollection($table, $options);
-			$result = $collection -> update($wherelist, $data, $options);
+			if(class_exists('\\MongoDB\Collection')) {
+				$result = $collection -> updateMany($wherelist, $data, $options);
+			} else {
+				$result = $collection -> update($wherelist, $data, $options);
+			}
 		} else {
 
 			$query = 'UPDATE ' . $table . ' SET ';
@@ -1856,7 +1895,12 @@ class PVDatabase extends PVStaticObject {
 
 		if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($table, $options);
-			$result = $collection -> remove($wherelist, $options);
+			if(class_exists('\\MongoDB\Collection')) {
+				$result = $collection -> deleteMany($wherelist, $options);
+			} else {
+				$result = $collection -> remove($wherelist, $options);
+			}
+			
 		} else {
 			$query = 'DELETE FROM ' . $table;
 	
@@ -2454,10 +2498,16 @@ class PVDatabase extends PVStaticObject {
 		
 		$options += $defaults;
 		
-		if($options['gridFS'])
-			$collection = self::$link -> getGridFS( $table_name );
-		else
-			$collection = self::$link -> $table_name;
+		if(class_exists('\\MongoDB\Collection')) {
+			$collection = new MongoDB\Collection(self::$link, $table_name);
+		} else {
+		
+			if($options['gridFS']) {
+				$collection = self::$link -> getGridFS( $table_name );
+			} else {
+				$collection = self::$link -> $table_name;
+			}
+		}
 		
 		return $collection;
 	}
