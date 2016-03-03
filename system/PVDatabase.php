@@ -203,7 +203,7 @@ class PVDatabase extends PVStaticObject {
 			$d = new PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
 		} else if (self::$dbtype == self::$mongoConnection) {
 			
-			if(class_exists ('\\MongoDB\Client')) {	
+			if(class_exists('\\MongoDB\Driver\Manager')) {	
 				//self::$link = new MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
 				self::$link = new MongoDB\Client('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
 				self::$link ->selectDatabase(self::$dbname);
@@ -1101,7 +1101,7 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($table, $options);
 			
-			if(class_exists('\\MongoDB\Collection')) {
+			if(class_exists('\\MongoDB\Driver\Manager')) {
     			$result = $collection->updateMany($wherelist, $data, $options);
 			} else {
 				$result = $collection -> update($wherelist, $data, $options);
@@ -1221,15 +1221,15 @@ class PVDatabase extends PVStaticObject {
 			} else {
 				$result = $collection -> find($where, $fields);
 			
-				if(!empty($args['order_by'])) {
+				if(!empty($args['order_by']) && !class_exists('\\MongoDB\Driver\Manager')) {
 					$result = $result -> sort($args['order_by']);
 				}
 				
-				if(!empty($args['limit'])) {
+				if(!empty($args['limit']) && !class_exists('\\MongoDB\Driver\Manager')) {
 					$result = $result -> limit($args['limit']);
 				}
 				
-				if(!empty($args['offset'])) {
+				if(!empty($args['offset']) && !class_exists('\\MongoDB\Driver\Manager')) {
 					$result = $result -> skip($args['offset']);
 				}
 				
@@ -1303,7 +1303,7 @@ class PVDatabase extends PVStaticObject {
 			$collection = self::_setMongoCollection($args['table'], $options);
 			$where = (!empty($args['where'])) ? $args['where'] : array();
 			
-			if(class_exists('\\MongoDB\Collection')) {
+			if(class_exists('\\MongoDB\Driver\Manager')) {
 				$result = $collection -> deleteMany($where, $options);
 			} else {
 				$result = $collection -> remove($where, $options);
@@ -1434,7 +1434,7 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($table);
 			
-			if(class_exists('\\MongoDB\Collection')){
+			if(class_exists('\\MongoDB\Driver\Manager')){
 				$collection -> insertOne($data);
 			} else {
 				$collection -> insert($data);
@@ -1476,7 +1476,7 @@ class PVDatabase extends PVStaticObject {
 			} else if(isset($options['gridFS']) && isset($options['file']) && $options['gridFS']) {
 				$id = $collection -> storeFile($options['file'] ,$data, $options);
 			} else {
-				if(class_exists('\\MongoDB\Collection')){
+				if(class_exists('\\MongoDB\Driver\Manager')){
 					$result = $collection -> insertOne($data,$options);
 					$id = $result->getInsertedId();
 				} else {
@@ -1793,7 +1793,7 @@ class PVDatabase extends PVStaticObject {
 		
 		if(self::getDatabaseType() == 'mongo' ) {
 			$collection = self::_setMongoCollection($table, $options);
-			if(class_exists('\\MongoDB\Collection')) {
+			if(class_exists('\\MongoDB\Driver\Manager')) {
 				$result = $collection -> updateMany($wherelist, $data, $options);
 			} else {
 				$result = $collection -> update($wherelist, $data, $options);
@@ -1900,7 +1900,7 @@ class PVDatabase extends PVStaticObject {
 
 		if (self::$dbtype == self::$mongoConnection) {
 			$collection = self::_setMongoCollection($table, $options);
-			if(class_exists('\\MongoDB\Collection')) {
+			if(class_exists('\\MongoDB\Driver\Manager')) {
 				$result = $collection -> deleteMany($wherelist, $options);
 			} else {
 				$result = $collection -> remove($wherelist, $options);
@@ -2503,7 +2503,7 @@ class PVDatabase extends PVStaticObject {
 		
 		$options += $defaults;
 		
-		if(class_exists('\\MongoDB\Collection')) {
+		if(class_exists('\\MongoDB\Driver\Manager')) {
 			$collection = self::$link -> selectCollection(self::$dbname ,$table_name);
 		} else {
 		
