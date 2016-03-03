@@ -1102,7 +1102,7 @@ class PVDatabase extends PVStaticObject {
 			$collection = self::_setMongoCollection($table, $options);
 			
 			if(class_exists('\\MongoDB\Driver\Manager')) {
-    			$result = $collection->updateMany($wherelist, $data, $options);
+    			$result = $collection->updateMany($wherelist, array('$set' =>$data), $options);
 			} else {
 				$result = $collection -> update($wherelist, $data, $options);
 			}
@@ -1794,7 +1794,7 @@ class PVDatabase extends PVStaticObject {
 		if(self::getDatabaseType() == 'mongo' ) {
 			$collection = self::_setMongoCollection($table, $options);
 			if(class_exists('\\MongoDB\Driver\Manager')) {
-				$result = $collection -> updateMany($wherelist, $data, $options);
+				$result = $collection -> updateMany($wherelist, array('$set' =>$data), $options);
 			} else {
 				$result = $collection -> update($wherelist, $data, $options);
 			}
