@@ -1478,7 +1478,6 @@ class PVDatabase extends PVStaticObject {
 			} else {
 				if(class_exists('\\MongoDB\Driver\Manager')){
 					$result = $collection -> insertOne($data,$options);
-					$id = $result->getInsertedId();
 				} else {
 					$result = $collection -> insert($data,$options);
 				}
@@ -1488,7 +1487,11 @@ class PVDatabase extends PVStaticObject {
 			if(isset($options['batchInsert']) && $options['batchInsert']) {
 				$id = $data;
 			} else if(isset($options['gridFS']) == false) {
-				$id = $data['_id'];
+				if(class_exists('\\MongoDB\Driver\Manager')){
+					$id = $result->getInsertedId();
+				} else {
+					$id = $data['_id'];
+				}
 			}
 				
 		} else {
