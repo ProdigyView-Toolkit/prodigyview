@@ -203,8 +203,10 @@ class PVDatabase extends PVStaticObject {
 			$d = new PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
 		} else if (self::$dbtype == self::$mongoConnection) {
 			
-			if(class_exists ('\\MongoDB\Driver\Manager')) {	
-				self::$link = new MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+			if(class_exists ('\\MongoDB\Client')) {	
+				//self::$link = new MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+				self::$link = new MongoDB\Client('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+				self::$link ->selectDatabase(self::$dbname);
 			} else if(class_exists ('MongoClient')) {
 				self::$link = new MongoClient('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
 				$database = self::$dbname;
@@ -2502,7 +2504,7 @@ class PVDatabase extends PVStaticObject {
 		$options += $defaults;
 		
 		if(class_exists('\\MongoDB\Collection')) {
-			$collection = new MongoDB\Collection(self::$link, self::$dbname.'.'.$table_name);
+			$collection = self::$link -> selectCollection(self::$dbname ,$table_name);
 		} else {
 		
 			if($options['gridFS']) {
