@@ -263,7 +263,7 @@ class PVVideo extends PVStaticObject {
 	 * @return void The output is not returned but a new file will be created if the conversion succeeded
 	 * @access public
 	 */
-	function convertVideoFile($current_file_location, $new_file_location, $options = array()) {
+	public static function convertVideoFile($current_file_location, $new_file_location, $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $current_file_location, $new_file_location, $options);
@@ -288,7 +288,7 @@ class PVVideo extends PVStaticObject {
 		$input_options .= PVAudio::setEncodingOptions($options, 'input_');
 		$output_options .= PVAudio::setEncodingOptions($options, 'output_');
 
-		exec("$converter -i $input_options $current_file_location $output_options $new_file_location");
+		exec("$converter -i $input_options $current_file_location -y $output_options $new_file_location");
 		self::_notify(get_class() . '::' . __FUNCTION__, $current_file_location, $new_file_location, $options, $input_options, $output_options);
 	}//end convertVideoFile
 
