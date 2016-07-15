@@ -391,6 +391,10 @@ class PVVideo extends PVStaticObject {
 		if (isset($options[$input_type . 'vcodec'])) {
 			$input_options .= ' -vcodec ' . $options[$input_type . 'vcodec'];
 		}
+		
+		if (isset($options[$input_type . 'codec'])) {
+			$input_options .= ' -codec ' . $options[$input_type . 'codec'];
+		}
 
 		if (isset($options[$input_type . 'pass'])) {
 			$input_options .= ' -pass ' . $options[$input_type . 'pass'];
