@@ -436,6 +436,10 @@ class PVAudio extends PVStaticObject {
 		if (isset($options[$input_type . 'acodec'])) {
 			$input_options .= ' -acodec ' . $options[$input_type . 'acodec'];
 		}
+		
+		if (isset($options[$input_type . 'codec'])) {
+			$input_options .= ' -codec ' . $options[$input_type . 'codec'];
+		}
 
 		if (isset($options[$input_type . 'newaudio'])) {
 			$input_options .= ' -newaudio ';
