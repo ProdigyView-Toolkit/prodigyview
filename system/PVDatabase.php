@@ -204,7 +204,7 @@ class PVDatabase extends PVStaticObject {
 		} else if (self::$dbtype == self::$mongoConnection) {
 			
 			if(class_exists('\\MongoDB\Driver\Manager')) {	
-				self::$link = new MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+				self::$link = new \MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
 				//self::$link = new MongoDB\Client('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 				self::$link ->selectDatabase(self::$dbname);
 			} else if(class_exists ('MongoClient')) {
