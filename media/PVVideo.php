@@ -387,9 +387,17 @@ class PVVideo extends PVStaticObject {
 		if (isset($options[$input_type . 'bufsize'])) {
 			$input_options .= ' -bufsize ' . $options[$input_type . 'bufsize'];
 		}
+		
+		if (isset($options[$input_type . 'acodec'])) {
+			$input_options .= ' -acodec ' . $options[$input_type . 'acodec'];
+		}
 
 		if (isset($options[$input_type . 'vcodec'])) {
 			$input_options .= ' -vcodec ' . $options[$input_type . 'vcodec'];
+		}
+		
+		if (isset($options[$input_type . 'f'])) {
+			$input_options .= ' -f ' . $options[$input_type . 'f'];
 		}
 		
 		if (isset($options[$input_type . 'codec'])) {
