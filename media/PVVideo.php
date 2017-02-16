@@ -331,6 +331,14 @@ class PVVideo extends PVStaticObject {
 		if (isset($options[$input_type . 's'])) {
 			$input_options .= ' -s ' . $options[$input_type . 's'];
 		}
+		
+		if (isset($options[$input_type . 't'])) {
+			$input_options .= ' -t ' . $options[$input_type . 't'];
+		}
+		
+		if (isset($options[$input_type . 'c'])) {
+			$input_options .= ' -c ' . $options[$input_type . 'c'];
+		}
 
 		if (isset($options[$input_type . 'aspect'])) {
 			$input_options .= ' -aspect ' . $options[$input_type . 'aspect'];
