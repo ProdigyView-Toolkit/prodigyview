@@ -2094,12 +2094,12 @@ function pv_exec_admin($app, $command, $params, $new_object=FALSE){
 	 * FieldGenerator
 	 */
 	
-	function pv_createField( $app_id=0, $owner_id=0 ,  $field_name="" ,$field_type="" ,$field_description="" , $field_title="" , $max_length=0, $max_size=0, $columns=0,$rows=0, $value="", $searchable=1 , $readonly=0 , $show_title=0 , $is_required=0 , $on_blur="" , $id="" , $on_change="", $on_click="" , $on_doubelclick="" , $on_focus="" , $on_keydown="" , $on_keyup="" , $on_keypress="" , $on_mousedown="" , $on_mouseup="" , $on_mousemove="" , $on_mouseover="" , $on_mouseout="" , $instructions="" , $show_instructions="" , $checked=0, $disabled=0 , $lang="", $align="", $accept="" , $field_class="" , $size="" , $field_prefix="" , $field_suffix="" , $field_css="" , $field_prefix="" , $field_suffix="" , $field_css="", $field_unique_name="" ){
+	function pv_createField( $app_id=0, $owner_id=0 ,  $field_name="" ,$field_type="" ,$field_description="" , $field_title="" , $max_length=0, $max_size=0, $columns=0,$rows=0, $value="", $searchable=1 , $readonly=0 , $show_title=0 , $is_required=0 , $on_blur="" , $id="" , $on_change="", $on_click="" , $on_doubelclick="" , $on_focus="" , $on_keydown="" , $on_keyup="" , $on_keypress="" , $on_mousedown="" , $on_mouseup="" , $on_mousemove="" , $on_mouseover="" , $on_mouseout="" , $instructions="" , $show_instructions="" , $checked=0, $disabled=0 , $lang="", $align="", $accept="" , $field_class="" , $size="" , $field_prefix="" , $field_suffix="" , $field_css=" , $field_unique_name="" ){
 		if(is_array($app_id)){
 			return PVFields::createFieldFromArray($app_id);
 		}
 		else{
-			return PVFields::createField( $app_id, $owner_id ,  $field_name ,$field_type ,$field_description , $field_title , $max_length, $max_size, $columns,$rows, $value, $searchable , $readonly , $show_title , $is_required , $on_blur , $id , $on_change, $on_click , $on_doubelclick , $on_focus , $on_keydown , $on_keyup , $on_keypress , $on_mousedown , $on_mouseup , $on_mousemove , $on_mouseover , $on_mouseout , $instructions , $show_instructions , $checked, $disabled , $lang, $align, $accept , $field_class , $size , $field_prefix , $field_suffix , $field_css , $field_prefix , $field_suffix , $field_css, $field_unique_name );
+			return PVFields::createField( $app_id, $owner_id ,  $field_name ,$field_type ,$field_description , $field_title , $max_length, $max_size, $columns,$rows, $value, $searchable , $readonly , $show_title , $is_required , $on_blur , $id , $on_change, $on_click , $on_doubelclick , $on_focus , $on_keydown , $on_keyup , $on_keypress , $on_mousedown , $on_mouseup , $on_mousemove , $on_mouseover , $on_mouseout , $instructions , $show_instructions , $checked, $disabled , $lang, $align, $accept , $field_class , $size , $field_prefix , $field_suffix , $field_css , $field_unique_name );
 		}
 	}//end pv_createField
 	
