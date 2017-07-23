@@ -1927,7 +1927,8 @@ class PVSecurity extends PVStaticObject {
 		$string = $filtered['string'];
 		$salt = $filtered['salt'];
 		
-		$hashed_string = crypt( $string, $salt ?: self::$_salt );
+		//$hashed_string = crypt( $string, $salt ?: self::$_salt );
+		$hashed_string = password_hash($string, PASSWORD_BCRYPT, array('cost' => 10, 'salt' => $salt ?: self::$_salt));
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $hashed_string, $string, $salt);
 		$hashed_string = self::_applyFilter(get_class(), __FUNCTION__, $hashed_string, array('event' => 'return'));
