@@ -92,9 +92,6 @@ class PVBootstrap extends PVStaticObject {
 		if ($args['load_database'])
 			PVDatabase::setDatabase($args['load_database_profile']);
 
-		if ($args['load_plugins'])
-			self::loadPlugins();
-
 		if ($args['initialize_libraries'])
 			PVLibraries::init();
 
@@ -243,32 +240,6 @@ class PVBootstrap extends PVStaticObject {
 		self::_notify(get_class() . '::' . __FUNCTION__, $report_errors, $log_errors, $error_report_level);
 	}//end setReporting
 
-	/**
-	 * Loads the plugins set in the database and initiliazes
-	 * them for site wide usage.The folder that the plugins are in
-	 * can be set by using the PV_PLUGINS define.
-	 *
-	 * @return void
-	 * @access public
-	 * @todo Add prepared query eventually
-	 */
-	public static function loadPlugins() {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$query = "SELECT plugin_function, plugin_file, plugin_directory FROM " . PVDatabase::getPluginsTableName() . " WHERE plugin_enabled='1' AND plugin_language='php' ORDER BY plugin_order ";
-		$result = PVDatabase::query($query);
-
-		while ($row = PVDatabase::fetchArray($result)) {
-			$plugin_file = $row['plugin_directory'] . $row['plugin_file'];
-			if (file_exists(PV_PLUGINS . $plugin_file)) {
-				include_once (PV_PLUGINS . $plugin_file);
-			}
-		}//end while
-
-		self::_notify(get_class() . '::' . __FUNCTION__);
-	}//end load plugins
 
 	/**
 	 * Unsets a global at launch. Use for removing data from $_GET, $_SESSION

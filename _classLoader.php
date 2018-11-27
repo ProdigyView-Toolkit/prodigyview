@@ -16,30 +16,6 @@ function systemLoader($class) {
 	require_once $file;
 }
 
-function cmsLoader($class) {
-	
-	$class =  str_replace('\\', '/', $class);
-	
-	$filename = $class . '.php';
-	$file = PV_CORE . DS . 'cms' . DS . $filename;
-	if (!file_exists($file)) {
-		return false;
-	}
-	require_once $file;
-}
-
-function componentsLoader($class) {
-	
-	$class =  str_replace('\\', '/', $class);
-	
-	$filename = $class . '.php';
-	$file = PV_CORE . DS . 'components' . DS . $filename;
-	if (!file_exists($file)) {
-		return false;
-	}
-	require_once $file;
-}
-
 function templateLoader($class) {
 	
 	$class =  str_replace('\\', '/', $class);
@@ -103,8 +79,6 @@ function networkLoader($class) {
 
 /*** register the loader functions ***/
 spl_autoload_register('systemLoader');
-spl_autoload_register('cmsLoader');
-spl_autoload_register('componentsLoader');
 spl_autoload_register('templateLoader');
 spl_autoload_register('utilLoader');
 spl_autoload_register('dataLoader');
