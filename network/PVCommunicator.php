@@ -43,6 +43,10 @@
 	
 	protected $_data = null;
 	
+	protected $_error = null;
+	
+	public $hasError = true;
+	
 	/**
 	 * Sets the protocol, right now either being defaulting
 	 * to curl, but SOAP and SOCKET can be set
@@ -65,6 +69,10 @@
 	 * @param string $url The endpoint of the api for REST or the wsdl for SOAP
 	 * @param array $data The data to be passed to the end endpoint
 	 * @param array $options Speciaized options to configure the sending client
+	 * 				- timeout: The timeout in seconds
+	 * 				- secure: Will require ssl for secure connection
+	 * 				- enable_proxy : Will utilize a proxy for connecting to the endpoint
+	 * 				- verbose: Display detailed bug log
 	 * 
 	 * @return $response
 	 */
@@ -72,6 +80,20 @@
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
+		$defaults = array(
+			'timeout' => 500,
+			'secure' => false,
+			'enable_proxy' => false,
+			'verbose' => false 
+		);
+		
+		$options += $defaults;
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
+		$url = trim($url);
 		
 		$this -> _openConnection($url, $options);
 		
@@ -81,12 +103,17 @@
 			$this -> _prepareData($data);
 			$this -> _sendSocket();
 		} else {
+			$this -> setTimeout($options['timeout']);
+			$this -> secureSendingOnly($options['secure']);
+			$this -> enableProxy($options['enable_proxy']);
+			$this -> debug($options['verbose']);
+			
 			$method = strtolower(trim($method));
 			
 			if($method === 'post') {
 				return $this -> _post($data);
 			} else if($method === 'get') {
-				return $this -> _get($data);
+				return $this -> _get($url, $data);
 			} else if($method === 'put') {
 				return$this -> _put($data);
 			} else if($method === 'delete') {
@@ -191,7 +218,8 @@
 	 * @param array $data Data to be sent
 	 */
 	protected function _get($url, $data = array()) {
-		$url = sprintf("%s?%s", $url, http_build_query($data));
+		$url .= '?' . http_build_query($data);
+		curl_setopt($this -> _handler, CURLOPT_URL, $url);
 		return $this -> _sendCurl();
 	}
 	
@@ -260,6 +288,18 @@
 	}
 	
 	/**
+	 * Will require all communication to be secure over ssl
+	 * 
+	 * @param boolean $secure Setting to true forces security protocals to be enabled
+	 * 
+	 * @return void
+	 */
+	public function secureSendingOnly($secure = false) {
+		curl_setopt($this -> _handler, CURLOPT_SSL_VERIFYPEER, $secure);
+		curl_setopt($this -> _handler, CURLOPT_SSL_VERIFYHOST, $secure);
+	}
+	
+	/**
 	 * Set any timeouts for long request or responses
 	 * 
 	 * @return void
@@ -270,6 +310,22 @@
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
 		
 		curl_setopt($this -> _handler, CURLOPT_CONNECTTIMEOUT, $timeout);
+		curl_setopt($this -> _handler, CURLOPT_TIMEOUT, $timeout);
+	}
+	
+	/**
+	 * Enable/Disable the usage of a proxy in the curl call
+	 */
+	public function enableProxy($proxy = false) {
+		curl_setopt($this -> _handler, CURLOPT_FOLLOWLOCATION, $proxy);
+		curl_setopt($this -> _handler, CURLOPT_PROXY, $proxy);
+	}
+	
+	/**
+	 * Enable verbose dislpay for debugging
+	 */
+	public function debug($debug) {
+		curl_setopt($this -> _handler, CURLOPT_VERBOSE, $debug);
 	}
 	
 	/**
@@ -278,9 +334,9 @@
 	 * @return mixed $response
 	 */
 	protected function _sendCurl() {
-		curl_setopt($this -> _handler, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($this -> _handler, CURLOPT_HEADER, TRUE);
-		curl_setopt($this -> _handler, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($this -> _handler, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($this -> _handler, CURLOPT_HEADER, 1);
+		
 	
 		if($this -> _headers) {
 			$final_headers = array();
@@ -289,14 +345,18 @@
 			}
 			
 			curl_setopt($this -> _handler, CURLOPT_HTTPHEADER, $final_headers);	
-		}
+		};
 		
 		$response = curl_exec($this -> _handler);
 		
+		if($response === false) {
+			$this -> _error = curl_error($this -> _handler);
+			$this -> hasError = true;
+		}
 		$this -> _response = $response;
 		
 		$this -> _response_info = curl_getinfo($this -> _handler);
-
+		
     		curl_close($this -> _handler);
 			
 		self::_notify(get_class() . '::' . __FUNCTION__, $this);
@@ -332,6 +392,13 @@
 		return $this -> _response;
 	}
 	
+	public function getResponseInfo() {
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
+		return $this -> _response_info;
+	}
+	
 	public function getResponseHeader() {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -347,6 +414,13 @@
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
 		
 		return substr($this -> _response, $this -> _response_info['header_size']);
+	}
+	
+	public function getError() {
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		
+		return $this -> _error;
 	}
 	
  }

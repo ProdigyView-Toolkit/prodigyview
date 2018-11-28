@@ -66,7 +66,7 @@ class PVRouter extends PVStaticObject {
 		self::$routes = array();
 		self::$route_parameters = array();
 
-		if ($config['seo_urls'] == 1 || $config['seo_urls'] == 'true') {
+		if ($config['seo_urls'] === 1 || $config['seo_urls'] === 'true') {
 			self::$seo_urls = 1;
 		} else {
 			self::$seo_urls = 0;
@@ -123,7 +123,7 @@ class PVRouter extends PVStaticObject {
 
 		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
 
-		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
 			$url = 'http://';
 
 			if ($_SERVER['SERVER_PORT'] != '443') {
@@ -202,7 +202,7 @@ class PVRouter extends PVStaticObject {
 			$uri = $_SERVER['REQUEST_URI'];
 		}
 
-		if (substr($uri, strlen($uri) - 1) == '/') {
+		if (substr($uri, strlen($uri) - 1) === '/') {
 			$uri = substr_replace($uri, '', strlen($uri) - 1);
 		}
 
@@ -246,11 +246,11 @@ class PVRouter extends PVStaticObject {
 				$match_1 = str_replace($uri_match, '', $uri);
 				$match_2 = str_replace($uri_match, '', $matches[0]);
 
-				if ($match_1 == $match_2 && !empty($match_1)) {
+				if ($match_1 === $match_2 && !empty($match_1)) {
 					$assigned_route = $matches;
 					$assigned_route_options = $route;
 					break;
-				} else if ($match_1 == $match_2 && empty($match_1)) {
+				} else if ($match_1 === $match_2 && empty($match_1)) {
 					$default_route = $matches;
 					$default_route_options = $route;
 				}
@@ -426,7 +426,7 @@ class PVRouter extends PVStaticObject {
 			$replacement = '/';
 			$url = preg_replace($pattern, $replacement, $url);
 		}
-		if (!PVValidator::isValidUrl($url) && strpos($url, PVTools::getCurrentBaseUrl()) == false) {
+		if (!PVValidator::isValidUrl($url) && strpos($url, PVTools::getCurrentBaseUrl()) === false) {
 			//$url=PVTools::getCurrentBaseUrl().$url;
 		}
 

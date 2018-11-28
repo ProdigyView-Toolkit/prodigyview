@@ -78,9 +78,9 @@ class PVResponse extends PVStaticObject {
 		header($status_header);
 		header('Content-type: ' . $content_type);
 
-		if ($content == '') {
+		if ($content === '') {
 
-			$signature = (isset($_SERVER['SERVER_SIGNATURE']) && $_SERVER['SERVER_SIGNATURE'] == '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : '';
+			$signature = (isset($_SERVER['SERVER_SIGNATURE']) && $_SERVER['SERVER_SIGNATURE'] === '') ? $_SERVER['SERVER_SOFTWARE'] . ' Server at ' . $_SERVER['SERVER_NAME'] . ' Port ' . $_SERVER['SERVER_PORT'] : '';
 
 			$content = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 						<html>
