@@ -53,7 +53,7 @@ class PVStaticObject extends PVStaticPatterns {
 		$index = $filtered['index'];
 		$value = $filtered['value'];
 		
-		if (self::$_collection[get_called_class()] == null) {
+		if (self::$_collection[get_called_class()] === null) {
 			self::$_collection[get_called_class()] = new PVCollection();
 		}
 
@@ -77,7 +77,7 @@ class PVStaticObject extends PVStaticPatterns {
 		
 		$index = self::_applyFilter(get_class(), __FUNCTION__, $index, array('event' => 'args'));
 		
-		if (self::$_collection[get_called_class()] == null) {
+		if (self::$_collection[get_called_class()] === null) {
 			self::$_collection[get_called_class()] = new PVCollection();
 		}
 		
@@ -135,7 +135,7 @@ class PVStaticObject extends PVStaticPatterns {
 			return self::_callAdapter(get_class(), __FUNCTION__, $data);
 		
 		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'args'));
-		if (self::$_collection[get_called_class()] == null) {
+		if (self::$_collection[get_called_class()] === null) {
 			self::$_collection[get_called_class()] = new PVCollection();
 		}
 		self::$_collection[get_called_class()] -> add($data);
@@ -162,7 +162,7 @@ class PVStaticObject extends PVStaticPatterns {
 		$name = $filtered['name'];
 		$data = $filtered['data'];
 		
-		if (self::$_collection[get_called_class()] == null) {
+		if (self::$_collection[get_called_class()] === null) {
 			self::$_collection[get_called_class()] = new PVCollection();
 		}
 		self::$_collection[get_called_class()] -> addWithName($name, $data);
@@ -180,7 +180,7 @@ class PVStaticObject extends PVStaticPatterns {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 		
-		if (self::$_collection[get_called_class()] == null) {
+		if (self::$_collection[get_called_class()] === null) {
 			self::$_collection[get_called_class()] = new PVCollection();
 		}
 		return self::$_collection[get_called_class()] -> getIterator();

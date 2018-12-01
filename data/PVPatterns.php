@@ -101,7 +101,7 @@ class PVPatterns {
 		);
 		$options += $defaults;
 		
-		if($options['object'] == 'instance' && !is_object($call_class))
+		if($options['object'] === 'instance' && !is_object($call_class))
 			$call_class = new $call_class();
 		
 		if(class_exists($trigger_class) || is_object($trigger_class)) {
@@ -110,9 +110,9 @@ class PVPatterns {
 			
 			foreach($reflection->getMethods() as $method) {
 					
-				if($method -> class == $trigger_class && $options['object'] == 'static')
+				if($method -> class == $trigger_class && $options['object'] === 'static')
 					$call_class::addAdapter($trigger_class, $method -> name, $call_class, $options);
-				else if($method -> class == $trigger_class && $options['object'] == 'instance')
+				else if($method -> class == $trigger_class && $options['object'] === 'instance')
 					$call_class -> addAdapter($trigger_class, $method -> name, $call_class, $options);
 				
 			}//end foreach
@@ -149,9 +149,9 @@ class PVPatterns {
 			$this -> _logAdapter( $options );
 		} 
 		
-		if($options['type'] == 'closure')
+		if($options['type'] === 'closure')
 			return call_user_func_array( $options['call_class'], $passable_args);
-		else if ($options['object'] == 'instance')
+		else if ($options['object'] === 'instance')
 			return self::_invokeMethod($options['call_class'], $options['call_method'], $passable_args);
 		else
 			return self::_invokeStaticMethod($options['call_class'], $options['call_method'], $passable_args);
@@ -256,9 +256,9 @@ class PVPatterns {
 					$this -> _logObserver($options);
 				}
 
-				if($options['type'] == 'closure')
+				if($options['type'] === 'closure')
 					call_user_func_array( $options['method'], $passable_args);
-				else if ($options['object'] == 'instance')
+				else if ($options['object'] === 'instance')
 					self::_invokeMethod($options['class'], $options['method'], $passable_args);
 				else
 					self::_invokeStaticMethod($options['class'], $options['method'], $passable_args);
@@ -349,9 +349,9 @@ class PVPatterns {
 					$this -> _logFilter($function);
 				}
 				
-				if($function['type'] == 'closure')
+				if($function['type'] === 'closure')
 					$passable_args[0] = call_user_func_array( $function['method'], $passable_args);
-				else if ($function['object'] == 'instance')
+				else if ($function['object'] === 'instance')
 					$passable_args[0] = $this -> _invokeMethod($function['class'], $function['method'], $passable_args);
 				else
 					$passable_args[0] = $this -> _invokeStaticMethod($function['class'], $function['method'], $passable_args);

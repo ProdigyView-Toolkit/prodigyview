@@ -27,6 +27,11 @@
  *or implied, of ProdigyView LLC.
  */
 
+ //If Mysql is Not installed, will have to be set to null
+ if(!defined('MYSQLI_REPORT_ERROR')) {
+ 	define('MYSQLI_REPORT_ERROR', null);
+ }
+  
 class PVDatabase extends PVStaticObject {
 
 	private static $theQuery;

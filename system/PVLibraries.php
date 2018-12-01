@@ -403,7 +403,7 @@ class PVLibraries extends PVStaticObject {
 		$allow_extensions = $filtered['allow_extensions'];
 
 		foreach ($library as $key => $value) {
-			if ($value['type'] == 'folder') {
+			if ($value['type'] === 'folder') {
 				self::_loadLibrary($value['files'], $allow_extensions);
 			} else {
 				if (empty($allow_extensions)) {

@@ -90,7 +90,7 @@ class PVTools extends PVStaticObject {
 		$strip_tags = $filtered['strip_tags'];
 		$allowed_tags = $filtered['allowed_tags'];
 
-		if ($strip_tags == TRUE && !empty($string)) {
+		if ($strip_tags === TRUE && !empty($string)) {
 			$string = strip_tags($string, $allowed_tags);
 		}
 
@@ -122,7 +122,7 @@ class PVTools extends PVStaticObject {
 
 		$current_page_url = 'http';
 
-		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
 			$current_page_url .= 's';
 		}
 
@@ -154,7 +154,7 @@ class PVTools extends PVStaticObject {
 
 		$current_page_url = 'http';
 
-		if (@$_SERVER['HTTPS'] == 'on') { $current_page_url .= 's';
+		if (@$_SERVER['HTTPS'] === 'on') { $current_page_url .= 's';
 		}
 		$current_page_url .= '://';
 
@@ -190,7 +190,7 @@ class PVTools extends PVStaticObject {
 
 		$first = 1;
 		foreach ($variables as $key => $value) {
-			if ($first == 1) {
+			if ($first === 1) {
 				$appendix .= $key . '=' . urlencode($value);
 			} else {
 				$appendix .= '&' . $key . '=' . urlencode($value);
@@ -225,7 +225,7 @@ class PVTools extends PVStaticObject {
 
 		$first = 1;
 		foreach ($variables as $key => $value) {
-			if ($first == 1) {
+			if ($first === 1) {
 				$appendix .= urlencode($value);
 			} else {
 				$appendix .= '/' . urlencode($value);
@@ -344,7 +344,7 @@ class PVTools extends PVStaticObject {
 		$encapsulate = $filtered['encapsulate'];
 		$syntax = $filtered['syntax'];
 		
-		if($syntax == 'standard') {
+		if($syntax === 'standard') {
 
 			$string = trim($string);
 			$string = PVDatabase::makeSafe($string);
@@ -363,20 +363,20 @@ class PVTools extends PVStaticObject {
 			$output = '';
 			for ($i = 0; $i < $length; $i++) {
 	
-				if ($string[$i] == '!') {
+				if ($string[$i] === '!') {
 	
 					$output .= ' ' . $content_term . '!=\'';
 	
 					if ($i == 0) {
 						$ADD_PREFIX = false;
 					}
-				} else if ($string[$i] == '+') {
+				} else if ($string[$i] === '+') {
 					if (@$string[$i + 1] != '!') {
 						$output .= ' AND ' . $content_term . '=\'';
 					} else {
 						$output .= ' AND ';
 					}
-				} else if ($string[$i] == ',') {
+				} else if ($string[$i] === ',') {
 					if (@$string[$i + 1] != '!') {
 						$output .= ' OR ' . $content_term . '=\'';
 	
@@ -390,7 +390,7 @@ class PVTools extends PVStaticObject {
 	
 					$output .= $string[$i];
 	
-					if (@$string[$i + 1] == ',' || @$string[$i + 1] == '+' || @$string[$i + 1] == '!' || $i == $length || $i == $length - 1) {
+					if (@$string[$i + 1] === ',' || @$string[$i + 1] === '+' || @$string[$i + 1] === '!' || $i == $length || $i == $length - 1) {
 						$output .= '\'';
 					}
 				}
@@ -429,9 +429,9 @@ class PVTools extends PVStaticObject {
 	 * @deprecated now
 	 */
 	public static function convertNumbericBoolean($boolean) {
-		if ($boolean == 1) {
+		if ($boolean === 1) {
 			return true;
-		} else if ($boolean == 0) {
+		} else if ($boolean === 0) {
 			return false;
 		}
 
@@ -441,9 +441,9 @@ class PVTools extends PVStaticObject {
 	 * Converts a boolean that is passed a string to the boolean type true or false.
 	 */
 	public static function convertTextBoolean($boolean) {
-		if ($boolean == 'true') {
+		if ($boolean === 'true') {
 			return true;
-		} else if ($boolean == 'false') {
+		} else if ($boolean === 'false') {
 			return false;
 		}
 

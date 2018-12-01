@@ -49,7 +49,7 @@ class PVConversions {
 				$object -> $name = self::arrayToObject($value);
 
 			return $object;
-		} else if (is_array($data) && count($data) == 0) {
+		} else if (is_array($data) && count($data) === 0) {
 			return (object) $data;
 		} else {
 			

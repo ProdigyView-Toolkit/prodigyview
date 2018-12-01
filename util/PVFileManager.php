@@ -102,7 +102,7 @@ class PVFileManager extends PVStaticObject {
 		}
 
 		foreach (scandir($directory) as $item) {
-			if ($item == '.' || $item == '..')
+			if ($item === '.' || $item === '..')
 				continue;
 			if (!self::deleteDirectory($directory . "/" . $item)) {
 				chmod($directory . "/" . $item, 0777);
@@ -489,7 +489,7 @@ class PVFileManager extends PVStaticObject {
 
 			while (FALSE !== ($entry = $directory -> read())) {
 
-				if ($entry == '.' || $entry == '..') {
+				if ($entry === '.' || $entry === '..') {
 					continue;
 				}//end if
 

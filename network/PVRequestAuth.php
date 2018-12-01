@@ -104,7 +104,7 @@ class PVRequestAuth {
 	 */
 	public function authenticate($credentials = array()) {
 			
-		if($this -> _username == $credentials['username'] && $this -> _password == $credentials['password'] && $this -> _digest)
+		if($this -> _username === $credentials['username'] && $this -> _password === $credentials['password'] && $this -> _digest)
 			return true;
 		
 		return false;
@@ -170,6 +170,6 @@ class PVRequestAuth {
 		preg_match_all('@(username|nonce|uri|nc|cnonce|qop|response)'. '=[\'"]?([^\'",]+)@', $digest, $matches);
 	    $data = array_combine($matches[1], $matches[2]);
 		
-	    return (count($data)==7) ? $data : false; 
+	    return (count($data) === 7 ) ? $data : false; 
 	}
 }

@@ -402,19 +402,19 @@ class PVTemplate extends PVStaticObject {
 			$version = '?pvversion=' . $options['version'];
 		}
 
-		if (isset($siteConfiguration['ajax_enabled']) && $siteConfiguration['ajax_enabled'] == 1 && isset($siteConfiguration['ajax_library']) && !empty($siteConfiguration['ajax_library'])) {
+		if (isset($siteConfiguration['ajax_enabled']) && $siteConfiguration['ajax_enabled'] === 1 && isset($siteConfiguration['ajax_library']) && !empty($siteConfiguration['ajax_library'])) {
 			$libraries .= '<script type="text/javascript" src="' . $url . $javascript . DS . $siteConfiguration['ajax_library'] . '"></script>';
 		}
 
-		if (isset($siteConfiguration['jquery_enabled'] ) && $siteConfiguration['jquery_enabled'] == 1 && isset($siteConfiguration['jquery_library']) && !empty($siteConfiguration['jquery_library'])) {
+		if (isset($siteConfiguration['jquery_enabled'] ) && $siteConfiguration['jquery_enabled'] === 1 && isset($siteConfiguration['jquery_library']) && !empty($siteConfiguration['jquery_library'])) {
 			$libraries . '<script type="text/javascript" src="' . $url . $jquery . DS . $siteConfiguration['jquery_library'] . '"></script>';
 		}
 
-		if (isset($siteConfiguration['mootools_enabled']) && $siteConfiguration['mootools_enabled'] == 1 && isset($siteConfiguration['mootools_library']) && !empty($siteConfiguration['mootools_library'])) {
+		if (isset($siteConfiguration['mootools_enabled']) && $siteConfiguration['mootools_enabled'] === 1 && isset($siteConfiguration['mootools_library']) && !empty($siteConfiguration['mootools_library'])) {
 			$libraries . '<script type="text/javascript" src="' . $url . $mootools . DS . $siteConfiguration['mootools_library'] . '"></script>';
 		}
 
-		if (isset($siteConfiguration['prototype_enabled']) && $siteConfiguration['prototype_enabled'] == 1 && isset($siteConfiguration['prototype_library']) && !empty($siteConfiguration['prototype_library'])) {
+		if (isset($siteConfiguration['prototype_enabled']) && $siteConfiguration['prototype_enabled'] === 1 && isset($siteConfiguration['prototype_library']) && !empty($siteConfiguration['prototype_library'])) {
 			$libraries . '<script type="text/javascript" src="' . $url . $prototype . DS . $siteConfiguration['prototype_library'] . '"></script>';
 		}
 
