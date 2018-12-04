@@ -26,6 +26,11 @@
  *authors and should not be interpreted as representing official policies, either expressed
  *or implied, of ProdigyView LLC.
  */
+ 
+ if(!defined('MCRYPT_DES')) {
+ 	define('MCRYPT_DES', null);
+ }
+  
 class PVSecurity extends PVStaticObject {
 
 	private static $cipher;
