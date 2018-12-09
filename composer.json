@@ -17,9 +17,9 @@
         "php": ">=5.3.0"
     },
     "autoload": {
+    		"files": [ "_classLoader.php" ],
         "psr-0": {
             "ProdigyView": "src",
-            "files": [ "_classLoader.php" ]
         }
     }
 }
