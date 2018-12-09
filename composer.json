@@ -19,7 +19,7 @@
     "autoload": {
     		"files": [ "_classLoader.php" ],
         "psr-0": {
-            "ProdigyView": "src",
+            "ProdigyView": "src"
         }
     }
 }
