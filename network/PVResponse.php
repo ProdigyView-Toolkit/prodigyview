@@ -5,6 +5,7 @@
  * The class takes into consideration the many generic responses HTTP has ranging from 200 to 500, and helps make it easy to output the correct response with headers.
  * 
  * Example:
+ * ```php
  * //Init the class
  * PVResponse::init();
  * 
@@ -13,6 +14,7 @@
  * 
  * //Page Not Found
  * PVResponse::createResponse(404, 'The page you are looking for cannot be found');
+ * ```
  * 
  * @package network
  */

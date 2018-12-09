@@ -5,7 +5,7 @@
  * While tools like composer make including and accessing libraries easy, not every library is on the service nor does every project want to manage their 3rd parties libraries in the same way. PVLibraries primary focus is the loading of external libraries to be used in your application.
  * 
  * Example:
- * 
+ * ```php
  * //Initialize the class
  * PVLibraries::init();
  * 
@@ -17,6 +17,7 @@
  * 
  * //To your application to load these libraries for use
  * PVLibraries::loadLibraries();
+ * ```
  * 
  * @package system
  */

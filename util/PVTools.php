@@ -5,6 +5,7 @@
  * The tools in this class do not have a direct affiliation with any other class and can be considered more of general tools.
  * 
  * Example:
+ * ```php
  * //Create random string of capital letters A -F that is 10 letters long
  * $string = PVTools::generateRandomString( 10, $chars = 'ABCDEF');
  * 
@@ -19,7 +20,7 @@
  * );
  * 
  * $item = PVTools::arraySearchRecursive('turkey', $data);
- * 
+ * ```
  * @package util 
  */
 class PVTools extends PVStaticObject {

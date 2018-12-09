@@ -5,7 +5,7 @@
  * With the rise of RESTFUL API and Microservices, this class was designed to allow easy communication with those services without having to rewrite the underlying commands.
  * 
  * Example:
- * 
+ * ```php
  * //CURL GET
  * $url = 'http://api.wunderground.com/api/Your_Key/conditions/q/CA/San_Francisco.json';
  * 
@@ -19,6 +19,7 @@
  * $communicator = new PVCommunicator();
  * $communicator->send('POST',  $url, );
  * print_r($communicator ->getResponseBody());
+ * ```
  * 
  * @package network
  */

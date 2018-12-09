@@ -6,6 +6,7 @@
 * server, or can be configured to send emails via SMTP.
 * 
 * Example:
+ * ```php
 * //Initialize The Class
 * PVMail::init(array(
 *             'smtp_host' => 'external.example.com',
@@ -23,7 +24,8 @@
 * 	'subject'=>'Hello World'
 * 	'message'=>'Dropping a line, saying hello'
 * ));
-* 
+* ```
+ * 
 * @package util 
 */
 class PVMail extends PVStaticObject {

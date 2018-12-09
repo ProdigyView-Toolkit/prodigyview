@@ -5,7 +5,7 @@
  * The configuration class is most notably used for setting variables that can be retrieved anywhere in your system with the setters and getters. There is also the option of setting different environment.
  * 
  * Example:
- * 
+ * ```php
  * //Init the class
  * PVConfiguration::init();
  * 
@@ -24,6 +24,7 @@
  * 
  * //Set different configs for different environments
  * PVConfiguration::addConfiguration('mysql',  $data, array('environment' => 'production'));
+ * ```
  * 
  * @package system
  */

@@ -5,7 +5,7 @@
  * The class takes in basic HTML forms with options. The functionality can be used with dynamic form generation tools.
  * 
  * Example:
- * 
+ * ```php
  * //Create array of links
  * $links = array('Google', 'http://www.google.com', 'Facebook', 'http://www.facebook.com');
  * 
@@ -28,6 +28,7 @@
  * 		<li><a href="http://www.facebook.com">Facebook</a><li>
  * 	 </ul>
  * </div>
+ * ```
  * 
  * @package template
  * @todo Add more HTML5 form elements

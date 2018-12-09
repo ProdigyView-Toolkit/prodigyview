@@ -5,6 +5,7 @@
  * The logs that can be recorded is up to the developer. The class can be overridden with Adapters to do things like write to syslog or external logging services.
  * 
  * Example:
+ * ```php
  * //Initialize The class
  * PVLog::init();
  * 
@@ -15,6 +16,7 @@
  * 
  * //Get the logs with a high priority level
  * $logs = PVLog::readLog('High Alert');
+ * ```
  * 
  * @package util 
  */

@@ -5,6 +5,7 @@
  * Often there will be requirements for converting data such as array to objects, json to xml, etc. This class is designed to have built-in functions to make those conversations easy.
  * 
  * Example:
+ * ```php
  * //Create an array
  * $data = $array('Apple', 'Bananna', 'Orange');
  * 
@@ -13,7 +14,7 @@
  * 
  * //Will display an stdObject
  * print_r($data);
- * 
+ * ```
  * @package data
  */
 class PVConversions {

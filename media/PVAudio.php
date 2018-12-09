@@ -5,7 +5,7 @@
  * PVAudio works with all kinds of audio files: mp3, wave, real audio, etc. It utilizes command tools like FFMPEG to do the transcoding and will return the results from the command line.
  * 
  * Example:
- * 
+ * ```php
  * //Set the file to be converted
  * $old_file = '/path/to/file/audio.wav';
  * 
@@ -19,6 +19,7 @@
  * //Run the conversion
  * PVAudio::init();
  * PVAudio::convertAudioFile($old_file, $new_file , $options );
+ * ```
  * 
  * @package media
  */

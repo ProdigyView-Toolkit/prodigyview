@@ -5,6 +5,7 @@
  * The class can be used to check for a variety of inputs to validate data from mime types to correct syntax for a URL. The class is also extendable to add more validation rules.
  * 
  * Examples:
+ * ```php
  * //Check if a file is an integer
  * 
  * if(PVValidator::check('integer', '3.4')) {
@@ -24,6 +25,7 @@
  * if(PVValidator::check(‘is_currecny’, '$10.00')) {
  * 	echo 'I am currency';
  * }
+ * ```
  * 
  * @package util 
  */

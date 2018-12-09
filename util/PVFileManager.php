@@ -3,7 +3,7 @@
  * PVFileManager allows easy manipulation of the file system such as making directories or getting mime types.
  * 
  * The class has various functions that make file manipulation reasonably easy. 
- * 
+ * ```php
  * Examples:
  * //Count the number of files in a directory
  * echo PVFileManager::getFilesInDirectory('/path/to/directry');
@@ -13,6 +13,7 @@
  * 
  * //Write To File
  * PVFileManager::getFileMimeType('/path/to/file', 'Hello World!'); 
+ * ```
  * 
  * @package util 
  */

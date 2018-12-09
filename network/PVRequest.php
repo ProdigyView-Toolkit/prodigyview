@@ -5,7 +5,7 @@
  * Built for receiving communication from other sources, PVRequest has the ability to take a request, parse the headers, get the data, determine what kind of requests, and other features.
  * 
  * Example:
- * 
+ * ```php
  * $request = new PVRequest();
  * 
  * if($request -> isAjaxRequest()) {
@@ -18,6 +18,7 @@
  * 
  * $data = getRequestData();
  * print_r($data);
+ * ```
  * 
  * @package network
  */

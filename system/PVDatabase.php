@@ -10,7 +10,7 @@
  * For future development, the class needs to be written, but it offers a lot of powerful features that including prepared statements, schema manipulation, sanitization, and other features.
  * 
  * Example:
- * 
+ * ```php
  * //Initialize the class
  * PVDatabase::init();
  * 
@@ -50,6 +50,7 @@
  * 
  * //Change the Database connection
  * PVDatabase::setDatabase('connection2');
+ * ```
  * 
  * @todo break apart class into seperate database handlers
  * @package system

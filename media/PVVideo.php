@@ -5,7 +5,7 @@
  * PVVideo works with all kinds of audio files: mp4, mov, ogg, etc. It utilizes command tools like FFMPEG to do the transcoding and will return the results from the command line.
  * 
  * Example:
- * 
+ * ```php
  * //Set the file to be converted
  * $old_file = '/path/to/file/video.mov';
  * 
@@ -19,6 +19,7 @@
  * //Run the conversion
  * PVVideo::init();
  * PVVideo::convertAudioFile($old_file, $new_file , $options );
+ * ```
  * 
  * @package media
  */

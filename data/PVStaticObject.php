@@ -3,7 +3,7 @@
  * PVStaticObjectt is an extendable class used to enhance an object with static methods.
  * 
  * ProdigyView comes with the ability to implement adapters, intercepting filters and observers. Extending this class to a child class will give the child class the ability to use those design patterns along with a collection that can assign and retrieve values using magic functions.
- * 
+ * ```php
  * Example:
  * 
  * //Create the class
@@ -37,6 +37,7 @@
  * 
  * //Will call test me and the observer attached
  * Example::testMe('Testing String ');
+ * ```
  * 
  * @package data
  */

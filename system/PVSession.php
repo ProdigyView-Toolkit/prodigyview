@@ -5,7 +5,7 @@
  * The class offers a variety of tools for how to set up basic session control within your application. These features can be used in conjunction with other session handling methodologies.
  * 
  * Example:
- * 
+ * ```php
  * //Initialize the class
  * PVSession::init();
  * 
@@ -16,6 +16,7 @@
  * //Encrypt the  value
  * PVSession::writeCookie('foo', 'bar', array('hash_cookie' => true));
  * echo PVSession::readCookie('foo', array('hash_cookie' => true);
+ * ```
  * 
  * @package system
  */

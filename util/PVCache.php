@@ -5,7 +5,7 @@
  * The default system uses a file cache for caching data. But the system through the adapter pattern is extendable to use any caching system attached to the application.
  * 
  * Example:
- * 
+ * ```php
  * //Init The Cache
  * PVCache::init();
  * 
@@ -20,6 +20,7 @@
  * $data = PVCache::readCache('mycache');
  * 
  * print_r($data);
+ * ```
  * 
  * @package util 
  */
