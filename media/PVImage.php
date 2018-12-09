@@ -1,6 +1,6 @@
 <?php
 /**
- *PVImage is a class for handling the processing and format of all image files.
+ * PVImage is a class for handling the processing and format of all image files.
  * 
  * PVImage has various functions built into it such as adding watermarks, resizing, cropping and more. By default, the class will use Imagick but can be set to use other image processing tools.
  * 
@@ -78,6 +78,14 @@ class PVImage extends PVStaticObject {
 
 	/**
 	 * Resizes the image use GD, not Imagick
+	 * 
+	 * @param string $name The location and name of the file
+	 * @param string $filename The name an location of the new file
+	 * @param double $new_w The new width to resize too
+	 * @param double $new_h The new height to resize too
+	 * 
+	 * @return void
+	 * @todo revisit implementation
 	 */
 	public static function resizeImageGD($name, $filename, $new_w = 150, $new_h = 150) {
 
@@ -90,9 +98,9 @@ class PVImage extends PVStaticObject {
 
 		$system = explode('.', $name);
 
-		if (pv_checkFileMimeType($name, '/jpg|jpeg/', array('search_method' => 'PREG_MATCH'))) {
+		if (PVValidator::checkFileMimeType($name, '/jpg|jpeg/', array('search_method' => 'PREG_MATCH'))) {
 			$src_img = imagecreatefromjpeg($name);
-		} else if (pv_checkFileMimeType($name, '/png/', array('search_method' => 'PREG_MATCH'))) {
+		} else if (PVValidator::checkFileMimeType($name, '/png/', array('search_method' => 'PREG_MATCH'))) {
 			$src_img = imagecreatefrompng($name);
 		} else {
 			$src_img = imagecreatefromjpeg($name);
@@ -117,7 +125,7 @@ class PVImage extends PVStaticObject {
 		$dst_img = ImageCreateTrueColor($thumb_w, $thumb_h);
 		imagecopyresampled($dst_img, $src_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $old_x, $old_y);
 
-		if (pv_checkFileMimeType($name, '/png/', array('search_method' => 'PREG_MATCH'))) {
+		if (PVValidator::checkFileMimeType($name, '/png/', array('search_method' => 'PREG_MATCH'))) {
 			imagepng($dst_img, $filename);
 		} else {
 			imagejpeg($dst_img, $filename);
@@ -127,8 +135,18 @@ class PVImage extends PVStaticObject {
 		imagedestroy($src_img);
 	}
 
-	
-	public static function cropImage($src, $ouput, $width, $height) {
+	/**
+	 * Crops the image
+	 * 
+	 * @param string $src The name and location of the file to crop
+	 * @param string $output The location to output the new file
+	 * @param double $width The width of the file
+	 * @param double $height The hieght of the file
+	 * 
+	 * @return void
+	 * @todo redo and finish, output is never being called
+	 */
+	public static function cropImage($src, $output, $width, $height) {
 
 		$file_type = PVFileManager::getFileMimeTypee($src);
 
@@ -148,6 +166,7 @@ class PVImage extends PVStaticObject {
 	 * 
 	 * @param mixed $image The value passed in can either be the location on a file system or the images in bytes. If
 	 * 			the image is bytes, the options 'type' = blob my be set.
+	 * @param string $watermark The the text to add as a watermark
 	 * @param array $options Options that can be used for further configuring the dropshadow
 	 * 			-'converter' _string_: The default converter set by the init function.
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
@@ -265,6 +284,7 @@ class PVImage extends PVStaticObject {
 	 * 
 	 * @param mixed $image The value passed in can either be the location on a file system or the images in bytes. If
 	 * 			the image is bytes, the options 'type' = blob my be set.
+	 * @param string $watermark The location of the image or base the image in as a blob
 	 * @param array $options Options that can be used for further configuring the dropshadow
 	 * 			-'converter' _string_: The default converter set by the init function.
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
@@ -466,6 +486,8 @@ class PVImage extends PVStaticObject {
 	 * 
 	 * @param mixed $image Either pass the location of the file on a server or the image as bytes. If the image is passed as bytes,
 	 * 			set the options type to 'blob'
+	 * @param double $width The width to scale the image too
+	 * @param double $height The height to scale the image too.
 	 * @param array $options Options that control the animating of images
 	 * 			-'converter' _string_: The default converter set by the init function
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.

@@ -3,7 +3,7 @@
  * The PVCollection class acts as a repository for data to be stored, retrieved and iterated over.
  * 
  * The collection class is a simple way of storing and getting information with key, value pairs, Any information can be stored and retrieved including strings, array, and objects. Some example use cases:
- * 
+ * ```php
  * //Add data and increment over fit
  * $collection = new PVCollection();
  * $collection -> add('Apples');
@@ -12,7 +12,7 @@
  * foreach($collection as $key => $value) {
  * 	echo $value;
  * }
- * 
+ * ```
  * @package data
  */
 class PVCollection implements IteratorAggregate {
@@ -30,7 +30,7 @@ class PVCollection implements IteratorAggregate {
 	 * The constructor of this class takes in an array and passes
 	 * it to the collection as the initial data.
 	 *
-	 * @param array $array An array of data
+	 * @param array $data An array of data
 	 * 
 	 * @return void
 	 * @access public
@@ -69,12 +69,11 @@ class PVCollection implements IteratorAggregate {
 	}//end add
 
 	/**
-	 * PHP magic function that returns an index if it is
-	 * in the collection.
+	 * PHP magic function that returns an index if it is in the collection.
 	 *
 	 * @param string $index An index/key that will be used to find the value, if present
 	 *
-	 * @return $value  The returned value if found in the index
+	 * @return $value The returned value if found in the index
 	 * @access public
 	 */
 	public function __get($index) {
@@ -84,6 +83,9 @@ class PVCollection implements IteratorAggregate {
 
 	/**
 	 * Same as the magic function __get.
+	 * 
+	 * @param string $index An index/key that will be used to find the value, if present
+	 * 
 	 * @see get
 	 */
 	public function get($index) {

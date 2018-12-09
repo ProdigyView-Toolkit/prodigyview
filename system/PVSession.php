@@ -313,7 +313,9 @@ class PVSession extends PVStaticObject {
 	 * Read a value set in a cookie. Objects and arrays thats were
 	 * serilizaed will be unserialzed and returned.
 	 *
-	 * @param string $name
+	 * @param string $name The key to access the session variable
+	 * @param array $options Options to define how the information is acccessed
+	 * 				-'hash_session' _boolean: Hash a session so its value is not easily readable
 	 *
 	 * @return mixed $stored_value
 	 * @access public
@@ -350,9 +352,12 @@ class PVSession extends PVStaticObject {
 		return $session_value;
 	}
 
-	/**Remove a session
+	/**
+	 * Remove a session
 	 *
-	 * @param strirng $name Key for the session
+	 * @param string $name Key for the session
+	 * @param array $options Options used for deleting the key
+	 * 				-'hash_session' _boolean: Hash a session so its value is not easily readable
 	 * @return void
 	 * @access public
 	 */

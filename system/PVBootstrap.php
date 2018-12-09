@@ -177,7 +177,7 @@ class PVBootstrap extends PVStaticObject {
 	 *
 	 * @param boolean $report_errors Set to true, errors will be displayed
 	 * @param boolean $log_errors Set to true, errors will be log in the defined log
-	 * @param mixed $error_reporting level Set the level errors will b shown
+	 * @param mixed $$error_report_level Set the level errors will b shown
 	 *
 	 * @return void
 	 * @access private
@@ -224,6 +224,8 @@ class PVBootstrap extends PVStaticObject {
 	/**
 	 * Unsets a global at launch. Use for removing data from $_GET, $_SESSION
 	 * $_POST, $_COOKIE, $_REQUEST, $_ENV.
+	 * 
+	 * @param string $global The global variable to unset
 	 *
 	 * @return void
 	 * @access private
@@ -244,6 +246,13 @@ class PVBootstrap extends PVStaticObject {
 		self::_notify(get_class() . '::' . __FUNCTION__, $global);
 	}//end unsetGlobalVariable
 
+	/**
+	 * Strips the slashes from an array
+	 * 
+	 * @param array $array The array to modify
+	 * 
+	 * @return array
+	 */
 	private static function stripSlashesRecursive($array) {
 
 		$array = is_array($array) ? array_map(NULL, $array) : self::stripSlashesRecursive($array);

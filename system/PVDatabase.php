@@ -434,7 +434,8 @@ class PVDatabase extends PVStaticObject {
 	 * $result=PVDatabase::query("SELECT * FROM TABLE");
 	 * $count=PVDatabase::resultRowCount($result);
 	 *
-	 * @param object $resut A result from a query
+	 * @param object $result A result from a query
+	 * 
 	 * @return int $count The number of rows in that result.
 	 * @access public
 	 */
@@ -681,6 +682,8 @@ class PVDatabase extends PVStaticObject {
 	 * $table_name=PVDatabase::getSchema.'contacts';
 	 * $query="INSERT INTO $table_name(name, phone) VALUES('John Smith', '999-9999')";
 	 * PVDatabase::query($query);
+	 * 
+	 * @param boolean $append_period Will appaned a period to the schema name
 	 *
 	 * @return string $schema Returns the name of the current schema.
 	 * @access public
@@ -735,11 +738,13 @@ class PVDatabase extends PVStaticObject {
 	 * Checks to see of a certain table exist within a database.
 	 *
 	 * Example:
-	 * if(!PVDatabase::tableExist('conacts')){
+	 * if(!PVDatabase::tableExist('contacts')){
 	 * 		//Create table code
 	 * }
 	 *
 	 * @param string $tablename The name of the table being checked if it exist
+	 * @param string $schema Add a schema to check against
+	 * 
 	 * @return boolean $exist Will be true if the tabe exist, else false;
 	 * @access public
 	 */
@@ -782,12 +787,12 @@ class PVDatabase extends PVStaticObject {
 	 * the schema.table_name if needed.
 	 *
 	 * Example:
-	 * if(!PVDatabase::columnExist('test.conacts', 'first_name' )){
+	 * if(!PVDatabase::columnExist('test.contacts', 'first_name' )){
 	 * 		//Code to create table
 	 * }
 	 *
 	 * @param string $table_name The name of the table to be checked
-	 * @param string $field_name:The name of the column to check if iexit
+	 * @param string $field_name The name of the column to check if exist
 	 *
 	 * @return boolean $exist Returns true if exist, otherwise return false
 	 */
@@ -966,6 +971,7 @@ class PVDatabase extends PVStaticObject {
 	 * @param int $current_page The current page. All pages or done by pageNumber-1. 0 is the first page
 	 * @param int $results_per_page The number of results to return per page
 	 * @param string $order_by How to order the results.
+	 * @param string $fields How to count the results, default is 'COUNT(*) as count'
 	 *
 	 * @return array results: Returns the
 	 */
@@ -1348,7 +1354,14 @@ class PVDatabase extends PVStaticObject {
 		return $result;
 	}
 
-
+	/**
+	 * Deletes an item from the database
+	 * 
+	 * @param array $args Arguements that define how the query will be created
+	 * @param array $options Options that define how the query will run
+	 * 
+	 * @return object $result The result of the query
+	 */
 	public static function deleteStatement(array $args, array $options = array()) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -1425,6 +1438,10 @@ class PVDatabase extends PVStaticObject {
 	/**
 	 * Executes a prepared Query that will be inserted into the database. Function still needs
 	 * work before being used.
+	 * 
+	 * @param string $query
+	 * @param array $data
+	 * @param string $formats
 	 *
 	 * @todo fix
 	 */
@@ -1457,7 +1474,12 @@ class PVDatabase extends PVStaticObject {
 	}//end preparedQuery
 
 	/**
-	 *  Function needs improvment.
+	 * Function needs improvment.
+	 * 
+	 * @param string $table_name
+	 * @param array $data
+	 * @param array $formats
+	 * 
 	 * @access public
 	 * @todo write better code
 	 */
@@ -1553,12 +1575,14 @@ class PVDatabase extends PVStaticObject {
 	 * Inserts a query into the database and returns the id of the field that was last inserted.
 	 * The query will be a prepared statement.
 	 *
-	 * @param string table_name: The name of the table the information will be inserted into.
-	 * @param string returnField: The field that will be returned as the ID. Used in postgresql..
-	 * @param string returnTable: The table the returnField is in. Used for MSSQL.
-	 * @param awrray data: The data to be inserted in the format of the key being the column and the
+	 * @param string table_name The name of the table the information will be inserted into.
+	 * @param string returnField The field that will be returned as the ID. Used in postgresql..
+	 * @param string returnTable The table the returnField is in. Used for MSSQL.
+	 * @param array $data The data to be inserted in the format of the key being the column and the
 	 * key's value being the data.
-	 * @param array formats: Still in progress. Formats a preparted statemet.
+	 * @param array $formats Still in progress. Formats a preparted statemet.
+	 * @param array $options Options mainly used for Mongo
+	 * 
 	 * @access public
 	 * @todo write better code
 	 */
@@ -1691,7 +1715,7 @@ class PVDatabase extends PVStaticObject {
 	 * correspond to that values.Futures version will have a select statement that handles the data in a better way.
 	 *
 	 * @param string $query A query of formatted data to be inserted into the database.
-	 * @param array $data: Data to be inserted into the database. The key should be the column name and the value
+	 * @param array $data Data to be inserted into the database. The key should be the column name and the value
 	 * should be the column's value.
 	 * @param array $formats The formats for a prepared statement
 	 * @param array $options Options than can be used to alter the query and its function
@@ -1762,6 +1786,12 @@ class PVDatabase extends PVStaticObject {
 
 	}//end preparedSelect
 	
+	/**
+	 * A SELECT query that will run as a prepared statement
+	 * 
+	 * @param array $args
+	 * @param array $options
+	 */
 	public static function selectPreparedStatement(array $args, array $options = array()){
 		
 		if (self::$dbtype === self::$mySQLConnection || self::$dbtype === self::$postgreSQLConnection || self::$dbtype === self::$msSQLConnection) {
@@ -1884,6 +1914,9 @@ class PVDatabase extends PVStaticObject {
 	 * @param string $table The name of the table to be updated.
 	 * @param array $data
 	 * @param array $wherelist
+	 * @param array $formats
+	 * @param array $whereformats
+	 * @param array $options
 	 *
 	 * @access public
 	 * @todo write better code
@@ -1990,10 +2023,10 @@ class PVDatabase extends PVStaticObject {
 	 * Deletes a row in the database spcefied by parameters passed. Use this function
 	 * with caution.
 	 *
-	 * @param string table: The table the information will be deleted from.
-	 * @param array wherelist: An array of whats fields to use when deleting the data. The key of the array
-	 * should be the column name and the array's key value should be the value present in the column.
-	 * @param array whereformats; Formats for the where.
+	 * @param string $table The table the information will be deleted from.
+	 * @param array $wherelist An array of whats fields to use when deleting the data. The key of the array should be the column name and the array's key value should be the value present in the column.
+	 * @param array $whereformats Formats for the where.
+	 * @param array $options Options mainly for MongoDB
 	 *
 	 * @return void
 	 */
@@ -2112,6 +2145,8 @@ class PVDatabase extends PVStaticObject {
 	 * is set, that will be appeneded also.
 	 *
 	 * @param string $table_name The name of the table to be formated
+	 * @param boolean $append_schema Will append the schema to the table name
+	 * @param boolean $append_prefix Will append a prefix to the tablee, but behind the schema
 	 *
 	 * @return string $table_name The name of the table with the values appened in front of it
 	 * @access public
@@ -2135,6 +2170,20 @@ class PVDatabase extends PVStaticObject {
 
 	}//end  getApplicationPermissionsTable
 	
+	/**
+	 * Takes in an array of values that is formated like a query, and parse it to become a SQL query. For example:
+	 * 
+	 * array('>' = '5') will become column > 5
+	 * 
+	 * @param string $column The name of column to do the comparison operation
+	 * @param array $args The args in key value and subkey value. The keys are conditionals and the value are what te conditio is being compparied too
+	 * @param string $key They conditional, either AND or OR for the query
+	 * @param string $operator How to compare values
+	 * @param boolean $first For recursive operation, is this the first value
+	 * 
+	 * @return string $query A query to execute
+	 * @todo Rewrite this function and description for clarity
+	 */
 	protected static function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true){
 		
 		$query = '';
@@ -2179,6 +2228,12 @@ class PVDatabase extends PVStaticObject {
 		return $query;
 	}
 
+	/**
+	 * For prepared statements, binds the parameters with placeholders.
+	 * 
+	 * @param string $statement The sql statement
+	 * @param array $params The parameters to bind with
+	 */
 	private static function bindParameters(&$statement, &$params) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -2194,6 +2249,12 @@ class PVDatabase extends PVStaticObject {
 		call_user_func_array(array(&$statement, 'bind_param'), $args);
 	}
 
+	/**
+	 * For prepared statements, binds an associatve array. Used for myql.
+	 * 
+	 * @param string $stmt The mysql statement
+	 * @param string $out The output
+	 */
 	private function stmt_bind_assoc(&$stmt, &$out) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -2604,6 +2665,15 @@ class PVDatabase extends PVStaticObject {
 			return $query;
 	}
 
+	/**
+	 * Sets the current MongoDB collection to use
+	 * 
+	 * @param string $table_name Not really a table but a collection in a Mongo Database
+	 * @param array $options Options to pass to Mongo collection
+	 * 					- boolean gridFS Default is false, but if set to true, will use gridFS
+	 * 
+	 * @return object The collection
+	 */
 	protected static function _setMongoCollection($table_name, $options = array()){
 		
 		$defaults = array(
@@ -2626,7 +2696,13 @@ class PVDatabase extends PVStaticObject {
 		return $collection;
 	}
 
-	public static function catchDBError($error = null ) {
+	/**
+	 * Not sure what this function does
+	 * 
+	 *
+	 * @todo dig into the function and redo
+	 */
+	public static function catchDBError() {
 		if (self::$dbtype === self::$mySQLConnection) {
 			$query = 'AUTO_INCREMENT';
 		} else if (self::$dbtype === self::$postgreSQLConnection) {

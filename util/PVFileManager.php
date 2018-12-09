@@ -13,11 +13,15 @@
  * 
  * //Write To File
  * PVFileManager::getFileMimeType('/path/to/file', 'Hello World!'); 
+ * 
+ * @package util 
  */
 class PVFileManager extends PVStaticObject {
 
 	/**
-	 * @todo figure out a point for this function. So do not use inthe eantime.
+	 * @params File information to upload
+	 *
+	 * @todo figure out a point for this function. So do not use in the mean time.
 	 */
 	public static function phpFileUpload($params) {
 
@@ -336,7 +340,7 @@ class PVFileManager extends PVStaticObject {
 	/**
 	 * Write contents to a file on the server only if the file does NOT already exist
 	 *
-	 * @param string $file_path The path to the file that will be writteen out too
+	 * @param string $file The path to the file that will be writteen out too
 	 * @param string $content The content to be written to the file
 	 * @param string $mode The mode to be used when writing the file. Default is 'w'.
 	 * @param string $encoding An encoding to be used when writing the file. Optional.
@@ -365,7 +369,7 @@ class PVFileManager extends PVStaticObject {
 	/**
 	 * Write contents to a file on the server only if the file does exist
 	 *
-	 * @param string $file_path The path to the file that will be writteen out too
+	 * @param string $file The path to the file that will be writteen out too
 	 * @param string $content The content to be written to the file
 	 * @param string $mode The mode to be used when writing the file. Default is 'w'.
 	 * @param string $encoding An encoding to be used when writing the file. Optional.
@@ -393,8 +397,8 @@ class PVFileManager extends PVStaticObject {
 	/**
 	 * Copy a file to another location
 	 *
-	 * @param string $current_file The location of the current file to be copied
-	 * @param string $new_file The location of the new file to be copied
+	 * @param string $currentFile The location of the current file to be copied
+	 * @param string $newFile The location of the new file to be copied
 	 *
 	 * @return boolean $copied Returns true if the file was succesfully copied
 	 * @access public
@@ -427,8 +431,8 @@ class PVFileManager extends PVStaticObject {
 	/**
 	 * Copy a file to another location only if the file DOES NOT exist
 	 *
-	 * @param string $current_file The location of the current file to be copied
-	 * @param string $new_file The location of the new file to be copied
+	 * @param string $currentFile The location of the current file to be copied
+	 * @param string $newFile The location of the new file to be copied
 	 *
 	 * @return boolean $copied Returns true if the file was succesfully copied
 	 * @access public
@@ -505,6 +509,15 @@ class PVFileManager extends PVStaticObject {
 		}//end else
 	}
 
+	/**
+	 * Copy an entire directory from one location to another location but only if the directory does not exist
+	 *
+	 * @param string $oldDirectory The location of the old directory
+	 * @param string $newDirectory The location of the new directory
+	 *
+	 * @return void
+	 * @access public
+	 */
 	public static function copyNewDirectory($oldDirectory, $newDirectory) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))

@@ -79,6 +79,10 @@
 	/**
 	 * Sets the protocol, right now either being defaulting
 	 * to curl, but SOAP and SOCKET can be set
+	 * 
+	 * @param string $protocol The protocol, default is curl
+	 * 
+	 * @return void
 	 */
 	public function __constrcut($protocol = null) {
 		
@@ -247,6 +251,7 @@
 	/**
 	 * Sends a GET to an endpoint using curl
 	 * 
+	 * @param string $url The url to curl
 	 * @param array $data Data to be sent
 	 */
 	protected function _get($url, $data = array()) {
@@ -306,7 +311,7 @@
 	 * Adds any special authentication required.
 	 * 
 	 * @param string $username
-	 * @param $sring $password
+	 * @param string $password
 	 * 
 	 * @return void
 	 */
@@ -334,6 +339,8 @@
 	/**
 	 * Set any timeouts for long request or responses
 	 * 
+	 * @param $timeout The timeout in milliseconds
+	 * 
 	 * @return void
 	 */
 	public function setTimeout($timeout) {
@@ -347,6 +354,8 @@
 	
 	/**
 	 * Enable/Disable the usage of a proxy in the curl call
+	 * 
+	 * @param boolean $proxy
 	 */
 	public function enableProxy($proxy = false) {
 		curl_setopt($this -> _handler, CURLOPT_FOLLOWLOCATION, $proxy);
@@ -355,6 +364,8 @@
 	
 	/**
 	 * Enable verbose dislpay for debugging
+	 * 
+	 * @param boolean $debug Enable Debugging features
 	 */
 	public function debug($debug) {
 		curl_setopt($this -> _handler, CURLOPT_VERBOSE, $debug);
@@ -396,14 +407,29 @@
     		return $response;
 	}
 	
+	/**
+	 * Sends the request via SOAP protocoal
+	 * 
+	 * @param string $method The function to call via soap
+	 * @param array $data The data being passed to that function
+	 * 
+	 * @return $string
+	 */
 	protected function _sendSoap($method, $data = array()) {
 		$response = $this -> _handler -> __soapCall($method, array($data));
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $this, $data);
+		self::_notify(get_class() . '::' . __FUNCTION__, $this, $method, $data);
 		
 		return $response;
 	}
 	
+	/**
+	 * Sends the communication over a socket
+	 * 
+	 * @param string $method The method to send
+	 * 
+	 * @todo work on a test socket communication
+	 */
 	protected function _sendSocket($method) {
 		if ($this -> _handler !== false) {
     			fwrite($this -> _handler, $this -> _data);
@@ -416,6 +442,11 @@
 		return $this -> _response;
 	}
 	
+	/**
+	 * Retrieves the full response
+	 * 
+	 * @param string
+	 */
 	public function getResponse() {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -424,6 +455,11 @@
 		return $this -> _response;
 	}
 	
+	/**
+	 * Gets information about the response
+	 * 
+	 * @return string
+	 */
 	public function getResponseInfo() {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
@@ -431,6 +467,11 @@
 		return $this -> _response_info;
 	}
 	
+	/**
+	 * Gets the headers that came back in a response
+	 * 
+	 * @param string
+	 */
 	public function getResponseHeader() {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -440,6 +481,11 @@
 		
 	}
 	
+	/**
+	 * Retrieves a response body
+	 * 
+	 * @return $string
+	 */
 	public function getResponseBody() {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -448,6 +494,11 @@
 		return substr($this -> _response, $this -> _response_info['header_size']);
 	}
 	
+	/**
+	 * Gets the error response
+	 * 
+	 * @return string
+	 */
 	public function getError() {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);

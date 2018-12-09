@@ -20,6 +20,8 @@
  * $data = PVCache::readCache('mycache');
  * 
  * print_r($data);
+ * 
+ * @package util 
  */
 class PVCache extends PVStaticObject {
 
@@ -133,7 +135,6 @@ class PVCache extends PVStaticObject {
 	 *
 	 * @param string $key The key to be used accessing the cache
 	 * @param string $content The content to be cached
-	 * @param string $expire How many seconds the cache will expire, starting now
 	 * @param array $options Options that define how the files are cached
 	 * 			-'cache_format' _string_: The date/time format used when caching
 	 * 			-'cache_format_search' _string_: The preg_match to use when searching for the cache date/time

@@ -15,6 +15,8 @@
  * 
  * //Get the logs with a high priority level
  * $logs = PVLog::readLog('High Alert');
+ * 
+ * @package util 
  */
 class PVLog extends PVStaticObject {
 	

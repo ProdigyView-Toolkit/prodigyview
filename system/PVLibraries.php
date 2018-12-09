@@ -422,7 +422,7 @@ class PVLibraries extends PVStaticObject {
 	 * Loads the library that is passed through. Uses include_once when including a file.
 	 *
 	 * @param array $library An array of the library that contains directores, files, and file information
-	 * @param array $allowed_extensions The allowed extensions
+	 * @param array $allow_extensions The allowed extensions
 	 *
 	 * @return void
 	 * @access protected

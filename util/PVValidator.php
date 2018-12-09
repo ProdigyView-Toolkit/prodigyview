@@ -24,6 +24,8 @@
  * if(PVValidator::check(‘is_currecny’, '$10.00')) {
  * 	echo 'I am currency';
  * }
+ * 
+ * @package util 
  */
 class PVValidator extends PVStaticObject {
 
@@ -35,9 +37,12 @@ class PVValidator extends PVStaticObject {
 	/**
 	 * Initializes PVValidators and sets the default for checking rules. The defaults allows the function
 	 * PVValidator::check() to function propery.
+	 * 
+	 * @param array $config The configuration for init the class
 	 *
 	 * @return void
 	 * @access public
+	 * @todo consider extending the config optiont actually have it doing something
 	 */
 	public static function init($config = array()) {
 
@@ -213,7 +218,7 @@ class PVValidator extends PVStaticObject {
 	/**
 	 * Checks if a value passed is of type int or an integer.
 	 *
-	 * @param mixed $int The value to check if it is an integer
+	 * @param mixed $double The value to check if it is an double
 	 *
 	 * @return boolean $valid Returns true if the value is an integer, otherwise false
 	 * @access public
@@ -1503,7 +1508,7 @@ class PVValidator extends PVStaticObject {
 	/**
 	 * Checks if a value passed has a valid email.
 	 *
-	 * @param mixed $mimetype The value to check if it is a valid email.
+	 * @param mixed $email The value to check if it is a valid email.
 	 *
 	 * @return boolean $valid Returns true if the value is a valid email, otherwise false
 	 * @access public
@@ -1529,7 +1534,7 @@ class PVValidator extends PVStaticObject {
 	/**
 	 * Checks if a value passed has a valid url.
 	 *
-	 * @param mixed $mimetype The value to check if it is a valid url.
+	 * @param mixed $url The value to check if it is a valid url.
 	 *
 	 * @return boolean $valid Returns true if the value is a valid url, otherwise false
 	 * @access public
@@ -1552,6 +1557,14 @@ class PVValidator extends PVStaticObject {
 		return $validation;
 	}
 
+	/**
+	 * Attempts to check if the url is an active url. Response should be 200.
+	 * 
+	 * @param string $url The url to check if active
+	 * 
+	 * @return boolean
+	 * @todo rewrite with PVCommunicator
+	 */
 	public static function isActiveUrl($url) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -1570,36 +1583,6 @@ class PVValidator extends PVStaticObject {
 
 		return $validation;
 	}//end isActiveUrl
-
-	public static function isApplicationInstalled($app_unique_id) {
-
-		if (!empty($app_unique_id)) {
-			$schema = pv_getSchema();
-			$app_unique_id = PVDatabase::makeSafe($app_unique_id);
-			$query = "SELECT app_id FROM " . $schema . "pv_app_manager WHERE app_unique_id='$app_unique_id' ";
-			$result = PVDatabase::query($query);
-
-			if (PVDatabase::resultRowCount($result) > 0) {
-				return 1;
-			}
-		}
-		return 0;
-	}//end isApplicationInstalled
-
-	public static function isApplicationEnabled($app_unique_id) {
-
-		if (!empty($app_unique_id)) {
-			$schema = pv_getSchema();
-			$app_unique_id = PVDatabase::makeSafe($app_unique_id);
-			$query = "SELECT app_id FROM " . $schema . "pv_app_manager WHERE app_unique_id='$app_unique_id' AND enabled='1 '";
-			$result = PVDatabase::query($query);
-
-			if (PVDatabase::resultRowCount($result) > 0) {
-				return 1;
-			}
-		}
-		return 0;
-	}//end isApplicationInstalled
 
 	/**
 	 * Checks a files mime type and returns true if the mime type is found, otherwise false.

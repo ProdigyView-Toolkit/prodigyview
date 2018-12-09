@@ -46,12 +46,12 @@ class PVStaticObject extends PVStaticPatterns {
 	/**
 	 * A collection of items that belong to this class
 	 */
-	protected $_collection = null;
+	protected static $_collection = null;
 	
 	/**
 	 * A collection of dynamically added methods that below to this class
 	 */
-	protected $_methods = array();
+	protected static $_methods = array();
 	
 	/**
 	 * Adds a value to the classes Collection. By default the collection is stored

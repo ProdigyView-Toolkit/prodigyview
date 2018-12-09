@@ -166,7 +166,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getEventAttributes()
 	 * @see self::getStandardAttributes()
 	 *
-	 * @param string $time A time value
+	 * @param string $src The source of the iframe
+	 * @param string $data The data to inside the iframe take
 	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
 	 * 				-'frameborder' _string_: Tags to go in the frameborder
 	 * 				-'marginheight' _string_: Tags to go in the marginheight
@@ -1231,6 +1232,13 @@ class PVHtml extends PVStaticObject {
 		return $return_attributes;
 	}
 
+	/**
+	 * Matches options pased with javascript event actions such as onabort, onclick, etc.
+	 * 
+	 * @param array $attributes An array of attributes check if its an event
+	 * 
+	 * @return string Html attributes if any matched
+	 */
 	public static function getEventAttributes($attributes = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -1253,6 +1261,13 @@ class PVHtml extends PVStaticObject {
 		return $return_attributes;
 	}
 
+	/**
+	 * Searches for media attributes that go with media tags like video/audio.
+	 * 
+	 * @param array $attributes An array of attributes to assign
+	 * 
+	 * @return string Html attributes if any matched
+	 */
 	public static function getMediaEventAttributes($attributes = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -1275,6 +1290,13 @@ class PVHtml extends PVStaticObject {
 		return $return_attributes;
 	}
 
+	/**
+	 * Searches for media attributes that go with window javascript events.
+	 * 
+	 * @param array $attributes An array of attributes to assign
+	 * 
+	 * @return string Html attributes if any matched
+	 */
 	public static function getWindowAttributes($attributes = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -1296,6 +1318,15 @@ class PVHtml extends PVStaticObject {
 		return $return_attributes;
 	}
 	
+	/**
+	 * Creates an html tag.
+	 * 
+	 * @param string $tag The name of the tag, such as div, main, etc.
+	 * @param string $data The content that will go instead the element
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
+	 */
 	public static function generateHtmlTag($tag, $data, $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -1317,7 +1348,16 @@ class PVHtml extends PVStaticObject {
 		return $generated_tag;
 	}
 
-	private static function audioContentURL($url, $append_location = true) {
+	/**
+	 * Not sure if the function is needed or still make sense
+	 * 
+	 * @param string $url url of the file
+	 * @param boolean $append_location Appends the PV_AUDIo tage
+	 * 
+	 * @return string
+	 * @todo check if function is still valid
+	 */
+	private static function audioContentURL($url, $append_location = false) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url);
@@ -1330,7 +1370,16 @@ class PVHtml extends PVStaticObject {
 		return PVRouter::url($url);
 	}
 
-	private static function videoContentURL($url, $append_location = true) {
+	/**
+	 * Not sure if the function is needed or still make sense
+	 * 
+	 * @param string $url url of the file
+	 * @param boolean $append_location Appends the PV_AUDIo tage
+	 * 
+	 * @return string
+	 * @todo check if function is still valid
+	 */
+	private static function videoContentURL($url, $append_location = false) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url);

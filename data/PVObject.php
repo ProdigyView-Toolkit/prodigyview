@@ -5,7 +5,7 @@
  * ProdigyView comes with the ability to implement adapters, intercepting filters and observers. Extending this class to a child class will give the child class the ability to use those design patterns along with a collection that can assign and retrieve values using magic functions.
  * 
  * Example:
- * 
+ * ```php
  * //Create the class
  * class Example extends PVObject {
  *   	public function testMe($string) {
@@ -38,13 +38,20 @@
  * 
  * //Will call the instance and the attached observer
  * $example->testMe('Testing String ');
+ * ```
+ * 
+ * @package data
  */
 class PVObject extends PVPatterns {
 
-	//Collection of items
+	/**
+	 * Collection of items
+	 */
 	protected $_collection = null;
 	
-	//Dynamically added methods
+	/**
+	 * Dynamically added methods
+	 */
 	protected $_methods = array();
 
 	/**

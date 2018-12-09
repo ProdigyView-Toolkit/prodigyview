@@ -19,6 +19,8 @@
  * );
  * 
  * $item = PVTools::arraySearchRecursive('turkey', $data);
+ * 
+ * @package util 
  */
 class PVTools extends PVStaticObject {
 
@@ -63,7 +65,7 @@ class PVTools extends PVStaticObject {
 	 * Truncates a strings of text to a certain length and applies trailing characters. Generally used for
 	 * creating 'Read More...' text descrptions.
 	 *
-	 * @param string $str The string to truncate
+	 * @param string $string The string to truncate
 	 * @param int $length The length to truncate the string too. Default is 10 characters.
 	 * @param string $trailing Trailing text to add at the end of string once it is truncated. Default text is '...'
 	 * @param boolean $strip_tags Strips out any html tags. Default is true.
@@ -284,36 +286,6 @@ class PVTools extends PVStaticObject {
 		}
 		return false;
 	}
-
-	
-
-	private static function parseSQLArrayOperators($args, $content_term) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $args, $content_term);
-
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('args' => $args, 'content_term' => $content_term), array('event' => 'args'));
-		$args = $filtered['args'];
-		$content_term = $filtered['content_term'];
-
-		$operator = $args['operator'];
-
-		if (empty($operator)) {
-			$operator = ' AND ';
-		}
-		$SQL = '';
-		$mark = '';
-
-		foreach ($args as $value) {
-			if ($key != 'operator') {
-				$SQL .= $mark . ' ' . $content_term . '=\'' . PVDatabase::makeSafe($value) . '\' ';
-				$mark = $operator;
-			}//end operator
-
-		}//end foreach
-
-		return $SQL;
-	}//end parseSQLArrayOperators
 	
 	/**
 	 * Parse a string into valid SQL WHERE CLAUSE based on passed parameters.
@@ -321,7 +293,7 @@ class PVTools extends PVStaticObject {
 	 * @param string $string A string of parameters to parse and derive a sql arguement from
 	 * @param string $content_term The parameters in the query that will relate to the values in the string
 	 * @param boolean $encapsulate Wrap the arguements in ()
-	 * @param string $sytnax The syntax that will be used for parsing the string. Standrd uses ProdigyView implementation of marsk suchas
+	 * @param string $syntax The syntax that will be used for parsing the string. Standrd uses ProdigyView implementation of marsk suchas
 	 * 			',', '!','+' for parsing content. Otherwise a more sql way is used.
 	 * 
 	 * @return string $string a SQL string to place in a where clause
@@ -417,51 +389,6 @@ class PVTools extends PVStaticObject {
 
 		return $output;
 	}//end parseSQLOperator
-
-	/**
-	 * @todo Get rid of this function
-	 * @deprecated now
-	 */
-	public static function convertNumbericBoolean($boolean) {
-		if ($boolean === 1) {
-			return true;
-		} else if ($boolean === 0) {
-			return false;
-		}
-
-	}//end convertNumbericBoolean
-
-	/**
-	 * Converts a boolean that is passed a string to the boolean type true or false.
-	 */
-	public static function convertTextBoolean($boolean) {
-		if ($boolean === 'true') {
-			return true;
-		} else if ($boolean === 'false') {
-			return false;
-		}
-
-		return $boolean;
-	}//end convertTextBoolean
-
-	/**
-	 * @todo most likely get ride of
-	 */
-	public static function createParameterArray($params) {
-		$array = split("[:\n]", $params);
-		$count = count($array);
-		$paramarray = array();
-
-		for ($i = 0; $i < $count; $i++) {
-			$name = $array[$i];
-			$paramarray[$name] = $array[$i + 1];
-			$i = $i + 1;
-
-		}//end for
-
-		return $paramarray;
-
-	}//end createrParamterArray
 
 }//end tools
 ?>

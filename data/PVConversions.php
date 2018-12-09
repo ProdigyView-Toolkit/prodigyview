@@ -81,5 +81,22 @@ class PVConversions {
 		$object = simplexml_load_string($xml);
 		return get_object_vars($object);
 	}
+	
+	/**
+	 * Converts a boolean that is passed a string to the boolean type true or false.
+	 * 
+	 * @param string $boolean The boolean as a string
+	 * 
+	 * @return boolean
+	 */
+	public static function convertTextBoolean($boolean) {
+		if ($boolean === 'true') {
+			return true;
+		} else if ($boolean === 'false') {
+			return false;
+		}
+
+		return $boolean;
+	}//end convertTextBoolean
 
 }//end class

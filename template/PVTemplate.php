@@ -195,6 +195,13 @@ class PVTemplate extends PVStaticObject {
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
+	/**
+	 * Adds to the sites Meta Tags to be displayed
+	 * 
+	 * @param string $string The string to append
+	 * 
+	 * @return void
+	 */
 	public static function appendSiteMetaTags($string) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -208,7 +215,7 @@ class PVTemplate extends PVStaticObject {
 	/**
 	 * Ovveride the meta description of the site.
 	 *
-	 * @param string $text The string that will be set as the site meta description
+	 * @param string $string The string that will be set as the site meta description
 	 *
 	 * @return void
 	 * @access public
@@ -226,7 +233,7 @@ class PVTemplate extends PVStaticObject {
 	/**
 	 * Append text to the site meta description
 	 *
-	 * @param string $text The text to be appened to the site meta description
+	 * @param string $string The text to be appened to the site meta description
 	 *
 	 * @return void
 	 * @access public
@@ -379,7 +386,7 @@ class PVTemplate extends PVStaticObject {
 		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
 		extract($options);
 
-		$siteConfiguration = pv_getSiteCompleteConfiguration();
+		$siteConfiguration = PVConfiguration::getSiteCompleteConfiguration();
 
 		$jquery = (PV_IS_ADMIN) ? PV_ADMIN_JQUERY : PV_JQUERY;
 		$mootools = (PV_IS_ADMIN) ? PV_ADMIN_MOOTOOLS : PV_MOOTOOLS;

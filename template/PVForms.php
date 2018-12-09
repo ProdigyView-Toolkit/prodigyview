@@ -397,6 +397,7 @@ class PVForms extends PVStaticObject {
 	 * @see self::getFormAttributes()
 	 *
 	 * @param string $name The name of the input being generated. Will be the input field's name
+	 * @param string $value The display output of the button.
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
@@ -1070,7 +1071,7 @@ class PVForms extends PVStaticObject {
 	 *
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param string $value The value in the textarea
-	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * @param array $attributes Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div around the element.
@@ -1116,6 +1117,17 @@ class PVForms extends PVStaticObject {
 
 	/**
 	 * Gets the tags for display s form with the data inside of it.
+	 * 
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the form
+	 * @param string $data The content to go instead the form
+	 * @param array $options Options than can be used to further distinguish the element. The options are
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				and get the self::getFormAttributes funtions
 	 */
 	public static function form($name, $data, $options = array()) {
 
@@ -1140,7 +1152,12 @@ class PVForms extends PVStaticObject {
 	/**
 	 * Outputs the beginning of a form
 	 * 
-	 * @parm string $name The name of the form
+	 * @see PVHTML::getStandardAttributes()
+	 * @see PVHTML::getEventAttributes()
+	 * @see PVHTML::getStandardAttributes()
+	 * @see self::getFormAttributes()
+	 * 
+	 * @param string $name The name of the form
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions

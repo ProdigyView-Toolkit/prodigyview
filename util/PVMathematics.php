@@ -3,6 +3,8 @@
  * PVMathematics is a class for doing computations.
  * 
  * The class is relatively incomplete and could use more important functions to ease development.
+ * 
+ * @package util 
  */
 class PVMathematics extends PVStaticObject {
 

@@ -11,6 +11,8 @@
  * 
  * This work is licensed under the Creative Commons Attribution License.
  * http://creativecommons.org/licenses/by/3.0/
+ * 
+ * @package util 
  */
 class PVCli extends PVStaticObject  {
 	
@@ -109,7 +111,7 @@ class PVCli extends PVStaticObject  {
 	 * GET BOOLEAN
 	 * 
 	 * @param string $key
-	 * @param string $value
+	 * @param string $default
 	 * 
 	 * @todo Revist for figure out what this function was for.
 	 */

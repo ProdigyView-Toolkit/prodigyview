@@ -23,16 +23,39 @@
 * 	'subject'=>'Hello World'
 * 	'message'=>'Dropping a line, saying hello'
 * ));
- * 
- * 
+* 
+* @package util 
 */
 class PVMail extends PVStaticObject {
 	
+	/**
+	 * The SMTP Host 
+	 */
 	protected static $_smtp_host;
+	
+	/**
+	 * The login user for SMTP
+	 */
 	protected static $_smtp_username;
+	
+	/**
+	 * The login password for SMTP
+	 */
 	protected static $_smtp_password;
+	
+	/**
+	 * The port for SMTP. Normally is 587
+	 */
 	protected static $_smtp_port;
+	
+	/**
+	 * Which mailer to use, default is php, other option is smtp
+	 */
 	protected static $_mailer = 'php';
+	
+	/**
+	 * The default from email to when sending emails
+	 */
 	protected static $_default_sender = '';
 	
 	/**

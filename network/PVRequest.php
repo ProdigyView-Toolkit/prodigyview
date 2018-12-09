@@ -46,8 +46,9 @@ class PVRequest extends PVStaticInstance {
 	/**
 	 * Set up the default variables for the Request class.
 	 * 
-	 * @param $mixed $data Currently not used but can be data of any sort
 	 * @param array $options An array of options that can be used to customize the class.
+	 * 
+	 * @return PVRequest instance
 	 */
 	public function __construct(array $options = array()) {
 		

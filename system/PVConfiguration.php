@@ -107,6 +107,8 @@ class PVConfiguration extends PVStaticObject {
 	 * assigned to it.
 	 *
 	 * @param string $key The key to the string stored
+	 * @param array $options Options can be be passed for retrieving the content.
+	 * 				- string "environment": The environment to set the configuration for
 	 *
 	 * @return string $configuration
 	 * @access pulbic
