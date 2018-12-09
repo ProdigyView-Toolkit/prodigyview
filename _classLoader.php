@@ -4,6 +4,11 @@ spl_autoload_register(null, false);
 /*** specify extensions that may be loaded ***/
 spl_autoload_extensions('.php');
 
+/**
+ * Load the system classes
+ * 
+ * @param string $class The name of the class to load
+ */
 function systemLoader($class) {
 	
 	$class =  str_replace('\\', '/', $class);
@@ -16,6 +21,11 @@ function systemLoader($class) {
 	require_once $file;
 }
 
+/**
+ * Load the template classes
+ * 
+ * @param string $class The name of the class to load
+ */
 function templateLoader($class) {
 	
 	$class =  str_replace('\\', '/', $class);
@@ -28,6 +38,11 @@ function templateLoader($class) {
 	require_once $file;
 }
 
+/**
+ * Load the utility classes
+ * 
+ * @param string $class The name of the class to load
+ */
 function utilLoader($class) {
 	
 	$class =  str_replace('\\', '/', $class);
@@ -40,6 +55,11 @@ function utilLoader($class) {
 	require_once $file;
 }
 
+/**
+ * Load the data classes
+ * 
+ * @param string $class The name of the class to load
+ */
 function dataLoader($class) {
 	
 	$class =  str_replace('\\', '/', $class);
@@ -52,6 +72,11 @@ function dataLoader($class) {
 	require_once $file;
 }
 
+/**
+ * Load the media classes
+ * 
+ * @param string $class The name of the class to load
+ */
 function mediaLoader($class) {
 	
 	$class =  str_replace('\\', '/', $class);
@@ -64,6 +89,11 @@ function mediaLoader($class) {
 	require_once $file;
 }
 
+/**
+ * Load the network classes
+ * 
+ * @param string $class The name of the class to load
+ */
 function networkLoader($class) {
 	
 	$class =  str_replace('\\', '/', $class);

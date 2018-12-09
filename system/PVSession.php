@@ -1,46 +1,85 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVSession is the class for handling the cookie session information related to the system.
+ * 
+ * The class offers a variety of tools for how to set up basic session control within your application. These features can be used in conjunction with other session handling methodologies.
+ * 
+ * Example:
+ * 
+ * //Initialize the class
+ * PVSession::init();
+ * 
+ * //Write data to a cookie
+ * PVSession::writeCookie('foo', 'bar');
+ * echo PVSession::readCookie('foo');
+ * 
+ * //Encrypt the  value
+ * PVSession::writeCookie('foo', 'bar', array('hash_cookie' => true));
+ * echo PVSession::readCookie('foo', array('hash_cookie' => true);
+ * 
+ * @package system
  */
-
 class PVSession extends PVStaticObject {
 
+	/**
+	 * The lifetime of the cookie
+	 */
 	private static $cookie_lifetime = 5000;
+	
+	/**
+	 * The cookie path
+	 */
 	private static $cookie_path = '/';
+	
+	/**
+	 * The cookie domain
+	 */
 	private static $cookie_domain = '';
+	
+	/**
+	 * Access the cookie only over an secure connection
+	 */
 	private static $cookie_secure = false;
+	
+	/**
+	 * Write to the cookie only over an http(s) connection
+	 */
 	private static $cookie_httponly = false;
+	
+	/**
+	 * Encrypt the cookie
+	 */
 	private static $hash_cookie = false;
 
+
+	/**
+	 * The lifetime of the session
+	 */
 	private static $session_lifetime = 5000;
+	
+	/**
+	 * The tmp path for the session
+	 */
 	private static $session_path = '/';
+	
+	/**
+	 * The domain for the session
+	 */
 	private static $session_domain = '';
+	
+	/**
+	 * Access the session only over a secure connection
+	 */
 	private static $session_secure = false;
+	
+	/**
+	 * Writes to the session only over an http connection
+	 */
 	private static $session_httponly = false;
+	
+	/**
+	 * Encrypt the session data
+	 */
 	private static $hash_session = false;
 
 	/**

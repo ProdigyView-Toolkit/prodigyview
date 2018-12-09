@@ -1,32 +1,19 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVFileManager allows easy manipulation of the file system such as making directories or getting mime types.
+ * 
+ * The class has various functions that make file manipulation reasonably easy. 
+ * 
+ * Examples:
+ * //Count the number of files in a directory
+ * echo PVFileManager::getFilesInDirectory('/path/to/directry');
+ * 
+ * //Get Mime Type
+ * echo PVFileManager::getFileMimeType('image.jpg'); 
+ * 
+ * //Write To File
+ * PVFileManager::getFileMimeType('/path/to/file', 'Hello World!'); 
  */
-
 class PVFileManager extends PVStaticObject {
 
 	/**
@@ -263,11 +250,12 @@ class PVFileManager extends PVStaticObject {
 	 * @param string $file The location of the file
 	 * @param string $mode The mode to be used reading the file
 	 * @param string $encoding The encoding to convert the file to. Optional.
+	 * @param boolean $stream The option to stream a file byte by byte
 	 *
 	 * @return string $contents The contents read from the file
 	 * @access public
 	 */
-	public static function readFile($file, $mode = 'r', $encoding = '') {
+	public static function readFile($file, $mode = 'r', $encoding = '', $stream = true) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $mode, $encoding);
@@ -278,13 +266,14 @@ class PVFileManager extends PVStaticObject {
 		$encoding = $filtered['encoding'];
 
 		$returnData = '';
+		
+		if (!file_exists($file)) {
+			return false;
+		}
 
-		if (file_exists($file) && floatval(phpversion()) >= 4.3) {
+		if ($stream === false || floatval(phpversion()) >= 4.3) {
 			$returnData = file_get_contents($file);
 		} else {
-			if (!file_exists($file)) {
-				return false;
-			}
 
 			$handler = fopen($file, $mode);
 			if (!$handler) {
@@ -572,64 +561,6 @@ class PVFileManager extends PVStaticObject {
 			return true;
 		} //end else
 	}//end copyfile From URL
-
-	/**
-	 * A function used in conjunction with the CMS too upload a file.
-	 */
-	public static function uploadFileFromContent($content_id, $file_name, $tmp_name, $file_size, $file_type) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $content_id, $file_name, $tmp_name, $file_size, $file_type);
-
-		$file_folder_url = PV_FILE;
-		$save_name = "";
-
-		$query = "SELECT * FROM " . pv_getFileContentTableName() . " WHERE file_id='$content_id'";
-		$result = PVDatabase::query($query);
-		$row = PVDatabase::fetchArray($result);
-		$current_file_name = $row['file_location'];
-
-		$file_extension = pathinfo($file_name, PATHINFO_EXTENSION);
-
-		$file_exist = true;
-
-		while ($file_exist) {
-			$randomFileName = pv_generateRandomString(20, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890') . '.' . $file_extension;
-
-			if (!file_exists(PV_ROOT . $file_folder_url . $randomFileName)) {
-				$file_exist = false;
-			}
-		}//end while
-
-		$file_name = PVDatabase::makeSafe($file_name);
-		$file_type = PVDatabase::makeSafe($file_type);
-		$file_size = PVDatabase::makeSafe($file_size);
-		$save_name = PVDatabase::makeSafe($file_folder_url . $randomFileName);
-
-		if (empty($app_id)) {
-			$app_id = 0;
-		}
-
-		if (empty($file_size)) {
-			$file_size = 0;
-		}
-
-		if (move_uploaded_file($tmp_name, PV_ROOT . $save_name) || self::copyFile($tmp_name, PV_ROOT . $save_name)) {
-
-			if (file_exists(PV_ROOT . $current_file_name) && !empty($current_file_name)) {
-				self::deleteFile(PV_ROOT . $file_folder_url . $current_file_name);
-			}
-
-			$query = "UPDATE " . pv_getFileContentTableName() . " SET file_type='$file_type', file_size='$file_size', file_name='$file_name', file_location='$randomFileName' WHERE file_id='$content_id' ";
-			PVDatabase::query($query);
-
-			return 1;
-
-		} else {
-			return FALSE;
-		}
-
-	}// end upload Image
 
 	/**
 	 * Returns the file that was last modified with a directory.

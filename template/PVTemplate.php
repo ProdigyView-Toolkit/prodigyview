@@ -1,37 +1,30 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVTemplate is a generic template wrapper class that is used as a basis for creating a templating system.
+ * 
+ * @package template
+ * @todo Remove Mootools, JQuery etc method. Update to do better parse and potentialy integrate with templating system
  */
-
 class PVTemplate extends PVStaticObject {
 
+	/**
+	 * The title of the site
+	 */
 	private static $siteTitle;
+	
+	/**
+	 * Meta tags to go in the header
+	 */
 	private static $siteMetaTags;
+	
+	/**
+	 * Description of the site
+	 */
 	private static $siteMetaDescription;
+	
+	/**
+	 * Site keywords
+	 */
 	private static $siteKeywords;
 
 	/**
@@ -589,7 +582,7 @@ class PVTemplate extends PVStaticObject {
 	 * @return string $libraries <script /> string with the libraries found
 	 * @access public
 	 */
-	public static function getJQueryHeade($options = array()) {
+	public static function getJQueryHeader($options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
@@ -663,39 +656,6 @@ class PVTemplate extends PVStaticObject {
 		return $libraries;
 	}//end printJavaScriptHeader
 
-	private static function getTemplateDefaults() {
-
-		$defaults = array(
-			'template_id' => 0, 
-			'template_name' => '', 
-			'template_version' => '', 
-			'template_author' => '', 
-			'template_license' => '', 
-			'is_default' => 0, 
-			'main_file' => '', 
-			'xml_file' => '', 
-			'template_directory' => '', 
-			'template_image' => '', 
-			'template_unique_id' => '', 
-			'template_domain' => '', 
-			'template_page' => 0, 
-			'template_site_id' => 0, 
-			'template_options' => ''
-		);
-
-		return $defaults;
-	}
-
-	private static function getTemplatePositionDefaults() {
-
-		$defaults = array(
-			'template_id' => 0, 
-			'position_name' => '', 
-			'position_width' => 0, 
-			'position_height' => 0
-		);
-
-		return $defaults;
-	}
+	
 
 }//end class

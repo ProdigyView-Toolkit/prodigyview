@@ -1,42 +1,76 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVLibraries is designed to load external libraries into the system, especially those that are not in a management service like Composer.
+ * 
+ * While tools like composer make including and accessing libraries easy, not every library is on the service nor does every project want to manage their 3rd parties libraries in the same way. PVLibraries primary focus is the loading of external libraries to be used in your application.
+ * 
+ * Example:
+ * 
+ * //Initialize the class
+ * PVLibraries::init();
+ * 
+ * //Add an external library
+ * PVLibraries::addLibrary('MailLoader', array('path' => '/absolute/path/to/library/1', 'explicit_load' => true));
+ * 
+ * //Add a library with name spaces
+ * PVLibraries::addLibrary('Facebook', array('path' => '/absolute/path/to/library/2', 'namespaced' => true));
+ * 
+ * //To your application to load these libraries for use
+ * PVLibraries::loadLibraries();
+ * 
+ * @package system
  */
-
 class PVLibraries extends PVStaticObject {
 
+	/**
+	 * Javascript libraries
+	 */
 	private static $javascript_libraries_array;
+	
+	/**
+	 * JQuery Libraries.
+	 * 
+	 * @deprecated To remove
+	 */
 	private static $jquery_libraries_array;
+	
+	/**
+	 * Prototype Libraries.
+	 * 
+	 * @deprecated To remove
+	 */
 	private static $prototype_libraries_array;
+	
+	/**
+	 * Mootools Librares
+	 * 
+	 * @deprecated To remove
+	 */
 	private static $motools_libraries_array;
+	
+	/**
+	 * CSS files to load
+	 */
 	private static $css_files_array;
+	
+	/**
+	 * Javascript that is not a file
+	 */
 	private static $open_javascript;
+	
+	/**
+	 * PHP libraries
+	 */
 	private static $libraries;
+	
+	/**
+	 * An array of classes to autoload
+	 */
 	private static $_autoloadClasses;
+	
+	/**
+	 * Signals if namespace is on by default for all classes
+	 */
 	private static $_namespaced;
 	
 	

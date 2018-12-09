@@ -1,30 +1,30 @@
 <?php
-/*
-*Copyright 2011 ProdigyView LLC. All rights reserved.
-*
-*Redistribution and use in source and binary forms, with or without modification, are
-*permitted provided that the following conditions are met:
-*
-*   1. Redistributions of source code must retain the above copyright notice, this list of
-*      conditions and the following disclaimer.
-*
-*   2. Redistributions in binary form must reproduce the above copyright notice, this list
-*      of conditions and the following disclaimer in the documentation and/or other materials
-*      provided with the distribution.
-*
-*THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
-*WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-*FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
-*CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-*CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-*SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-*ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-*NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-*ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*The views and conclusions contained in the software and documentation are those of the
-*authors and should not be interpreted as representing official policies, either expressed
-*or implied, of ProdigyView LLC.
+/**
+* PVMail is responsible for sending email from the application.
+* 
+* PVMail is a basic class for sending emails. The class either uses the default mail() function on the 
+* server, or can be configured to send emails via SMTP.
+* 
+* Example:
+* //Initialize The Class
+* PVMail::init(array(
+*             'smtp_host' => 'external.example.com',
+*             'smtp_username' => 'MyLogin',
+*             'smtp_password' => 'abc123',
+*             'smtp_port' => 582,
+*             'mailer' => 'smtp',
+*             'default_sender' => 'mydomain@example.com'
+*       ));
+* 
+* //Send An Email
+* PVMail::sendEmail(array(
+* 	'receiver' => 'jane@example.com',
+* 	'sender'=>'jon@example.com',
+* 	'subject'=>'Hello World'
+* 	'message'=>'Dropping a line, saying hello'
+* ));
+ * 
+ * 
 */
 class PVMail extends PVStaticObject {
 	
@@ -378,6 +378,11 @@ Content-Disposition: attachment
 	
 	}//end sendEmailPHPSMTP
 	
+	/**
+	 * Retrieves the default values that should go out with each email
+	 * 
+	 * @return array
+	 */
 	private static function getEmailDefaults() {
 		$defaults=array(
 			'receiver'=>'',

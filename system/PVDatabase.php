@@ -1,70 +1,177 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
- */
-
  //If Mysql is Not installed, will have to be set to null
  if(!defined('MYSQLI_REPORT_ERROR')) {
  	define('MYSQLI_REPORT_ERROR', null);
  }
-  
+
+/**
+ * PVDatabase controls the connections to various databases ranging from Mysql to MongoDB.
+ * 
+ * For future development, the class needs to be written, but it offers a lot of powerful features that including prepared statements, schema manipulation, sanitization, and other features.
+ * 
+ * Example:
+ * 
+ * //Initialize the class
+ * PVDatabase::init();
+ * 
+ * //Two Different Configurations
+ * $mysql_options = array(
+ * 	'dbhost' => 'localhost',
+ * 	'dbuser' => 'jondoe',
+ * 	'dbpass'=>'abc123',
+ * 	'dbtype'=>'mysql',
+ * 	'dbname'=>'example1',
+ * 	'dbport'=>3306
+ * );
+ * 
+ * //Add The Connection
+ * PVDatabase::addConnection('connection1', $mysql_options);
+ * 
+ * $postgres_options = array(
+ *     'dbhost' => 'localhost',
+ *     'dbuser' => 'janedoe',
+ *     'dbpass'=>'doeraeme',
+ *     'dbtype'=>'postgresql',
+ *     'dbname'=>'example2',
+ *     'dbport'=>5432
+ * );
+ * 
+ * //Add The Connection
+ * PVDatabase::addConnection('connection2', $postgres_options);
+ * 
+ * //Connect To the Mysql Database
+ * PVDatabase::setDatabase('connection1');
+ * 
+ * //Sanitize input
+ * $value = PVDatabase::makeSafe('SELECT ItemName, ItemDescription FROM Items WHERE ItemNumber = 999; DROP TABLE USERS ');
+ * 
+ * //Execute A Query
+ * PVDatabase::query("INSERT INTO users(name) VALUES(${value})");
+ * 
+ * //Change the Database connection
+ * PVDatabase::setDatabase('connection2');
+ * 
+ * @todo break apart class into seperate database handlers
+ * @package system
+ */ 
 class PVDatabase extends PVStaticObject {
 
+	/**
+	 * The current query being executed
+	 */
 	private static $theQuery;
+	
+	/**
+	 * The connection to the datbase
+	 */
 	private static $link;
+	
+	/**
+	 * Not sure what this was for
+	 */
 	private static $version;
 
 	//Assigns the connection types values
 	//Important for deciding which database to connect to
+	
+	/**
+	 * MYSQL Connection indicator
+	 */
 	private static $mySQLConnection = 'mysql';
+	
+	/**
+	 * Postgresql Connection Indicator
+	 */
 	private static $postgreSQLConnection = 'postgresql';
+	
+	/**
+	 * Oracle connection indicator
+	 */
 	private static $oracleConnection = 'oracle';
+	
+	/**
+	 * MSSQL connection indicator
+	 */
 	private static $msSQLConnection = 'mssql';
+	
+	/**
+	 * SQL Light connection indicatir
+	 */
 	private static $sqLiteConnection = 'sqlite';
+	
+	/**
+	 * MongoDB connection dicator
+	 */
 	private static $mongoConnection = 'mongo';
 
+	/**
+	 * An array of possible connections that have been added
+	 */
 	private static $connections = array();
 
+	/**
+	 * Ability to execute myself connections
+	 */
 	private static $mysql_error_report = MYSQLI_REPORT_ERROR;
 
 	//Database Implementation
+	/**
+	 * The host of the current datbase
+	 */
 	private static $dbhost = '';
+	
+	/**
+	 * The name of the current database
+	 */
 	private static $dbname = '';
+	
+	/**
+	 * The user to login to the current datbase
+	 */
 	private static $dbuser = '';
+	
+	/**
+	 * The password to access the current database
+	 */
 	private static $dbpass = '';
+	
+	/**
+	 * The type of DB being accessed(Postgresql, Mysql, ETC)
+	 */
 	private static $dbtype = '';
+	
+	/**
+	 * A schema to be accessed, if any
+	 */
 	private static $dbschema = '';
+	
+	/**
+	 * Optional prefixes for the tables
+	 */
 	private static $dbprefix = '';
+	
+	/**
+	 * The port for the current database
+	 */
 	private static $dbport = '';
+	
+	/**
+	 * The current database connection being referenced
+	 */
 	private static $current_connecton = '';
 
-	//Variables
+	/**
+	 * A row of data
+	 */
 	private static $row;
 
+	/**
+	 * Initializes the class.
+	 * 
+	 * @param array $config Configuration options to pass into the class
+	 * 
+	 * @return void
+	 */
 	public static function init($config = array()) {
 
 		$defaults = array('mysql_error_report' => MYSQLI_REPORT_ERROR);
@@ -73,12 +180,6 @@ class PVDatabase extends PVStaticObject {
 		self::$mysql_error_report = $config['mysql_error_report'];
 
 		self::$connections = array();
-
-		if (file_exists(PV_DB_CONFIG)) {
-			include (PV_DB_CONFIG);
-			if (is_array($connections))
-				self::$connections += $connections;
-		}
 
 	}//end init
 
@@ -2534,780 +2635,5 @@ class PVDatabase extends PVStaticObject {
 			$query = 'IDENTITY (1,1)';
 		}
 	}
-	
-
-	/**
-	 * Returns the table name for the application's permissions.
-	 * The name will be formated to match the current database
-	 * schema. So if a schema is defined. the table name will have
-	 * the schama name, period, then the table name. Likewise for if a
-	 * table prefix is defined.
-	 *
-	 * Example:
-	 * Config file:
-	 * $schema = MySchema
-	 * $prefix = 'pv_
-	 *
-	 * Function call
-	 * echo PVDatabase::getTableName();
-	 *
-	 * Result
-	 * MySchema.pv_tableName
-	 */
-	public static function getApplicationPermissionsTableName() {
-
-		$table_name = 'application_permissions';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getAccessLevelsTableName() {
-
-		$table_name = 'access_levels';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getApplicationsTableName() {
-
-		$table_name = 'applications';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContainersTableName() {
-
-		$table_name = 'containers';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContainerModulesTableName() {
-
-		$table_name = 'container_modules';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentTableName() {
-
-		$table_name = 'content';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getAudioContentTableName() {
-
-		$table_name = 'content_audio';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentCategoriesTableName() {
-
-		$table_name = 'content_categories';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentCategoryRelationsTableName() {
-
-		$table_name = 'content_category_relations';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentRelationsTableName() {
-
-		$table_name = 'content_relations';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentCommentsTableName() {
-
-		$table_name = 'content_comments';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getEventContentTableName() {
-
-		$table_name = 'content_events';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentFieldRelationsTableName() {
-
-		$table_name = 'content_field_relations';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getFileContentTableName() {
-
-		$table_name = 'content_files';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getImageContentTableName() {
-
-		$table_name = 'content_images';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentModifiersTableName() {
-
-		$table_name = 'content_modifiers';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getProductContentTableName() {
-
-		$table_name = 'content_product';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentRatingTableName() {
-
-		$table_name = 'content_rating';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentTaxonomyTableName() {
-
-		$table_name = 'content_taxonomy';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getTextContentTableName() {
-
-		$table_name = 'content_text';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentTypeTableName() {
-
-		$table_name = 'content_type';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentMultiAuthorTableName() {
-
-		$table_name = 'content_multi_author';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getVideoContentTableName() {
-
-		$table_name = 'content_video';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getContentViewsTableName() {
-
-		$table_name = 'content_views';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getFieldsTableName() {
-
-		$table_name = 'fields';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getFieldsOptionsTableName() {
-
-		$table_name = 'fields_options';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getFieldValuesTableName() {
-
-		$table_name = 'fields_values';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getFieldTypesTableName() {
-
-		$table_name = 'fieldtypes';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getFieldOutputTableName() {
-
-		$table_name = 'field_output';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getLoginTableName() {
-
-		$table_name = 'users';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getUsersTableName() {
-
-		$table_name = 'users';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getMenuTableName() {
-
-		$table_name = 'menu';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getMenuItemsTableName() {
-
-		$table_name = 'menu_items';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getModuleAdminTableName() {
-
-		$table_name = 'module_admin';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getModulesTableName() {
-
-		$table_name = 'modules';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getModulePermissionsTableName() {
-
-		$table_name = 'module_permissions';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getMVCTableName() {
-
-		$table_name = 'mvc';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getOptionsTableName() {
-
-		$table_name = 'options';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getPageContainersRelationshipTableName() {
-
-		$table_name = 'page_containers';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getPagesTableName() {
-
-		$table_name = 'pages';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getPageModuleRelationshipTableName() {
-
-		$table_name = 'page_module_relationship';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getPluginsTableName() {
-
-		$table_name = 'plugins';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getPluginPermissionsTableName() {
-
-		$table_name = 'plugin_permissions';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getSessionTableName() {
-
-		$table_name = 'session';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getSessionTrackerTableName() {
-
-		$table_name = 'session_tracker';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getTemplatesTableName() {
-
-		$table_name = 'templates';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getTemplatePositionsTableName() {
-
-		$table_name = 'template_positions';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getUserActivationTableName() {
-
-		$table_name = 'user_activation';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getPointsTableName() {
-
-		$table_name = 'points';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getUserRelationsTableName() {
-
-		$table_name = 'user_relations';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getUserRolesRelationsTableName() {
-
-		$table_name = 'user_roles_relations';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getSubscriptionTableName() {
-
-		$table_name = 'subscriptions';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getUserTaxonomyTableName() {
-
-		$table_name = 'user_taxonomy';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
-
-	public static function getUserRolesTableName() {
-
-		$table_name = 'user_roles';
-
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema)) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		return $table_name;
-
-	}//end  getApplicationPermissionsTable
 	
 }//end class

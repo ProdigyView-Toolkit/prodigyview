@@ -1,36 +1,14 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
- */
  
  if(!defined('MCRYPT_DES')) {
  	define('MCRYPT_DES', null);
  }
-  
+/**
+ * PVSecurity is a class designed to handle the security of your application ranging from encryption to hashing.
+ * 
+ * @TODO rework classs
+ * @package system
+ */ 
 class PVSecurity extends PVStaticObject {
 
 	private static $cipher;
@@ -112,155 +90,6 @@ class PVSecurity extends PVStaticObject {
 		self::$_cookie_fields = $args['cookie_fields'];
 		self::$_session_fields = $args['session_fields'];
 	}
-
-	/**
-	 * Checks the user access level of the user based occepeted roles.
-	 *
-	 * @param id $user_id The is od the user whose roles will be cheked
-	 * @param int $access_level The access level to check eagaint.
-	 */
-	public static function checkUserAccessLevel($user_id, $required_level) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $required_level);
-
-		if (!empty($user_id)) {
-			$user_info = PVUsers::getUserInfo($user_id);
-
-			if ($user_info['user_access_level'] >= $required_level) {
-				return 1;
-			}
-		}
-		return 0;
-	}//end checkUserAccessLevel
-
-	/**
-	 * Checks the user's permission based on the user roles. The roles should be
-	 * present in the user_roles table. A user belong to mutiple rules so the function
-	 * will check the user roles.
-	 *
-	 * @param array user_role: An array os user roles. Either IDs of the role or name
-	 * the name of the role should be passed
-	 * @param array allow_roles. Id
-	 */
-	public static function checkUserPermission($user_role, $allowed_roles) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $user_role, $allowed_roles);
-
-		if (empty($allowed_roles)) {
-			return 1;
-		}
-		$roles = PVUsers::getUserRolesList();
-		$found = false;
-
-		//Put Roles Into Array for checking
-		if (!is_array($allowed_roles)) {
-			$role_array = explode(',', $allowed_roles);
-
-			//Convert nOn numeric roles to IDS if they exist
-			foreach ($role_array as $key => $role) {
-				if (!PVValidator::isInteger($role)) {
-					$role_array[$key] = self::findRoleID($role, $roles);
-				}
-			}//end foreach
-		}
-
-		if (is_array($user_role)) {
-			//Make Sure each passed role is an ID
-			foreach ($user_role as $key => $value) {
-				if (!PVValidator::isInteger($value)) {
-					$user_role[$key] = self::findRoleID($value, $roles);
-				}
-			}
-
-			foreach ($user_role as $key => $value) {
-				$found = 0;
-				if (is_array($value)) {
-					if (in_array($value['role_id'], $role_array))
-						$found = 1;
-				} else {
-					if (in_array($value, $role_array))
-						$found = 1;
-				}
-			}//end foreach
-
-			return $found;
-		} else {
-
-			if (!PVValidator::isInteger($user_role))
-				$user_role = self::findRoleID($user_role, $roles);
-
-			return in_array($user_role, $role_array);
-
-		}//end else
-
-	}//end checkUserPermissions
-
-	/**
-	 * Checks if a user has a specified role assigned to them. Can either search for the
-	 * role based upon the role name or role id.
-	 *
-	 * @param id $user_id The id of the user
-	 * @param mixed $roles Either an id or name of a role or an array of ids and/or names of toles
-	 *
-	 * @return boolean $hasRole Returns true if user has that role, otherwise false
-	 * @access public
-	 */
-	public static function checkUserRole($user_id, $roles) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $user_id, $roles);
-
-		if (!empty($user_id)) {
-			$assigned_roles = PVUsers::getAssignedUserRoles($user_id);
-			if (PVTools::arraySearchRecursive($roles, $assigned_roles))
-				return true;
-		}
-		return 0;
-	}
-
-	/**
-	 * Finds the first role by passing in an array of roles with IDs
-	 * and the NAME of the role to be found.
-	 *
-	 * @param stirng role: The name of the role to be passed
-	 * @param array role_array: An arrray of roles with the role name and ID
-	 *
-	 * @return int role_id: The id of the role
-	 */
-	private static function findRoleID($role, $role_array) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $role, $role_array);
-		
-		foreach ($role_array as $roles) {
-			if (in_array($role['role_id'], $roles)) {
-				
-				return $roles['role_id'];
-			}
-		}//end foreach
-		return 0;
-	}//end findRole
-
-	/**
-	 * Check the users allowed to have access to an application based upon their role.
-	 *
-	 * @param int app id
-	 * @param permission_name
-	 * @param user_role
-	 *
-	 * @return boolean allowed
-	 */
-	public static function checkApplicationUserPermission($app_id, $permission_name, $user_role = '') {
-
-		if (empty($user_role)) {
-			$user_role = PVUsers::getAssignedUserRoles(PVUsers::getUserID());
-		}
-		$allowed_roles = self::getApplicationPermissions($app_id, $permission_name);
-
-		return self::checkUserPermission($user_role, $allowed_roles);
-	}//end checkUserApplicationPermission
 
 	
 	/**

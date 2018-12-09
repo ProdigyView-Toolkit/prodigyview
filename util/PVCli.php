@@ -1,7 +1,5 @@
 <?php
 /**
- * PVCli
- *
  * Command Line Interface (CLI) utility class.
  * 
  * This is an adaptation of Patrick Fisher command line parser for PHP. The class has been modified
@@ -15,9 +13,19 @@
  * http://creativecommons.org/licenses/by/3.0/
  */
 class PVCli extends PVStaticObject  {
-		
+	
+	/**
+	 * Args parsed from command linke entry
+	 */
 	public static $args;
 	
+	/**
+	 * Parse the command line arguements
+	 * 
+	 * @param string $argv Arguements from teh command line
+	 * 
+	 * @return array An array of items to output
+	 */
 	public static function parse($argv = null) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
@@ -99,6 +107,11 @@ class PVCli extends PVStaticObject  {
 
 	/**
 	 * GET BOOLEAN
+	 * 
+	 * @param string $key
+	 * @param string $value
+	 * 
+	 * @todo Revist for figure out what this function was for.
 	 */
 	public static function getBoolean($key, $default = false) {
 		

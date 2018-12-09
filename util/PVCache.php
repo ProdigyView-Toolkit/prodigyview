@@ -1,40 +1,61 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVCache is a system for caching data and retrieving cached data.
+ * 
+ * The default system uses a file cache for caching data. But the system through the adapter pattern is extendable to use any caching system attached to the application.
+ * 
+ * Example:
+ * 
+ * //Init The Cache
+ * PVCache::init();
+ * 
+ * $data = array('Apples', 'Oranges', 'Bananas');
+ * 
+ * //Check if cache has expired
+ * if(PVCache::hasExpired('mycache')):
+ * 	 //Store The Cache
+ * 	 PVCache::writeCache('mycache', $data);
+ * endif;
+ * 
+ * $data = PVCache::readCache('mycache');
+ * 
+ * print_r($data);
  */
-
 class PVCache extends PVStaticObject {
 
+	/**
+	 * File location to store the cache
+	 */
 	protected static $_cache_location = '/tmp/';
+	
+	/**
+	 * The date format for storing the cache
+	 */
 	protected static $_cache_format = 'Y-m-d H:i:s';
+	
+	/**
+	 * The regular expression for searching for cache
+	 */
 	protected static $_cache_format_search = '/\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}/';
+	
+	/**
+	 * The name to preprend to cache
+	 */
 	protected static $_cache_name = 'cache:';
+	
+	/**
+	 * How to wrap the the cache
+	 */
 	protected static $_enclosing_tags = array('{', '}');
+	
+	/**
+	 * Memcache connection
+	 */
 	protected static $_memcache = null;
+	
+	/**
+	 * Default time to live for the cache
+	 */
 	protected static $_cache_expire = 300;
 
 	/**

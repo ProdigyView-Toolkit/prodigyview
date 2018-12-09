@@ -3,6 +3,9 @@
  * PVBootstrap is responsible for initializing the system the system by initializing all the classes.
  * 
  * This class will have to be refactored, but it was designed to give base options for creating a secure environment based off of a configuration file that would be passed to it.
+ * 
+ * @TODO rework this class and decide if still needed
+ * @package system
  */
 class PVBootstrap extends PVStaticObject {
 

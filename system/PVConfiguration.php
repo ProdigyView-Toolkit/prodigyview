@@ -25,6 +25,7 @@
  * //Set different configs for different environments
  * PVConfiguration::addConfiguration('mysql',  $data, array('environment' => 'production'));
  * 
+ * @package system
  */
 class PVConfiguration extends PVStaticObject {
 	
