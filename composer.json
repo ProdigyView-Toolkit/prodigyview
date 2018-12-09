@@ -18,7 +18,8 @@
     },
     "autoload": {
         "psr-0": {
-            "Helium": "src"
-        }
+            "ProdigyView": "src",
+            "files": [ "_classLoader.php" ]
+        },
     }
 }

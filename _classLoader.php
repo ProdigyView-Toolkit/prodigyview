@@ -1,4 +1,32 @@
 <?php
+
+//Define the directory seperator
+if(!defined('DS')) {
+ 	define('DS', '/');
+ }
+
+//Define the core constant
+if(!defined('PV_CORE')) {
+ 	define('PV_CORE', getcwd(). DS);
+}
+
+if(!defined('PV_AUDIO')) {
+ 	define('PV_AUDIO', '');
+}
+
+if(!defined('PV_VIDEO')) {
+ 	define('PV_VIDEO', '');
+}
+
+if(!defined('PV_IS_ADMIN')) {
+ 	define('PV_IS_ADMIN', false);
+}
+
+if(!defined('PV_LIBRARIES')) {
+ 	define('PV_LIBRARIES', '');
+}
+
+
 /*** nullify any existing autoloads ***/
 spl_autoload_register(null, false);
 /*** specify extensions that may be loaded ***/
