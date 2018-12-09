@@ -26,11 +26,16 @@
  *authors and should not be interpreted as representing official policies, either expressed
  *or implied, of ProdigyView LLC.
  */
-
 class PVStaticInstance extends PVStaticPatterns {
 
+	/**
+	 * A collection of items that belong to this class
+	 */
 	protected $_collection = null;
 	
+	/**
+	 * A collection of dynamically added methods that below to this class
+	 */
 	protected $_methods = array();
 
 	/**
@@ -206,42 +211,6 @@ class PVStaticInstance extends PVStaticPatterns {
 		
 		$this->_methods[$method]=$closure;
 		$this->_notify(get_class() . '::' . __FUNCTION__, $method, $closure);
-	}
-
-	protected function getSqlSearchDefaults() {
-		
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__);
-			
-		$defaults = array(
-			'custom_where' => '', 
-			'limit' => '', 
-			'order_by' => '', 
-			'custom_join' => '', 
-			'custom_select' => '', 
-			'distinct' => '', 
-			'group_by' => '', 
-			'having' => '', 
-			'join_users' => false, 
-			'prequery' => '', 
-			'current_page' => '', 
-			'results_per_page' => '', 
-			'paged' => '', 
-			'prefix_args' => '', 
-			'join_user_roles' => false, 
-			'join_content' => false, 
-			'join_content' => false, 
-			'join_comments' => false, 
-			'join_applications' => false, 
-			'join_apps' => false, 
-			'join_pages' => false, 
-			'join_modules' => false, 
-			'join_containers' => false
-		);
-
-		$defaults = $this->_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
-		
-		return $defaults;
 	}
 	
 }//end class

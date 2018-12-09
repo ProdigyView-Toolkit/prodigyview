@@ -1,33 +1,32 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVVideo is a class designed to manipulate video files and transcoding to various formats.
+ * 
+ * PVVideo works with all kinds of audio files: mp4, mov, ogg, etc. It utilizes command tools like FFMPEG to do the transcoding and will return the results from the command line.
+ * 
+ * Example:
+ * 
+ * //Set the file to be converted
+ * $old_file = '/path/to/file/video.mov';
+ * 
+ * //Set the path of the new file
+ * $new_file =  '/path/to/file/video.mp4';
+ * 
+ * //Options to pass to the FFmpeg or other conversion tools
+ * //The following will place a -f infront of the input
+ * $options = array('input_f' => '');
+ * 
+ * //Run the conversion
+ * PVVideo::init();
+ * PVVideo::convertAudioFile($old_file, $new_file , $options );
+ * 
+ * @package media
  */
 class PVVideo extends PVStaticObject {
 
+	/**
+	 * The type of convet to use, default is ffmpeg
+	 */
 	protected static $converter = 'ffmpeg';
 
 	/**

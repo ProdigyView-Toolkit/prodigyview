@@ -1,35 +1,41 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/** 
+ * The PVConfiguration acts a global registry for system-wide configuration options for the application.
+ * 
+ * The configuration class is most notably used for setting variables that can be retrieved anywhere in your system with the setters and getters. There is also the option of setting different environment.
+ * 
+ * Example:
+ * 
+ * //Init the class
+ * PVConfiguration::init();
+ * 
+ * //Add An Example Configuration
+ * $data = array(
+ * 	'host'=>'localhost',
+ * 	'database' => 'test',
+ * 	'user'=>'admin',
+ * 	'password'=>'abc123'
+ * );
+ * PVConfiguration::addConfiguration('mysql',  $data);
+ * 
+ * //Retrieve and use that configuration
+ * $mysql = PVConfiguration::getConfiguration('mysql');
+ * echo $mysql->host;
+ * 
+ * //Set different configs for different environments
+ * PVConfiguration::addConfiguration('mysql',  $data, array('environment' => 'production'));
+ * 
  */
-
 class PVConfiguration extends PVStaticObject {
 	
+	/**
+	 * The environment, ie production, staging, development, etc.
+	 */
 	protected static $_environment = '';
+	
+	/**
+	 * Configuration options that have been set.
+	 */
 	protected static $_configurations = '';
 	
 
@@ -70,6 +76,8 @@ class PVConfiguration extends PVStaticObject {
 	 *
 	 * @param string $key The Key to be used for accessing the configuration
 	 * @param string $value The string value to be stored in the configuration
+	 * @param array $options Options when setting the configuratuin
+	 * 			- string "environment": The environment to set the configuration for
 	 *
 	 * @return void
 	 * @access public

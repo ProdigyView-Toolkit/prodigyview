@@ -1,51 +1,80 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVCommunicator opens up communication with other services via Curl, SOAP, or Sockets.
+ * 
+ * With the rise of RESTFUL API and Microservices, this class was designed to allow easy communication with those services without having to rewrite the underlying commands.
+ * 
+ * Example:
+ * 
+ * //CURL GET
+ * $url = 'http://api.wunderground.com/api/Your_Key/conditions/q/CA/San_Francisco.json';
+ * 
+ * $communicator = new PVCommunicator();
+ * $communicator->send('get',  $url);
+ * print_r($communicator ->getResponseBody());
+ * 
+ * //CURL POST
+ * $url = 'http://api.example.com/createuser';
+ * $data = array('name' =>'John Doe', 'email' => 'johndoe@example.com')
+ * $communicator = new PVCommunicator();
+ * $communicator->send('POST',  $url, );
+ * print_r($communicator ->getResponseBody());
+ * 
+ * @package network
  */
- 
  class PVCommunicator extends PVStaticInstance {
  	
+	/**
+	 * The handler for executing the communication and changes depending on type.
+	 */
 	protected $_handler = null;
 	
+	/**
+	 * Headers to pass to the destination
+	 */
 	protected $_headers = array();
 	
+	/**
+	 * Files to send to the destination
+	 */
 	protected $_files = array();
 	
+	/**
+	 * Detailed information about the destinations response
+	 */
 	protected $_response_info = '';
 	
+	/**
+	 * The response body in fill
+	 */
 	protected $_response = '';
 	
+	/**
+	 * The protocol to use, default is curl but can use SOAP or sockets
+	 */
 	protected $_protocol = 'curl';
 	
+	/**
+	 * The data to send to send
+	 */
 	protected $_data = null;
 	
+	/**
+	 * An error response if communication fales
+	 */
 	protected $_error = null;
 	
-	public $hasError = true;
+	/**
+	 * The check to see if the connection has already been opened to prevent multiple connections from opening
+	 */
+	public $connectionActive = false;
+	
+	/**
+	 * If the boolean set if the response has an error
+	 */
+	public $hasError = false;
+	
+	
 	
 	/**
 	 * Sets the protocol, right now either being defaulting
@@ -54,7 +83,7 @@
 	public function __constrcut($protocol = null) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__, $protocol);
 		
 		if($protocol) {
 			$this -> _protocol = strtolower(trim($protocol));
@@ -79,7 +108,7 @@
 	public function send($method, $url, $data = array(), $options = array()) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__, $method, $url, $data, $options);
 		
 		$defaults = array(
 			'timeout' => 500,
@@ -90,12 +119,11 @@
 		
 		$options += $defaults;
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
-		
 		$url = trim($url);
 		
-		$this -> _openConnection($url, $options);
+		if(!$this ->connectionActive) {
+			$this -> openConnection($url, $options);
+		}
 		
 		if($this -> _protocol === 'soap') {
 			return $this -> _sendSoap($method, $data);
@@ -125,6 +153,8 @@
 			}
 		}
 		
+		$this ->connectionActive = false;
+		
 	}
 	
 	/**
@@ -139,7 +169,7 @@
 	public function addHeader($key, $value) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__, $key, $value);
 		
 		$this -> _headers[$key]= $value;
 	}
@@ -154,7 +184,7 @@
 	public function addFile($file_location) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__, $file_location);
 		
 		$this -> _files[] = $file_location;
 	}
@@ -167,7 +197,7 @@
 	 * 
 	 * @return void
 	 */
-	protected function _openConnection($url, $options = array()) {
+	public function openConnection($url, $options = array()) {
 		
 		if($this -> _protocol === 'soap') {
 			$this -> _handler = new SoapClient($url, $options);
@@ -184,6 +214,8 @@
 			$this -> _handler = curl_init($url);
 			curl_setopt($this -> _handler, CURLOPT_URL, $url);
 		}
+		
+		$this ->connectionActive = true;
 	}
 	
 	/**
@@ -281,7 +313,7 @@
 	public function setAuthentication($username, $password) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__, $username, $password);
 		
 		curl_setopt($this -> _handler, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
     		curl_setopt($this -> _handler, CURLOPT_USERPWD, $username.':'.$password);
@@ -307,7 +339,7 @@
 	public function setTimeout($timeout) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__, $timeout);
 		
 		curl_setopt($this -> _handler, CURLOPT_CONNECTTIMEOUT, $timeout);
 		curl_setopt($this -> _handler, CURLOPT_TIMEOUT, $timeout);
@@ -367,7 +399,7 @@
 	protected function _sendSoap($method, $data = array()) {
 		$response = $this -> _handler -> __soapCall($method, array($data));
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $this);
+		self::_notify(get_class() . '::' . __FUNCTION__, $this, $data);
 		
 		return $response;
 	}
@@ -379,7 +411,7 @@
 			fclose($this -> _handler);
 		}
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $this);
+		self::_notify(get_class() . '::' . __FUNCTION__, $this, $method);
 		
 		return $this -> _response;
 	}
@@ -387,14 +419,14 @@
 	public function getResponse() {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		return $this -> _response;
 	}
 	
 	public function getResponseInfo() {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		return $this -> _response_info;
 	}
@@ -402,7 +434,7 @@
 	public function getResponseHeader() {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		return trim(substr($this -> _response, 0, $this -> _response_info['header_size']));
 		
@@ -411,14 +443,14 @@
 	public function getResponseBody() {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		return substr($this -> _response, $this -> _response_info['header_size']);
 	}
 	
 	public function getError() {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+			return self::_callAdapter(get_class(), __FUNCTION__);
 		
 		return $this -> _error;
 	}

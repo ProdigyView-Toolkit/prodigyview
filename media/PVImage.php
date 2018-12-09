@@ -1,39 +1,42 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY ProdigyView LLC ``AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ProdigyView LLC OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ *PVImage is a class for handling the processing and format of all image files.
+ * 
+ * PVImage has various functions built into it such as adding watermarks, resizing, cropping and more. By default, the class will use Imagick but can be set to use other image processing tools.
+ * 
+ * @package media
  */
 class PVImage extends PVStaticObject {
 	
+	/**
+	 * The tool used to process images, default imagic but can be GD or another class
+	 */
 	protected static $_converter = 'imagick';
-	protected static $_write_image = true;
+	
+	/**
+	 * Boolean to automatically an image to file, setup in the PV_IMAGE constant.
+	 */
+	protected static $_write_image = false;
+	
+	/**
+	 * If write_image is set to true, the location to write the image
+	 */
 	protected static $_write_image_location = PV_IMAGE;
+	
+	/**
+	 * Boolean to display the image once processed. Will add image headers.
+	 */
 	protected static $_display_image = false;
+	
+	/**
+	 * For processed images, will automatically add the correct extenison to the image
+	 */
 	protected static $_add_extension = true;
-	protected static $_return = 'image_location';
+	
+	/**
+	 * For processed images, can return various types including the Imagick Object, string of bytes, or the location if written to file.
+	 */
+	protected static $_return = 'image_object';
 	
 	/**
 	 *  Initalize the PVImage class with default variables for image conversion

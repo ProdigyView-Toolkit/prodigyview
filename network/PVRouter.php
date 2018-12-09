@@ -1,39 +1,41 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVRouter is responsible for parsing the URL setting up the ability for routing within your application.
+ * 
+ * Applications, especially with Frontend Controller Design Pattern, may require routing to get a user to their destination correctly. This class can take rules, route and correctly navigate the user to their destination.
+ * 
+ * @package network
  */
-
 class PVRouter extends PVStaticObject {
 
+	/**
+	 * A list of routes that have been added
+	 */
 	private static $routes;
+	
+	/**
+	 * Items within a route, after is has been parsed
+	 */
 	private static $route_parameters;
+	
+	/**
+	 * Configurationoptions around a route
+	 */
 	private static $route_options;
+	
+	/**
+	 * Attempt to make Seo friendy urls
+	 */
 	private static $seo_urls;
+	
+	/**
+	 * Specifies what to look for when defining a parameter in a router
+	 */
 	private static $default_rule_replace = '/:([a-z]+)/';
+	
+	/**
+	 * When a rule is found, speficies what to replace it with before parsing
+	 */
 	private static $default_route_replace = '(?P<\1>[^/]+)';
 
 	/**
@@ -355,6 +357,14 @@ class PVRouter extends PVStaticObject {
 		
 		
 	}
+	
+	/**
+	 * Returns a parameter that is embeed within the route.
+	 * 
+	 * @param string $parameter The parameter being looked for
+	 * 
+	 * @return string The found value, if any
+	 */
 	public static function getRouteParameter($parameter) {
 		return self::$route_parameters[self::$route_options['route'][$parameter]];
 	}
@@ -465,6 +475,12 @@ class PVRouter extends PVStaticObject {
 			exit();
 	}
 	
+	/**
+	 * Determines of the connection is secure behind SSL to TLS. Default
+	 * functionality utilizes the server.
+	 * 
+	 * @return boolean Return true is secure, otherwise false
+	 */
 	public static function isSecureConnection(){
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))

@@ -1,34 +1,29 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * The PVCollection class acts as a repository for data to be stored, retrieved and iterated over.
+ * 
+ * The collection class is a simple way of storing and getting information with key, value pairs, Any information can be stored and retrieved including strings, array, and objects. Some example use cases:
+ * 
+ * //Add data and increment over fit
+ * $collection = new PVCollection();
+ * $collection -> add('Apples');
+ * $collection -> add('Oranges');
+ * 
+ * foreach($collection as $key => $value) {
+ * 	echo $value;
+ * }
+ * 
+ * @package data
  */
-
 class PVCollection implements IteratorAggregate {
+	/**
+	 * The items stored in the collection, key=>value pair
+	 */
 	private $dataset = array();
+	
+	/**
+	 * The number of items in the collection
+	 */
 	private $count = 0;
 
 	/**
@@ -42,6 +37,7 @@ class PVCollection implements IteratorAggregate {
 	 */
 	public function __construct($data = array()) {
 		$this -> dataset = $data;
+		$this -> count = count($data);
 	}
 
 	/**
@@ -97,7 +93,7 @@ class PVCollection implements IteratorAggregate {
 
 	/**
 	 * Adds a value to the collection but also defines the index/key in which the value
-	 * will be placed at
+	 * will be placed at.
 	 *
 	 * @param string $name The name/index/key that will be associated with the passed value
 	 * @param mixed $data The data the will be story associated with thhat key.
@@ -138,7 +134,14 @@ class PVCollection implements IteratorAggregate {
 
 }//end class
 
+/**
+ * A class used for iterating over items in loops.
+ */
 class PVIterator implements Iterator {
+		
+	/**
+	 * The items to iterate over
+	 */	
 	private $data = array();
 
 	/**

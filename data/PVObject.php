@@ -1,36 +1,50 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVObject is an extendable class used to enhance an object that can be instantiated.
+ * 
+ * ProdigyView comes with the ability to implement adapters, intercepting filters and observers. Extending this class to a child class will give the child class the ability to use those design patterns along with a collection that can assign and retrieve values using magic functions.
+ * 
+ * Example:
+ * 
+ * //Create the class
+ * class Example extends PVObject {
+ *   	public function testMe($string) {
+ * 			echo $string;
+ * 		
+ * 			//An observer
+ * 			$this->_notify(get_class() . '::' . __FUNCTION__, $string);
+ * 		}
+ * 	}
+ * 
+ * //Add to its collection
+ * $example = new Example();
+ * $example->foo='bar';
+ * echo $example-> foo;
+ * 
+ * //Add a dynamic method
+ * $example -> addMethod('fiz', function($text) {
+ * 		return 'fiz ' . $text;
+ * });
+ * 
+ * echo $example -> fizz('Bop');
+ * 
+ * 
+ * //Add Observer
+ * Example::addObserver('Example::testMe', 'test_closure', function($string) {
+ *   	echo "\nLine 2 \n"
+ * 		echo $string;
+ *     
+ * }, array('type' => 'closure'));
+ * 
+ * //Will call the instance and the attached observer
+ * $example->testMe('Testing String ');
  */
-
 class PVObject extends PVPatterns {
 
+	//Collection of items
 	protected $_collection = null;
 	
+	//Dynamically added methods
 	protected $_methods = array();
 
 	/**
@@ -173,7 +187,7 @@ class PVObject extends PVPatterns {
 	 * Returns the iterator for iterating through the values stored in the classes collection.
 	 * 
 	 * @return PVIterator $iterator The classes collection in an iteratable form
-	 * #access public
+	 * @access public
 	 */
 	public function getIterator() {
 		
@@ -208,40 +222,5 @@ class PVObject extends PVPatterns {
 		$this->_notify(get_class() . '::' . __FUNCTION__, $method, $closure);
 	}
 
-	protected function getSqlSearchDefaults() {
-		
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__);
-			
-		$defaults = array(
-			'custom_where' => '', 
-			'limit' => '', 
-			'order_by' => '', 
-			'custom_join' => '', 
-			'custom_select' => '', 
-			'distinct' => '', 
-			'group_by' => '', 
-			'having' => '', 
-			'join_users' => false, 
-			'prequery' => '', 
-			'current_page' => '', 
-			'results_per_page' => '', 
-			'paged' => '', 
-			'prefix_args' => '', 
-			'join_user_roles' => false, 
-			'join_content' => false, 
-			'join_content' => false, 
-			'join_comments' => false, 
-			'join_applications' => false, 
-			'join_apps' => false, 
-			'join_pages' => false, 
-			'join_modules' => false, 
-			'join_containers' => false
-		);
-
-		$defaults = $this->_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
-		
-		return $defaults;
-	}
 	
 }//end class

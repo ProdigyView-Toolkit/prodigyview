@@ -1,38 +1,58 @@
 <?php
-/*
- *Copyright 2011 ProdigyView LLC. All rights reserved.
- *
- *Redistribution and use in source and binary forms, with or without modification, are
- *permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *      conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *      of conditions and the following disclaimer in the documentation and/or other materials
- *      provided with the distribution.
- *
- *THIS SOFTWARE IS PROVIDED BY My-Lan AS IS'' AND ANY EXPRESS OR IMPLIED
- *WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
- *FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL My-Lan OR
- *CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- *SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- *ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- *ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *The views and conclusions contained in the software and documentation are those of the
- *authors and should not be interpreted as representing official policies, either expressed
- *or implied, of ProdigyView LLC.
+/**
+ * PVStaticObjectt is an extendable class used to enhance an object with static methods.
+ * 
+ * ProdigyView comes with the ability to implement adapters, intercepting filters and observers. Extending this class to a child class will give the child class the ability to use those design patterns along with a collection that can assign and retrieve values using magic functions.
+ * 
+ * Example:
+ * 
+ * //Create the class
+ * class Example extends PVObject {
+ *   	public static function testMe($string) {
+ * 			echo $string;
+ * 		
+ * 			//An observer
+ * 			$this->_notify(get_class() . '::' . __FUNCTION__, $string);
+ * 		}
+ * 	}
+ * 
+ * //Add to its collection
+ * Example::set('foo','bar');
+ * echo Example::get('foo');
+ * 
+ * //Add a dynamic method
+ * Example::addMethod('fiz', function($text) {
+ * 		return 'fiz ' . $text;
+ * });
+ * 
+ * echo Example::fizz('Bop');
+ * 
+ * 
+ * //Add Observer
+ * Example::addObserver('Example::testMe', 'test_closure', function($string) {
+ *   	echo "\nLine 2 \n"
+ * 		echo $string;
+ *     
+ * }, array('type' => 'closure'));
+ * 
+ * //Will call test me and the observer attached
+ * Example::testMe('Testing String ');
+ * 
+ * @package data
  */
 
 class PVStaticObject extends PVStaticPatterns {
 
-	protected static $_collection = null;
+	/**
+	 * A collection of items that belong to this class
+	 */
+	protected $_collection = null;
 	
-	protected static $_methods = array();
-
+	/**
+	 * A collection of dynamically added methods that below to this class
+	 */
+	protected $_methods = array();
+	
 	/**
 	 * Adds a value to the classes Collection. By default the collection is stored
 	 * in the public collection. The stored instance can be retrieved later by called
@@ -175,7 +195,7 @@ class PVStaticObject extends PVStaticPatterns {
 	 * @return PVIterator $iterator The classes collection in an iteratable form
 	 * #access public
 	 */
-	public function getIterator() {
+	public static function getIterator() {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
@@ -195,7 +215,7 @@ class PVStaticObject extends PVStaticPatterns {
 	 * @return void
 	 * @access public
 	 */
-	public function addMethod($method, $closure) {
+	public static function addMethod($method, $closure) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $method, $closure);
@@ -206,42 +226,6 @@ class PVStaticObject extends PVStaticPatterns {
 		
 		self::$_methods[get_called_class()][$method]=$closure;
 		self::_notify(get_class() . '::' . __FUNCTION__, $method, $closure);
-	}
-
-	protected static function _getSqlSearchDefaults() {
-		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-			
-		$defaults = array(
-			'custom_where' => '', 
-			'limit' => '', 
-			'order_by' => '', 
-			'custom_join' => '', 
-			'custom_select' => '', 
-			'distinct' => '', 
-			'group_by' => '', 
-			'having' => '', 
-			'join_users' => false, 
-			'prequery' => '', 
-			'current_page' => '', 
-			'results_per_page' => '', 
-			'paged' => '', 
-			'prefix_args' => '', 
-			'join_user_roles' => false, 
-			'join_content' => false, 
-			'join_content' => false, 
-			'join_comments' => false, 
-			'join_applications' => false, 
-			'join_apps' => false, 
-			'join_pages' => false, 
-			'join_modules' => false, 
-			'join_containers' => false
-		);
-		
-		$defaults = self::_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
-
-		return $defaults;
 	}
 
 }//end class

@@ -85,6 +85,4 @@ spl_autoload_register('dataLoader');
 spl_autoload_register('mediaLoader');
 spl_autoload_register('networkLoader');
 
-//Include the Core
-require_once (PV_CORE . 'PVCore.php');
 ?>
