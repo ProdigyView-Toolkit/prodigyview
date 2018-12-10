@@ -1,24 +1,30 @@
 <?php
 /**
- * PVLibraries is designed to load external libraries into the system, especially those that are not in a management service like Composer.
- * 
- * While tools like composer make including and accessing libraries easy, not every library is on the service nor does every project want to manage their 3rd parties libraries in the same way. PVLibraries primary focus is the loading of external libraries to be used in your application.
- * 
+ * PVLibraries is designed to load external libraries into the system, especially those that are not
+ * in a management service like Composer.
+ *
+ * While tools like composer make including and accessing libraries easy, not every library is on the
+ * service nor does every project want to manage their 3rd parties libraries in the same way.
+ * PVLibraries primary focus is the loading of external libraries to be used in your application.
+ *
  * Example:
+ * 
  * ```php
  * //Initialize the class
  * PVLibraries::init();
- * 
+ *
  * //Add an external library
- * PVLibraries::addLibrary('MailLoader', array('path' => '/absolute/path/to/library/1', 'explicit_load' => true));
- * 
+ * PVLibraries::addLibrary('MailLoader', array('path' => '/absolute/path/to/library/1',
+ * 'explicit_load' => true));
+ *
  * //Add a library with name spaces
- * PVLibraries::addLibrary('Facebook', array('path' => '/absolute/path/to/library/2', 'namespaced' => true));
- * 
+ * PVLibraries::addLibrary('Facebook', array('path' => '/absolute/path/to/library/2', 'namespaced' =>
+ * true));
+ *
  * //To your application to load these libraries for use
  * PVLibraries::loadLibraries();
  * ```
- * 
+ *
  * @package system
  */
 class PVLibraries extends PVStaticObject {
@@ -27,61 +33,62 @@ class PVLibraries extends PVStaticObject {
 	 * Javascript libraries
 	 */
 	private static $javascript_libraries_array;
-	
+
 	/**
 	 * JQuery Libraries.
-	 * 
+	 *
 	 * @deprecated To remove
 	 */
 	private static $jquery_libraries_array;
-	
+
 	/**
 	 * Prototype Libraries.
-	 * 
+	 *
 	 * @deprecated To remove
 	 */
 	private static $prototype_libraries_array;
-	
+
 	/**
 	 * Mootools Librares
-	 * 
+	 *
 	 * @deprecated To remove
 	 */
 	private static $motools_libraries_array;
-	
+
 	/**
 	 * CSS files to load
 	 */
 	private static $css_files_array;
-	
+
 	/**
 	 * Javascript that is not a file
 	 */
 	private static $open_javascript;
-	
+
 	/**
 	 * PHP libraries
 	 */
 	private static $libraries;
-	
+
 	/**
 	 * An array of classes to autoload
 	 */
 	private static $_autoloadClasses;
-	
+
 	/**
 	 * Signals if namespace is on by default for all classes
 	 */
 	private static $_namespaced;
-	
-	
+
 	/**
-	 * Initialize the library class in preparotion for loading libraries. Needs to be configured if namespaces
+	 * Initialize the library class in preparotion for loading libraries. Needs to be configured if
+	 * namespaces
 	 * are going to be used.
-	 * 
+	 *
 	 * @param array $config A configuration that can be used for setting how the class works
-	 * 			-'namespaced' _boolean_: Default is false. If set to true, classes will be treated and react as if they are namespaced
-	 * 
+	 * 			-'namespaced' _boolean_: Default is false. If set to true, classes will be treated and react as
+	 * if they are namespaced
+	 *
 	 * @return void
 	 * @access public
 	 */
@@ -89,9 +96,9 @@ class PVLibraries extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
-		
+
 		$defaults = array('namespaced' => false);
-		
+
 		$config += $defaults;
 		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
 
@@ -103,8 +110,11 @@ class PVLibraries extends PVStaticObject {
 		self::$libraries = array();
 		self::$_autoloadClasses = array();
 		self::$_namespaced = $config['namespaced'];
-		
-		spl_autoload_register( array( 'PVLibraries', '_autoload' ) );
+
+		spl_autoload_register(array(
+			'PVLibraries',
+			'_autoload'
+		));
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $config);
 	}
@@ -113,7 +123,8 @@ class PVLibraries extends PVStaticObject {
 	 * Adds javascript files to a queue of javascript files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing
+	 * the script and the location of the script.
 	 *
 	 * @return void
 	 * @access public
@@ -124,6 +135,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $script);
 
 		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		
 		self::$javascript_libraries_array[$script] = $script;
 		self::_notify(get_class() . '::' . __FUNCTION__, $script);
 	}
@@ -132,7 +144,8 @@ class PVLibraries extends PVStaticObject {
 	 * Adds jquery files to a queue of jquery files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing
+	 * the script and the location of the script.
 	 *
 	 * @return void
 	 * @access public
@@ -143,6 +156,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $script);
 
 		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		
 		self::$jquery_libraries_array[$script] = $script;
 		self::_notify(get_class() . '::' . __FUNCTION__, $script);
 	}
@@ -151,7 +165,8 @@ class PVLibraries extends PVStaticObject {
 	 * Adds prototype files to a queue of prototype files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing
+	 * the script and the location of the script.
 	 *
 	 * @return void
 	 * @access public
@@ -162,6 +177,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $script);
 
 		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		
 		self::$prototype_libraries_array[$script] = $script;
 		self::_notify(get_class() . '::' . __FUNCTION__, $script);
 	}
@@ -170,7 +186,8 @@ class PVLibraries extends PVStaticObject {
 	 * Adds mootools files to a queue of mootools files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing
+	 * the script and the location of the script.
 	 *
 	 * @return void
 	 * @access public
@@ -181,6 +198,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $script);
 
 		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		
 		self::$motools_libraries_array[$script] = $script;
 		self::_notify(get_class() . '::' . __FUNCTION__, $script);
 	}
@@ -189,7 +207,8 @@ class PVLibraries extends PVStaticObject {
 	 * Adds css files to a queue of css files. The name of the
 	 * file should be unique and set the path of the file or the url of the file.
 	 *
-	 * @param string $script The name of script to be added. The name of script acts as key for accessing the script and the location of the script.
+	 * @param string $script The name of script to be added. The name of script acts as key for accessing
+	 * the script and the location of the script.
 	 *
 	 * @return void
 	 * @access public
@@ -200,16 +219,19 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $script);
 
 		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		
 		self::$css_files_array[$script] = $script;
 		self::_notify(get_class() . '::' . __FUNCTION__, $script);
 	}
 
 	/**
-	 * Adds a script directly into a queue to be outputted later.The script should be inputted with opening
+	 * Adds a script directly into a queue to be outputted later.The script should be inputted with
+	 * opening
 	 * and closing tags as it would appear when the output occurs
 	 *
 	 *
-	 * @param string $script The string to be added to a queue. The string does not have a key and cannot be removed once added.
+	 * @param string $script The string to be added to a queue. The string does not have a key and cannot
+	 * be removed once added.
 	 *
 	 * @return void
 	 * @access public
@@ -220,6 +242,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $script);
 
 		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		
 		self::$open_javascript .= $script;
 		self::_notify(get_class() . '::' . __FUNCTION__, $script);
 	}
@@ -228,7 +251,8 @@ class PVLibraries extends PVStaticObject {
 	 * Returns javascript file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @return array $script Returns an array of scripts. The key => value are the same and should
+	 * present the location of the script
 	 * @access public
 	 */
 	public static function getJavascriptQueue() {
@@ -237,6 +261,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$javascript_libraries_array);
+		
 		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$javascript_libraries_array, array('event' => 'return'));
 
 		return $script;
@@ -246,7 +271,8 @@ class PVLibraries extends PVStaticObject {
 	 * Returns JQuery file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @return array $script Returns an array of scripts. The key => value are the same and should
+	 * present the location of the script
 	 * @access public
 	 */
 	public static function getJqueryQueue() {
@@ -255,6 +281,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$jquery_libraries_array);
+		
 		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$jquery_libraries_array, array('event' => 'return'));
 
 		return $script;
@@ -264,7 +291,8 @@ class PVLibraries extends PVStaticObject {
 	 * Returns Prototype file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @return array $script Returns an array of scripts. The key => value are the same and should
+	 * present the location of the script
 	 * @access public
 	 */
 	public static function getPrototypeQueue() {
@@ -273,6 +301,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$prototype_libraries_array);
+		
 		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$prototype_libraries_array, array('event' => 'return'));
 
 		return $script;
@@ -282,7 +311,8 @@ class PVLibraries extends PVStaticObject {
 	 * Returns mootools file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @return array $script Returns an array of scripts. The key => value are the same and should
+	 * present the location of the script
 	 * @access public
 	 */
 	public static function getMootoolsQueue() {
@@ -291,6 +321,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$motools_libraries_array);
+		
 		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$motools_libraries_array, array('event' => 'return'));
 
 		return $script;
@@ -300,7 +331,8 @@ class PVLibraries extends PVStaticObject {
 	 * Returns css file locations that have been inserted
 	 * into the queue.
 	 *
-	 * @return array $script Returns an array of scripts. The key => value are the same and should present the location of the script
+	 * @return array $script Returns an array of scripts. The key => value are the same and should
+	 * present the location of the script
 	 * @access public
 	 */
 	public static function getCssQueue() {
@@ -309,6 +341,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$css_files_array);
+		
 		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$css_files_array, array('event' => 'return'));
 
 		return $script;
@@ -326,6 +359,7 @@ class PVLibraries extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$open_javascript);
+		
 		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$open_javascript, array('event' => 'return'));
 
 		return $script;
@@ -335,13 +369,16 @@ class PVLibraries extends PVStaticObject {
 	 * Add a library that will be auto loaded when loadLibraries is called. The libraries
 	 * added will be available through the class.
 	 *
-	 * @param folder_name The name of folder that contains the library. By default the folder should be in the PV_Libraries
+	 * @param folder_name The name of folder that contains the library. By default the folder should be
+	 * in the PV_Libraries
 	 * 		  DEFINE location. Also acts as the library name when being referenced
 	 * @param array $options Options than can be used to configure the library that will be loaded
 	 * 			-'path' _string_: The path to the library. The default path is PV_LIBRARIES.$folder_name.DS
-	 * 			-'auto_load' _boolean_: When true, library will become part of the spl_autoload. Default is true. Other the library will not be auto_loaded
+	 * 			-'auto_load' _boolean_: When true, library will become part of the spl_autoload. Default is
+	 * true. Other the library will not be auto_loaded
 	 * 			-'explicit_load' _boolean_: Default is false. If set to false
-	 * 			-'extensions' _array_: An array of allowed file extensions that will be included when the library loads. Default is .php
+	 * 			-'extensions' _array_: An array of allowed file extensions that will be included when the
+	 * library loads. Default is .php
 	 *
 	 * @return void
 	 * @access public
@@ -351,10 +388,19 @@ class PVLibraries extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $folder_name, $options);
 
-		$defaults = array('path' => PV_LIBRARIES . $folder_name . DS, 'auto_load' => true, 'explicit_load' => false, 'extensions' => array('.php'));
+		$defaults = array(
+			'path' => PV_LIBRARIES . $folder_name . DS,
+			'auto_load' => true,
+			'explicit_load' => false,
+			'extensions' => array('.php')
+		);
 
 		$options += $defaults;
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('folder_name' => $folder_name, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'folder_name' => $folder_name,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$folder_name = $filtered['folder_name'];
 		$options = $filtered['options'];
 
@@ -363,8 +409,10 @@ class PVLibraries extends PVStaticObject {
 	}
 
 	/**
-	 * Looks through any libraries that have been added through addLibrary function. If there ae libraries
-	 * and their autoload is set to true, the library's file and folders will be included and made accessible.
+	 * Looks through any libraries that have been added through addLibrary function. If there ae
+	 * libraries
+	 * and their autoload is set to true, the library's file and folders will be included and made
+	 * accessible.
 	 *
 	 * @return void
 	 * @access public
@@ -373,8 +421,8 @@ class PVLibraries extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
-		
-		self:: _buildAutoLoads();
+
+		self::_buildAutoLoads();
 
 		if (!empty(self::$libraries)) {
 
@@ -390,10 +438,12 @@ class PVLibraries extends PVStaticObject {
 	}//end loadLibraries
 
 	/**
-	 * Explicity loads a specfic library, even if autoload is set to false. If the library is already loaded, the files that have already
+	 * Explicity loads a specfic library, even if autoload is set to false. If the library is already
+	 * loaded, the files that have already
 	 * been included WILL NOT be re-included.
 	 *
-	 * @param string $library_name The name of the library to be load. Will be the same name passed when addLibrary was used.
+	 * @param string $library_name The name of the library to be load. Will be the same name passed when
+	 * addLibrary was used.
 	 *
 	 * @return void
 	 * @access public
@@ -407,13 +457,13 @@ class PVLibraries extends PVStaticObject {
 
 		if (isset(self::$libraries[$library_name])) {
 			$library = PVFileManager::getFilesInDirectory(self::$libraries[$library_name]['path'], array('verbose' => true));
-			
-			if(self::$libraries[$library_name]['auto_load'])
+
+			if (self::$libraries[$library_name]['auto_load'])
 				self::_buildAutoLoads();
-			
-			if(self::$libraries[$library_name]['explicit_load'])
+
+			if (self::$libraries[$library_name]['explicit_load'])
 				self::_loadLibrary($library, self::$libraries[$library_name]['extensions']);
-			
+
 			self::_notify(get_class() . '::' . __FUNCTION__, $library_name);
 		}//end loadLibrary
 
@@ -422,7 +472,8 @@ class PVLibraries extends PVStaticObject {
 	/**
 	 * Loads the library that is passed through. Uses include_once when including a file.
 	 *
-	 * @param array $library An array of the library that contains directores, files, and file information
+	 * @param array $library An array of the library that contains directores, files, and file
+	 * information
 	 * @param array $allow_extensions The allowed extensions
 	 *
 	 * @return void
@@ -433,7 +484,11 @@ class PVLibraries extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $library, $allow_extensions);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('library' => $library, 'allow_extensions' => $allow_extensions), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'library' => $library,
+			'allow_extensions' => $allow_extensions
+		), array('event' => 'args'));
+		
 		$library = $filtered['library'];
 		$allow_extensions = $filtered['allow_extensions'];
 
@@ -445,10 +500,10 @@ class PVLibraries extends PVStaticObject {
 					include_once ($key);
 				} else {
 					$extensions_allowed = (is_array($allow_extensions)) ? implode($allow_extensions, '|') : $allow_extensions;
-				
+
 					if (preg_match('/' . $extensions_allowed . '/', $value['basename'], $matches)) {
-					
-						$key =  str_replace('\\', '/', $key);
+
+						$key = str_replace('\\', '/', $key);
 						include_once ($key);
 					}
 				}
@@ -459,63 +514,66 @@ class PVLibraries extends PVStaticObject {
 	}//end _loadLibrary
 
 	/**
-	 * Build an array of the classes to autoload through spl_autoload if thec classes are not automatically included.
-	 * 
+	 * Build an array of the classes to autoload through spl_autoload if thec classes are not
+	 * automatically included.
+	 *
 	 * @return void
 	 * @access public
 	 * @todo Find a faster method for autloading
 	 */
 	protected static function _buildAutoLoads() {
-		
+
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
-		
+
 		foreach (self::$libraries as $library) {
-			
-			if($library['auto_load']) {
+
+			if ($library['auto_load']) {
 				$allow_extensions = $library['extensions'];
-				
+
 				$directory_iterator = new RecursiveDirectoryIterator($library['path']);
 				$iterator_iterator = new RecursiveIteratorIterator($directory_iterator, RecursiveIteratorIterator::SELF_FIRST);
+				
 				foreach ($iterator_iterator as $file) {
 					$extensions_allowed = (is_array($allow_extensions)) ? implode($allow_extensions, '|') : $allow_extensions;
-					
-					if (false === strpos($file -> getFilename(), '~') && 0 < strpos($file -> getFilename(), '.php') && preg_match('/' . $extensions_allowed . '/', $file -> getBasename(), $matches)) {
-						
-						if(self::$_namespaced ||  (isset($library['namespaced']) && $library['namespaced'] ) ) {
-							if(isset($library['path'])){
-                                                                $namespace = basename($library['path']).DS.str_replace($library['path'], '', $file -> getPathname());
-                                                        } else {
-                                                                $namespace = str_replace(PV_LIBRARIES, '', $file -> getPathname());
-                                                        }
+
+					if (false === strpos($file->getFilename(), '~') && 0 < strpos($file->getFilename(), '.php') && preg_match('/' . $extensions_allowed . '/', $file->getBasename(), $matches)) {
+
+						if (self::$_namespaced || (isset($library['namespaced']) && $library['namespaced'])) {
+							if (isset($library['path'])) {
+								$namespace = basename($library['path']) . DS . str_replace($library['path'], '', $file->getPathname());
+							} else {
+								$namespace = str_replace(PV_LIBRARIES, '', $file->getPathname());
+							}
 							$namespace = str_replace($matches[0], '', $namespace);
-							self::$_autoloadClasses[$namespace] = $file -> getPathname();
+							self::$_autoloadClasses[$namespace] = $file->getPathname();
 						} else {
-							self::$_autoloadClasses[$file -> getBasename($matches[0])] = $file -> getPathname();
+							self::$_autoloadClasses[$file->getBasename($matches[0])] = $file->getPathname();
 						}
 					}
 				}//end inter foreach
 			}//end if autoload
 		}//endforeach
-		
+
 	}
-	
+
 	/**
-	 * Will attempt to autoload the classes if a class cannot be found. Works with namespaced classes also.
-	 * 
+	 * Will attempt to autoload the classes if a class cannot be found. Works with namespaced classes
+	 * also.
+	 *
 	 * @param $classname The name of the class to autoload
-	 * 
+	 *
 	 * @return void
 	 * @access protected
 	 * @todo Fix for dealing with namespaces
 	 */
 	protected static function _autoload($classname) {
-		
-		$classname =  str_replace('\\', '/', $classname);
-		
+
+		$classname = str_replace('\\', '/', $classname);
+
 		if (isset(self::$_autoloadClasses[$classname]) && is_readable(self::$_autoloadClasses[$classname])) {
 			include_once self::$_autoloadClasses[$classname];
 		}
 	}
-	
+
 }//end class

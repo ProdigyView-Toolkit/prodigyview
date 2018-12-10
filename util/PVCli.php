@@ -1,43 +1,44 @@
 <?php
 /**
  * Command Line Interface (CLI) utility class.
- * 
+ *
  * This is an adaptation of Patrick Fisher command line parser for PHP. The class has been modified
  * to utilizes adapters, filter and observers natively present in ProdigyView.
  *
  * @author              Patrick Fisher <patrick@pwfisher.com>
  * @since               August 21, 2009
  * @see                 https://github.com/pwfisher/CommandLine.php
- * 
+ *
  * This work is licensed under the Creative Commons Attribution License.
  * http://creativecommons.org/licenses/by/3.0/
- * 
- * @package util 
+ *
+ * @package util
  */
-class PVCli extends PVStaticObject  {
-	
+class PVCli extends PVStaticObject {
+
 	/**
 	 * Args parsed from command linke entry
 	 */
 	public static $args;
-	
+
 	/**
 	 * Parse the command line arguements
-	 * 
+	 *
 	 * @param string $argv Arguements from teh command line
-	 * 
+	 *
 	 * @return array An array of items to output
 	 */
 	public static function parse($argv = null) {
-		
+
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $argv);
-		
+
 		$argv = self::_applyFilter(get_class(), __FUNCTION__, $argv, array('event' => 'args'));
-		
+
 		$argv = ($argv) ? : $_SERVER['argv'];
 
 		array_shift($argv);
+		
 		$out = array();
 
 		for ($i = 0, $j = count($argv); $i < $j; $i++) {
@@ -101,7 +102,7 @@ class PVCli extends PVStaticObject  {
 		}
 
 		self::$args = $out;
-		
+
 		$out = self::_applyFilter(get_class(), __FUNCTION__, $out, array('event' => 'return'));
 
 		return $out;
@@ -109,17 +110,17 @@ class PVCli extends PVStaticObject  {
 
 	/**
 	 * GET BOOLEAN
-	 * 
+	 *
 	 * @param string $key
 	 * @param string $default
-	 * 
+	 *
 	 * @todo Revist for figure out what this function was for.
 	 */
 	public static function getBoolean($key, $default = false) {
-		
+
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $default);
-		
+
 		if (!isset(self::$args[$key])) {
 			return $default;
 		}
@@ -135,7 +136,18 @@ class PVCli extends PVStaticObject  {
 
 		if (is_string($value)) {
 			$value = strtolower($value);
-			$map = array('y' => true, 'n' => false, 'yes' => true, 'no' => false, 'true' => true, 'false' => false, '1' => true, '0' => false, 'on' => true, 'off' => false, );
+			$map = array(
+				'y' => true,
+				'n' => false,
+				'yes' => true,
+				'no' => false,
+				'true' => true,
+				'false' => false,
+				'1' => true,
+				'0' => false,
+				'on' => true,
+				'off' => false,
+			);
 			if (isset($map[$value])) {
 				return $map[$value];
 			}

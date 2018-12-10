@@ -1,10 +1,10 @@
 <?php
 /**
  * PVMathematics is a class for doing computations.
- * 
+ *
  * The class is relatively incomplete and could use more important functions to ease development.
- * 
- * @package util 
+ *
+ * @package util
  */
 class PVMathematics extends PVStaticObject {
 
@@ -64,9 +64,9 @@ class PVMathematics extends PVStaticObject {
 
 	/**
 	 * Converts Seconds into minutes
-	 * 
+	 *
 	 * @param int $seconds The amount of seconds
-	 * 
+	 *
 	 * @return double $minutes The number of minutes
 	 */
 	public static function convertSecondsToMinutes($seconds) {
@@ -76,9 +76,9 @@ class PVMathematics extends PVStaticObject {
 
 	/**
 	 * Converts the number of seconds into days
-	 * 
+	 *
 	 * @param int $seconds The amount of seconds
-	 * 
+	 *
 	 * @return double $days The number of days derived from those seconds
 	 */
 	public static function convertSecondsToDays($seconds) {
@@ -88,9 +88,9 @@ class PVMathematics extends PVStaticObject {
 
 	/**
 	 * Converts the seconds between two periods in an elasped time
-	 * 
+	 *
 	 * @param int $seconds The number of seconds
-	 * 
+	 *
 	 * @return string $timeElasped
 	 */
 	public static function convertSecondsIntoElapsedTime($seconds) {

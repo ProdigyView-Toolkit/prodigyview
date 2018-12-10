@@ -1,9 +1,10 @@
 <?php
 /**
  * PVBootstrap is responsible for initializing the system the system by initializing all the classes.
- * 
- * This class will have to be refactored, but it was designed to give base options for creating a secure environment based off of a configuration file that would be passed to it.
- * 
+ *
+ * This class will have to be refactored, but it was designed to give base options for creating a
+ * secure environment based off of a configuration file that would be passed to it.
+ *
  * @TODO rework this class and decide if still needed
  * @package system
  */
@@ -26,7 +27,8 @@ class PVBootstrap extends PVStaticObject {
 	 *			-'load_libraries' _boolean_: Loads the libraries that have been added
 	 * 			-'load_configuration' _boolean_: Loads the xml configuration file
 	 * 			-'load_database' _boolean_: Opens up a connection to the database.
-	 * 			-'load_database_profile' _mixed_: Connects to the specified database that the option 'load_database' connects too.
+	 * 			-'load_database_profile' _mixed_: Connects to the specified database that the option
+	 * 'load_database' connects too.
 	 *
 	 * @return void
 	 * @access public
@@ -37,30 +39,47 @@ class PVBootstrap extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 
 		$defaults = array(
-			'initialize_database' => true, 
-			'initialize_libraries' => true, 
-			'initialize_router' => true, 
-			'initialize_template' => true, 
-			'initialize_validator' => true, 
-			'initialize_security' => true, 
-			'initialize_session' => true, 
-			'initialize_cache' => true, 
+			'initialize_database' => true,
+			'initialize_libraries' => true,
+			'initialize_router' => true,
+			'initialize_template' => true,
+			'initialize_validator' => true,
+			'initialize_security' => true,
+			'initialize_session' => true,
+			'initialize_cache' => true,
 			'initialize_mail' => true,
 			'initialize_video' => true,
 			'initialize_audio' => true,
 			'initialize_image' => true,
-			'load_plugins' => true, 
-			'load_libraries' => true, 
+			'load_plugins' => true,
+			'load_libraries' => true,
 			'load_configuration' => true,
-			'load_database' => true, 
-			'load_database_profile' => 0, 
-			'config' => array('report_errors' => false, 'log_errors' => true, 'error_report_level' => E_ALL, 'enable_cache' => true, 'unset_cookie' => false, 'unset_session' => false, 'unset_post' => false, 'unset_get' => false, 'unset_request' => false, 'unset_env' => false, 'unset_files' => false, 'unset_server' => false, 'cache_time' => 15));
+			'load_database' => true,
+			'load_database_profile' => 0,
+			'config' => array(
+				'report_errors' => false,
+				'log_errors' => true,
+				'error_report_level' => E_ALL,
+				'enable_cache' => true,
+				'unset_cookie' => false,
+				'unset_session' => false,
+				'unset_post' => false,
+				'unset_get' => false,
+				'unset_request' => false,
+				'unset_env' => false,
+				'unset_files' => false,
+				'unset_server' => false,
+				'cache_time' => 15
+			)
+		);
 
 		$args += $defaults;
-		if ($args['load_configuration'])
+		
+		if ($args['load_configuration']) {
 			$config = PVConfiguration::getSiteCompleteConfiguration() + $defaults['config'];
-		else
+		} else {
 			$config = $args['config'] + $defaults['config'];
+		}
 
 		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
 
@@ -68,7 +87,7 @@ class PVBootstrap extends PVStaticObject {
 
 		if ($args['initialize_database'])
 			PVDatabase::init($config);
-		
+
 		if ($args['load_database'])
 			PVDatabase::setDatabase($args['load_database_profile']);
 
@@ -92,19 +111,19 @@ class PVBootstrap extends PVStaticObject {
 
 		if ($args['initialize_session'])
 			PVSession::init($config);
-		
+
 		if ($args['initialize_cache'])
 			PVCache::init($config);
-		
+
 		if ($args['initialize_mail'])
 			PVMail::init($config);
-			
+
 		if ($args['initialize_video'])
 			PVVideo::init($config);
-		
+
 		if ($args['initialize_audio'])
 			PVAudio::init($config);
-		
+
 		if ($args['initialize_image'])
 			PVImage::init($config);
 
@@ -167,7 +186,7 @@ class PVBootstrap extends PVStaticObject {
 	 * 2. Report fatal, notices and warnings
 	 * 3. Report everything except notices
 	 * 4. Report everything
-	 * 
+	 *
 	 * Or the values such as E_ALL, E_ALL ^ NOTICE, etc can be passed in.
 	 *
 	 *In your xml configuration, look for these tags.
@@ -187,7 +206,12 @@ class PVBootstrap extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $report_errors, $log_errors, $error_report_level);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('report_errors' => $report_errors, 'log_errors' => $log_errors, 'error_report_level' => $error_report_level), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'report_errors' => $report_errors,
+			'log_errors' => $log_errors,
+			'error_report_level' => $error_report_level
+		), array('event' => 'args'));
+		
 		$report_errors = $filtered['report_errors'];
 		$log_errors = $filtered['log_errors'];
 		$error_report_level = $filtered['error_report_level'];
@@ -220,11 +244,10 @@ class PVBootstrap extends PVStaticObject {
 		self::_notify(get_class() . '::' . __FUNCTION__, $report_errors, $log_errors, $error_report_level);
 	}//end setReporting
 
-
 	/**
 	 * Unsets a global at launch. Use for removing data from $_GET, $_SESSION
 	 * $_POST, $_COOKIE, $_REQUEST, $_ENV.
-	 * 
+	 *
 	 * @param string $global The global variable to unset
 	 *
 	 * @return void
@@ -248,9 +271,9 @@ class PVBootstrap extends PVStaticObject {
 
 	/**
 	 * Strips the slashes from an array
-	 * 
+	 *
 	 * @param array $array The array to modify
-	 * 
+	 *
 	 * @return array
 	 */
 	private static function stripSlashesRecursive($array) {
@@ -285,7 +308,7 @@ class PVBootstrap extends PVStaticObject {
 	 * At boot, set in what amount of time the header will expire in. Should be
 	 * set in munutes. The configuration for this file can be changed in the xml
 	 * configuration file in the <cache_time>x</cache_time> tags.
-	 * 
+	 *
 	 * @param int $expirationMinutes The amount of minutes in with the header will expire
 	 *
 	 * @return void

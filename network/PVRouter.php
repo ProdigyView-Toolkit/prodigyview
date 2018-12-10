@@ -1,9 +1,12 @@
 <?php
 /**
- * PVRouter is responsible for parsing the URL setting up the ability for routing within your application.
- * 
- * Applications, especially with Frontend Controller Design Pattern, may require routing to get a user to their destination correctly. This class can take rules, route and correctly navigate the user to their destination.
- * 
+ * PVRouter is responsible for parsing the URL setting up the ability for routing within your
+ * application.
+ *
+ * Applications, especially with Frontend Controller Design Pattern, may require routing to get a
+ * user to their destination correctly. This class can take rules, route and correctly navigate the
+ * user to their destination.
+ *
  * @package network
  */
 class PVRouter extends PVStaticObject {
@@ -12,27 +15,27 @@ class PVRouter extends PVStaticObject {
 	 * A list of routes that have been added
 	 */
 	private static $routes;
-	
+
 	/**
 	 * Items within a route, after is has been parsed
 	 */
 	private static $route_parameters;
-	
+
 	/**
 	 * Configurationoptions around a route
 	 */
 	private static $route_options;
-	
+
 	/**
 	 * Attempt to make Seo friendy urls
 	 */
 	private static $seo_urls;
-	
+
 	/**
 	 * Specifies what to look for when defining a parameter in a router
 	 */
 	private static $default_rule_replace = '/:([a-z]+)/';
-	
+
 	/**
 	 * When a rule is found, speficies what to replace it with before parsing
 	 */
@@ -45,8 +48,10 @@ class PVRouter extends PVStaticObject {
 	 *
 	 * @param array $config The configuration to add to the router.
 	 * 			-'seo_urls' _boolean_: Defaulted to true, specifiy to always make the urls appear seo friendly
-	 * 			-'default_rule_replace' _string_: Specifies what to look for when defining a parameter in a router
-	 * 			-'default_route_replace' _string_ : When a rule is found, speficies what to replace it with before parsing
+	 * 			-'default_rule_replace' _string_: Specifies what to look for when defining a parameter in a
+	 * router
+	 * 			-'default_route_replace' _string_ : When a rule is found, speficies what to replace it with
+	 * before parsing
 	 *
 	 * @return void
 	 * @access public
@@ -57,8 +62,8 @@ class PVRouter extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
 		$defaults = array(
-			'seo_urls' => true, 
-			'default_rule_replace' => '/:([a-z]+)/', 
+			'seo_urls' => true,
+			'default_rule_replace' => '/:([a-z]+)/',
 			'default_route_replace' => '(?P<\1>[^/]+)'
 		);
 
@@ -144,7 +149,8 @@ class PVRouter extends PVStaticObject {
 	 * Adds a rule to the router. The rule determines how the
 	 * router will react..
 	 *
-	 * @param mixed $route Can a string that merely sets a rule or an array with configuration information for rule.
+	 * @param mixed $route Can a string that merely sets a rule or an array with configuration
+	 * information for rule.
 	 * 			- 'rule' _string_: A rule to follow that will be matched using a preg_match.
 	 * 			- 'redirect' _string_: A location to redirect if the uri matches the rule
 	 * 			- 'access_level' _int_: A level of access required for the matching rule.
@@ -162,11 +168,11 @@ class PVRouter extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $route);
 
 		$defaults = array(
-			'route' => null, 
-			'access_level' => null, 
-			'access_level_redirect' => null, 
-			'user_roles' => null, 
-			'user_roles_redirect' => null, 
+			'route' => null,
+			'access_level' => null,
+			'access_level_redirect' => null,
+			'user_roles' => null,
+			'user_roles_redirect' => null,
 			'rule' => null,
 			'activate_ssl' => false,
 			'deactivate_ssl' => false
@@ -209,23 +215,23 @@ class PVRouter extends PVStaticObject {
 		}
 
 		$routes = array();
-		
-		$pos = @strpos($uri, '?');
-		
-                if($pos !== false) {
-                	$uri = substr_replace($uri, '', $pos , strlen($uri));
-                }
 
-                $uri_parts = explode('/', $uri);
-                
-                foreach($uri_parts as $key => $value) {
-                        if(empty($uri_parts[$key])){
-                                unset($uri_parts[$key]);
-                        }
-                }
-                
-                $uri_parts = array_values($uri_parts);
-                $uri = '/' . implode('/', $uri_parts);
+		$pos = @strpos($uri, '?');
+
+		if ($pos !== false) {
+			$uri = substr_replace($uri, '', $pos, strlen($uri));
+		}
+
+		$uri_parts = explode('/', $uri);
+
+		foreach ($uri_parts as $key => $value) {
+			if (empty($uri_parts[$key])) {
+				unset($uri_parts[$key]);
+			}
+		}
+
+		$uri_parts = array_values($uri_parts);
+		$uri = '/' . implode('/', $uri_parts);
 
 		$assigned_route = array();
 		$default_route = array();
@@ -277,12 +283,10 @@ class PVRouter extends PVStaticObject {
 		self::$route_options = $route_options;
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $final_route, $route_options);
-		
-		if(!empty($route_options['activate_ssl']) && $route_options['activate_ssl'] && !self::isSecureConnection()) {
+
+		if (!empty($route_options['activate_ssl']) && $route_options['activate_ssl'] && !self::isSecureConnection()) {
 			self::activateSSL();
-		}
-		
-		else if(!empty($route_options['deactivate_ssl']) && $route_options['deactivate_ssl'] && self::isSecureConnection()) {
+		} else if (!empty($route_options['deactivate_ssl']) && $route_options['deactivate_ssl'] && self::isSecureConnection()) {
 			self::deactivateSSL();
 		}
 
@@ -338,31 +342,29 @@ class PVRouter extends PVStaticObject {
 
 	/**
 	 * Returns all the variables that are specified in a route.
-	 * 
+	 *
 	 * @return array
 	 * @access public
 	 */
 	public static function getRouteVariables() {
-		
+
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
-		
 		$data = self::$route_parameters;
-		
+
 		self::_notify(get_class() . '::' . __FUNCTION__, $data);
-		$data = self::_applyFilter(get_class(), __FUNCTION__, $data , array('event' => 'return'));
-		
+		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
+
 		return $data;
-		
-		
+
 	}
-	
+
 	/**
 	 * Returns a parameter that is embeed within the route.
-	 * 
+	 *
 	 * @param string $parameter The parameter being looked for
-	 * 
+	 *
 	 * @return string The found value, if any
 	 */
 	public static function getRouteParameter($parameter) {
@@ -411,7 +413,10 @@ class PVRouter extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('url' => $url, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'url' => $url,
+			'options' => $options
+		), array('event' => 'args'));
 		$url = $filtered['url'];
 		$options = $filtered['options'];
 
@@ -452,7 +457,7 @@ class PVRouter extends PVStaticObject {
 	 *
 	 * @param string $url A url to be redirected too.
 	 * @param boolean $exit Exit script after header is set
-	 * 
+	 *
 	 * @return void
 	 * @access public
 	 */
@@ -470,25 +475,25 @@ class PVRouter extends PVStaticObject {
 			self::setRoute($url);
 			header('Location: ' . self::url($url));
 		}
-		
-		if($exit)
+
+		if ($exit)
 			exit();
 	}
-	
+
 	/**
 	 * Determines of the connection is secure behind SSL to TLS. Default
 	 * functionality utilizes the server.
-	 * 
+	 *
 	 * @return boolean Return true is secure, otherwise false
 	 */
-	public static function isSecureConnection(){
-		
+	public static function isSecureConnection() {
+
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
-		
+
 		if ($_SERVER['HTTPS'] != 'on')
 			return false;
-		
+
 		return true;
 	}
 

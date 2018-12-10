@@ -1,14 +1,18 @@
 <?php
-/** 
- * The PVConfiguration acts a global registry for system-wide configuration options for the application.
- * 
- * The configuration class is most notably used for setting variables that can be retrieved anywhere in your system with the setters and getters. There is also the option of setting different environment.
- * 
+/**
+ * The PVConfiguration acts a global registry for system-wide configuration options for the
+ * application.
+ *
+ * The configuration class is most notably used for setting variables that can be retrieved anywhere
+ * in your system with the setters and getters. There is also the option of setting different
+ * environment.
+ *
  * Example:
+ * 
  * ```php
  * //Init the class
  * PVConfiguration::init();
- * 
+ *
  * //Add An Example Configuration
  * $data = array(
  * 	'host'=>'localhost',
@@ -17,29 +21,28 @@
  * 	'password'=>'abc123'
  * );
  * PVConfiguration::addConfiguration('mysql',  $data);
- * 
+ *
  * //Retrieve and use that configuration
  * $mysql = PVConfiguration::getConfiguration('mysql');
  * echo $mysql->host;
- * 
+ *
  * //Set different configs for different environments
  * PVConfiguration::addConfiguration('mysql',  $data, array('environment' => 'production'));
  * ```
- * 
+ *
  * @package system
  */
 class PVConfiguration extends PVStaticObject {
-	
+
 	/**
 	 * The environment, ie production, staging, development, etc.
 	 */
 	protected static $_environment = '';
-	
+
 	/**
 	 * Configuration options that have been set.
 	 */
 	protected static $_configurations = '';
-	
 
 	/**
 	 * Initializes the configuration class by adding values to the collection
@@ -57,15 +60,15 @@ class PVConfiguration extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 
 		$args = self::_applyFilter(get_class(), __FUNCTION__, $args, array('event' => 'args'));
-		
-		if(isset($args['environment'])) {
+
+		if (isset($args['environment'])) {
 			self::$_environment = $args['environment'];
 			unset($args['environment']);
 		}
-		
+
 		if (!empty($args)) {
 			foreach ($args as $key => $value) {
-				self::addToCollectionWithName($key.'_'.self::$_environment , $value);
+				self::addToCollectionWithName($key . '_' . self::$_environment, $value);
 			}
 		}
 
@@ -88,18 +91,22 @@ class PVConfiguration extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $value);
-		
+
 		$defaults = array('environment' => self::$_environment);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'value' => $value, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'value' => $value,
+			'options' => $options
+		), array('event' => 'args'));
 		$key = $filtered['key'];
 		$value = $filtered['value'];
 		$options = $filtered['options'];
-		
+
 		$environment = $options['environment'];
 
-		self::addToCollectionWithName($key.'_'.$environment , $value);
+		self::addToCollectionWithName($key . '_' . $environment, $value);
 		self::_notify(get_class() . '::' . __FUNCTION__, $key, $value);
 	}
 
@@ -118,17 +125,20 @@ class PVConfiguration extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key);
-		
+
 		$defaults = array('environment' => self::$_environment);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'options' => $options
+		), array('event' => 'args'));
 		$key = $filtered['key'];
 		$options = $filtered['options'];
-		
+
 		$environment = $options['environment'];
 
-		$value = parent::get($key.'_'.$environment);
+		$value = parent::get($key . '_' . $environment);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $key, $value);
 		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
@@ -156,16 +166,16 @@ class PVConfiguration extends PVStaticObject {
 		$parameter_array = array();
 
 		$doc = new DOMDocument();
-		$doc -> formatOutput = true;
-		$doc -> preserveWhiteSpace = false;
-		$doc -> load($filename);
-		$node_array = $doc -> getElementsByTagName($node_name);
+		$doc->formatOutput = true;
+		$doc->preserveWhiteSpace = false;
+		$doc->load($filename);
+		$node_array = $doc->getElementsByTagName($node_name);
 
 		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
+			if ($node->childNodes->length) {
 				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					$parameter_array[$i->nodeName] = $i->nodeValue;
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 				}//end foreach
 			}//end if
 
@@ -194,16 +204,16 @@ class PVConfiguration extends PVStaticObject {
 		$parameter_array = array();
 
 		$doc = new DOMDocument();
-		$doc -> formatOutput = true;
-		$doc -> preserveWhiteSpace = false;
-		$doc -> load($filename);
-		$node_array = $doc -> getElementsByTagName('email');
+		$doc->formatOutput = true;
+		$doc->preserveWhiteSpace = false;
+		$doc->load($filename);
+		$node_array = $doc->getElementsByTagName('email');
 
 		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
+			if ($node->childNodes->length) {
 				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					$parameter_array[$i->nodeName] = $i->nodeValue;
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 				}//end foreach
 			}//end if
 
@@ -232,16 +242,16 @@ class PVConfiguration extends PVStaticObject {
 		$parameter_array = array();
 
 		$doc = new DOMDocument();
-		$doc -> formatOutput = true;
-		$doc -> preserveWhiteSpace = false;
-		$doc -> load($filename);
-		$node_array = $doc -> getElementsByTagName('sessions');
+		$doc->formatOutput = true;
+		$doc->preserveWhiteSpace = false;
+		$doc->load($filename);
+		$node_array = $doc->getElementsByTagName('sessions');
 
 		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
+			if ($node->childNodes->length) {
 				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					$parameter_array[$i->nodeName] = $i->nodeValue;
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 				}//end foreach
 			}//end if
 
@@ -265,67 +275,67 @@ class PVConfiguration extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
-			
+
 		$parameter_array = array();
-		if(defined('PV_CONFIG') && file_exists(PV_CONFIG)) {
+		if (defined('PV_CONFIG') && file_exists(PV_CONFIG)) {
 			$filename = PV_CONFIG;
-	
+
 			$doc = new DOMDocument();
-			$doc -> formatOutput = true;
-			$doc -> preserveWhiteSpace = false;
-			$doc -> load($filename);
-			$node_array = $doc -> getElementsByTagName('general');
-	
+			$doc->formatOutput = true;
+			$doc->preserveWhiteSpace = false;
+			$doc->load($filename);
+			$node_array = $doc->getElementsByTagName('general');
+
 			foreach ($node_array as $node) {
-				if ($node -> childNodes -> length) {
+				if ($node->childNodes->length) {
 					foreach ($node->childNodes as $i) {
-						$parameter_array[$i -> nodeName] = $i -> nodeValue;
+						$parameter_array[$i->nodeName] = $i->nodeValue;
 					}//end foreach
 				}//end if
 			}//end foreach
-	
-			$node_array = $doc -> getElementsByTagName('email');
-	
+
+			$node_array = $doc->getElementsByTagName('email');
+
 			foreach ($node_array as $node) {
-				if ($node -> childNodes -> length) {
+				if ($node->childNodes->length) {
 					foreach ($node->childNodes as $i) {
-						$parameter_array[$i -> nodeName] = $i -> nodeValue;
-						self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+						$parameter_array[$i->nodeName] = $i->nodeValue;
+						self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 					}//end foreach
 				}//end if
-	
+
 			}//end foreach
-	
-			$node_array = $doc -> getElementsByTagName('system');
-	
+
+			$node_array = $doc->getElementsByTagName('system');
+
 			foreach ($node_array as $node) {
-				if ($node -> childNodes -> length) {
+				if ($node->childNodes->length) {
 					foreach ($node->childNodes as $i) {
-						$parameter_array[$i -> nodeName] = $i -> nodeValue;
-						self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+						$parameter_array[$i->nodeName] = $i->nodeValue;
+						self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 					}//end foreach
 				}//end if
-	
+
 			}//end foreach
-	
-			$node_array = $doc -> getElementsByTagName('libraries');
-	
+
+			$node_array = $doc->getElementsByTagName('libraries');
+
 			foreach ($node_array as $node) {
-				if ($node -> childNodes -> length) {
+				if ($node->childNodes->length) {
 					foreach ($node->childNodes as $i) {
-						$parameter_array[$i -> nodeName] = $i -> nodeValue;
-						self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+						$parameter_array[$i->nodeName] = $i->nodeValue;
+						self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 					}//end foreach
 				}//end if
 			}//end foreach
-	
-			$node_array = $doc -> getElementsByTagName('sessions');
-	
+
+			$node_array = $doc->getElementsByTagName('sessions');
+
 			foreach ($node_array as $node) {
-				if ($node -> childNodes -> length) {
+				if ($node->childNodes->length) {
 					foreach ($node->childNodes as $i) {
-						$parameter_array[$i -> nodeName] = $i -> nodeValue;
-						self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+						$parameter_array[$i->nodeName] = $i->nodeValue;
+						self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 					}//end foreach
 				}//end if
 			}
@@ -353,28 +363,28 @@ class PVConfiguration extends PVStaticObject {
 		$parameter_array = array();
 
 		$doc = new DOMDocument();
-		$doc -> formatOutput = true;
-		$doc -> preserveWhiteSpace = false;
-		$doc -> load($filename);
-		$node_array = $doc -> getElementsByTagName('general');
+		$doc->formatOutput = true;
+		$doc->preserveWhiteSpace = false;
+		$doc->load($filename);
+		$node_array = $doc->getElementsByTagName('general');
 
 		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
+			if ($node->childNodes->length) {
 				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					$parameter_array[$i->nodeName] = $i->nodeValue;
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 				}//end foreach
 			}//end if
 
 		}//end foreach
 
-		$node_array = $doc -> getElementsByTagName('email');
+		$node_array = $doc->getElementsByTagName('email');
 
 		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
+			if ($node->childNodes->length) {
 				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					$parameter_array[$i->nodeName] = $i->nodeValue;
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 				}//end foreach
 			}//end if
 
@@ -403,16 +413,16 @@ class PVConfiguration extends PVStaticObject {
 		$parameter_array = array();
 
 		$doc = new DOMDocument();
-		$doc -> formatOutput = true;
-		$doc -> preserveWhiteSpace = false;
-		$doc -> load($filename);
-		$node_array = $doc -> getElementsByTagName('system');
+		$doc->formatOutput = true;
+		$doc->preserveWhiteSpace = false;
+		$doc->load($filename);
+		$node_array = $doc->getElementsByTagName('system');
 
 		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
+			if ($node->childNodes->length) {
 				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					$parameter_array[$i->nodeName] = $i->nodeValue;
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 				}//end foreach
 			}//end if
 
@@ -441,16 +451,16 @@ class PVConfiguration extends PVStaticObject {
 		$parameter_array = array();
 
 		$doc = new DOMDocument();
-		$doc -> formatOutput = true;
-		$doc -> preserveWhiteSpace = false;
-		$doc -> load($filename);
-		$node_array = $doc -> getElementsByTagName('general');
+		$doc->formatOutput = true;
+		$doc->preserveWhiteSpace = false;
+		$doc->load($filename);
+		$node_array = $doc->getElementsByTagName('general');
 
 		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
+			if ($node->childNodes->length) {
 				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					$parameter_array[$i->nodeName] = $i->nodeValue;
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 				}//end foreach
 			}//end if
 
@@ -479,16 +489,16 @@ class PVConfiguration extends PVStaticObject {
 		$parameter_array = array();
 
 		$doc = new DOMDocument();
-		$doc -> formatOutput = true;
-		$doc -> preserveWhiteSpace = false;
-		$doc -> load($filename);
-		$node_array = $doc -> getElementsByTagName('server');
+		$doc->formatOutput = true;
+		$doc->preserveWhiteSpace = false;
+		$doc->load($filename);
+		$node_array = $doc->getElementsByTagName('server');
 
 		foreach ($node_array as $node) {
-			if ($node -> childNodes -> length) {
+			if ($node->childNodes->length) {
 				foreach ($node->childNodes as $i) {
-					$parameter_array[$i -> nodeName] = $i -> nodeValue;
-					self::addToCollectionWithName($i -> nodeName, $i -> nodeValue);
+					$parameter_array[$i->nodeName] = $i->nodeValue;
+					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
 				}//end foreach
 			}//end if
 

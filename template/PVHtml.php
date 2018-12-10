@@ -1,26 +1,27 @@
 <?php
 /**
  * PVHTML is a class designed for generating HTML elements to display to the user.
- * 
- * The class takes in basic HTML forms with options. The functionality can be used with dynamic form generation tools.
- * 
+ *
+ * The class takes in basic HTML forms with options. The functionality can be used with dynamic form
+ * generation tools.
+ *
  * Example:
  * ```php
  * //Create array of links
  * $links = array('Google', 'http://www.google.com', 'Facebook', 'http://www.facebook.com');
- * 
+ *
  * $html = '';
  * $li = '';
- * 
+ *
  * foreach($links as $key => $value):
  * 	 $li .= PVHtml::li(PVHtml::ahref($key, $value));
  * endforeach;
- * 
+ *
  * $html = PVHtml::ul($li);
- * 
+ *
  * $html = PVHtml::div($html, array('class' => 'container'));
  * echo $html;
- * 
+ *
  * //The following will be printed
  * <div class="container">
  * 	 <ul>
@@ -29,7 +30,7 @@
  * 	 </ul>
  * </div>
  * ```
- * 
+ *
  * @package template
  * @todo Add more HTML5 form elements
  */
@@ -42,8 +43,10 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getEventAttributes()
 	 * @see self::getStandardAttributes()
 	 *
-	 * @param string $location Either a url of the image or the path to the image in the PV_IMAGE define location
-	 * @param array $options Attributes that can be added to the image. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param string $location Either a url of the image or the path to the image in the PV_IMAGE define
+	 * location
+	 * @param array $options Attributes that can be added to the image. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 * 				-'image_width' _double_: The width of the image
 	 * 				-'image_height' _double_: The height of the image
 	 * 				-'width' _double_: The width of the image
@@ -60,10 +63,17 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $location, $options);
 
-		$defaults = array('alt' => '', 'append_location' => true);
+		$defaults = array(
+			'alt' => '',
+			'append_location' => true
+		);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('location' => $location, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'location' => $location,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$location = $filtered['location'];
 		$options = $filtered['options'];
 
@@ -123,7 +133,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $time A time value
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 * 				-'datetime' _string_: Tags to go in the datetime tags
 	 * 				-'pubdate' _string_: Tags to go in the pubdate
 	 *
@@ -135,7 +146,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $time, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('time' => $time, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'time' => $time,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$time = $filtered['time'];
 		$options = $filtered['options'];
 
@@ -160,7 +175,7 @@ class PVHtml extends PVStaticObject {
 		return $tag;
 
 	}//end getImageDisplay
-	
+
 	/**
 	 * Generate an html element for displaying an iframe.
 	 *
@@ -169,7 +184,8 @@ class PVHtml extends PVStaticObject {
 	 *
 	 * @param string $src The source of the iframe
 	 * @param string $data The data to inside the iframe take
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 * 				-'frameborder' _string_: Tags to go in the frameborder
 	 * 				-'marginheight' _string_: Tags to go in the marginheight
 	 * 				-'marginwidth' _string_: Tags to go in the marginweidth
@@ -184,7 +200,12 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $time, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('src' => $src, 'data' => $data , 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'src' => $src,
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$src = $filtered['src'];
 		$data = $filtered['data'];
 		$options = $filtered['options'];
@@ -198,15 +219,15 @@ class PVHtml extends PVStaticObject {
 		if (isset($options['marginheight']) && !empty($options['marginheight'])) {
 			$tag .= 'marginheight="' . $options['marginheight'] . '" ';
 		}
-		
+
 		if (isset($options['marginwidth']) && !empty($options['marginwidth'])) {
 			$tag .= 'marginwidth="' . $options['marginwidth'] . '" ';
 		}
-		
+
 		if (isset($options['scrolling']) && !empty($options['scrolling'])) {
 			$tag .= 'scrolling="' . $options['scrolling'] . '" ';
 		}
-		
+
 		if (isset($options['longdesc']) && !empty($options['longdesc'])) {
 			$tag .= 'longdesc="' . $options['longdesc'] . '" ';
 		}
@@ -231,8 +252,10 @@ class PVHtml extends PVStaticObject {
 	 * @see PVRouter::url()
 	 *
 	 * @param string $title The title of link that the user will see
-	 * @param mixed $url A url that the link will point too. If the url is an array or not a valid url, it will be passed to PVRouter::url.
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param mixed $url A url that the link will point too. If the url is an array or not a valid url,
+	 * it will be passed to PVRouter::url.
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 * 				-'charset' _string_: Value to go in the charset tag.
 	 * 				-'hreflang' _string_: Value to go in the hreflang tag.
 	 * 				-'name' _string_: Value tog go in the name attribute
@@ -248,7 +271,12 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $title, $url, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('title' => $title, 'url' => $url, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'title' => $title,
+			'url' => $url,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$title = $filtered['title'];
 		$url = $filtered['url'];
 		$options = $filtered['options'];
@@ -307,8 +335,10 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 * @see PVRouter::url()
 	 *
-	 * @param mixed $url A url that the link will point too. If the url is an array or not a valid url, it will be passed to PVRouter::url.
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param mixed $url A url that the link will point too. If the url is an array or not a valid url,
+	 * it will be passed to PVRouter::url.
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 * 				-'hreflang' _string_: Value to go in the hreflang tag.
 	 * 				-'name' _string_: Value tog go in the name attribute
 	 * 				-'rel' _string_: Value to go in the rel attribute
@@ -323,7 +353,10 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('url' => $url, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'url' => $url,
+			'options' => $options
+		), array('event' => 'args'));
 		$url = $filtered['url'];
 		$options = $filtered['options'];
 
@@ -349,7 +382,7 @@ class PVHtml extends PVStaticObject {
 		if (!empty($options['rel'])) {
 			$link .= 'rel="' . $options['rel'] . '" ';
 		}
-		
+
 		if (!empty($options['type'])) {
 			$link .= 'type="' . $options['type'] . '" ';
 		}
@@ -375,7 +408,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $name The name of the meta tag being generated
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 * 				-'charset' _string_: Value to go in the charset tag.
 	 * 				-'content' _string_: Value to go in the content attribute.
 	 * 				-'name' _string_: Value tog go in the name attribute
@@ -389,7 +423,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'name' => $name,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$options = $filtered['options'];
 
@@ -422,9 +460,11 @@ class PVHtml extends PVStaticObject {
 	}//end meta
 
 	/**
-	 * Displays a video using the HTML5 video component. For best usage, pass through a mp4, ogv and webm file.
+	 * Displays a video using the HTML5 video component. For best usage, pass through a mp4, ogv and webm
+	 * file.
 	 *
-	 * @param string $src The location of the video file to be played. Will be rendered by self::videoContentURL() function
+	 * @param string $src The location of the video file to be played. Will be rendered by
+	 * self::videoContentURL() function
 	 * @param array $options Options that can be used to define attributes in the elements tag
 	 * 				-'height' _double_: The height of the video
 	 * 				-'width' _width_: The width of the video
@@ -446,10 +486,17 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
 
-		$defaults = array('controls' => 'controls', 'error' => 'Sorry but your browser cannot play this HTML5 Element', 'append_location' => true);
+		$defaults = array(
+			'controls' => 'controls',
+			'error' => 'Sorry but your browser cannot play this HTML5 Element',
+			'append_location' => true
+		);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('src' => $src, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'src' => $src,
+			'options' => $options
+		), array('event' => 'args'));
 		$src = $filtered['src'];
 		$options = $filtered['options'];
 
@@ -515,9 +562,11 @@ class PVHtml extends PVStaticObject {
 	}//end getVideoDisplay
 
 	/**
-	 * Displays an audio clip using the HTML5 audio component. For best usage, pass through a wav, mp3 and oga file.
+	 * Displays an audio clip using the HTML5 audio component. For best usage, pass through a wav, mp3
+	 * and oga file.
 	 *
-	 * @param string $src The location of the audio file to be played. Will be rendered by self::audioContentURL() function
+	 * @param string $src The location of the audio file to be played. Will be rendered by
+	 * self::audioContentURL() function
 	 * @param array $options Options that can be used to define attributes in the elements tag
 	 * 				-'controls' _string_: The controls attributes.
 	 * 				-'audio' '_string_: THe audio attribute
@@ -537,10 +586,19 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
 
-		$defaults = array('controls' => 'controls', 'error' => 'Sorry but your browser cannot play this HTML5 Element', 'append_location' => true);
+		$defaults = array(
+			'controls' => 'controls',
+			'error' => 'Sorry but your browser cannot play this HTML5 Element',
+			'append_location' => true
+		);
+		
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('src' => $src, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'src' => $src,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$src = $filtered['src'];
 		$options = $filtered['options'];
 
@@ -600,7 +658,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information thatwill be displayed inside the div
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $div The div element that was generated
 	 * @access public
@@ -610,7 +669,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -620,7 +683,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a <h1></h1> to display.
 	 *
@@ -628,7 +691,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the heaader tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $header The header element that was generated
 	 * @access public
@@ -638,7 +702,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -649,7 +717,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a <h2></h2> to display.
 	 *
@@ -657,7 +725,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the heaader tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $header The header element that was generated
 	 * @access public
@@ -667,7 +736,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -678,7 +751,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a <h3></h3> to display.
 	 *
@@ -686,7 +759,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the heaader tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $header The header element that was generated
 	 * @access public
@@ -696,7 +770,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -707,7 +785,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a <h4></h4> to display.
 	 *
@@ -715,7 +793,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the heaader tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $header The header element that was generated
 	 * @access public
@@ -725,7 +804,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -736,7 +819,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a <h5></h5> to display.
 	 *
@@ -744,7 +827,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the heaader tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $header The header element that was generated
 	 * @access public
@@ -754,7 +838,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -765,7 +853,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a <h6></h6> to display.
 	 *
@@ -773,7 +861,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the heaader tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $header The header element that was generated
 	 * @access public
@@ -783,7 +872,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -794,7 +887,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a paragraph tag ,<p></p>, to display.
 	 *
@@ -802,7 +895,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the paragraph tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $header The paragraph element that was generated
 	 * @access public
@@ -812,7 +906,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -823,7 +921,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a span tag ,<span></span>, to display.
 	 *
@@ -831,7 +929,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the span tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $header The span element that was generated
 	 * @access public
@@ -841,7 +940,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -852,7 +955,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a article tag ,<article></article>, to display.
 	 *
@@ -860,7 +963,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the article tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $article The article element that was generated
 	 * @access public
@@ -870,7 +974,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -881,7 +989,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a address tag ,<address></address>, to display.
 	 *
@@ -889,7 +997,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the address tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $address The address element that was generated
 	 * @access public
@@ -899,7 +1008,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -910,7 +1023,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a strong tag ,<strong></strong>, to display.
 	 *
@@ -918,7 +1031,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the strong tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $strong The strong element that was generated
 	 * @access public
@@ -928,7 +1042,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -939,7 +1057,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a summary tag ,<summary></ssummary>, to display.
 	 *
@@ -947,7 +1065,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the strong tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $summary The summary element that was generated
 	 * @access public
@@ -957,7 +1076,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -968,7 +1091,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a details tag ,<details></details>, to display.
 	 *
@@ -976,7 +1099,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the details tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $details The details element that was generated
 	 * @access public
@@ -986,7 +1110,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -997,7 +1125,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a aside tag ,<aside></aside>, to display.
 	 *
@@ -1005,7 +1133,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the aside tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $aside The aside element that was generated
 	 * @access public
@@ -1015,7 +1144,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -1026,7 +1159,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a canvas tag ,<canvas></canvas>, to display.
 	 *
@@ -1034,7 +1167,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the canvas tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $aside The canvas element that was generated
 	 * @access public
@@ -1044,7 +1178,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -1055,7 +1193,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a strong li ,<li></li>, to display.
 	 *
@@ -1063,7 +1201,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the li tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $strong The strong element that was generated
 	 * @access public
@@ -1073,7 +1212,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -1084,7 +1227,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a strong ul ,<ul></ul>, to display.
 	 *
@@ -1092,7 +1235,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the ul tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $strong The strong element that was generated
 	 * @access public
@@ -1102,7 +1246,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -1113,7 +1261,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a strong ol ,<ol></ol>, to display.
 	 *
@@ -1121,7 +1269,8 @@ class PVHtml extends PVStaticObject {
 	 * @see self::getStandardAttributes()
 	 *
 	 * @param string $data The information that will be displayed inside the ol tag
-	 * @param array $options Attributes that can be added to the element. includes self::getStandardAttributes and self::getEventAttributes
+	 * @param array $options Attributes that can be added to the element. includes
+	 * self::getStandardAttributes and self::getEventAttributes
 	 *
 	 * @return string $strong The strong element that was generated
 	 * @access public
@@ -1131,7 +1280,11 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
@@ -1142,7 +1295,7 @@ class PVHtml extends PVStaticObject {
 
 		return $tag;
 	}
-	
+
 	/**
 	 * Creates a progress input element with options passed too it.
 	 *
@@ -1154,7 +1307,8 @@ class PVHtml extends PVStaticObject {
 	 * @param string $value The current value for the progress bar
 	 * @param string $max The max value for the progress bar
 	 * @param array $options Options than can be used to further distinguish the element. The options are
-	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes,
+	 * PVHTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 *
 	 * @return string $element The string that creates the element
@@ -1165,7 +1319,12 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('value' => $value, 'max' => $max, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'value' => $value,
+			'max' => $max,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$value = $filtered['value'];
 		$max = $filtered['max'];
 		$options = $filtered['options'];
@@ -1173,7 +1332,7 @@ class PVHtml extends PVStaticObject {
 		$label = '<progress ';
 		$label .= 'value="' . $value . '" ';
 		$label .= 'max="' . $max . '" ';
-		
+
 		$label .= PVHtml::getStandardAttributes($options);
 		$label .= PVHtml::getEventAttributes($options);
 
@@ -1184,10 +1343,10 @@ class PVHtml extends PVStaticObject {
 
 		return $label;
 	}
-	
 
 	/**
-	 * Standard attributes that are present in many html tags. This functionisused for assigning those attribute by passing
+	 * Standard attributes that are present in many html tags. This functionisused for assigning those
+	 * attribute by passing
 	 * them in as an array and returning them as a string. Contains both html and html5 elements
 	 *
 	 * @param array $attributes Attribues that will be assigned if they match
@@ -1219,7 +1378,24 @@ class PVHtml extends PVStaticObject {
 		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
 
 		$return_attributes = '';
-		$accepted_attributes = array('class', 'id', 'dir', 'lang', 'style', 'title', 'xml:lang', 'accesskey', 'contenteditable', 'contextmenu', 'draggable', 'dropzone', 'hidden', 'spellcheck', 'title');
+		
+		$accepted_attributes = array(
+			'class',
+			'id',
+			'dir',
+			'lang',
+			'style',
+			'title',
+			'xml:lang',
+			'accesskey',
+			'contenteditable',
+			'contextmenu',
+			'draggable',
+			'dropzone',
+			'hidden',
+			'spellcheck',
+			'title'
+		);
 
 		foreach ($attributes as $key => $attribute) {
 			if (in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)) {
@@ -1235,9 +1411,9 @@ class PVHtml extends PVStaticObject {
 
 	/**
 	 * Matches options pased with javascript event actions such as onabort, onclick, etc.
-	 * 
+	 *
 	 * @param array $attributes An array of attributes check if its an event
-	 * 
+	 *
 	 * @return string Html attributes if any matched
 	 */
 	public static function getEventAttributes($attributes = array()) {
@@ -1248,7 +1424,30 @@ class PVHtml extends PVStaticObject {
 		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
 
 		$return_attributes = '';
-		$accepted_attributes = array('onabort', 'onclick', 'ondblclick', 'onmousedown', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onkeydown', 'onkeypress', 'onkeyup', 'onblur', 'onfocus', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onmousewheel', 'onscroll');
+		$accepted_attributes = array(
+			'onabort',
+			'onclick',
+			'ondblclick',
+			'onmousedown',
+			'onmousemove',
+			'onmouseout',
+			'onmouseover',
+			'onmouseup',
+			'onkeydown',
+			'onkeypress',
+			'onkeyup',
+			'onblur',
+			'onfocus',
+			'ondrag',
+			'ondragend',
+			'ondragenter',
+			'ondragleave',
+			'ondragover',
+			'ondragstart',
+			'ondrop',
+			'onmousewheel',
+			'onscroll'
+		);
 
 		foreach ($attributes as $key => $attribute) {
 			if (in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)) {
@@ -1264,9 +1463,9 @@ class PVHtml extends PVStaticObject {
 
 	/**
 	 * Searches for media attributes that go with media tags like video/audio.
-	 * 
+	 *
 	 * @param array $attributes An array of attributes to assign
-	 * 
+	 *
 	 * @return string Html attributes if any matched
 	 */
 	public static function getMediaEventAttributes($attributes = array()) {
@@ -1277,7 +1476,30 @@ class PVHtml extends PVStaticObject {
 		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
 
 		$return_attributes = '';
-		$accepted_attributes = array('oncanplay', 'oncanplaythrough', 'ondurationchange', 'onemptied', 'onended', 'onerror', 'onloadeddata', 'onloadedmetadata', 'onloadstart', 'onpause', 'onplay', 'onplaying', 'onprogress', 'onratechange', 'onreadystatechange', 'onseeked', 'onseeking', 'onstalled', 'onsuspend', 'ontimeupdate', 'onvolumechange', 'onwaiting');
+		$accepted_attributes = array(
+			'oncanplay',
+			'oncanplaythrough',
+			'ondurationchange',
+			'onemptied',
+			'onended',
+			'onerror',
+			'onloadeddata',
+			'onloadedmetadata',
+			'onloadstart',
+			'onpause',
+			'onplay',
+			'onplaying',
+			'onprogress',
+			'onratechange',
+			'onreadystatechange',
+			'onseeked',
+			'onseeking',
+			'onstalled',
+			'onsuspend',
+			'ontimeupdate',
+			'onvolumechange',
+			'onwaiting'
+		);
 
 		foreach ($attributes as $key => $attribute) {
 			if (in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)) {
@@ -1293,9 +1515,9 @@ class PVHtml extends PVStaticObject {
 
 	/**
 	 * Searches for media attributes that go with window javascript events.
-	 * 
+	 *
 	 * @param array $attributes An array of attributes to assign
-	 * 
+	 *
 	 * @return string Html attributes if any matched
 	 */
 	public static function getWindowAttributes($attributes = array()) {
@@ -1305,7 +1527,27 @@ class PVHtml extends PVStaticObject {
 
 		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
 
-		$accepted_attributes = array('onafterprint', 'onbeforeprint', 'ondurationchange', 'onbeforeonload', 'onblur', 'onerror', 'onfocus', 'onhaschange', 'onload', 'onmessage', 'onoffline', 'ononline', 'onpageshow', 'onpopstate', 'onredo', 'onresize', 'onstorage', 'onundo', 'onunload');
+		$accepted_attributes = array(
+			'onafterprint',
+			'onbeforeprint',
+			'ondurationchange',
+			'onbeforeonload',
+			'onblur',
+			'onerror',
+			'onfocus',
+			'onhaschange',
+			'onload',
+			'onmessage',
+			'onoffline',
+			'ononline',
+			'onpageshow',
+			'onpopstate',
+			'onredo',
+			'onresize',
+			'onstorage',
+			'onundo',
+			'onunload'
+		);
 
 		foreach ($attributes as $key => $attribute) {
 			if (in_array($key, $accepted_attributes) && !PVValidator::isInteger($key)) {
@@ -1318,14 +1560,15 @@ class PVHtml extends PVStaticObject {
 
 		return $return_attributes;
 	}
-	
+
 	/**
 	 * Creates an html tag.
-	 * 
+	 *
 	 * @param string $tag The name of the tag, such as div, main, etc.
 	 * @param string $data The content that will go instead the element
 	 * @param array $options Options than can be used to further distinguish the element. The options are
-	 * 				the same values that will be passed through PVHTML::getStandardAttributes, PVHTML::getEventAttributes
+	 * 				the same values that will be passed through PVHTML::getStandardAttributes,
+	 * PVHTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 */
 	public static function generateHtmlTag($tag, $data, $options = array()) {
@@ -1333,7 +1576,12 @@ class PVHtml extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $tag, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('tag'=> $tag, 'data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'tag' => $tag,
+			'data' => $data,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$tag = $filtered['tag'];
 		$data = $filtered['data'];
 		$options = $filtered['options'];
@@ -1341,7 +1589,7 @@ class PVHtml extends PVStaticObject {
 		$generated_tag = '<' . $tag . ' ';
 		$generated_tag .= self::getStandardAttributes($options);
 		$generated_tag .= self::getEventAttributes($options);
-		$generated_tag .= '>' . $data . '</'.$tag.'>';
+		$generated_tag .= '>' . $data . '</' . $tag . '>';
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $generated_tag, $tag, $data, $options);
 		$generated_tag = self::_applyFilter(get_class(), __FUNCTION__, $generated_tag, array('event' => 'return'));
@@ -1351,10 +1599,10 @@ class PVHtml extends PVStaticObject {
 
 	/**
 	 * Not sure if the function is needed or still make sense
-	 * 
+	 *
 	 * @param string $url url of the file
 	 * @param boolean $append_location Appends the PV_AUDIo tage
-	 * 
+	 *
 	 * @return string
 	 * @todo check if function is still valid
 	 */
@@ -1373,10 +1621,10 @@ class PVHtml extends PVStaticObject {
 
 	/**
 	 * Not sure if the function is needed or still make sense
-	 * 
+	 *
 	 * @param string $url url of the file
 	 * @param boolean $append_location Appends the PV_AUDIo tage
-	 * 
+	 *
 	 * @return string
 	 * @todo check if function is still valid
 	 */

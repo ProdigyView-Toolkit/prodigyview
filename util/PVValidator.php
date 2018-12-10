@@ -1,33 +1,34 @@
 <?php
 /**
  * PVValidator is a dynamically extendable class used to validate inputs.
- * 
- * The class can be used to check for a variety of inputs to validate data from mime types to correct syntax for a URL. The class is also extendable to add more validation rules.
- * 
+ *
+ * The class can be used to check for a variety of inputs to validate data from mime types to correct
+ * syntax for a URL. The class is also extendable to add more validation rules.
+ *
  * Examples:
  * ```php
  * //Check if a file is an integer
- * 
+ *
  * if(PVValidator::check('integer', '3.4')) {
  * 	echo 'I am an integer';
  * }
- * 
+ *
  * if(PVValidator::check('url', 'http://www.google.com')) {
  *     echo 'I am a valid url';
  * }
- * 
+ *
  * //Add custom validation rule
  * PVValidator::addRule('is_currency', array('function' => function($number) {
  *     return preg_match("/^-?[0-9]+(?:\.[0-9]{1,2})?$/", $number);
  * }));
- * 
+ *
  * //Check against custom rule
  * if(PVValidator::check(‘is_currecny’, '$10.00')) {
  * 	echo 'I am currency';
  * }
  * ```
- * 
- * @package util 
+ *
+ * @package util
  */
 class PVValidator extends PVStaticObject {
 
@@ -39,7 +40,7 @@ class PVValidator extends PVStaticObject {
 	/**
 	 * Initializes PVValidators and sets the default for checking rules. The defaults allows the function
 	 * PVValidator::check() to function propery.
-	 * 
+	 *
 	 * @param array $config The configuration for init the class
 	 *
 	 * @return void
@@ -55,59 +56,191 @@ class PVValidator extends PVStaticObject {
 
 		self::$rules = array();
 
-		self::$rules['id'] = array('type' => 'validator', 'function' => 'isID');
-		self::$rules['integer'] = array('type' => 'validator', 'function' => 'isInteger');
-		self::$rules['double'] = array('type' => 'validator', 'function' => 'isDouble');
+		self::$rules['id'] = array(
+			'type' => 'validator',
+			'function' => 'isID'
+		);
+		
+		self::$rules['integer'] = array(
+			'type' => 'validator',
+			'function' => 'isInteger'
+		);
+		
+		self::$rules['double'] = array(
+			'type' => 'validator',
+			'function' => 'isDouble'
+		);
 
 		//Audio File Validation
-		self::$rules['audio_file'] = array('type' => 'validator', 'function' => 'isAudioFile');
-		self::$rules['midi_file'] = array('type' => 'validator', 'function' => 'isMidiFile');
-		self::$rules['mp3_file'] = array('type' => 'validator', 'function' => 'isMpegAudioFile');
-		self::$rules['wav_file'] = array('type' => 'validator', 'function' => 'isWavFile');
-		self::$rules['aiff_file'] = array('type' => 'validator', 'function' => 'isAiffFile');
-		self::$rules['ra_file'] = array('type' => 'validator', 'function' => 'isRealAudioFile');
-		self::$rules['oga_file'] = array('type' => 'validator', 'function' => 'isOGGAudioFile');
+		self::$rules['audio_file'] = array(
+			'type' => 'validator',
+			'function' => 'isAudioFile'
+		);
+		
+		self::$rules['midi_file'] = array(
+			'type' => 'validator',
+			'function' => 'isMidiFile'
+		);
+		
+		self::$rules['mp3_file'] = array(
+			'type' => 'validator',
+			'function' => 'isMpegAudioFile'
+		);
+		
+		self::$rules['wav_file'] = array(
+			'type' => 'validator',
+			'function' => 'isWavFile'
+		);
+		
+		self::$rules['aiff_file'] = array(
+			'type' => 'validator',
+			'function' => 'isAiffFile'
+		);
+		
+		self::$rules['ra_file'] = array(
+			'type' => 'validator',
+			'function' => 'isRealAudioFile'
+		);
+		
+		self::$rules['oga_file'] = array(
+			'type' => 'validator',
+			'function' => 'isOGGAudioFile'
+		);
 
 		//Image File Validation
-		self::$rules['image_file'] = array('type' => 'validator', 'function' => 'isImageFile');
-		self::$rules['bmp_file'] = array('type' => 'validator', 'function' => 'isBmpFile');
-		self::$rules['jpg_file'] = array('type' => 'validator', 'function' => 'isJpegFile');
-		self::$rules['png_file'] = array('type' => 'validator', 'function' => 'isPngFile');
-		self::$rules['gif_file'] = array('type' => 'validator', 'function' => 'isGifFile');
+		self::$rules['image_file'] = array(
+			'type' => 'validator',
+			'function' => 'isImageFile'
+		);
+		
+		self::$rules['bmp_file'] = array(
+			'type' => 'validator',
+			'function' => 'isBmpFile'
+		);
+		
+		self::$rules['jpg_file'] = array(
+			'type' => 'validator',
+			'function' => 'isJpegFile'
+		);
+		
+		self::$rules['png_file'] = array(
+			'type' => 'validator',
+			'function' => 'isPngFile'
+		);
+		
+		self::$rules['gif_file'] = array(
+			'type' => 'validator',
+			'function' => 'isGifFile'
+		);
 
 		//Video File Validation
-		self::$rules['video_file'] = array('type' => 'validator', 'function' => 'isVideoFile');
-		self::$rules['mpeg_file'] = array('type' => 'validator', 'function' => 'isMpegVideoFile');
-		self::$rules['quicktime_file'] = array('type' => 'validator', 'function' => 'isQuickTimeFile');
-		self::$rules['mov_file'] = array('type' => 'validator', 'function' => 'isMovFile');
-		self::$rules['avi_file'] = array('type' => 'validator', 'function' => 'isAviFile');
-		self::$rules['ogv_file'] = array('type' => 'validator', 'function' => 'isOGGVideoFile');
+		self::$rules['video_file'] = array(
+			'type' => 'validator',
+			'function' => 'isVideoFile'
+		);
+		self::$rules['mpeg_file'] = array(
+			'type' => 'validator',
+			'function' => 'isMpegVideoFile'
+		);
+		
+		self::$rules['quicktime_file'] = array(
+			'type' => 'validator',
+			'function' => 'isQuickTimeFile'
+		);
+		
+		self::$rules['mov_file'] = array(
+			'type' => 'validator',
+			'function' => 'isMovFile'
+		);
+		
+		self::$rules['avi_file'] = array(
+			'type' => 'validator',
+			'function' => 'isAviFile'
+		);
+		
+		self::$rules['ogv_file'] = array(
+			'type' => 'validator',
+			'function' => 'isOGGVideoFile'
+		);
 
 		//Compressed File
-		self::$rules['compressed_file'] = array('type' => 'validator', 'function' => 'isCompressedFile');
-		self::$rules['zip_file'] = array('type' => 'validator', 'function' => 'isZipFile');
-		self::$rules['tar_file'] = array('type' => 'validator', 'function' => 'isTarFile');
-		self::$rules['gtar_file'] = array('type' => 'validator', 'function' => 'isGTarFile');
+		self::$rules['compressed_file'] = array(
+			'type' => 'validator',
+			'function' => 'isCompressedFile'
+		);
+		
+		self::$rules['zip_file'] = array(
+			'type' => 'validator',
+			'function' => 'isZipFile'
+		);
+		self::$rules['tar_file'] = array(
+			'type' => 'validator',
+			'function' => 'isTarFile'
+		);
+		
+		self::$rules['gtar_file'] = array(
+			'type' => 'validator',
+			'function' => 'isGTarFile'
+		);
 
 		//Other Validators
-		self::$rules['url'] = array('type' => 'validator', 'function' => 'isValidUrl');
-		self::$rules['active_url'] = array('type' => 'validator', 'function' => 'isActiveUrl');
-		self::$rules['email'] = array('type' => 'validator', 'function' => 'isValidEmail');
-		self::$rules['notempty'] = array('type' => 'preg_match', 'rule' => '/[^\s]+/m');
+		self::$rules['url'] = array(
+			'type' => 'validator',
+			'function' => 'isValidUrl'
+		);
+		
+		self::$rules['active_url'] = array(
+			'type' => 'validator',
+			'function' => 'isActiveUrl'
+		);
+		
+		self::$rules['email'] = array(
+			'type' => 'validator',
+			'function' => 'isValidEmail'
+		);
+		
+		self::$rules['notempty'] = array(
+			'type' => 'preg_match',
+			'rule' => '/[^\s]+/m'
+		);
 
 		//Other File Validiation
-		self::$rules['css_file'] = array('type' => 'validator', 'function' => 'isCssFile');
-		self::$rules['html_file'] = array('type' => 'validator', 'function' => 'isHtmlFile');
-		self::$rules['htm_file'] = array('type' => 'validator', 'function' => 'isHtmFile');
-		self::$rules['asc_file'] = array('type' => 'validator', 'function' => 'isAscFile');
-		self::$rules['text_file'] = array('type' => 'validator', 'function' => 'isTxtFile');
-		self::$rules['richtext_file'] = array('type' => 'validator', 'function' => 'isRtxFile');
+		self::$rules['css_file'] = array(
+			'type' => 'validator',
+			'function' => 'isCssFile'
+		);
+		
+		self::$rules['html_file'] = array(
+			'type' => 'validator',
+			'function' => 'isHtmlFile'
+		);
+		
+		self::$rules['htm_file'] = array(
+			'type' => 'validator',
+			'function' => 'isHtmFile'
+		);
+		
+		self::$rules['asc_file'] = array(
+			'type' => 'validator',
+			'function' => 'isAscFile'
+		);
+		
+		self::$rules['text_file'] = array(
+			'type' => 'validator',
+			'function' => 'isTxtFile'
+		);
+		
+		self::$rules['richtext_file'] = array(
+			'type' => 'validator',
+			'function' => 'isRtxFile'
+		);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $config);
 	}
 
 	/**
-	 * Add a rule to the validator or modify a current one with the name name. Checks can either be closures(PHP 5.3)
+	 * Add a rule to the validator or modify a current one with the name name. Checks can either be
+	 * closures(PHP 5.3)
 	 * or preg_match, or calls to other function.
 	 *
 	 * @param string $rule The name of the rule
@@ -115,7 +248,8 @@ class PVValidator extends PVStaticObject {
 	 * 			-'type' _string_: The type of validation to perform. There are currently 4 supported types.
 	 * 			1. 'closures' If you are in php 5.3, a closure function can be passed and validated against
 	 * 			2. 'preg_match' Validation will be peformoned using a preg_match. Rule must be passed in.
-	 * 			3. 'function' A php function that is stores in a string and called. Create the function using 'create_function' method
+	 * 			3. 'function' A php function that is stores in a string and called. Create the function using
+	 * 'create_function' method
 	 * 			4. 'validator' Calls a function in the validator to be exectued
 	 * 			-'rule' _string_: A rule to be checked against if the type is a preg_match
 	 * 			-'function' _mixed_: Either a string that is a function or an annoymous function.
@@ -128,11 +262,19 @@ class PVValidator extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $rule, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('rule' => $rule, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'rule' => $rule,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$rule = $filtered['rule'];
 		$options = $filtered['options'];
 
-		$defaults = array('type' => 'closure', 'function' => '', 'rule' => '', );
+		$defaults = array(
+			'type' => 'closure',
+			'function' => '',
+			'rule' => '',
+		);
 
 		$options += $defaults;
 		self::$rules[$rule] = $options;
@@ -162,7 +304,11 @@ class PVValidator extends PVStaticObject {
 			$passable_args[$key] = &$arg;
 		}
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('rule' => $rule, 'passasbe_args' => $passable_args), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'rule' => $rule,
+			'passasbe_args' => $passable_args
+		), array('event' => 'args'));
+		
 		$rule = $filtered['rule'];
 		$passable_args = $filtered['passasbe_args'];
 		$validation = false;
@@ -184,6 +330,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $rule);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -212,6 +359,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $int);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -240,6 +388,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $double);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -266,6 +415,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $id);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -286,7 +436,17 @@ class PVValidator extends PVStaticObject {
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
 
-		$audio_types = array('audio/basic', 'audio/midi', 'audio/mpeg', 'audio/x-aiff', 'audio/x-mpegurl', 'audio/x-pn-realaudio', 'audio/x-realaudio', 'audio/x-wav');
+		$audio_types = array(
+			'audio/basic',
+			'audio/midi',
+			'audio/mpeg',
+			'audio/x-aiff',
+			'audio/x-mpegurl',
+			'audio/x-pn-realaudio',
+			'audio/x-realaudio',
+			'audio/x-wav'
+		);
+		
 		$validation = false;
 
 		if (in_array(strtolower($mimetype), $audio_types)) {
@@ -294,6 +454,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -313,6 +474,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'audio/midi') {
@@ -320,6 +482,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -339,6 +502,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'audio/mpeg' || $mimetype == 'audio/mp3') {
@@ -346,6 +510,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -365,6 +530,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'audio/x-aiff') {
@@ -372,6 +538,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -391,6 +558,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'audio/x-wav') {
@@ -398,6 +566,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -417,6 +586,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'audio/x-realaudio') {
@@ -424,6 +594,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -443,6 +614,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'audio/ogg' || $mimetype == 'application/ogg') {
@@ -450,6 +622,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -469,15 +642,26 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
-		$image_types = array('image/bmp', 'image/gif', 'image/ief', 'image/jpeg', 'image/png', 'image/tiff', 'image/pjpeg', 'image/x-png');
+		$image_types = array(
+			'image/bmp',
+			'image/gif',
+			'image/ief',
+			'image/jpeg',
+			'image/png',
+			'image/tiff',
+			'image/pjpeg',
+			'image/x-png'
+		);
 
 		if (in_array(strtolower($mimetype), $image_types)) {
 			$validation = true;
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -497,6 +681,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'image/bmp') {
@@ -504,6 +689,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -523,6 +709,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'image/gif') {
@@ -530,6 +717,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -549,6 +737,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'image/ief') {
@@ -556,6 +745,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -575,6 +765,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'image/jpeg' || $mimetype == 'image/pjpeg') {
@@ -582,6 +773,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -601,6 +793,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'image/png' || $mimetype == 'image/x-png') {
@@ -608,6 +801,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -627,6 +821,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'image/tiff') {
@@ -634,6 +829,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -653,15 +849,38 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
-		$video_types = array('video/mpeg', 'video/quicktime', 'video/vnd.mpegurl', 'video/x-msvideo', 'video/x-sgi-movie', 'video/mp4', 'video/ogg', 'video/webm', 'video/x-ms-wmv', 'application/x-troff-msvideo', 'video/avi', 'video/msvideo', 'video/mp4', 'application/mp4', 'application/vnd.rn-realmedia', 'video/x-ms-asf', 'video/ogg', 'application/ogg', 'video/webm', 'video/x-flv');
+		$video_types = array(
+			'video/mpeg',
+			'video/quicktime',
+			'video/vnd.mpegurl',
+			'video/x-msvideo',
+			'video/x-sgi-movie',
+			'video/mp4',
+			'video/ogg',
+			'video/webm',
+			'video/x-ms-wmv',
+			'application/x-troff-msvideo',
+			'video/avi',
+			'video/msvideo',
+			'video/mp4',
+			'application/mp4',
+			'application/vnd.rn-realmedia',
+			'video/x-ms-asf',
+			'video/ogg',
+			'application/ogg',
+			'video/webm',
+			'video/x-flv'
+		);
 
 		if (in_array(strtolower($mimetype), $video_types)) {
 			$validation = true;
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -681,6 +900,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/mpeg') {
@@ -688,6 +908,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -707,6 +928,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/x-ms-wmv') {
@@ -714,6 +936,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -733,6 +956,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/mp4' || $mimetype == 'application/mp4') {
@@ -740,6 +964,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -759,6 +984,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/x-flv') {
@@ -766,6 +992,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -785,6 +1012,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/quicktime') {
@@ -792,6 +1020,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -811,6 +1040,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/quicktime') {
@@ -818,6 +1048,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -837,6 +1068,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/vnd.mpegurl') {
@@ -844,6 +1076,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -863,6 +1096,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/x-msvideo' || $mimetype == 'video/avi' || $mimetype == 'video/msvideo' || $mimetype == 'application/x-troff-msvideo') {
@@ -870,6 +1104,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -889,6 +1124,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/ogg' || $mimetype == 'application/ogg') {
@@ -896,6 +1132,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -915,6 +1152,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'application/vnd.rn-realmedia') {
@@ -922,6 +1160,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -941,6 +1180,7 @@ class PVValidator extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
 
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		
 		$validation = false;
 
 		if ($mimetype == 'video/x-ms-asf') {
@@ -948,6 +1188,7 @@ class PVValidator extends PVStaticObject {
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		
 		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
@@ -995,7 +1236,12 @@ class PVValidator extends PVStaticObject {
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
-		$file_types = array('application/zip', 'application/x-gtar', 'application/x-tar', 'application/x-zip');
+		$file_types = array(
+			'application/zip',
+			'application/x-gtar',
+			'application/x-tar',
+			'application/x-zip'
+		);
 
 		if (in_array(strtolower($mimetype), $file_types)) {
 			$validation = true;
@@ -1257,7 +1503,10 @@ class PVValidator extends PVStaticObject {
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
-		$file_types = array('application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+		$file_types = array(
+			'application/msword',
+			'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+		);
 
 		if (in_array(strtolower($mimetype), $file_types)) {
 			$validation = true;
@@ -1337,7 +1586,10 @@ class PVValidator extends PVStaticObject {
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
-		$file_types = array('application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		$file_types = array(
+			'application/vnd.ms-excel',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+		);
 
 		if (in_array(strtolower($mimetype), $file_types)) {
 			$validation = true;
@@ -1417,7 +1669,10 @@ class PVValidator extends PVStaticObject {
 		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
-		$file_types = array('application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+		$file_types = array(
+			'application/vnd.ms-powerpoint',
+			'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+		);
 
 		if (in_array(strtolower($mimetype), $file_types)) {
 			$validation = true;
@@ -1434,7 +1689,8 @@ class PVValidator extends PVStaticObject {
 	 *
 	 * @param mixed $mimetype The value to check if it is a MS Powerpoint file mime type
 	 *
-	 * @return boolean $valid Returns true if the value is a MS Powerpoint file mime type, otherwise false
+	 * @return boolean $valid Returns true if the value is a MS Powerpoint file mime type, otherwise
+	 * false
 	 * @access public
 	 */
 	public static function isMicrosoftPPTFile($mimetype) {
@@ -1460,7 +1716,8 @@ class PVValidator extends PVStaticObject {
 	 *
 	 * @param mixed $mimetype The value to check if it is a MS PowerPoint file mime type
 	 *
-	 * @return boolean $valid Returns true if the value is a MS PowerPoint file mime type, otherwise false
+	 * @return boolean $valid Returns true if the value is a MS PowerPoint file mime type, otherwise
+	 * false
 	 * @access public
 	 */
 	public static function isMicrosoftPPTXFile($mimetype) {
@@ -1561,9 +1818,9 @@ class PVValidator extends PVStaticObject {
 
 	/**
 	 * Attempts to check if the url is an active url. Response should be 200.
-	 * 
+	 *
 	 * @param string $url The url to check if active
-	 * 
+	 *
 	 * @return boolean
 	 * @todo rewrite with PVCommunicator
 	 */
@@ -1594,7 +1851,8 @@ class PVValidator extends PVStaticObject {
 	 * @param array $options Options that can customize how the mime type is to be found.
 	 * 			-'search_method' _string_: The search method can either be found using strpos or preg_match.
 	 * 			The default is STRING_POSITION as the method, change to PREG_MATCH to use PREG_MATCH
-	 * 			-'magic_file' _string_: If you have phpinfo installed, it will be used for finding the mime_type. The
+	 * 			-'magic_file' _string_: If you have phpinfo installed, it will be used for finding the
+	 * mime_type. The
 	 * 			default magic file is not set and will use the default in the PVFileManager.
 	 *
 	 * @return boolean $found Returns true if the mime type was match, otherwise false
@@ -1608,7 +1866,11 @@ class PVValidator extends PVStaticObject {
 		$defaults = array('search_method' => 'STRING_POSITION');
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('file' => $file, 'options' => $options, 'mime_text' => $mime_text), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'file' => $file,
+			'options' => $options,
+			'mime_text' => $mime_text
+		), array('event' => 'args'));
 		$file = $filtered['file'];
 		$options = $filtered['options'];
 		$mime_text = $filtered['mime_text'];

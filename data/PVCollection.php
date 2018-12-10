@@ -1,14 +1,17 @@
 <?php
 /**
  * The PVCollection class acts as a repository for data to be stored, retrieved and iterated over.
+ *
+ * The collection class is a simple way of storing and getting information with key, value pairs, Any
+ * information can be stored and retrieved including strings, array, and objects. Some example use
+ * cases:
  * 
- * The collection class is a simple way of storing and getting information with key, value pairs, Any information can be stored and retrieved including strings, array, and objects. Some example use cases:
  * ```php
  * //Add data and increment over fit
  * $collection = new PVCollection();
  * $collection -> add('Apples');
  * $collection -> add('Oranges');
- * 
+ *
  * foreach($collection as $key => $value) {
  * 	echo $value;
  * }
@@ -20,7 +23,7 @@ class PVCollection implements IteratorAggregate {
 	 * The items stored in the collection, key=>value pair
 	 */
 	private $dataset = array();
-	
+
 	/**
 	 * The number of items in the collection
 	 */
@@ -31,13 +34,13 @@ class PVCollection implements IteratorAggregate {
 	 * it to the collection as the initial data.
 	 *
 	 * @param array $data An array of data
-	 * 
+	 *
 	 * @return void
 	 * @access public
 	 */
 	public function __construct($data = array()) {
-		$this -> dataset = $data;
-		$this -> count = count($data);
+		$this->dataset = $data;
+		$this->count = count($data);
 	}
 
 	/**
@@ -47,7 +50,7 @@ class PVCollection implements IteratorAggregate {
 	 * @access public
 	 */
 	public function getIterator() {
-		return new PVIterator($this -> dataset);
+		return new PVIterator($this->dataset);
 	}
 
 	/**
@@ -62,10 +65,11 @@ class PVCollection implements IteratorAggregate {
 	public function add($data) {
 
 		if (is_array($data)) {
-			$this -> dataset[$this -> count++] = PVConversions::arrayToObject($data);
+			$this->dataset[$this->count++] = PVConversions::arrayToObject($data);
 		} else {
-			$this -> dataset[$this -> count++] = $data;
+			$this->dataset[$this->count++] = $data;
 		}
+		
 	}//end add
 
 	/**
@@ -77,20 +81,20 @@ class PVCollection implements IteratorAggregate {
 	 * @access public
 	 */
 	public function __get($index) {
-		if (isset($this -> dataset[$index]))
-			return $this -> dataset[$index];
+		if (isset($this->dataset[$index]))
+			return $this->dataset[$index];
 	}
 
 	/**
 	 * Same as the magic function __get.
-	 * 
+	 *
 	 * @param string $index An index/key that will be used to find the value, if present
-	 * 
+	 *
 	 * @see get
 	 */
 	public function get($index) {
-		if (isset($this -> dataset[$index]))
-			return $this -> dataset[$index];
+		if (isset($this->dataset[$index]))
+			return $this->dataset[$index];
 	}
 
 	/**
@@ -106,12 +110,12 @@ class PVCollection implements IteratorAggregate {
 	public function addWithName($name, $data) {
 
 		if (is_array($data)) {
-			$this -> dataset[$name] = PVConversions::arrayToObject($data);
+			$this->dataset[$name] = PVConversions::arrayToObject($data);
 		} else {
-			$this -> dataset[$name] = $data;
+			$this->dataset[$name] = $data;
 		}
 
-		$this -> count++;
+		$this->count++;
 	}//end add
 
 	/**
@@ -123,15 +127,15 @@ class PVCollection implements IteratorAggregate {
 	 * @access public
 	 */
 	public function remove($index) {
-		if (isset($this -> dataset[$index]))
-			unset($this -> dataset[$index]);
+		if (isset($this->dataset[$index]))
+			unset($this->dataset[$index]);
 	}
-	
+
 	/**
 	 * Returns all the data
 	 */
 	public function getData() {
-		return $this -> dataset;
+		return $this->dataset;
 	}
 
 }//end class
@@ -140,10 +144,10 @@ class PVCollection implements IteratorAggregate {
  * A class used for iterating over items in loops.
  */
 class PVIterator implements Iterator {
-		
+
 	/**
 	 * The items to iterate over
-	 */	
+	 */
 	private $data = array();
 
 	/**
@@ -157,7 +161,7 @@ class PVIterator implements Iterator {
 	 */
 	public function __construct($array = array()) {
 		if (is_array($array)) {
-			$this -> data = $array;
+			$this->data = $array;
 		}
 	}
 
@@ -168,7 +172,7 @@ class PVIterator implements Iterator {
 	 * @access public
 	 */
 	public function rewind() {
-		reset($this -> data);
+		reset($this->data);
 	}
 
 	/**
@@ -179,7 +183,7 @@ class PVIterator implements Iterator {
 	 * @access public
 	 */
 	public function last() {
-		return end($this -> data);
+		return end($this->data);
 	}
 
 	/**
@@ -189,7 +193,7 @@ class PVIterator implements Iterator {
 	 * @access public
 	 */
 	public function current() {
-		$data = current($this -> data);
+		$data = current($this->data);
 		return $data;
 	}
 
@@ -200,7 +204,7 @@ class PVIterator implements Iterator {
 	 * @access public
 	 */
 	public function key() {
-		$data = key($this -> data);
+		$data = key($this->data);
 		return $data;
 	}
 
@@ -211,7 +215,7 @@ class PVIterator implements Iterator {
 	 * @access public
 	 */
 	public function next() {
-		$data = next($this -> data);
+		$data = next($this->data);
 		return $data;
 	}
 
@@ -222,7 +226,7 @@ class PVIterator implements Iterator {
 	 * @access public
 	 */
 	public function previous() {
-		$data = prev($this -> data);
+		$data = prev($this->data);
 		return $data;
 	}
 
@@ -233,27 +237,27 @@ class PVIterator implements Iterator {
 	 * @access public
 	 */
 	public function valid() {
-		$key = key($this -> data);
+		$key = key($this->data);
 		$data = ($key !== NULL && $key !== FALSE);
 		return $data;
 	}
-	
+
 	/**
 	 * Counts the number of elements currently in the iterator.
-	 * 
+	 *
 	 * @return int count
 	 * @access public
 	 */
 	public function count() {
-		return count($this -> data);
+		return count($this->data);
 	}
-	
+
 	/**
 	 * Returns the data as stored in the object
-	 * 
+	 *
 	 */
 	public function getData() {
-		return $this -> data;
+		return $this->data;
 	}
 
 }

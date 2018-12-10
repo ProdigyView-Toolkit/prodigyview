@@ -1,23 +1,24 @@
 <?php
 /**
  * PVSession is the class for handling the cookie session information related to the system.
- * 
- * The class offers a variety of tools for how to set up basic session control within your application. These features can be used in conjunction with other session handling methodologies.
- * 
+ *
+ * The class offers a variety of tools for how to set up basic session control within your
+ * application. These features can be used in conjunction with other session handling methodologies.
+ *
  * Example:
  * ```php
  * //Initialize the class
  * PVSession::init();
- * 
+ *
  * //Write data to a cookie
  * PVSession::writeCookie('foo', 'bar');
  * echo PVSession::readCookie('foo');
- * 
+ *
  * //Encrypt the  value
  * PVSession::writeCookie('foo', 'bar', array('hash_cookie' => true));
  * echo PVSession::readCookie('foo', array('hash_cookie' => true);
  * ```
- * 
+ *
  * @package system
  */
 class PVSession extends PVStaticObject {
@@ -26,58 +27,57 @@ class PVSession extends PVStaticObject {
 	 * The lifetime of the cookie
 	 */
 	private static $cookie_lifetime = 5000;
-	
+
 	/**
 	 * The cookie path
 	 */
 	private static $cookie_path = '/';
-	
+
 	/**
 	 * The cookie domain
 	 */
 	private static $cookie_domain = '';
-	
+
 	/**
 	 * Access the cookie only over an secure connection
 	 */
 	private static $cookie_secure = false;
-	
+
 	/**
 	 * Write to the cookie only over an http(s) connection
 	 */
 	private static $cookie_httponly = false;
-	
+
 	/**
 	 * Encrypt the cookie
 	 */
 	private static $hash_cookie = false;
 
-
 	/**
 	 * The lifetime of the session
 	 */
 	private static $session_lifetime = 5000;
-	
+
 	/**
 	 * The tmp path for the session
 	 */
 	private static $session_path = '/';
-	
+
 	/**
 	 * The domain for the session
 	 */
 	private static $session_domain = '';
-	
+
 	/**
 	 * Access the session only over a secure connection
 	 */
 	private static $session_secure = false;
-	
+
 	/**
 	 * Writes to the session only over an http connection
 	 */
 	private static $session_httponly = false;
-	
+
 	/**
 	 * Encrypt the session data
 	 */
@@ -110,19 +110,19 @@ class PVSession extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $session_vars);
 
 		$defaults = array(
-			'cookie_path' => '/', 
-			'cookie_domain' => $_SERVER['HTTP_HOST'], 
-			'cookie_secure' => false, 
-			'cookie_httponly' => false, 
-			'cookie_lifetime' => 5000, 
-			'hash_cookie' => false, 
-			'hash_session' => false, 
-			'session_name' => 'pv_session', 
-			'session_lifetime' => 2000, 
-			'session_path' => '/', 
-			'session_domain' => $_SERVER['HTTP_HOST'], 
-			'session_secure' => false, 
-			'session_httponly' => false, 
+			'cookie_path' => '/',
+			'cookie_domain' => $_SERVER['HTTP_HOST'],
+			'cookie_secure' => false,
+			'cookie_httponly' => false,
+			'cookie_lifetime' => 5000,
+			'hash_cookie' => false,
+			'hash_session' => false,
+			'session_name' => 'pv_session',
+			'session_lifetime' => 2000,
+			'session_path' => '/',
+			'session_domain' => $_SERVER['HTTP_HOST'],
+			'session_secure' => false,
+			'session_httponly' => false,
 			'session_start' => true
 		);
 
@@ -178,7 +178,13 @@ class PVSession extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
 
 		$options += self::getCookieDefaults();
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'value' => $value, 'options' => $options), array('event' => 'args'));
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'name' => $name,
+			'value' => $value,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$value = $filtered['value'];
 		$options = $filtered['options'];
@@ -205,7 +211,8 @@ class PVSession extends PVStaticObject {
 	 * @param array $options Options thats configure reading the cookie
 	 * 			-hash_cookie _boolean_: If the cookie was hashed, set the value to true
 	 *
-	 * @return mixed $value The value retrieved from the cookie. Arrays and objects serialized will be unseralized and returned.
+	 * @return mixed $value The value retrieved from the cookie. Arrays and objects serialized will be
+	 * unseralized and returned.
 	 * @access public
 	 */
 	public static function readCookie($name, $options = array()) {
@@ -214,7 +221,12 @@ class PVSession extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
 
 		$options += self::getCookieDefaults();
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'options' => $options), array('event' => 'args'));
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'name' => $name,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$options = $filtered['options'];
 
@@ -256,7 +268,12 @@ class PVSession extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
 
 		$options += self::getCookieDefaults();
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'options' => $options), array('event' => 'args'));
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'name' => $name,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$options = $filtered['options'];
 
@@ -290,7 +307,13 @@ class PVSession extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
 
 		$options += self::getSessionDefaults();
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'value' => $value, 'options' => $options), array('event' => 'args'));
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'name' => $name,
+			'value' => $value,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$value = $filtered['value'];
 		$options = $filtered['options'];
@@ -327,7 +350,12 @@ class PVSession extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
 
 		$options += self::getSessionDefaults();
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'options' => $options), array('event' => 'args'));
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'name' => $name,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$options = $filtered['options'];
 
@@ -368,7 +396,12 @@ class PVSession extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
 
 		$options += self::getSessionDefaults();
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'options' => $options), array('event' => 'args'));
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'name' => $name,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$options = $filtered['options'];
 
@@ -390,13 +423,13 @@ class PVSession extends PVStaticObject {
 	 * @access private
 	 */
 	private static function getCookieDefaults() {
-			
+
 		$defaults = array(
-			'cookie_path' => self::$cookie_path, 
-			'cookie_domain' => self::$cookie_domain, 
-			'cookie_secure' => self::$cookie_secure, 
-			'cookie_httponly' => self::$cookie_httponly, 
-			'cookie_lifetime' => self::$cookie_lifetime, 
+			'cookie_path' => self::$cookie_path,
+			'cookie_domain' => self::$cookie_domain,
+			'cookie_secure' => self::$cookie_secure,
+			'cookie_httponly' => self::$cookie_httponly,
+			'cookie_lifetime' => self::$cookie_lifetime,
 			'hash_cookie' => self::$hash_cookie
 		);
 
@@ -410,13 +443,13 @@ class PVSession extends PVStaticObject {
 	 * @access private
 	 */
 	private static function getSessionDefaults() {
-			
+
 		$defaults = array(
-			'session_path' => self::$session_path, 
-			'session_path' => self::$session_domain, 
-			'session_secure' => self::$session_secure, 
-			'session_httponly' => self::$session_httponly, 
-			'session_lifetime' => self::$session_lifetime, 
+			'session_path' => self::$session_path,
+			'session_path' => self::$session_domain,
+			'session_secure' => self::$session_secure,
+			'session_httponly' => self::$session_httponly,
+			'session_lifetime' => self::$session_lifetime,
 			'hash_session' => self::$hash_session
 		);
 

@@ -1,28 +1,29 @@
 <?php
 /**
  * PVCache is a system for caching data and retrieving cached data.
- * 
- * The default system uses a file cache for caching data. But the system through the adapter pattern is extendable to use any caching system attached to the application.
- * 
+ *
+ * The default system uses a file cache for caching data. But the system through the adapter pattern
+ * is extendable to use any caching system attached to the application.
+ *
  * Example:
  * ```php
  * //Init The Cache
  * PVCache::init();
- * 
+ *
  * $data = array('Apples', 'Oranges', 'Bananas');
- * 
+ *
  * //Check if cache has expired
  * if(PVCache::hasExpired('mycache')):
  * 	 //Store The Cache
  * 	 PVCache::writeCache('mycache', $data);
  * endif;
- * 
+ *
  * $data = PVCache::readCache('mycache');
- * 
+ *
  * print_r($data);
  * ```
- * 
- * @package util 
+ *
+ * @package util
  */
 class PVCache extends PVStaticObject {
 
@@ -30,32 +31,35 @@ class PVCache extends PVStaticObject {
 	 * File location to store the cache
 	 */
 	protected static $_cache_location = '/tmp/';
-	
+
 	/**
 	 * The date format for storing the cache
 	 */
 	protected static $_cache_format = 'Y-m-d H:i:s';
-	
+
 	/**
 	 * The regular expression for searching for cache
 	 */
 	protected static $_cache_format_search = '/\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}/';
-	
+
 	/**
 	 * The name to preprend to cache
 	 */
 	protected static $_cache_name = 'cache:';
-	
+
 	/**
 	 * How to wrap the the cache
 	 */
-	protected static $_enclosing_tags = array('{', '}');
-	
+	protected static $_enclosing_tags = array(
+		'{',
+		'}'
+	);
+
 	/**
 	 * Memcache connection
 	 */
 	protected static $_memcache = null;
-	
+
 	/**
 	 * Default time to live for the cache
 	 */
@@ -65,14 +69,15 @@ class PVCache extends PVStaticObject {
 	 * Initalize PVCache by setting the location to save cached files and initialize
 	 * memchace servers
 	 *
-	 * @param array $config An array of configuration options. Options will be the defaults for other options.
+	 * @param array $config An array of configuration options. Options will be the defaults for other
+	 * options.
 	 * 			-'cache_format' _string_: The date/time format used when caching
 	 * 			-'cache_format_search' _string_: The preg_match to use when searching for the cache date/time
 	 * 			-'enclosing_tags' _array_: Tags that will encase the files to be caches
 	 * 			-'cache_location' _string_: The location the cached is saved
 	 * 			-'cache_name' _string_: The name to assign to the cache when both writing and reading it
 	 * 			-'cache_expire' _int_: Ovveride the default expiration time by setting your own
-	 * 
+	 *
 	 * @return void
 	 * @access public
 	 */
@@ -82,12 +87,15 @@ class PVCache extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
 		$defaults = array(
-			'cache_location' => PV_ROOT . DS . 'tmp' . DS, 
-			'cache_format' => 'Y-m-d H:i:s', 
-			'cache_format_search' => '\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}', 
-			'enclosing_tags' => array('{', '}'), 
-			'cache_name' => 'cache:', 
-			'cache_expire' => 300, 
+			'cache_location' => PV_ROOT . DS . 'tmp' . DS,
+			'cache_format' => 'Y-m-d H:i:s',
+			'cache_format_search' => '\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}',
+			'enclosing_tags' => array(
+				'{',
+				'}'
+			),
+			'cache_name' => 'cache:',
+			'cache_expire' => 300,
 			'memcache_servers' => array()
 		);
 
@@ -115,7 +123,7 @@ class PVCache extends PVStaticObject {
 			$failure_callback = (isset($server['failure_callback'])) ? $server['failure_callback'] : null;
 			$timeoutms = (isset($server['timeoutms'])) ? $server['timeoutms'] : null;
 
-			self::$_memcache -> addServer($host, $port, $persistent, $weight, $timeout, $retry_interval, $status, $failure_callback, $timeoutms);
+			self::$_memcache->addServer($host, $port, $persistent, $weight, $timeout, $retry_interval, $status, $failure_callback, $timeoutms);
 		}
 
 		foreach ($config['memcache_servers'] as $server) {
@@ -125,7 +133,7 @@ class PVCache extends PVStaticObject {
 			$connect = (isset($server['connect'])) ? $server['connect'] : false;
 
 			if ($connect)
-				self::$_memcache -> connect($host, $port, $timeout);
+				self::$_memcache->connect($host, $port, $timeout);
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $config);
@@ -151,19 +159,24 @@ class PVCache extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $content, $options);
-		
+
 		$defaults = array(
-			'cache_format' => self::$_cache_format, 
-			'cache_format_search' => self::$_cache_format_search, 
-			'enclosing_tags' => self::$_enclosing_tags, 
-			'cache_location' => self::$_cache_location, 
-			'cache_name' => self::$_cache_name, 
+			'cache_format' => self::$_cache_format,
+			'cache_format_search' => self::$_cache_format_search,
+			'enclosing_tags' => self::$_enclosing_tags,
+			'cache_location' => self::$_cache_location,
+			'cache_name' => self::$_cache_name,
 			'cache_expire' => self::$_cache_expire
 		);
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'content' => $content, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'content' => $content,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$key = $filtered['key'];
 		$content = $filtered['content'];
 		$options = $filtered['options'];
@@ -204,17 +217,20 @@ class PVCache extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
 
 		$defaults = array(
-			'cache_format' => self::$_cache_format, 
-			'cache_format_search' => self::$_cache_format_search, 
-			'enclosing_tags' => self::$_enclosing_tags, 
-			'cache_location' => self::$_cache_location, 
-			'cache_name' => self::$_cache_name, 
+			'cache_format' => self::$_cache_format,
+			'cache_format_search' => self::$_cache_format_search,
+			'enclosing_tags' => self::$_enclosing_tags,
+			'cache_location' => self::$_cache_location,
+			'cache_name' => self::$_cache_name,
 			'remove_cache_tag' => true
 		);
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'options' => $options
+		), array('event' => 'args'));
 		$key = $filtered['key'];
 		$options = $filtered['options'];
 		extract($options);
@@ -226,6 +242,7 @@ class PVCache extends PVStaticObject {
 		}
 
 		$data = @unserialize($content);
+		
 		if ($data !== false || $content === 'b:0;')
 			$content = $data;
 
@@ -255,25 +272,29 @@ class PVCache extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
 
 		$defaults = array(
-			'cache_format' => self::$_cache_format, 
-			'cache_format_search' => self::$_cache_format_search, 
-			'enclosing_tags' => self::$_enclosing_tags, 
-			'cache_location' => self::$_cache_location, 
+			'cache_format' => self::$_cache_format,
+			'cache_format_search' => self::$_cache_format_search,
+			'enclosing_tags' => self::$_enclosing_tags,
+			'cache_location' => self::$_cache_location,
 			'cache_name' => self::$_cache_name
 		);
 
 		$expired = false;
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$key = $filtered['key'];
 		$options = $filtered['options'];
 		extract($options);
 
-		if(!file_exists($cache_location . $key)) {
-			$expired = true;	
+		if (!file_exists($cache_location . $key)) {
+			$expired = true;
 		}
-		
+
 		$content = PVFileManager::readFile($cache_location . $key);
 
 		if (!empty($content) && preg_match('/\\' . $enclosing_tags[0] . $cache_name . $cache_format_search . $enclosing_tags[1] . '/', $content, $matches)) {
@@ -311,19 +332,24 @@ class PVCache extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
 
 		$defaults = array(
-			'cache_format' => self::$_cache_format, 
-			'cache_format_search' => self::$_cache_format_search, 
-			'enclosing_tags' => self::$_enclosing_tags, 
-			'cache_location' => self::$_cache_location, 
+			'cache_format' => self::$_cache_format,
+			'cache_format_search' => self::$_cache_format_search,
+			'enclosing_tags' => self::$_enclosing_tags,
+			'cache_location' => self::$_cache_location,
 			'cache_name' => self::$_cache_name
 		);
-		
+
 		$expiration = null;
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$key = $filtered['key'];
 		$options = $filtered['options'];
+		
 		extract($options);
 
 		$content = PVFileManager::readFile($cache_location . $key);
@@ -359,9 +385,14 @@ class PVCache extends PVStaticObject {
 		$defaults = array('cache_location' => self::$_cache_location);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$key = $filtered['key'];
 		$options = $filtered['options'];
+		
 		extract($options);
 
 		PVFileManager::deleteFile($cache_location . $key);
@@ -388,26 +419,30 @@ class PVCache extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $content, $options);
 
 		$defaults = array(
-			'flag' => MEMCACHE_COMPRESSED, 
-			'cache_expire' => self::$_cache_expire, 
-			'add_only' => false, 
+			'flag' => MEMCACHE_COMPRESSED,
+			'cache_expire' => self::$_cache_expire,
+			'add_only' => false,
 			'replace' => false
 		);
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'content' => $content, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'content' => $content,
+			'options' => $options
+		), array('event' => 'args'));
 		$key = $filtered['key'];
 		$content = $filtered['content'];
 		$options = $filtered['options'];
 		extract($options);
 
 		if ($add_only)
-			self::$_memcache -> add($key, $content, $flag, $cache_expire);
+			self::$_memcache->add($key, $content, $flag, $cache_expire);
 		else if ($replace)
-			self::$_memcache -> replace($key, $content, $flag, $cache_expire);
+			self::$_memcache->replace($key, $content, $flag, $cache_expire);
 		else
-			self::$_memcache -> set($key, $content, $flag, $cache_expire);
+			self::$_memcache->set($key, $content, $flag, $cache_expire);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $key, $content, $options);
 	}
@@ -430,12 +465,16 @@ class PVCache extends PVStaticObject {
 		$defaults = array('flags' => MEMCACHE_COMPRESSED, );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$key = $filtered['key'];
 		$options = $filtered['options'];
 		extract($options);
 
-		$content = self::$_memcache -> get($key, $flags);
+		$content = self::$_memcache->get($key, $flags);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $content, $key, $options);
 		$content = self::_applyFilter(get_class(), __FUNCTION__, $content, array('event' => 'return'));
@@ -462,15 +501,19 @@ class PVCache extends PVStaticObject {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('key' => $key, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'key' => $key,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$key = $filtered['key'];
 		$options = $filtered['options'];
 		extract($options);
 
 		if ($flush)
-			self::$_memcache -> flush();
+			self::$_memcache->flush();
 		else
-			self::$_memcache -> delete($key);
+			self::$_memcache->delete($key);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $key, $options);
 	}

@@ -1,17 +1,19 @@
 <?php
 /**
- *PVConversions is a class used to convert one data type to another.
- * 
- * Often there will be requirements for converting data such as array to objects, json to xml, etc. This class is designed to have built-in functions to make those conversations easy.
- * 
+ * PVConversions is a class used to convert one data type to another.
+ *
+ * Often there will be requirements for converting data such as array to objects, json to xml, etc.
+ * This class is designed to have built-in functions to make those conversations easy.
+ *
  * Example:
+ * 
  * ```php
  * //Create an array
  * $data = $array('Apple', 'Bananna', 'Orange');
- * 
+ *
  * //Convert the array to object
  * $data = PVConversions::arrayToObject($data);
- * 
+ *
  * //Will display an stdObject
  * print_r($data);
  * ```
@@ -28,6 +30,7 @@ class PVConversions {
 	 * @access public
 	 */
 	public static function arrayToObject($data) {
+		
 		if (!is_array($data)) {
 			return $data;
 		}
@@ -37,13 +40,13 @@ class PVConversions {
 		if (is_array($data) && count($data) > 0) {
 
 			foreach ($data as $name => $value)
-				$object -> $name = self::arrayToObject($value);
+				$object->$name = self::arrayToObject($value);
 
 			return $object;
 		} else if (is_array($data) && count($data) === 0) {
-			return (object) $data;
+			return (object)$data;
 		} else {
-			
+
 			return FALSE;
 		}
 	}
@@ -58,6 +61,7 @@ class PVConversions {
 	 * @access public
 	 */
 	public static function objectToArray($object) {
+		
 		if (!is_object($object) && !is_array($object)) {
 			return $object;
 		}
@@ -77,20 +81,22 @@ class PVConversions {
 	 * @access public
 	 */
 	public static function xmlToArray($xml) {
+		
 		if (empty($xml))
 			return false;
 		$object = simplexml_load_string($xml);
 		return get_object_vars($object);
 	}
-	
+
 	/**
 	 * Converts a boolean that is passed a string to the boolean type true or false.
-	 * 
+	 *
 	 * @param string $boolean The boolean as a string
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public static function convertTextBoolean($boolean) {
+		
 		if ($boolean === 'true') {
 			return true;
 		} else if ($boolean === 'false') {

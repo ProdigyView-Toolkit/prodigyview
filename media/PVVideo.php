@@ -1,26 +1,28 @@
 <?php
 /**
  * PVVideo is a class designed to manipulate video files and transcoding to various formats.
- * 
- * PVVideo works with all kinds of audio files: mp4, mov, ogg, etc. It utilizes command tools like FFMPEG to do the transcoding and will return the results from the command line.
- * 
+ *
+ * PVVideo works with all kinds of audio files: mp4, mov, ogg, etc. It utilizes command tools like
+ * FFMPEG to do the transcoding and will return the results from the command line.
+ *
  * Example:
+ * 
  * ```php
  * //Set the file to be converted
  * $old_file = '/path/to/file/video.mov';
- * 
+ *
  * //Set the path of the new file
  * $new_file =  '/path/to/file/video.mp4';
- * 
+ *
  * //Options to pass to the FFmpeg or other conversion tools
  * //The following will place a -f infront of the input
  * $options = array('input_f' => '');
- * 
+ *
  * //Run the conversion
  * PVVideo::init();
  * PVVideo::convertAudioFile($old_file, $new_file , $options );
  * ```
- * 
+ *
  * @package media
  */
 class PVVideo extends PVStaticObject {
@@ -55,18 +57,23 @@ class PVVideo extends PVStaticObject {
 	}
 
 	/**
-	 * Convert the video file using a converter to another format or a different settings of the same format.
+	 * Convert the video file using a converter to another format or a different settings of the same
+	 * format.
 	 *
 	 * @param string $current_file_location The location of the file that is going to be converted
 	 * @param string $new_file_location The location of the new file
 	 * @param array $options Options that can control how the conversion takes place.
-	 * 			'conveter' _string_: The convert to be used and the location. Default is ffmpeg. To further define
+	 * 			'conveter' _string_: The convert to be used and the location. Default is ffmpeg. To further
+	 * define
 	 * 			either added the path to the converter + ffmpeg or path to another converter besides ffmpeg.
 	 * 			'input_' array: Should be an array that of options for how to treat the input file. The options
-	 * 			should be the same options passed through the setEncodingOptions except the prefix should have 'input_'.
+	 * 			should be the same options passed through the setEncodingOptions except the prefix should have
+	 * 'input_'.
 	 * 			For example if the option is 'ar' as in setEncodingOptions, add 'input_ar' as the option key.
-	 * 			'output_' array: Should be an array that of options for how to treat the output file. The options
-	 * 			should be the same options passed through the setEncodingOptions except the prefix should have 'output_'.
+	 * 			'output_' array: Should be an array that of options for how to treat the output file. The
+	 * options
+	 * 			should be the same options passed through the setEncodingOptions except the prefix should have
+	 * 'output_'.
 	 * 			For example if the option is 'ar' as in setEncodingOptions, add 'input_ar' as the option key.
 	 *
 	 * @return void The output is not returned but a new file will be created if the conversion succeeded
@@ -84,7 +91,12 @@ class PVVideo extends PVStaticObject {
 		$defaults = array('converter' => self::$converter);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('current_file_location' => $current_file_location, 'new_file_location' => $new_file_location, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'current_file_location' => $current_file_location,
+			'new_file_location' => $new_file_location,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$current_file_location = $filtered['current_file_location'];
 		$new_file_location = $filtered['new_file_location'];
 		$options = $filtered['options'];
@@ -93,7 +105,7 @@ class PVVideo extends PVStaticObject {
 
 		$input_options = self::setEncodingOptions($options, 'input_');
 		$output_options = self::setEncodingOptions($options, 'output_');
-		
+
 		$input_options .= PVAudio::setEncodingOptions($options, 'input_');
 		$output_options .= PVAudio::setEncodingOptions($options, 'output_');
 
@@ -102,16 +114,21 @@ class PVVideo extends PVStaticObject {
 	}//end convertVideoFile
 
 	/**
-	 * The encoding options on how to encode a file using FFMPPEG. The options should be run in a command line
-	 * formated. The current formmating will only handle options passed through that deal with video manipulation
+	 * The encoding options on how to encode a file using FFMPPEG. The options should be run in a command
+	 * line
+	 * formated. The current formmating will only handle options passed through that deal with video
+	 * manipulation
 	 * @see http://www.ffmpeg.org/ffmpeg.html
 	 * @see http://www.ffmpeg.org/ffmpeg.html#Video-Options
 	 * @see http://www.ffmpeg.org/ffmpeg.html#Advanced-Video-Options
 	 *
-	 * @param array $options Defined options to be used in the conversion. Options relate to those passed in a normal
-	 * 		  FFMPEG command line fashion.The key of the array corresponds the command and the value responds to the command
+	 * @param array $options Defined options to be used in the conversion. Options relate to those passed
+	 * in a normal
+	 * 		  FFMPEG command line fashion.The key of the array corresponds the command and the value
+	 * responds to the command
 	 * 		  value.
-	 * @param string $input_type If the options have a prefix in front of the key, the prefix should be defined either.
+	 * @param string $input_type If the options have a prefix in front of the key, the prefix should be
+	 * defined either.
 	 *
 	 * @return string $options A string of options that should be used on the command line with ffmpeg
 	 * @access public
@@ -123,7 +140,11 @@ class PVVideo extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options, $input_type);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('input_type' => $input_type, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'input_type' => $input_type,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$input_type = $filtered['input_type'];
 		$options = $filtered['options'];
 
@@ -140,11 +161,11 @@ class PVVideo extends PVStaticObject {
 		if (isset($options[$input_type . 's'])) {
 			$input_options .= ' -s ' . $options[$input_type . 's'];
 		}
-		
+
 		if (isset($options[$input_type . 't'])) {
 			$input_options .= ' -t ' . $options[$input_type . 't'];
 		}
-		
+
 		if (isset($options[$input_type . 'c'])) {
 			$input_options .= ' -c ' . $options[$input_type . 'c'];
 		}
@@ -204,7 +225,7 @@ class PVVideo extends PVStaticObject {
 		if (isset($options[$input_type . 'bufsize'])) {
 			$input_options .= ' -bufsize ' . $options[$input_type . 'bufsize'];
 		}
-		
+
 		if (isset($options[$input_type . 'acodec'])) {
 			$input_options .= ' -acodec ' . $options[$input_type . 'acodec'];
 		}
@@ -212,11 +233,11 @@ class PVVideo extends PVStaticObject {
 		if (isset($options[$input_type . 'vcodec'])) {
 			$input_options .= ' -vcodec ' . $options[$input_type . 'vcodec'];
 		}
-		
+
 		if (isset($options[$input_type . 'f'])) {
 			$input_options .= ' -f ' . $options[$input_type . 'f'];
 		}
-		
+
 		if (isset($options[$input_type . 'codec'])) {
 			$input_options .= ' -codec ' . $options[$input_type . 'codec'];
 		}
@@ -260,23 +281,23 @@ class PVVideo extends PVStaticObject {
 		if (isset($options[$input_type . 'g'])) {
 			$input_options .= ' -g ' . $options[$input_type . 'g'];
 		}
-		
+
 		if (isset($options[$input_type . 'c:v'])) {
 			$input_options .= ' -c:v ' . $options[$input_type . 'c:v'];
 		}
-		
+
 		if (isset($options[$input_type . 'c:a'])) {
 			$input_options .= ' -c:a ' . $options[$input_type . 'c:a'];
 		}
-		
+
 		if (isset($options[$input_type . 'q:v'])) {
 			$input_options .= ' -q:v ' . $options[$input_type . 'q:v'];
 		}
-		
+
 		if (isset($options[$input_type . 'q:a'])) {
 			$input_options .= ' -q:a ' . $options[$input_type . 'q:a'];
 		}
-		
+
 		if (isset($options[$input_type . 'vdt'])) {
 			$input_options .= ' -vdt ' . $options[$input_type . 'vdt'];
 		}

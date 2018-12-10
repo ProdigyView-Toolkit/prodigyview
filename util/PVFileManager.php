@@ -1,21 +1,22 @@
 <?php
 /**
- * PVFileManager allows easy manipulation of the file system such as making directories or getting mime types.
- * 
- * The class has various functions that make file manipulation reasonably easy. 
+ * PVFileManager allows easy manipulation of the file system such as making directories or getting
+ * mime types.
+ *
+ * The class has various functions that make file manipulation reasonably easy.
  * ```php
  * Examples:
  * //Count the number of files in a directory
  * echo PVFileManager::getFilesInDirectory('/path/to/directry');
- * 
+ *
  * //Get Mime Type
- * echo PVFileManager::getFileMimeType('image.jpg'); 
- * 
+ * echo PVFileManager::getFileMimeType('image.jpg');
+ *
  * //Write To File
- * PVFileManager::getFileMimeType('/path/to/file', 'Hello World!'); 
+ * PVFileManager::getFileMimeType('/path/to/file', 'Hello World!');
  * ```
- * 
- * @package util 
+ *
+ * @package util
  */
 class PVFileManager extends PVStaticObject {
 
@@ -103,6 +104,7 @@ class PVFileManager extends PVStaticObject {
 				}
 			};//end for
 		}//end
+		
 		return rmdir($directory);
 	}//end deleteDirectory
 
@@ -152,9 +154,11 @@ class PVFileManager extends PVStaticObject {
 	 *
 	 * @param string $directory The directory to be scanned
 	 * @param array $options Options that can alter how the directory is scanned
-	 * 			-'verbose' _boolean_: Enabling this mode will return everything in array of arrays. The array will contain
+	 * 			-'verbose' _boolean_: Enabling this mode will return everything in array of arrays. The array
+	 * will contain
 	 * 			more detailed information such as mime_type, extension, base name, etc. Default is false.
-	 * 			-'magic_file' _string_: If finfo is installed and verbose is set to true, use this option to specifiy the magic
+	 * 			-'magic_file' _string_: If finfo is installed and verbose is set to true, use this option to
+	 * specifiy the magic
 	 * 			file to use when getting the mime type of the file. Default is null
 	 *
 	 * @return array $files An array of subdirectories and fules
@@ -168,7 +172,11 @@ class PVFileManager extends PVStaticObject {
 		$defaults = array('verbose' => false);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('directory' => $directory, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'directory' => $directory,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$directory = $filtered['directory'];
 		$options = $filtered['options'];
 
@@ -187,9 +195,18 @@ class PVFileManager extends PVStaticObject {
 					$file_array[$directory . $file . DS] = self::getFilesInDirectory($directory . $file . DS, $options);
 
 				} else if (is_dir($directory . $file . DS) && $options['verbose']) {
-					$file_array[$directory . $file . DS] = array('type' => 'folder', 'directory' => $directory.$file.DS, 'files' => self::getFilesInDirectory($directory . $file . DS, $options));
+					$file_array[$directory . $file . DS] = array(
+						'type' => 'folder',
+						'directory' => $directory . $file . DS,
+						'files' => self::getFilesInDirectory($directory . $file . DS, $options)
+					);
 				} else if ($options['verbose']) {
-					$info = array('type' => 'file', 'basename' => pathinfo($file, PATHINFO_BASENAME), 'extension' => pathinfo($file, PATHINFO_EXTENSION), 'mime_type' => self::getFileMimeType($directory . $file, $options));
+					$info = array(
+						'type' => 'file',
+						'basename' => pathinfo($file, PATHINFO_BASENAME),
+						'extension' => pathinfo($file, PATHINFO_EXTENSION),
+						'mime_type' => self::getFileMimeType($directory . $file, $options)
+					);
 
 					$file_array[$directory . $file] = $info;
 				} else {
@@ -223,7 +240,12 @@ class PVFileManager extends PVStaticObject {
 		$defaults = array('magic_file' => null);
 
 		$options += $defaults;
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('file' => $file, 'options' => $options), array('event' => 'args'));
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'file' => $file,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$file = $filtered['file'];
 		$options = $filtered['options'];
 
@@ -233,7 +255,7 @@ class PVFileManager extends PVStaticObject {
 			$finfo = finfo_open(FILEINFO_MIME_TYPE, $options['magic_file']);
 			$mime_type = finfo_file($finfo, $file);
 			finfo_close($finfo);
-		}else if (function_exists('mime_content_type')) {
+		} else if (function_exists('mime_content_type')) {
 			$mime_type = mime_content_type($file);
 		} else {
 			ob_start();
@@ -265,13 +287,18 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $mode, $encoding);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('file' => $file, 'mode' => $mode, 'encoding' => $encoding), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'file' => $file,
+			'mode' => $mode,
+			'encoding' => $encoding
+		), array('event' => 'args'));
+		
 		$file = $filtered['file'];
 		$mode = $filtered['mode'];
 		$encoding = $filtered['encoding'];
 
 		$returnData = '';
-		
+
 		if (!file_exists($file)) {
 			return false;
 		}
@@ -316,7 +343,13 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('file' => $file, 'mode' => $mode, 'encoding' => $encoding, 'content' => $content), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'file' => $file,
+			'mode' => $mode,
+			'encoding' => $encoding,
+			'content' => $content
+		), array('event' => 'args'));
+		
 		$file = $filtered['file'];
 		$mode = $filtered['mode'];
 		$encoding = $filtered['encoding'];
@@ -355,7 +388,13 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('file' => $file, 'mode' => $mode, 'encoding' => $encoding, 'content' => $content), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'file' => $file,
+			'mode' => $mode,
+			'encoding' => $encoding,
+			'content' => $content
+		), array('event' => 'args'));
+		
 		$file = $filtered['file'];
 		$mode = $filtered['mode'];
 		$encoding = $filtered['encoding'];
@@ -383,7 +422,13 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('file' => $file, 'mode' => $mode, 'encoding' => $encoding, 'content' => $content), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'file' => $file,
+			'mode' => $mode,
+			'encoding' => $encoding,
+			'content' => $content
+		), array('event' => 'args'));
+		
 		$file = $filtered['file'];
 		$mode = $filtered['mode'];
 		$encoding = $filtered['encoding'];
@@ -409,7 +454,11 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $currentFile, $newFile);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('currentFile' => $currentFile, 'newFile' => $newFile), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'currentFile' => $currentFile,
+			'newFile' => $newFile
+		), array('event' => 'args'));
+		
 		$currentFile = $filtered['currentFile'];
 		$newFile = $filtered['newFile'];
 
@@ -443,7 +492,11 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $currentFile, $newFile);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('currentFile' => $currentFile, 'newFile' => $newFile), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'currentFile' => $currentFile,
+			'newFile' => $newFile
+		), array('event' => 'args'));
+		
 		$currentFile = $filtered['currentFile'];
 		$newFile = $filtered['newFile'];
 
@@ -467,7 +520,11 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $oldDirectory, $newDirectory);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('oldDirectory' => $oldDirectory, 'newDirectory' => $newDirectory), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'oldDirectory' => $oldDirectory,
+			'newDirectory' => $newDirectory
+		), array('event' => 'args'));
+		
 		$oldDirectory = $filtered['oldDirectory'];
 		$newDirectory = $filtered['newDirectory'];
 
@@ -481,7 +538,7 @@ class PVFileManager extends PVStaticObject {
 
 			$directory = dir($oldDirectory);
 
-			while (FALSE !== ($entry = $directory -> read())) {
+			while (FALSE !== ($entry = $directory->read())) {
 
 				if ($entry === '.' || $entry === '..') {
 					continue;
@@ -498,7 +555,7 @@ class PVFileManager extends PVStaticObject {
 
 			}//end while
 
-			$directory -> close();
+			$directory->close();
 
 		} else {
 			$target_dir = dirname($newDirectory);
@@ -511,7 +568,8 @@ class PVFileManager extends PVStaticObject {
 	}
 
 	/**
-	 * Copy an entire directory from one location to another location but only if the directory does not exist
+	 * Copy an entire directory from one location to another location but only if the directory does not
+	 * exist
 	 *
 	 * @param string $oldDirectory The location of the old directory
 	 * @param string $newDirectory The location of the new directory
@@ -524,7 +582,11 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $oldDirectory, $newDirectory);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('oldDirectory' => $oldDirectory, 'newDirectory' => $newDirectory), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'oldDirectory' => $oldDirectory,
+			'newDirectory' => $newDirectory
+		), array('event' => 'args'));
+		
 		$oldDirectory = $filtered['oldDirectory'];
 		$newDirectory = $filtered['newDirectory'];
 
@@ -548,7 +610,12 @@ class PVFileManager extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url, $destination, $filename);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('url' => $url, 'destination' => $destination, 'filename' => $filename), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'url' => $url,
+			'destination' => $destination,
+			'filename' => $filename
+		), array('event' => 'args'));
+		
 		$url = $filtered['url'];
 		$destination = $filtered['destination'];
 		$filename = $filtered['filename'];

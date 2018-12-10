@@ -1,9 +1,11 @@
 <?php
 /**
- * PVTemplate is a generic template wrapper class that is used as a basis for creating a templating system.
- * 
+ * PVTemplate is a generic template wrapper class that is used as a basis for creating a templating
+ * system.
+ *
  * @package template
- * @todo Remove Mootools, JQuery etc method. Update to do better parse and potentialy integrate with templating system
+ * @todo Remove Mootools, JQuery etc method. Update to do better parse and potentialy integrate with
+ * templating system
  */
 class PVTemplate extends PVStaticObject {
 
@@ -11,17 +13,17 @@ class PVTemplate extends PVStaticObject {
 	 * The title of the site
 	 */
 	private static $siteTitle;
-	
+
 	/**
 	 * Meta tags to go in the header
 	 */
 	private static $siteMetaTags;
-	
+
 	/**
 	 * Description of the site
 	 */
 	private static $siteMetaDescription;
-	
+
 	/**
 	 * Site keywords
 	 */
@@ -43,7 +45,11 @@ class PVTemplate extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$defaults = array('site_name' => '', 'meta_keywords' => '', 'meta_description' => '');
+		$defaults = array(
+			'site_name' => '',
+			'meta_keywords' => '',
+			'meta_description' => ''
+		);
 
 		$config += $defaults;
 		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
@@ -72,11 +78,11 @@ class PVTemplate extends PVStaticObject {
 
 		return $value;
 	}
-	
+
 	/**
 	 * Returns the site keywords.
 	 * Modify the keywords attribute
-	 * 
+	 *
 	 * @return string
 	 * @access public
 	 */
@@ -122,6 +128,7 @@ class PVTemplate extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$siteMetaTags);
+		
 		$value = self::_applyFilter(get_class(), __FUNCTION__, self::$siteMetaTags, array('event' => 'return'));
 
 		return $value;
@@ -140,12 +147,13 @@ class PVTemplate extends PVStaticObject {
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 		self::$siteTitle = $string;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
-	
+
 	/**
 	 * Sets the site keywords
-	 * 
+	 *
 	 * @param string keywords: Site keywords
 	 * @access public
 	 */
@@ -173,6 +181,7 @@ class PVTemplate extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		
 		self::$siteTitle .= $string;
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
@@ -191,15 +200,16 @@ class PVTemplate extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		
 		self::$siteMetaTags = $string;
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
 	/**
 	 * Adds to the sites Meta Tags to be displayed
-	 * 
+	 *
 	 * @param string $string The string to append
-	 * 
+	 *
 	 * @return void
 	 */
 	public static function appendSiteMetaTags($string) {
@@ -208,6 +218,7 @@ class PVTemplate extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		
 		self::$siteMetaTags .= $string;
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
@@ -226,6 +237,7 @@ class PVTemplate extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		
 		self::$siteMetaDescription = $string;
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
@@ -244,6 +256,7 @@ class PVTemplate extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		
 		self::$siteMetaDescription .= $string;
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
@@ -267,12 +280,18 @@ class PVTemplate extends PVStaticObject {
 		$defaults = array('class' => 'error-message');
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('message' => $message, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'message' => $message,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$message = $filtered['message'];
 		$options = $filtered['options'];
 
 		$div = PVHtml::div($message, $options);
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $div, $message, $options);
+		
 		$div = self::_applyFilter(get_class(), __FUNCTION__, $div, array('event' => 'return'));
 
 		return $div;
@@ -297,12 +316,18 @@ class PVTemplate extends PVStaticObject {
 		$defaults = array('class' => 'success-message');
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('message' => $message, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'message' => $message,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$message = $filtered['message'];
 		$options = $filtered['options'];
 
 		$div = PVHtml::div($message, $options);
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $div, $message, $options);
+		
 		$div = self::_applyFilter(get_class(), __FUNCTION__, $div, array('event' => 'return'));
 
 		return $div;
@@ -314,13 +339,18 @@ class PVTemplate extends PVStaticObject {
 	 *
 	 * @param string $buffer The string/buffer that will contain the tags to be replaced
 	 * @param array $options The options that define how the header will output
-	 * 			-'site_title' _string_: The text will be searched for in the passed string and replaced with the title of the site.
-	 * 			-'site_keywords' _string_: The text will be searched for in the passed string and replaced with the keywords of the site.
-	 * 			-'site_description' _string_: The text will be searched for in the passed string and replaced with the description of the site.
-	 * 			-'header_addition' _string_: The text will be searched for in the passed string and replaced with the libraries found.
+	 * 			-'site_title' _string_: The text will be searched for in the passed string and replaced with
+	 * the title of the site.
+	 * 			-'site_keywords' _string_: The text will be searched for in the passed string and replaced with
+	 * the keywords of the site.
+	 * 			-'site_description' _string_: The text will be searched for in the passed string and replaced
+	 * with the description of the site.
+	 * 			-'header_addition' _string_: The text will be searched for in the passed string and replaced
+	 * with the libraries found.
 	 * 			-'version' _double_: A version for the file to differinate versions of the same file
 	 * 			-'append_url' _boolean_: Append the sites url the location of the script
-	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and
+	 * returned
 	 * 			-'url' _string_: A url to speficy the location of the libraries
 	 *
 	 * @return string $buffer The buffer with the tags replaced
@@ -332,25 +362,29 @@ class PVTemplate extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $buffer, $options);
 
 		$defaults = array(
-			'site_title' => '{SITE_TITLE}', 
-			'site_keywords' => '{SITE_KEYWORDS}', 
+			'site_title' => '{SITE_TITLE}',
+			'site_keywords' => '{SITE_KEYWORDS}',
 			'site_description' => '{SITE_DESCRIPTION}',
-			'site_meta' => '{SITE_META}',  
+			'site_meta' => '{SITE_META}',
 			'header_addition' => '{HEADER_ADDITION}'
 		);
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('buffer' => $buffer, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'buffer' => $buffer,
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$buffer = $filtered['buffer'];
 		$options = $filtered['options'];
 
 		$libraries = self::getHeader($options);
 
-		$buffer = str_replace($options['site_title'],  PVTemplate::getSiteTitle(), $buffer);
+		$buffer = str_replace($options['site_title'], PVTemplate::getSiteTitle(), $buffer);
 
 		$buffer = str_replace($options['site_keywords'], PVTemplate::getSiteKeywords(), $buffer);
-		
+
 		$buffer = str_replace($options['site_meta'], PVTemplate::getSiteMetaTags(), $buffer);
 
 		$buffer = str_replace($options['site_description'], PVTemplate::getSiteMetaDescription(), $buffer);
@@ -358,19 +392,22 @@ class PVTemplate extends PVStaticObject {
 		$buffer = str_replace($options['header_addition'], $libraries, $buffer);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $buffer, $options);
+		
 		$buffer = self::_applyFilter(get_class(), __FUNCTION__, $buffer, array('event' => 'return'));
 
 		return $buffer;
 	}//end  updateHeader
 
 	/**
-	 * Retrieves information that would typically be present in a header. Includes all the libraries(javascript, prototype, etc)
+	 * Retrieves information that would typically be present in a header. Includes all the
+	 * libraries(javascript, prototype, etc)
 	 * and css.
 	 *
 	 * @param array $options Options that can determine how the site files are displayed
 	 * 			-'version' _double_: A version for the file to differinate versions of the same file
 	 * 			-'append_url' _boolean_: Append the sites url the location of the script
-	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and
+	 * returned
 	 * 			-'url' _string_: A url to speficy the location of the libraries
 	 *
 	 * @return string $libraries <script /> string with the libraries found
@@ -381,9 +418,16 @@ class PVTemplate extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
 
-		$defaults = array('version' => false, 'append_url' => true, 'libraries' => '', 'url' => '');
+		$defaults = array(
+			'version' => false,
+			'append_url' => true,
+			'libraries' => '',
+			'url' => ''
+		);
+		
 		$options += $defaults;
 		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
+		
 		extract($options);
 
 		$siteConfiguration = PVConfiguration::getSiteCompleteConfiguration();
@@ -406,7 +450,7 @@ class PVTemplate extends PVStaticObject {
 			$libraries .= '<script type="text/javascript" src="' . $url . $javascript . DS . $siteConfiguration['ajax_library'] . '"></script>';
 		}
 
-		if (isset($siteConfiguration['jquery_enabled'] ) && $siteConfiguration['jquery_enabled'] === 1 && isset($siteConfiguration['jquery_library']) && !empty($siteConfiguration['jquery_library'])) {
+		if (isset($siteConfiguration['jquery_enabled']) && $siteConfiguration['jquery_enabled'] === 1 && isset($siteConfiguration['jquery_library']) && !empty($siteConfiguration['jquery_library'])) {
 			$libraries . '<script type="text/javascript" src="' . $url . $jquery . DS . $siteConfiguration['jquery_library'] . '"></script>';
 		}
 
@@ -447,13 +491,15 @@ class PVTemplate extends PVStaticObject {
 	}//end  updateHeader
 
 	/**
-	 * Retrieves the queued javascript libraries in PVLibaries and adds them to a script take to be placed in
+	 * Retrieves the queued javascript libraries in PVLibaries and adds them to a script take to be
+	 * placed in
 	 * a template.
 	 *
 	 * @param array $options Options that can determine how the site files are displayed
 	 * 			-'version' _double_: A version for the file to differinate versions of the same file
 	 * 			-'append_url' _boolean_: Append the sites url the location of the script
-	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and
+	 * returned
 	 * 			-'url' _string_: A url to speficy the location of the libraries
 	 *
 	 * @return string $libraries <script /> string with the libraries found
@@ -464,7 +510,13 @@ class PVTemplate extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
 
-		$defaults = array('version' => false, 'append_url' => true, 'libraries' => '', 'url' => '');
+		$defaults = array(
+			'version' => false,
+			'append_url' => true,
+			'libraries' => '',
+			'url' => ''
+		);
+		
 		$options += $defaults;
 		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
 		extract($options);
@@ -490,13 +542,15 @@ class PVTemplate extends PVStaticObject {
 	}//end printJavaScriptHeader
 
 	/**
-	 * Retrieves the queued mootools libraries in PVLibaries and adds them to a script take to be placed in
+	 * Retrieves the queued mootools libraries in PVLibaries and adds them to a script take to be placed
+	 * in
 	 * a template.
 	 *
 	 * @param array $options Options that can determine how the site files are displayed
 	 * 			-'version' _double_: A version for the file to differinate versions of the same file
 	 * 			-'append_url' _boolean_: Append the sites url the location of the script
-	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and
+	 * returned
 	 * 			-'url' _string_: A url to speficy the location of the libraries
 	 *
 	 * @return string $libraries <script /> string with the libraries found
@@ -507,7 +561,13 @@ class PVTemplate extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
 
-		$defaults = array('version' => false, 'append_url' => true, 'libraries' => '', 'url' => '');
+		$defaults = array(
+			'version' => false,
+			'append_url' => true,
+			'libraries' => '',
+			'url' => ''
+		);
+		
 		$options += $defaults;
 		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
 		extract($options);
@@ -534,13 +594,15 @@ class PVTemplate extends PVStaticObject {
 	}//end printJavaScriptHeader
 
 	/**
-	 * Retrieves the queued prototype libraries in PVLibaries and adds them to a script take to be placed in
+	 * Retrieves the queued prototype libraries in PVLibaries and adds them to a script take to be placed
+	 * in
 	 * a template.
 	 *
 	 * @param array $options Options that can determine how the site files are displayed
 	 * 			-'version' _double_: A version for the file to differinate versions of the same file
 	 * 			-'append_url' _boolean_: Append the sites url the location of the script
-	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and
+	 * returned
 	 * 			-'url' _string_: A url to speficy the location of the libraries
 	 *
 	 * @return string $libraries <script /> string with the libraries found
@@ -551,7 +613,13 @@ class PVTemplate extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
 
-		$defaults = array('version' => false, 'append_url' => true, 'libraries' => '', 'url' => '');
+		$defaults = array(
+			'version' => false,
+			'append_url' => true,
+			'libraries' => '',
+			'url' => ''
+		);
+		
 		$options += $defaults;
 		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
 		extract($options);
@@ -577,13 +645,15 @@ class PVTemplate extends PVStaticObject {
 	}//end printJavaScriptHeader
 
 	/**
-	 * Retrieves the queued prototype libraries in PVLibaries and adds them to a script take to be placed in
+	 * Retrieves the queued prototype libraries in PVLibaries and adds them to a script take to be placed
+	 * in
 	 * a template.
 	 *
 	 * @param array $options Options that can determine how the site files are displayed
 	 * 			-'version' _double_: A version for the file to differinate versions of the same file
 	 * 			-'append_url' _boolean_: Append the sites url the location of the script
-	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and
+	 * returned
 	 * 			-'url' _string_: A url to speficy the location of the libraries
 	 *
 	 * @return string $libraries <script /> string with the libraries found
@@ -594,7 +664,13 @@ class PVTemplate extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
 
-		$defaults = array('version' => false, 'append_url' => true, 'libraries' => '', 'url' => false);
+		$defaults = array(
+			'version' => false,
+			'append_url' => true,
+			'libraries' => '',
+			'url' => false
+		);
+		
 		$options += $defaults;
 		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
 		extract($options);
@@ -627,7 +703,8 @@ class PVTemplate extends PVStaticObject {
 	 * @param array $options Options that can determine how the site files are displayed
 	 * 			-'version' _double_: A version for the file to differinate versions of the same file
 	 * 			-'append_url' _boolean_: Append the sites url the location of the script
-	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and returned
+	 * 			-'libraries' _string_: A string of other libraries that these libraries will be added to and
+	 * returned
 	 * 			-'url' _string_: A url to speficy the location of the libraries
 	 *
 	 * @return string $libraries <script /> string with the libraries found
@@ -638,7 +715,13 @@ class PVTemplate extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
 
-		$defaults = array('version' => false, 'append_url' => true, 'libraries' => '', 'url' => false);
+		$defaults = array(
+			'version' => false,
+			'append_url' => true,
+			'libraries' => '',
+			'url' => false
+		);
+		
 		$options += $defaults;
 		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
 		extract($options);
@@ -662,7 +745,5 @@ class PVTemplate extends PVStaticObject {
 
 		return $libraries;
 	}//end printJavaScriptHeader
-
-	
 
 }//end class

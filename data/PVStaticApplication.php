@@ -44,6 +44,7 @@ abstract class PVStaticApplication extends PVStaticObject {
 		array_shift($args);
 
 		$passable_args = array();
+		
 		foreach ($args as $key => &$arg) {
 			$passable_args[$key] = &$arg;
 		}
@@ -51,7 +52,11 @@ abstract class PVStaticApplication extends PVStaticObject {
 		if (self::_hasAdapter(get_called_class(), __FUNCTION__))
 			return self::_callAdapter(get_called_class(), __FUNCTION__, $command, $passable_args);
 
-		$filtered = self::_applyFilter(get_called_class(), __FUNCTION__, array('command' => $command, 'passable_args' => $passable_args), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_called_class(), __FUNCTION__, array(
+			'command' => $command,
+			'passable_args' => $passable_args
+		), array('event' => 'args'));
+		
 		$command = $filtered['command'];
 		$passable_args = $filtered['passable_args'];
 
