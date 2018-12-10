@@ -7,7 +7,7 @@ if (!defined('DS')) {
 
 //Define the sites root directory
 if (!defined('PV_ROOT')) {
-	define('PV_ROOT', getcwd());
+	define('PV_ROOT', './');
 }
 
 //Define the core constant

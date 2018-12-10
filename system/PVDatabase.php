@@ -843,6 +843,8 @@ class PVDatabase extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
+		$function = '';
+		
 		if (self::$dbtype === self::$mySQLConnection) {
 			$function = 'RAND()';
 		} else if (self::$dbtype === self::$postgreSQLConnection) {
@@ -913,6 +915,8 @@ class PVDatabase extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $field);
 
 		$field = self::_applyFilter(get_class(), __FUNCTION__, $field, array('event' => 'args'));
+		
+		$function = '';
 
 		if (self::$dbtype === self::$mySQLConnection) {
 			$function = ' AVG(' . $field . ') ';
@@ -1125,24 +1129,7 @@ class PVDatabase extends PVStaticObject {
 				$result = self::query($query);
 			}
 		} else if (self::$dbtype === self::$mongoConnection) {
-			$collection = self::_setMongoCollection($table_name, $options);
-			
-			if(isset($options['batchInsert']) && $options['batchInsert']){
-				$result = $collection -> batchInsert($data, $options);
-			} else if( isset($options['gridFS']) &&  $options['gridFS'] && isset($options['file'])) {
-				$result = $collection -> storeFile($options['file'] ,$data, $options);
-			} else{
-				if(class_exists('\\MongoDB\Driver\Manager')) {
-					$result = $collection->insertOne($data, $options);
-				} else { 
-					$result = $collection -> insert($data, $options);
-				}
-			}
-			
-			if(isset($options['batchInsert']) && $options['batchInsert'])
-				$result = $data;
-			else if(!(isset($options['gridFS']) &&  $options['gridFS'] && isset($options['file'])))
-				$result = $data['_id'];
+			$result = preparedReturnLastInsert($table_name, '', '', $data, array(), $options );
 		}
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table_name, $data, $options);
