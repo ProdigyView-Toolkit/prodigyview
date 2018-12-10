@@ -110,7 +110,7 @@ class PVRequest extends PVStaticInstance {
 				$this->_request_data = $_GET;
 				break;
 			case 'post' :
-				$this->_request_data = $_POST;
+				$this->_request_data = ($_POST)?: file_get_contents('php://input');
 				break;
 			case 'put' :
 				$this->_request_data = file_get_contents('php://input');
@@ -151,9 +151,10 @@ class PVRequest extends PVStaticInstance {
 	/**
 	 * Returns the request data. The data can be return in certain formats if neccesary.
 	 *
-	 * @param string $format The default format will return the data as set in the class. If set to json,
-	 * the data will be return in a json format
-	 *
+	 * @param string $format The default format will return the data as set in the class. The formats
+	 * 						can be set to the options of json, array and object, and will return the
+	 * 						data in each of those types.
+	 * 
 	 * @return mixed $data The data return in a certain format
 	 * @access public
 	 * @todo add ability to format data in xml and to serialize
@@ -167,8 +168,27 @@ class PVRequest extends PVStaticInstance {
 
 		switch ($format) {
 			case 'json' :
-				$data = json_encode($this->_request_data);
+				if(is_array($this->_request_data)) {
+					$data = json_encode($this->_request_data);
+				} else {
+					$data = $this->_request_data; 
+				}
 				break;
+			case 'array':
+				if(is_string($this->_request_data) && json_decode($this->_request_data) && json_last_error() == JSON_ERROR_NONE) {
+					$data = json_decode($this->_request_data, true);
+				} else {
+					$data = $this->_request_data;
+				}
+				break;
+			case 'object':
+				if(is_array($this->_request_data)) {
+					$data = PVConversion::arrayToObject($this->_request_data);
+				} elseif(is_string($this->_request_data) && json_decode($this->_request_data) && json_last_error() == JSON_ERROR_NONE) {
+					$data = json_decode($this->_request_data);
+				} else {
+					$data = $this->_request_data;
+				}
 			default :
 				$data = $this->_request_data;
 				break;
