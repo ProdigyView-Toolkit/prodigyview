@@ -3,7 +3,7 @@
     "type": "library",
     "description": "Complete PHP Toolkit",
     "keywords": ["mvc","php"],
-    "homepage": "https://github.com/ProdigyView/ProdigyView-Core",
+    "homepage": "https://github.com/ProdigyView-Toolkit/prodigyview",
     "license": "MIT",
     "authors": [
         {
