@@ -12,13 +12,47 @@ if (!defined('MCRYPT_DES')) {
  */
 class PVSecurity extends PVStaticObject {
 
+	/**
+	 * Basic Cipher method, ie AES-256-CBC
+	 */
 	private static $cipher;
+	
+	/**
+	 * The Mycrypt cypher algorithm, for versions before PHP7 or without open_ssl
+	 */
 	private static $mcrypt_algorithm;
+	/**
+	 * The location of mycrypt modelues, for versions before PHP7 or without open_ssl
+	 */
 	private static $mcrypt_algorithm_directory;
 	private static $mcrypt_mode;
 	private static $mcrypt_mode_directory;
 	private static $mcrypt_key;
 	private static $mcrypt_iv;
+	
+	/**
+	 * The Open SSEL cypher algorithm
+	 */
+	private static $open_ssl_cipher;
+	
+	/**
+	 * The key used to lock and unlock encrypted data. Key must be the same
+	 */
+	private static $open_ssl_key;
+	
+	/**
+	 * The open for RAW DATA or not
+	 */
+	private static $open_ssl_options;
+	
+	/**
+	 * The IV
+	 */
+	private static $open_ssl_iv;
+	private static $open_ssl_tag;
+	private static $open_ssl_aad;
+	private static $open_ssl_tag_length;
+	
 
 	protected static $_salt = null;
 	protected static $_auth_table = 'users';
@@ -73,9 +107,16 @@ class PVSecurity extends PVStaticObject {
 			'save_cookie' => true,
 			'save_session' => true,
 			'cookie_fields' => array(),
-			'session_fields' => array()
+			'session_fields' => array(),
+			'open_ssl_cipher' => 'AES-256-CBC',
+			'open_ssl_key' => 'OxF3qAylVd',
+			'open_ssl_options' => 0,
+			'open_ssl_iv' => hex2bin('24957d373953e44afb49ea3d61104d3c'),
+			'open_ssl_tag' => null,
+			'open_ssl_aad' => '',
+			'open_ssl_tag_length' => 16
 		);
-
+		
 		$args += $defaults;
 
 		self::$mcrypt_algorithm = $args['mcrypt_algorithm'];
@@ -84,6 +125,14 @@ class PVSecurity extends PVStaticObject {
 		self::$mcrypt_mode_directory = $args['mcrypt_mode_directory'];
 		self::$mcrypt_key = $args['mcrypt_key'];
 		self::$mcrypt_iv = $args['mcrypt_iv'];
+		
+		self::$open_ssl_cipher = $args['open_ssl_cipher'];
+		self::$open_ssl_key = $args['open_ssl_key'];
+		self::$open_ssl_options = $args['open_ssl_options'];
+		self::$open_ssl_iv = $args['open_ssl_iv'];
+		self::$open_ssl_tag = $args['open_ssl_tag'];
+		self::$open_ssl_aad = $args['open_ssl_aad'];
+		self::$open_ssl_tag_length = $args['open_ssl_tag_length'];
 
 		self::$_salt = $args['salt'];
 		self::$_auth_table = $args['auth_table'];
@@ -115,23 +164,38 @@ class PVSecurity extends PVStaticObject {
 			'string' => $string,
 			'options' => $options
 		), array('event' => 'args'));
+		
 		$string = $filtered['string'];
 		$options = $filtered['options'];
-
-		if (self::$cipher == null || $options['recreate_cipher'])
-			self::$cipher = mcrypt_module_open($options['mcrypt_algorithm'], $options['mcrypt_algorithm_directory'], $options['mcrypt_mode'], $options['mcrypt_mode_directory']);
-
-		$iv = self::_checkIv($options['mcrypt_iv']);
-		$key = self::_checkKey($options['mcrypt_key']);
-
-		mcrypt_generic_init(self::$cipher, $key, $iv);
-		$encrypted_data = mcrypt_generic(self::$cipher, $string);
-		mcrypt_generic_deinit(self::$cipher);
+		$nonce = '';
+		
+		if(function_exists('openssl_encrypt')) {
+			$key = hash( 'sha256', $options['open_ssl_key'] );
+			$iv = substr( hash( 'sha256', $options['open_ssl_iv'] ), 0, 16 );
+			
+			$encrypted_data = base64_encode( openssl_encrypt(
+				$string, 
+				$options['open_ssl_cipher'], 
+				$key, 
+				$options['open_ssl_options'], 
+				$iv
+			));
+		} else {
+			if (self::$cipher == null || $options['recreate_cipher'])
+				self::$cipher = mcrypt_module_open($options['mcrypt_algorithm'], $options['mcrypt_algorithm_directory'], $options['mcrypt_mode'], $options['mcrypt_mode_directory']);
+			
+			$iv = self::_checkIv($options['mcrypt_iv']);
+			$key = self::_checkKey($options['mcrypt_key']);
+	
+			mcrypt_generic_init(self::$cipher, $key, $iv);
+			$encrypted_data = mcrypt_generic(self::$cipher, $string);
+			mcrypt_generic_deinit(self::$cipher);
+		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $encrypted_data, $string, $options);
 		$encrypted_data = self::_applyFilter(get_class(), __FUNCTION__, $encrypted_data, array('event' => 'return'));
 
-		return $encrypted_data;
+		return $nonce.$encrypted_data;
 	}
 
 	/**
@@ -143,7 +207,7 @@ class PVSecurity extends PVStaticObject {
 	 * @return string $decrypted_string The string decrypted
 	 * @access public
 	 */
-	public function decrypt($string, $options = array()) {
+	public static function decrypt($string, $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string, $options);
@@ -154,22 +218,37 @@ class PVSecurity extends PVStaticObject {
 			'string' => $string,
 			'options' => $options
 		), array('event' => 'args'));
+		
 		$string = $filtered['string'];
 		$options = $filtered['options'];
+		
+		if(function_exists('openssl_decrypt')) {
+			$key = hash( 'sha256', $options['open_ssl_key'] );
+			$iv = substr( hash( 'sha256', $options['open_ssl_iv'] ), 0, 16 );
+			
+			$decrypted_data = openssl_decrypt(
+				base64_decode($string), 
+				$options['open_ssl_cipher'],
+				$key, 
+				$options['open_ssl_options'], 
+				$iv
+			);
+		} else {
 
-		if (self::$cipher == null || $options['recreate_cipher'])
-			self::$cipher = mcrypt_module_open($options['mcrypt_algorithm'], $options['mcrypt_algorithm_directory'], $options['mcrypt_mode'], $options['mcrypt_mode_directory']);
+			if (self::$cipher == null || $options['recreate_cipher'])
+				self::$cipher = mcrypt_module_open($options['mcrypt_algorithm'], $options['mcrypt_algorithm_directory'], $options['mcrypt_mode'], $options['mcrypt_mode_directory']);
 
-		$iv = self::_checkIv($options['mcrypt_iv']);
-		$key = self::_checkKey($options['mcrypt_key']);
-
-		mcrypt_generic_init(self::$cipher, $key, $iv);
-		$decrypted_data = mdecrypt_generic(self::$cipher, $string);
-		mcrypt_generic_deinit(self::$cipher);
+			$iv = self::_checkIv($options['mcrypt_iv']);
+			$key = self::_checkKey($options['mcrypt_key']);
+	
+			mcrypt_generic_init(self::$cipher, $key, $iv);
+			$decrypted_data = mdecrypt_generic(self::$cipher, $string);
+			mcrypt_generic_deinit(self::$cipher);
+		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $decrypted_data, $string, $options);
 		$decrypted_data = self::_applyFilter(get_class(), __FUNCTION__, $decrypted_data, array('event' => 'return'));
-
+		
 		return $decrypted_data;
 	}
 
@@ -226,7 +305,14 @@ class PVSecurity extends PVStaticObject {
 			'mcrypt_mode_directory' => self::$mcrypt_mode_directory,
 			'recreate_cipher' => false,
 			'mcrypt_key' => self::$mcrypt_key,
-			'mcrypt_iv' => self::$mcrypt_iv
+			'mcrypt_iv' => self::$mcrypt_iv,
+			'open_ssl_cipher' => self::$open_ssl_cipher,
+			'open_ssl_key' => self::$open_ssl_key,
+			'open_ssl_options' => self::$open_ssl_options,
+			'open_ssl_iv' => self::$open_ssl_iv,
+			'open_ssl_tag' => self::$open_ssl_tag,
+			'open_ssl_aad' => self::$open_ssl_aad,
+			'open_ssl_tag_length' => self::$open_ssl_tag_length
 		);
 
 		$defaults = self::_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
@@ -346,6 +432,19 @@ class PVSecurity extends PVStaticObject {
 		$hashed_string = self::_applyFilter(get_class(), __FUNCTION__, $hashed_string, array('event' => 'return'));
 
 		return $hashed_string;
+	}
+	
+	/**
+	 * Generates a secure and unique string that can be used as a token.
+	 * 
+	 * @param int $length The length of the token
+	 * 
+	 * @return string
+	 */
+	public static function generateToken($length = 64) {
+		
+		return bin2hex(openssl_random_pseudo_bytes($length));
+		
 	}
 
 }//end class
