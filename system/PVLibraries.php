@@ -79,6 +79,11 @@ class PVLibraries extends PVStaticObject {
 	 * Signals if namespace is on by default for all classes
 	 */
 	private static $_namespaced;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initialize the library class in preparotion for loading libraries. Needs to be configured if
@@ -97,26 +102,29 @@ class PVLibraries extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$defaults = array('namespaced' => false);
-
-		$config += $defaults;
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
-
-		self::$javascript_libraries_array = array();
-		self::$jquery_libraries_array = array();
-		self::$prototype_libraries_array = array();
-		self::$motools_libraries_array = array();
-		self::$css_files_array = array();
-		self::$libraries = array();
-		self::$_autoloadClasses = array();
-		self::$_namespaced = $config['namespaced'];
-
-		spl_autoload_register(array(
-			'PVLibraries',
-			'_autoload'
-		));
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
+		if(!self::$_initialized) {
+			$defaults = array('namespaced' => false);
+	
+			$config += $defaults;
+			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+	
+			self::$javascript_libraries_array = array();
+			self::$jquery_libraries_array = array();
+			self::$prototype_libraries_array = array();
+			self::$motools_libraries_array = array();
+			self::$css_files_array = array();
+			self::$libraries = array();
+			self::$_autoloadClasses = array();
+			self::$_namespaced = $config['namespaced'];
+	
+			spl_autoload_register(array(
+				'PVLibraries',
+				'_autoload'
+			));
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::$_initialized = true;
+		}
 	}
 
 	/**

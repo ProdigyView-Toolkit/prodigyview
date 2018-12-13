@@ -43,6 +43,11 @@ class PVConfiguration extends PVStaticObject {
 	 * Configuration options that have been set.
 	 */
 	protected static $_configurations = '';
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initializes the configuration class by adding values to the collection
@@ -59,20 +64,25 @@ class PVConfiguration extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 
-		$args = self::_applyFilter(get_class(), __FUNCTION__, $args, array('event' => 'args'));
-
-		if (isset($args['environment'])) {
-			self::$_environment = $args['environment'];
-			unset($args['environment']);
-		}
-
-		if (!empty($args)) {
-			foreach ($args as $key => $value) {
-				self::addToCollectionWithName($key . '_' . self::$_environment, $value);
+		if(!self::$_initialized) {
+			$args = self::_applyFilter(get_class(), __FUNCTION__, $args, array('event' => 'args'));
+	
+			if (isset($args['environment'])) {
+				self::$_environment = $args['environment'];
+				unset($args['environment']);
 			}
+	
+			if (!empty($args)) {
+				foreach ($args as $key => $value) {
+					self::addToCollectionWithName($key . '_' . self::$_environment, $value);
+				}
+			}
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $args);
+			
+			self::$_initialized = true;
 		}
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $args);
+		
 	}
 
 	/**

@@ -28,6 +28,11 @@ class PVTemplate extends PVStaticObject {
 	 * Site keywords
 	 */
 	private static $siteKeywords;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initilize the class and set the variables for the template.
@@ -45,20 +50,24 @@ class PVTemplate extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$defaults = array(
-			'site_name' => '',
-			'meta_keywords' => '',
-			'meta_description' => ''
-		);
-
-		$config += $defaults;
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
-
-		self::$siteTitle = $config['site_name'];
-		self::$siteMetaTags = $config['meta_keywords'];
-		self::$siteMetaDescription = $config['meta_description'];
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
+		if(!self::$_initialized) {
+			$defaults = array(
+				'site_name' => '',
+				'meta_keywords' => '',
+				'meta_description' => ''
+			);
+	
+			$config += $defaults;
+			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+	
+			self::$siteTitle = $config['site_name'];
+			self::$siteMetaTags = $config['meta_keywords'];
+			self::$siteMetaDescription = $config['meta_description'];
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			
+			self::$_initialized = true;
+		}
 	}
 
 	/**

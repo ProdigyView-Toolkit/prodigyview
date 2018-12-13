@@ -33,6 +33,11 @@ class PVImage extends PVStaticObject {
 	 * For processed images, will automatically add the correct extenison to the image
 	 */
 	protected static $_add_extension = true;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * For processed images, can return various types including the Imagick Object, string of bytes, or
@@ -62,23 +67,30 @@ class PVImage extends PVStaticObject {
 	 */
 	public static function init($config = array()) {
 
-		$defaults = array(
-			'converter' => 'imagick',
-			'write_image' => true,
-			'write_image_location' => PV_ROOT . PV_IMAGE,
-			'display_image' => false,
-			'add_extension' => true,
-			'return' => 'image_location'
-		);
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$config += $defaults;
-
-		self::$_converter = $config['converter'];
-		self::$_write_image = $config['write_image'];
-		self::$_write_image_location = $config['write_image_location'];
-		self::$_display_image = $config['display_image'];
-		self::$_add_extension = $config['add_extension'];
-		self::$_return = $config['return'];
+		if(!self::$_initialized) {
+			$defaults = array(
+				'converter' => 'imagick',
+				'write_image' => true,
+				'write_image_location' => PV_ROOT . PV_IMAGE,
+				'display_image' => false,
+				'add_extension' => true,
+				'return' => 'image_location'
+			);
+	
+			$config += $defaults;
+	
+			self::$_converter = $config['converter'];
+			self::$_write_image = $config['write_image'];
+			self::$_write_image_location = $config['write_image_location'];
+			self::$_display_image = $config['display_image'];
+			self::$_add_extension = $config['add_extension'];
+			self::$_return = $config['return'];
+			
+			self::$_initialized = true;
+		}
 
 	}
 

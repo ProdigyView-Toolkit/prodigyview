@@ -26,6 +26,11 @@ class PVResponse extends PVStaticObject {
 	 * A list of generic HTTP Statuses
 	 */
 	protected static $_statusMessages;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * The initalizer for the static class
@@ -38,14 +43,18 @@ class PVResponse extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$default = array('status_messages' => self::getDefaultStatusMessages());
-
-		$config += $default;
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
-
-		self::$_statusMessages = $config['status_messages'];
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
+		if(!self::$_initialized) {
+			$default = array('status_messages' => self::getDefaultStatusMessages());
+	
+			$config += $default;
+			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+	
+			self::$_statusMessages = $config['status_messages'];
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			
+			self::$_initialized = true;
+		}
 	}
 
 	/**

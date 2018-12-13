@@ -31,6 +31,11 @@ class PVVideo extends PVStaticObject {
 	 * The type of convet to use, default is ffmpeg
 	 */
 	protected static $converter = 'ffmpeg';
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initialize the static class. Currently can be used for modifying the default converter
@@ -46,14 +51,19 @@ class PVVideo extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+			
+		if(!self::$_initialized) {
 
-		$defaults = array('converter' => 'ffmpeg');
-
-		$config += $defaults;
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
-
-		self::$converter = $config['converter'];
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			$defaults = array('converter' => 'ffmpeg');
+	
+			$config += $defaults;
+			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+	
+			self::$converter = $config['converter'];
+			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			
+			self::$_initialized = true;
+		}
 	}
 
 	/**

@@ -64,6 +64,11 @@ class PVCache extends PVStaticObject {
 	 * Default time to live for the cache
 	 */
 	protected static $_cache_expire = 300;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initalize PVCache by setting the location to save cached files and initialize
@@ -86,57 +91,61 @@ class PVCache extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$defaults = array(
-			'cache_location' => PV_ROOT . DS . 'tmp' . DS,
-			'cache_format' => 'Y-m-d H:i:s',
-			'cache_format_search' => '\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}',
-			'enclosing_tags' => array(
-				'{',
-				'}'
-			),
-			'cache_name' => 'cache:',
-			'cache_expire' => 300,
-			'memcache_servers' => array()
-		);
-
-		$config += $defaults;
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
-
-		self::$_cache_format = $config['cache_format'];
-		self::$_cache_location = $config['cache_location'];
-		self::$_cache_format_search = $config['cache_format_search'];
-		self::$_cache_name = $config['cache_name'];
-		self::$_enclosing_tags = $config['enclosing_tags'];
-		self::$_cache_expire = $config['cache_expire'];
-
-		if (!empty($config['memcache_servers']))
-			self::$_memcache = new Memcache();
-
-		foreach ($config['memcache_servers'] as $server) {
-			$host = (isset($server['host'])) ? $server['host'] : '127.0.0.1';
-			$port = (isset($server['port'])) ? $server['port'] : '11211';
-			$persistent = (isset($server['persistent'])) ? $server['persistent'] : true;
-			$weight = (isset($server['weight'])) ? $server['weight'] : 1;
-			$timeout = (isset($server['timeout'])) ? $server['timeout'] : 30;
-			$retry_interval = (isset($server['retry_interval'])) ? $server['retry_interval'] : 15;
-			$status = (isset($server['status'])) ? $server['status'] : true;
-			$failure_callback = (isset($server['failure_callback'])) ? $server['failure_callback'] : null;
-			$timeoutms = (isset($server['timeoutms'])) ? $server['timeoutms'] : null;
-
-			self::$_memcache->addServer($host, $port, $persistent, $weight, $timeout, $retry_interval, $status, $failure_callback, $timeoutms);
+		if(!self::$_initialized) {
+			$defaults = array(
+				'cache_location' => PV_ROOT . DS . 'tmp' . DS,
+				'cache_format' => 'Y-m-d H:i:s',
+				'cache_format_search' => '\d{4}\-\d{2}\-\d{2} \d{2}:\d{2}:\d{2}',
+				'enclosing_tags' => array(
+					'{',
+					'}'
+				),
+				'cache_name' => 'cache:',
+				'cache_expire' => 300,
+				'memcache_servers' => array()
+			);
+	
+			$config += $defaults;
+			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+	
+			self::$_cache_format = $config['cache_format'];
+			self::$_cache_location = $config['cache_location'];
+			self::$_cache_format_search = $config['cache_format_search'];
+			self::$_cache_name = $config['cache_name'];
+			self::$_enclosing_tags = $config['enclosing_tags'];
+			self::$_cache_expire = $config['cache_expire'];
+	
+			if (!empty($config['memcache_servers']))
+				self::$_memcache = new Memcache();
+	
+			foreach ($config['memcache_servers'] as $server) {
+				$host = (isset($server['host'])) ? $server['host'] : '127.0.0.1';
+				$port = (isset($server['port'])) ? $server['port'] : '11211';
+				$persistent = (isset($server['persistent'])) ? $server['persistent'] : true;
+				$weight = (isset($server['weight'])) ? $server['weight'] : 1;
+				$timeout = (isset($server['timeout'])) ? $server['timeout'] : 30;
+				$retry_interval = (isset($server['retry_interval'])) ? $server['retry_interval'] : 15;
+				$status = (isset($server['status'])) ? $server['status'] : true;
+				$failure_callback = (isset($server['failure_callback'])) ? $server['failure_callback'] : null;
+				$timeoutms = (isset($server['timeoutms'])) ? $server['timeoutms'] : null;
+	
+				self::$_memcache->addServer($host, $port, $persistent, $weight, $timeout, $retry_interval, $status, $failure_callback, $timeoutms);
+			}
+	
+			foreach ($config['memcache_servers'] as $server) {
+				$host = (isset($server['host'])) ? $server['host'] : '127.0.0.1';
+				$port = (isset($server['port'])) ? $server['port'] : '11211';
+				$timeout = (isset($server['timeout'])) ? $server['timeout'] : 30;
+				$connect = (isset($server['connect'])) ? $server['connect'] : false;
+	
+				if ($connect)
+					self::$_memcache->connect($host, $port, $timeout);
+			}
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			
+			self::$_initialized = true;
 		}
-
-		foreach ($config['memcache_servers'] as $server) {
-			$host = (isset($server['host'])) ? $server['host'] : '127.0.0.1';
-			$port = (isset($server['port'])) ? $server['port'] : '11211';
-			$timeout = (isset($server['timeout'])) ? $server['timeout'] : 30;
-			$connect = (isset($server['connect'])) ? $server['connect'] : false;
-
-			if ($connect)
-				self::$_memcache->connect($host, $port, $timeout);
-		}
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
 	}
 
 	/**

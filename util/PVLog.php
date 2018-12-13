@@ -43,6 +43,11 @@ class PVLog extends PVStaticObject {
 	 * The format for saving logs, in terms of priorty, message and date
 	 */
 	protected static $_logFormat;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initialize the log class and set the options for how the logger will write
@@ -67,24 +72,28 @@ class PVLog extends PVStaticObject {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
-
-		$defaults = array(
-			'directory' => DS . 'tmp' . DS,
-			'file' => '',
-			'timestamp_format' => 'Y-m-d H:i:s',
-			'log_format' => '{priority} {timestamp} {message}' . "\n"
-		);
-
-		$config += $defaults;
-
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
-
-		self::$_logDirectory = $config['directory'];
-		self::$_timestampFormat = $config['timestamp_format'];
-		self::$_logFormat = $config['log_format'];
-		self::$_logFile = $config['file'];
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
+		
+		if(!self::$_initialized) {
+			$defaults = array(
+				'directory' => DS . 'tmp' . DS,
+				'file' => '',
+				'timestamp_format' => 'Y-m-d H:i:s',
+				'log_format' => '{priority} {timestamp} {message}' . "\n"
+			);
+	
+			$config += $defaults;
+	
+			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+	
+			self::$_logDirectory = $config['directory'];
+			self::$_timestampFormat = $config['timestamp_format'];
+			self::$_logFormat = $config['log_format'];
+			self::$_logFile = $config['file'];
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			
+			self::$_initialized = true;
+		}
 
 	}
 

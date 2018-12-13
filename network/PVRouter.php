@@ -40,6 +40,11 @@ class PVRouter extends PVStaticObject {
 	 * When a rule is found, speficies what to replace it with before parsing
 	 */
 	private static $default_route_replace = '(?P<\1>[^/]+)';
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initializes the router and sets up default parameters and default rules
@@ -61,28 +66,32 @@ class PVRouter extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$defaults = array(
-			'seo_urls' => true,
-			'default_rule_replace' => '/:([a-z]+)/',
-			'default_route_replace' => '(?P<\1>[^/]+)'
-		);
-
-		$config += $defaults;
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
-
-		self::$routes = array();
-		self::$route_parameters = array();
-
-		if ($config['seo_urls'] === 1 || $config['seo_urls'] === 'true') {
-			self::$seo_urls = 1;
-		} else {
-			self::$seo_urls = 0;
+		if(!self::$_initialized) {
+			$defaults = array(
+				'seo_urls' => true,
+				'default_rule_replace' => '/:([a-z]+)/',
+				'default_route_replace' => '(?P<\1>[^/]+)'
+			);
+	
+			$config += $defaults;
+			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+	
+			self::$routes = array();
+			self::$route_parameters = array();
+	
+			if ($config['seo_urls'] === 1 || $config['seo_urls'] === 'true') {
+				self::$seo_urls = 1;
+			} else {
+				self::$seo_urls = 0;
+			}
+	
+			self::$default_rule_replace = $config['default_rule_replace'];
+			self::$default_route_replace = $config['default_route_replace'];
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			
+			self::$_initialized = true;
 		}
-
-		self::$default_rule_replace = $config['default_rule_replace'];
-		self::$default_route_replace = $config['default_route_replace'];
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
 	}//end init
 
 	/**

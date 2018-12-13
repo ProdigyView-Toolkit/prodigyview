@@ -36,6 +36,11 @@ class PVValidator extends PVStaticObject {
 	 * An array of stored rules and the functions to validate those rules.
 	 */
 	private static $rules;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initializes PVValidators and sets the default for checking rules. The defaults allows the function
@@ -52,190 +57,194 @@ class PVValidator extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
-
-		self::$rules = array();
-
-		self::$rules['id'] = array(
-			'type' => 'validator',
-			'function' => 'isID'
-		);
+		if(!self::$_initialized) {
+			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+	
+			self::$rules = array();
+	
+			self::$rules['id'] = array(
+				'type' => 'validator',
+				'function' => 'isID'
+			);
+			
+			self::$rules['integer'] = array(
+				'type' => 'validator',
+				'function' => 'isInteger'
+			);
+			
+			self::$rules['double'] = array(
+				'type' => 'validator',
+				'function' => 'isDouble'
+			);
+	
+			//Audio File Validation
+			self::$rules['audio_file'] = array(
+				'type' => 'validator',
+				'function' => 'isAudioFile'
+			);
+			
+			self::$rules['midi_file'] = array(
+				'type' => 'validator',
+				'function' => 'isMidiFile'
+			);
+			
+			self::$rules['mp3_file'] = array(
+				'type' => 'validator',
+				'function' => 'isMpegAudioFile'
+			);
+			
+			self::$rules['wav_file'] = array(
+				'type' => 'validator',
+				'function' => 'isWavFile'
+			);
+			
+			self::$rules['aiff_file'] = array(
+				'type' => 'validator',
+				'function' => 'isAiffFile'
+			);
+			
+			self::$rules['ra_file'] = array(
+				'type' => 'validator',
+				'function' => 'isRealAudioFile'
+			);
+			
+			self::$rules['oga_file'] = array(
+				'type' => 'validator',
+				'function' => 'isOGGAudioFile'
+			);
+	
+			//Image File Validation
+			self::$rules['image_file'] = array(
+				'type' => 'validator',
+				'function' => 'isImageFile'
+			);
+			
+			self::$rules['bmp_file'] = array(
+				'type' => 'validator',
+				'function' => 'isBmpFile'
+			);
+			
+			self::$rules['jpg_file'] = array(
+				'type' => 'validator',
+				'function' => 'isJpegFile'
+			);
+			
+			self::$rules['png_file'] = array(
+				'type' => 'validator',
+				'function' => 'isPngFile'
+			);
+			
+			self::$rules['gif_file'] = array(
+				'type' => 'validator',
+				'function' => 'isGifFile'
+			);
+	
+			//Video File Validation
+			self::$rules['video_file'] = array(
+				'type' => 'validator',
+				'function' => 'isVideoFile'
+			);
+			self::$rules['mpeg_file'] = array(
+				'type' => 'validator',
+				'function' => 'isMpegVideoFile'
+			);
+			
+			self::$rules['quicktime_file'] = array(
+				'type' => 'validator',
+				'function' => 'isQuickTimeFile'
+			);
+			
+			self::$rules['mov_file'] = array(
+				'type' => 'validator',
+				'function' => 'isMovFile'
+			);
+			
+			self::$rules['avi_file'] = array(
+				'type' => 'validator',
+				'function' => 'isAviFile'
+			);
+			
+			self::$rules['ogv_file'] = array(
+				'type' => 'validator',
+				'function' => 'isOGGVideoFile'
+			);
+	
+			//Compressed File
+			self::$rules['compressed_file'] = array(
+				'type' => 'validator',
+				'function' => 'isCompressedFile'
+			);
+			
+			self::$rules['zip_file'] = array(
+				'type' => 'validator',
+				'function' => 'isZipFile'
+			);
+			self::$rules['tar_file'] = array(
+				'type' => 'validator',
+				'function' => 'isTarFile'
+			);
+			
+			self::$rules['gtar_file'] = array(
+				'type' => 'validator',
+				'function' => 'isGTarFile'
+			);
+	
+			//Other Validators
+			self::$rules['url'] = array(
+				'type' => 'validator',
+				'function' => 'isValidUrl'
+			);
+			
+			self::$rules['active_url'] = array(
+				'type' => 'validator',
+				'function' => 'isActiveUrl'
+			);
+			
+			self::$rules['email'] = array(
+				'type' => 'validator',
+				'function' => 'isValidEmail'
+			);
+			
+			self::$rules['notempty'] = array(
+				'type' => 'preg_match',
+				'rule' => '/[^\s]+/m'
+			);
+	
+			//Other File Validiation
+			self::$rules['css_file'] = array(
+				'type' => 'validator',
+				'function' => 'isCssFile'
+			);
+			
+			self::$rules['html_file'] = array(
+				'type' => 'validator',
+				'function' => 'isHtmlFile'
+			);
+			
+			self::$rules['htm_file'] = array(
+				'type' => 'validator',
+				'function' => 'isHtmFile'
+			);
+			
+			self::$rules['asc_file'] = array(
+				'type' => 'validator',
+				'function' => 'isAscFile'
+			);
+			
+			self::$rules['text_file'] = array(
+				'type' => 'validator',
+				'function' => 'isTxtFile'
+			);
+			
+			self::$rules['richtext_file'] = array(
+				'type' => 'validator',
+				'function' => 'isRtxFile'
+			);
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $config);
 		
-		self::$rules['integer'] = array(
-			'type' => 'validator',
-			'function' => 'isInteger'
-		);
-		
-		self::$rules['double'] = array(
-			'type' => 'validator',
-			'function' => 'isDouble'
-		);
-
-		//Audio File Validation
-		self::$rules['audio_file'] = array(
-			'type' => 'validator',
-			'function' => 'isAudioFile'
-		);
-		
-		self::$rules['midi_file'] = array(
-			'type' => 'validator',
-			'function' => 'isMidiFile'
-		);
-		
-		self::$rules['mp3_file'] = array(
-			'type' => 'validator',
-			'function' => 'isMpegAudioFile'
-		);
-		
-		self::$rules['wav_file'] = array(
-			'type' => 'validator',
-			'function' => 'isWavFile'
-		);
-		
-		self::$rules['aiff_file'] = array(
-			'type' => 'validator',
-			'function' => 'isAiffFile'
-		);
-		
-		self::$rules['ra_file'] = array(
-			'type' => 'validator',
-			'function' => 'isRealAudioFile'
-		);
-		
-		self::$rules['oga_file'] = array(
-			'type' => 'validator',
-			'function' => 'isOGGAudioFile'
-		);
-
-		//Image File Validation
-		self::$rules['image_file'] = array(
-			'type' => 'validator',
-			'function' => 'isImageFile'
-		);
-		
-		self::$rules['bmp_file'] = array(
-			'type' => 'validator',
-			'function' => 'isBmpFile'
-		);
-		
-		self::$rules['jpg_file'] = array(
-			'type' => 'validator',
-			'function' => 'isJpegFile'
-		);
-		
-		self::$rules['png_file'] = array(
-			'type' => 'validator',
-			'function' => 'isPngFile'
-		);
-		
-		self::$rules['gif_file'] = array(
-			'type' => 'validator',
-			'function' => 'isGifFile'
-		);
-
-		//Video File Validation
-		self::$rules['video_file'] = array(
-			'type' => 'validator',
-			'function' => 'isVideoFile'
-		);
-		self::$rules['mpeg_file'] = array(
-			'type' => 'validator',
-			'function' => 'isMpegVideoFile'
-		);
-		
-		self::$rules['quicktime_file'] = array(
-			'type' => 'validator',
-			'function' => 'isQuickTimeFile'
-		);
-		
-		self::$rules['mov_file'] = array(
-			'type' => 'validator',
-			'function' => 'isMovFile'
-		);
-		
-		self::$rules['avi_file'] = array(
-			'type' => 'validator',
-			'function' => 'isAviFile'
-		);
-		
-		self::$rules['ogv_file'] = array(
-			'type' => 'validator',
-			'function' => 'isOGGVideoFile'
-		);
-
-		//Compressed File
-		self::$rules['compressed_file'] = array(
-			'type' => 'validator',
-			'function' => 'isCompressedFile'
-		);
-		
-		self::$rules['zip_file'] = array(
-			'type' => 'validator',
-			'function' => 'isZipFile'
-		);
-		self::$rules['tar_file'] = array(
-			'type' => 'validator',
-			'function' => 'isTarFile'
-		);
-		
-		self::$rules['gtar_file'] = array(
-			'type' => 'validator',
-			'function' => 'isGTarFile'
-		);
-
-		//Other Validators
-		self::$rules['url'] = array(
-			'type' => 'validator',
-			'function' => 'isValidUrl'
-		);
-		
-		self::$rules['active_url'] = array(
-			'type' => 'validator',
-			'function' => 'isActiveUrl'
-		);
-		
-		self::$rules['email'] = array(
-			'type' => 'validator',
-			'function' => 'isValidEmail'
-		);
-		
-		self::$rules['notempty'] = array(
-			'type' => 'preg_match',
-			'rule' => '/[^\s]+/m'
-		);
-
-		//Other File Validiation
-		self::$rules['css_file'] = array(
-			'type' => 'validator',
-			'function' => 'isCssFile'
-		);
-		
-		self::$rules['html_file'] = array(
-			'type' => 'validator',
-			'function' => 'isHtmlFile'
-		);
-		
-		self::$rules['htm_file'] = array(
-			'type' => 'validator',
-			'function' => 'isHtmFile'
-		);
-		
-		self::$rules['asc_file'] = array(
-			'type' => 'validator',
-			'function' => 'isAscFile'
-		);
-		
-		self::$rules['text_file'] = array(
-			'type' => 'validator',
-			'function' => 'isTxtFile'
-		);
-		
-		self::$rules['richtext_file'] = array(
-			'type' => 'validator',
-			'function' => 'isRtxFile'
-		);
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::$_initialized = true;
+		}
 	}
 
 	/**

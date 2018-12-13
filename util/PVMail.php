@@ -61,6 +61,11 @@ class PVMail extends PVStaticObject {
 	protected static $_default_sender = '';
 	
 	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
+	
+	/**
 	 * Configure the mail class with default options to be used.
 	 * 
 	 * @param array $config The options that will configure the class
@@ -80,27 +85,31 @@ class PVMail extends PVStaticObject {
 		if(self::_hasAdapter(get_class(), __FUNCTION__) )
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 		
-		$config = self::_applyFilter( get_class(), __FUNCTION__ , $config , array('event'=>'args'));
-		
-		$defaults = array(
-			'smtp_host' => '',
-			'smtp_username' => '',
-			'smtp_password' => '',
-			'smtp_port' => '',
-			'mailer' => 'php',
-			'default_sender' => ''
-		);
-		
-		$config += $defaults;
-		
-		self::$_smtp_host= $config['smtp_host'];
-		self::$_smtp_username= $config['smtp_username'];
-		self::$_smtp_password= $config['smtp_password'];
-		self::$_smtp_port= $config['smtp_port'];
-		self::$_mailer = $config['mailer'];
-		self::$_default_sender = $config['default_sender'];
-		
-		self::_notify(get_class().'::'.__FUNCTION__, $config);
+		if(!self::$_initialized) {
+			$config = self::_applyFilter( get_class(), __FUNCTION__ , $config , array('event'=>'args'));
+			
+			$defaults = array(
+				'smtp_host' => '',
+				'smtp_username' => '',
+				'smtp_password' => '',
+				'smtp_port' => '',
+				'mailer' => 'php',
+				'default_sender' => ''
+			);
+			
+			$config += $defaults;
+			
+			self::$_smtp_host= $config['smtp_host'];
+			self::$_smtp_username= $config['smtp_username'];
+			self::$_smtp_password= $config['smtp_password'];
+			self::$_smtp_port= $config['smtp_port'];
+			self::$_mailer = $config['mailer'];
+			self::$_default_sender = $config['default_sender'];
+			
+			self::_notify(get_class().'::'.__FUNCTION__, $config);
+			
+			self::$_initialized = true;
+		}
 	}
 	
 	/**

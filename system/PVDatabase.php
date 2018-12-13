@@ -165,6 +165,11 @@ class PVDatabase extends PVStaticObject {
 	 * A row of data
 	 */
 	private static $row;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initializes the class.
@@ -174,13 +179,20 @@ class PVDatabase extends PVStaticObject {
 	 * @return void
 	 */
 	public static function init($config = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
-		$defaults = array('mysql_error_report' => MYSQLI_REPORT_ERROR);
-		$config += $defaults;
-
-		self::$mysql_error_report = $config['mysql_error_report'];
-
-		self::$connections = array();
+		if(!self::$_initialized) {
+			$defaults = array('mysql_error_report' => MYSQLI_REPORT_ERROR);
+			$config += $defaults;
+	
+			self::$mysql_error_report = $config['mysql_error_report'];
+	
+			self::$connections = array();
+		
+			self::$_initialized = true;
+		}
 
 	}//end init
 

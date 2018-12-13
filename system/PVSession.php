@@ -82,6 +82,11 @@ class PVSession extends PVStaticObject {
 	 * Encrypt the session data
 	 */
 	private static $hash_session = false;
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initializes the static class PVSession. Values passed can be
@@ -109,49 +114,53 @@ class PVSession extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $session_vars);
 
-		$defaults = array(
-			'cookie_path' => '/',
-			'cookie_domain' => $_SERVER['HTTP_HOST'],
-			'cookie_secure' => false,
-			'cookie_httponly' => false,
-			'cookie_lifetime' => 5000,
-			'hash_cookie' => false,
-			'hash_session' => false,
-			'session_name' => 'pv_session',
-			'session_lifetime' => 2000,
-			'session_path' => '/',
-			'session_domain' => $_SERVER['HTTP_HOST'],
-			'session_secure' => false,
-			'session_httponly' => false,
-			'session_start' => true
-		);
-
-		$session_vars += $defaults;
-
-		$session_vars = self::_applyFilter(get_class(), __FUNCTION__, $session_vars, array('event' => 'args'));
-
-		self::$cookie_path = $session_vars['cookie_path'];
-		self::$cookie_domain = $session_vars['cookie_domain'];
-		self::$cookie_secure = $session_vars['cookie_secure'];
-		self::$cookie_httponly = $session_vars['cookie_httponly'];
-		self::$cookie_lifetime = $session_vars['cookie_lifetime'];
-
-		self::$session_path = $session_vars['session_path'];
-		self::$session_domain = $session_vars['session_domain'];
-		self::$session_secure = $session_vars['session_secure'];
-		self::$session_httponly = $session_vars['session_httponly'];
-		self::$session_lifetime = $session_vars['session_lifetime'];
-
-		self::$hash_cookie = $session_vars['hash_cookie'];
-		self::$hash_session = $session_vars['hash_session'];
-
-		session_name($session_vars['session_name']);
-		session_set_cookie_params($session_vars['session_lifetime'], $session_vars['session_path'], $session_vars['session_domain'], $session_vars['session_secure'], $session_vars['session_httponly']);
-
-		if ($session_vars['session_start'])
-			session_start();
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $session_vars);
+		if(!self::$_initialized) {
+			$defaults = array(
+				'cookie_path' => '/',
+				'cookie_domain' => $_SERVER['HTTP_HOST'],
+				'cookie_secure' => false,
+				'cookie_httponly' => false,
+				'cookie_lifetime' => 5000,
+				'hash_cookie' => false,
+				'hash_session' => false,
+				'session_name' => 'pv_session',
+				'session_lifetime' => 2000,
+				'session_path' => '/',
+				'session_domain' => $_SERVER['HTTP_HOST'],
+				'session_secure' => false,
+				'session_httponly' => false,
+				'session_start' => true
+			);
+	
+			$session_vars += $defaults;
+	
+			$session_vars = self::_applyFilter(get_class(), __FUNCTION__, $session_vars, array('event' => 'args'));
+	
+			self::$cookie_path = $session_vars['cookie_path'];
+			self::$cookie_domain = $session_vars['cookie_domain'];
+			self::$cookie_secure = $session_vars['cookie_secure'];
+			self::$cookie_httponly = $session_vars['cookie_httponly'];
+			self::$cookie_lifetime = $session_vars['cookie_lifetime'];
+	
+			self::$session_path = $session_vars['session_path'];
+			self::$session_domain = $session_vars['session_domain'];
+			self::$session_secure = $session_vars['session_secure'];
+			self::$session_httponly = $session_vars['session_httponly'];
+			self::$session_lifetime = $session_vars['session_lifetime'];
+	
+			self::$hash_cookie = $session_vars['hash_cookie'];
+			self::$hash_session = $session_vars['hash_session'];
+	
+			session_name($session_vars['session_name']);
+			session_set_cookie_params($session_vars['session_lifetime'], $session_vars['session_path'], $session_vars['session_domain'], $session_vars['session_secure'], $session_vars['session_httponly']);
+	
+			if ($session_vars['session_start'])
+				session_start();
+	
+			self::_notify(get_class() . '::' . __FUNCTION__, $session_vars);
+			
+			self::$_initialized = true;
+		}
 	}
 
 	/**

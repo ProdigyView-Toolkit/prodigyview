@@ -446,5 +446,20 @@ class PVSecurity extends PVStaticObject {
 		return bin2hex(openssl_random_pseudo_bytes($length));
 		
 	}
+	
+	/**
+	 * Creates a unique string using an HMac Hash.
+	 * 
+	 * @param string $string The data to check against in the encoding
+	 * @param string $key A private keu
+	 * @param string $method The hash generation tool. Default is sha1
+	 * @param boolean $raw_output
+	 * 
+	 * @return string Encoded string
+	 */
+	public static function encodeHmacSignature($string, $key, $method = 'sha1', $raw_output= true) {
+		
+		return base64_encode(hash_hmac($method, $string, $key, $raw_output));
+	}
 
 }//end class
