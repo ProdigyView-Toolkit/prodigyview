@@ -42,6 +42,11 @@ class PVRequest extends PVStaticInstance {
 	protected $_http_request;
 
 	/**
+	 * The headers found in the request
+	 */
+	protected $_headers = array();
+
+	/**
 	 * The kinds of mobile devices
 	 */
 	protected $_mobile_devices;
@@ -60,6 +65,7 @@ class PVRequest extends PVStaticInstance {
 
 		$defaults = array(
 			'process_request' => true,
+			'parse_headers' => true,
 			'http_accept' => (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'json')) ? 'json' : 'xml',
 			'request_method' => 'REQUEST_METHOD',
 			'mobile_devices' => "/(nokia|iphone|android|motorola|^mot-|softbank|foma|docomo|kddi|up.browser|up.link|htc|dopod|blazer|netfront|helio|hosin|huawei|novarra|CoolPad|webos|techfaith|palmsource|blackberry|alcatel|amoi|ktouch|nexian|samsung|^sam-|s[cg]h|^lge|ericsson|philips|sagem|wellcom|bunjalloo|maui|symbian|smartphone|midp|wap|phone|windows ce|iemobile|^spice|^bird|^zte-|longcos|pantech|gionee|^sie-|portalmmm|jigs browser|hiptop|^ucweb|^benq|haier|^lct|operas*mobi|opera*mini|320x320|240x320|176x220)/i"
@@ -81,6 +87,10 @@ class PVRequest extends PVStaticInstance {
 
 		if ($options['process_request']) {
 			$this->processRequest();
+		}
+		
+		if ($options['parse_headers']) {
+			$this->parseHeaders();
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $this);
@@ -110,7 +120,7 @@ class PVRequest extends PVStaticInstance {
 				$this->_request_data = $_GET;
 				break;
 			case 'post' :
-				$this->_request_data = ($_POST)?: file_get_contents('php://input');
+				$this->_request_data = ($_POST) ? : file_get_contents('php://input');
 				break;
 			case 'put' :
 				$this->_request_data = file_get_contents('php://input');
@@ -126,6 +136,29 @@ class PVRequest extends PVStaticInstance {
 				break;
 		}
 
+	}
+
+	/**
+	 * Parses the HTTP headers found in the request and assigns it to the class
+	 * $_headers variable.
+	 * 
+	 * @return void
+	 * @author https://stackoverflow.com/questions/541430/how-do-i-read-any-request-header-in-php
+	 */
+	public function parseHeaders() {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		foreach ($_SERVER as $key => $value) {
+			if (substr($key, 0, 5) <> 'HTTP_') {
+				continue;
+			}
+			
+			$header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))));
+			
+			$this ->_headers[$header] = $value;
+		}
 	}
 
 	/**
@@ -154,7 +187,7 @@ class PVRequest extends PVStaticInstance {
 	 * @param string $format The default format will return the data as set in the class. The formats
 	 * 						can be set to the options of json, array and object, and will return the
 	 * 						data in each of those types.
-	 * 
+	 *
 	 * @return mixed $data The data return in a certain format
 	 * @access public
 	 * @todo add ability to format data in xml and to serialize
@@ -168,23 +201,23 @@ class PVRequest extends PVStaticInstance {
 
 		switch ($format) {
 			case 'json' :
-				if(is_array($this->_request_data)) {
+				if (is_array($this->_request_data)) {
 					$data = json_encode($this->_request_data);
 				} else {
-					$data = $this->_request_data; 
+					$data = $this->_request_data;
 				}
 				break;
-			case 'array':
-				if(is_string($this->_request_data) && json_decode($this->_request_data) && json_last_error() == JSON_ERROR_NONE) {
+			case 'array' :
+				if (is_string($this->_request_data) && json_decode($this->_request_data) && json_last_error() == JSON_ERROR_NONE) {
 					$data = json_decode($this->_request_data, true);
 				} else {
 					$data = $this->_request_data;
 				}
 				break;
-			case 'object':
-				if(is_array($this->_request_data)) {
+			case 'object' :
+				if (is_array($this->_request_data)) {
 					$data = PVConversion::arrayToObject($this->_request_data);
-				} elseif(is_string($this->_request_data) && json_decode($this->_request_data) && json_last_error() == JSON_ERROR_NONE) {
+				} elseif (is_string($this->_request_data) && json_decode($this->_request_data) && json_last_error() == JSON_ERROR_NONE) {
 					$data = json_decode($this->_request_data);
 				} else {
 					$data = $this->_request_data;
@@ -288,7 +321,34 @@ class PVRequest extends PVStaticInstance {
 			return true;
 
 		return false;
+	}
 
+	/**
+	 * Attempts to retrieve a header that was found in the request
+	 * 
+	 * @param string $header The header being searched for
+	 * 
+	 * @return mixed, returns the header if found, otherwise returns false
+	 */
+	public function getHeader($header) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $header);
+		
+		$found_value = false;
+		
+		$header = self::_applyFilter(get_class(), __FUNCTION__, $header, array('event' => 'args'));
+		
+		$header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower($header))));
+		
+		if(isset($this -> _headers[$header])) {
+			$found_value = $this -> _headers[$header];
+		}
+		
+		$found_value = self::_applyFilter(get_class(), __FUNCTION__, $found_value, array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $header, $found_value);
+		
+		return $found_value;
 	}
 
 }

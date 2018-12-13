@@ -62,6 +62,11 @@ class PVSecurity extends PVStaticObject {
 	protected static $_save_session = true;
 	protected static $_cookie_fields = array();
 	protected static $_session_fields = array();
+	
+	/**
+	 * Protects the class from being initalized multiple times via init
+	 */
+	protected static $_initialized = false;
 
 	/**
 	 * Initializes the security class for using encryption and for authentication. Requires that
@@ -93,55 +98,60 @@ class PVSecurity extends PVStaticObject {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
 
-		$defaults = array(
-			'mcrypt_algorithm' => MCRYPT_DES,
-			'mcrypt_algorithm_directory' => '',
-			'mcrypt_mode' => 'ofb',
-			'mcrypt_mode_directory' => '',
-			'mcrypt_key' => 'prodgiyviewkey',
-			'mcrypt_iv' => 'prodgiyviewiv',
-			'salt' => null,
-			'auth_table' => 'users',
-			'auth_hashed_fields' => array(),
-			'auth_encrypted_fields' => array(),
-			'save_cookie' => true,
-			'save_session' => true,
-			'cookie_fields' => array(),
-			'session_fields' => array(),
-			'open_ssl_cipher' => 'AES-256-CBC',
-			'open_ssl_key' => 'OxF3qAylVd',
-			'open_ssl_options' => 0,
-			'open_ssl_iv' => hex2bin('24957d373953e44afb49ea3d61104d3c'),
-			'open_ssl_tag' => null,
-			'open_ssl_aad' => '',
-			'open_ssl_tag_length' => 16
-		);
+		if(!self::$_initialized) {
+			
+			$defaults = array(
+				'mcrypt_algorithm' => MCRYPT_DES,
+				'mcrypt_algorithm_directory' => '',
+				'mcrypt_mode' => 'ofb',
+				'mcrypt_mode_directory' => '',
+				'mcrypt_key' => 'prodgiyviewkey',
+				'mcrypt_iv' => 'prodgiyviewiv',
+				'salt' => null,
+				'auth_table' => 'users',
+				'auth_hashed_fields' => array(),
+				'auth_encrypted_fields' => array(),
+				'save_cookie' => true,
+				'save_session' => true,
+				'cookie_fields' => array(),
+				'session_fields' => array(),
+				'open_ssl_cipher' => 'AES-256-CBC',
+				'open_ssl_key' => 'OxF3qAylVd',
+				'open_ssl_options' => 0,
+				'open_ssl_iv' => hex2bin('24957d373953e44afb49ea3d61104d3c'),
+				'open_ssl_tag' => null,
+				'open_ssl_aad' => '',
+				'open_ssl_tag_length' => 16
+			);
+			
+			$args += $defaults;
+	
+			self::$mcrypt_algorithm = $args['mcrypt_algorithm'];
+			self::$mcrypt_algorithm_directory = $args['mcrypt_algorithm_directory'];
+			self::$mcrypt_mode = $args['mcrypt_mode'];
+			self::$mcrypt_mode_directory = $args['mcrypt_mode_directory'];
+			self::$mcrypt_key = $args['mcrypt_key'];
+			self::$mcrypt_iv = $args['mcrypt_iv'];
+			
+			self::$open_ssl_cipher = $args['open_ssl_cipher'];
+			self::$open_ssl_key = $args['open_ssl_key'];
+			self::$open_ssl_options = $args['open_ssl_options'];
+			self::$open_ssl_iv = $args['open_ssl_iv'];
+			self::$open_ssl_tag = $args['open_ssl_tag'];
+			self::$open_ssl_aad = $args['open_ssl_aad'];
+			self::$open_ssl_tag_length = $args['open_ssl_tag_length'];
+	
+			self::$_salt = $args['salt'];
+			self::$_auth_table = $args['auth_table'];
+			self::$_auth_hashed_fields = $args['auth_hashed_fields'];
+			self::$_auth_encrypted_fields = $args['auth_encrypted_fields'];
+			self::$_save_cookie = $args['save_cookie'];
+			self::$_save_session = $args['save_session'];
+			self::$_cookie_fields = $args['cookie_fields'];
+			self::$_session_fields = $args['session_fields'];
 		
-		$args += $defaults;
-
-		self::$mcrypt_algorithm = $args['mcrypt_algorithm'];
-		self::$mcrypt_algorithm_directory = $args['mcrypt_algorithm_directory'];
-		self::$mcrypt_mode = $args['mcrypt_mode'];
-		self::$mcrypt_mode_directory = $args['mcrypt_mode_directory'];
-		self::$mcrypt_key = $args['mcrypt_key'];
-		self::$mcrypt_iv = $args['mcrypt_iv'];
-		
-		self::$open_ssl_cipher = $args['open_ssl_cipher'];
-		self::$open_ssl_key = $args['open_ssl_key'];
-		self::$open_ssl_options = $args['open_ssl_options'];
-		self::$open_ssl_iv = $args['open_ssl_iv'];
-		self::$open_ssl_tag = $args['open_ssl_tag'];
-		self::$open_ssl_aad = $args['open_ssl_aad'];
-		self::$open_ssl_tag_length = $args['open_ssl_tag_length'];
-
-		self::$_salt = $args['salt'];
-		self::$_auth_table = $args['auth_table'];
-		self::$_auth_hashed_fields = $args['auth_hashed_fields'];
-		self::$_auth_encrypted_fields = $args['auth_encrypted_fields'];
-		self::$_save_cookie = $args['save_cookie'];
-		self::$_save_session = $args['save_session'];
-		self::$_cookie_fields = $args['cookie_fields'];
-		self::$_session_fields = $args['session_fields'];
+			self::$_initialized = true;
+		}
 	}
 
 	/**
@@ -422,6 +432,7 @@ class PVSecurity extends PVStaticObject {
 			'string' => $string,
 			'salt' => $salt
 		), array('event' => 'args'));
+		
 		$string = $filtered['string'];
 		$salt = $filtered['salt'];
 
@@ -443,23 +454,54 @@ class PVSecurity extends PVStaticObject {
 	 */
 	public static function generateToken($length = 64) {
 		
-		return bin2hex(openssl_random_pseudo_bytes($length));
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $length);
+		
+		$length = self::_applyFilter(get_class(), __FUNCTION__, $length, array('event' => 'args'));
+		
+		$token = bin2hex(openssl_random_pseudo_bytes($length));
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $token);
+		$token = self::_applyFilter(get_class(), __FUNCTION__, $token, array('event' => 'return'));
+		
+		return $token;
 		
 	}
 	
 	/**
-	 * Creates a unique string using an HMac Hash.
+	 * Creates a unique string using an HMac Hash that containts both a public
+	 * and private key for checking later
 	 * 
-	 * @param string $string The data to check against in the encoding
+	 * @param string $public The data to check against in the encoding
 	 * @param string $key A private keu
 	 * @param string $method The hash generation tool. Default is sha1
 	 * @param boolean $raw_output
 	 * 
 	 * @return string Encoded string
 	 */
-	public static function encodeHmacSignature($string, $key, $method = 'sha1', $raw_output= true) {
+	public static function encodeHmacSignature($public, $key, $method = 'sha1', $raw_output= true) {
 		
-		return base64_encode(hash_hmac($method, $string, $key, $raw_output));
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $public, $key, $method, $raw_output);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'public' => $public,
+			'key' => $key,
+			'method' => $method,
+			'raw_output' => $raw_output,
+		), array('event' => 'args'));
+		
+		$public = $filtered['public'];
+		$key = $filtered['key'];
+		$method = $filtered['method'];
+		$raw_output = $filtered['raw_output'];
+		
+		$hashed_string = base64_encode(hash_hmac($method, $public, $key, $raw_output));
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $hashed_string, $public, $key, $method, $raw_output);
+		$hashed_string = self::_applyFilter(get_class(), __FUNCTION__, $hashed_string, array('event' => 'return'));
+		
+		return $hashed_string;
 	}
 
 }//end class
