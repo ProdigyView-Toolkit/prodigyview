@@ -1,4 +1,4 @@
-# ProdigyView Toolkit For Rapid Development
+# ProdigyView: The Toolkit For Building Frameworks and Structured Applications
 
 Welcome to the ProdigyView Toolkit, a powerful PHP enhancement tool designed to make PHP coding faster, less mundane and highly extendable. This document will go over how to install the toolkit, use some of the features, and extend objects with the built-in design patterns.
 
