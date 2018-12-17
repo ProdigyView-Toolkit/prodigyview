@@ -1,4 +1,4 @@
-# ProdigyView: The Toolkit For Building Frameworks and Structured Applications
+# ProdigyView: The Toolkit For Building Micro: Frameworks / Applications / Services
 
 Welcome to the ProdigyView Toolkit, a powerful PHP enhancement tool designed to make PHP coding faster, less mundane and highly extendable. This document will go over how to install the toolkit, use some of the features, and extend objects with the built-in design patterns.
 
@@ -93,18 +93,30 @@ $is_mobile = $request -> isMobile();
 
 And a lot of other tools from hashing, generating a random string, connecting with databases, etc. Using these tools can help speed up your application development.
 
-### Application Design
+### Development Principles
+
+For hardcor developers that focus on IoC, S.O.L.I.D and other principles, this section is for you.As you get started with ProdigyView, it is good to understand some of the principles behind the framework.
+
+1.  [A New Approach To Inversion of Control ](https://medium.com/helium-mvc/a-new-approach-to-inversion-of-control-with-prodigyview-e15a34cff0d "A New Approach To Inversion of Control ")
+2. [Programming Principles For Early Stage Startups](https://medium.com/helium-mvc/programming-principles-for-early-stage-startups-1215ad14bcb8 "Programming Principles For Early Stage Startups")
+3. [How Helium and ProdigyView Is Designed For Startups](https://medium.com/helium-mvc/how-helium-and-prodigyview-is-designed-for-startups-a0e4c53edd32 "How Helium and ProdigyView Is Designed For Startups")
+4.  [Debunking The Myth Of Static Classes, Methods and Variables](https://medium.com/helium-mvc/debunking-the-myth-of-static-classes-methods-and-variables-8059472a1bc7 "Debunking The Myth Of Static Classes, Methods and Variables")
+
+### Application Design Patterns
 
 Another great feature the toolkit provides is helping you to extend and better design your applications. The framework focuses on 3 design patterns that can be implemented on any object: Adapters, Observers,
 Intercepting Filters.
 
-##### Adapters
+#### Adapters
 Adapters are is a design pattern that is meant as an alternative to Dependency Injection. Adapters allow you to change the underlying functionality of an object without directly manipulating the code of the object.
 
-##### Observers
-Observers allow other objects to subscribe to an objects actions and be notified when actions are executed.
+https://medium.com/helium-mvc/the-adapter-pattern-a-replacement-to-dependency-injection-835c9bfbe4f4
 
-##### Intercepting Filters
+#### Observers
+Observers allow other objects to subscribe to an objects actions and be notified when actions are executed.
+https://medium.com/helium-mvc/observer-design-pattern-others-apps-are-following-you-ef5553b61f77
+
+#### Intercepting Filters
 The Intercepting Design Pattern allows both pre-processing and post-processing of variables within a function.
 
 
