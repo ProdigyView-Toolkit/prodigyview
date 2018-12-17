@@ -85,7 +85,7 @@ class PVCommunicator extends PVStaticInstance {
 	 *
 	 * @return void
 	 */
-	public function __constrcut($protocol = null) {
+	public function __construct($protocol = null) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $protocol);
