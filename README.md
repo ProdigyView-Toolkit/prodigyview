@@ -95,7 +95,7 @@ And a lot of other tools from hashing, generating a random string, connecting wi
 
 ### Development Principles
 
-For hardcor developers that focus on IoC, S.O.L.I.D and other principles, this section is for you.As you get started with ProdigyView, it is good to understand some of the principles behind the framework.
+For hardcore developers that focus on IoC, S.O.L.I.D and other principles, this section is for you.As you get started with ProdigyView, it is good to understand some of the principles behind the framework.
 
 1.  [A New Approach To Inversion of Control ](https://medium.com/helium-mvc/a-new-approach-to-inversion-of-control-with-prodigyview-e15a34cff0d "A New Approach To Inversion of Control ")
 2. [Programming Principles For Early Stage Startups](https://medium.com/helium-mvc/programming-principles-for-early-stage-startups-1215ad14bcb8 "Programming Principles For Early Stage Startups")
