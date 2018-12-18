@@ -101,7 +101,7 @@ Forks and contributors are more than welcome!!!!
 - Work on PVCommunicator SOAP and Socket Implementation
 - Add namespacing into the system.
 
-### Development Principles
+## Development Principles
 
 For hardcore developers that focus on IoC, S.O.L.I.D and other principles, this section is for you.As you get started with ProdigyView, it is good to understand some of the principles behind the framework.
 
