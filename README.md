@@ -93,8 +93,11 @@ $is_mobile = $request -> isMobile();
 
 And a lot of other tools from hashing, generating a random string, connecting with databases, etc. Using these tools can help speed up your application development.
 
-###RoadMap
-- Redo the PVDatabase. Seperate into different classes per database and potentially used DI or another pattern for referencing connection. Important to allow connection pooling to continue in implementation.
+## RoadMap
+
+Forks and contributors are more than welcome!!!!
+
+- Redo the PVDatabase. Seperate into different classes per database and potentially used DI or another pattern for referencing connection. Important to allow connection pooling to continue in implementation. Checkout the db_rewrite branch.
 - Work on PVCommunicator SOAP and Socket Implementation
 - Add namespacing into the system.
 
