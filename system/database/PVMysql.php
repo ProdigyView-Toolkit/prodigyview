@@ -1,90 +1,70 @@
 <?php
 
-class PVPostgreSql {
-	
-	/**
-	 * Execute a query.
-	 * 
-	 * @param string $query
-	 */
-	public function query(string $query) {
+class PVMysql {
 
-		$result = pg_query(self::$link, $query);
+	//use PVSQL;
+
+	public function query($query) {
+		$result = self::$link->query($query);
 
 		return $result;
 	}
 
-	/**
-	 * Returns the last interested id of a query.
-	 * 
-	 * @param string $query The query to be executed
-	 * @param string $returnField The returning field
-	 * @param string $returnTable Void in this case, not used
-	 */
-	public function return_last_insert_query(string $query, string $returnField = '', string $returnTable = '') {
-
-		$result = pg_exec($query . " RETURNING $returnField ");
-		$row = self::fetchArray($result);
-		$id = $row[$returnField];
+	public function return_last_insert_query($query, $returnField = '', $returnTable = '') {
+		self::$link->query($query);
+		$id = self::$link->insert_id;
 
 		return $id;
-
 	}
 
-	/**
-	 * Gets the number of rows found in a result
-	 * 
-	 * @param resource $result The result
-	 * 
-	 * @return int
-	 */
-	public function resultRowCount(resource $result) {
-		$count = pg_num_rows($result);
+	public function resultRowCount($result) {
+		$count = self::$link->affected_rows;
 
 		return $count;
 	}
-	
-	/**
-	 * Fetches the the results of a row in the form of an array
-	 * 
-	 * @param resource $result A resource from an executed query
-	 * 
-	 * @return
-	 */
-	public function fetchArray(resource $result) {
-		$array = pg_fetch_array($result);
+
+	public function fetchArray($result) {
+
+		if (get_class($result) == 'mysqli_result') {
+			$array = $result->fetch_array();
+		} else if (get_class($result) == 'mysqli_stmt') {
+			$result->fetch();
+			//return self::$row;
+
+			$array = array();
+			foreach (self::$row as $key => $value) {
+				$array[$key] = $value;
+			}
+		}
 
 		return $array;
 	}
 
 	public function fetchFields($result) {
 
-		$fields = pg_fetch_assoc($result);
+		$fields = null;
 
+		if (method_exists($result, 'fetch_all')) {
+			$fields = $result->fetch_all(MYSQLI_BOTH);
+		} else {
+			$fields = array();
+			while ($row = $result->fetch_assoc()) {
+				$fields[] = $row;
+			}
+		}
 		return $fields;
-
 	}
 
 	public function makeSafe($string) {
-		if (is_array($string)) {
-			$return_array = array();
 
-			foreach ($string as $key => $value) {
-				$return_array[$key] = $this->makeSafe($value);
-			}
+		$sanitized_string = self::$link->real_escape_string($string);
 
-		} else {
+		return $sanitized_string;
 
-			$return_array = pg_escape_string(self::$link, $string);
-		}
-
-		return $return_array;
 	}
 
 	public function closeDB() {
-
-		pg_close(self::$link);
-
+		self::$link->close();
 	}
 
 	public function getSchema($append_period = true) {
@@ -101,18 +81,16 @@ class PVPostgreSql {
 	}
 
 	public function clearTableData($tablename, $options = '') {
+
 		$tablename = self::makeSafe($tablename);
 
 		$query = "TRUNCATE TABLE $tablename $options";
+
 		self::query($query);
 	}
 
 	public function tableExist($tablename, $schema = '') {
-		$query = '';
-
-		$query = "select * from information_schema.tables where table_name  = '$tablename' ";
-		if (!empty($schema))
-			$query .= "AND table_schema = '$schema'";
+		$query = "show tables like \"$tablename\";";
 
 		$result = self::query($query);
 		$count = self::resultRowCount($result);
@@ -126,7 +104,7 @@ class PVPostgreSql {
 
 	public function columnExist($table_name, $field_name) {
 
-		$query = "SELECT * FROM information_schema.columns WHERE table_schema = '" . self::getSchema(false) . "' AND table_name = '$table_name' AND column_name = '$field_name';";
+		$query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = '" . self::$dbname . "' AND table_name = '$table_name' AND column_name = '$field_name' ";
 
 		$result = self::query($query);
 		$count = self::resultRowCount($result);
@@ -141,13 +119,25 @@ class PVPostgreSql {
 	}
 
 	public function getSQLRandomOperator() {
-		$function = 'RANDOM()';
+		$function = 'RAND()';
 
 		return $function;
 	}
 
 	public function formatData($string) {
 
+		if (is_array($string)) {
+			$return_array = array();
+			foreach ($string as $key => $value) {
+				$return_array[$key] = self::formatData($value);
+			}
+		} else {
+
+			$return_array = stripslashes($string);
+
+		}//end else
+
+		return $return_array;
 	}
 
 	public function dbAverageFunction($field) {
@@ -155,10 +145,11 @@ class PVPostgreSql {
 		$function = ' AVG(' . $field . ') ';
 
 		return $function;
+
 	}
 
 	public function getDatabaseType() {
-		return 'postgresql';
+		return 'mysql';
 	}
 
 	public function getConnectionName() {
@@ -166,6 +157,7 @@ class PVPostgreSql {
 	}
 
 	public function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count') {
+
 		if (!empty($where_clause) && !is_array($where_clause))
 			$where_clause .= ' WHERE ' . $args['where'];
 		else if (is_array($where_clause) && !empty($where_clause)) {
@@ -220,7 +212,7 @@ class PVPostgreSql {
 
 		$database_type = self::getDatabaseType();
 
-		$limit_offset = ' LIMIT ' . ($current_page - 1) * $results_per_page . ' OFFSET ' . $results_per_page;
+		$limit_offset = ' LIMIT ' . ($current_page - 1) * $results_per_page . ',' . $results_per_page;
 
 		$return_array = array(
 			'limit_offset' => $limit_offset,
@@ -232,7 +224,6 @@ class PVPostgreSql {
 		);
 
 		return $return_array;
-
 	}
 
 	public function getDatabaseLink() {
@@ -240,6 +231,8 @@ class PVPostgreSql {
 	}
 
 	public function insertStatement($table_name, $data, $options = array()) {
+
+		$result = null;
 
 		if (!empty($table_name)) {
 			$first = 1;
@@ -264,7 +257,6 @@ class PVPostgreSql {
 	}
 
 	public function updateStatement($table, $data, $wherelist, $options = array()) {
-
 		$query = 'UPDATE ' . $table . ' SET ';
 		$params = array();
 		$params_holder = array();
@@ -305,142 +297,17 @@ class PVPostgreSql {
 		return $result;
 	}
 
-	public function selectStatement(array $args, array $options = array()) {
-
-		$default = array(
-			'fields' => '*',
-			'where' => '',
-			'into' => '',
-			'from' => '',
-			'join' => '',
-			'group_by' => '',
-			'having' => '',
-			'order_by' => '',
-			'limit' => '',
-			'offset' => '',
-			'paged' => false,
-			'results_per_page' => 10,
-			'current_page' => 0
-		);
-
-		$args += $default;
-
-		$query = '';
-
-		if (is_array($args['fields'])) {
-			$fields = implode(',', $args['fields']);
-		} else {
-			$fields = $args['fields'];
-		}
-
-		$query .= 'SELECT ' . $fields . ' ';
-
-		$query .= ' FROM ' . $args['table'] . ' ';
-
-		if (is_array($args['join'])) {
-			foreach ($args['join'] as $key => $value) {
-				if (is_array($value)) {
-					$type = isset($value['type']) ? $value['type'] : ' NATURAL JOIN ';
-					$table = isset($value['table']) ? $value['table'] : $key;
-					$on = isset($value['on']) ? $value['on'] : '';
-
-					$query .= $type . ' ' . $table . ' ' . $on;
-				} else {
-					$query .= ' JOIN ' . $value;
-				}
-			}
-		} else {
-			$query .= ' ' . $args['join'];
-		}
-
-		if (!empty($args['where']) && !is_array($args['where']))
-			$query .= ' WHERE ' . $args['where'];
-		else if (is_array($args['where']) && !empty($args['where'])) {
-			$query .= ' WHERE ';
-			$first = true;
-			foreach ($args['where'] as $key => $value) {
-				if (is_array($value))
-					$query .= self::parseOperators($key, $value, 'AND', '=', $first);
-				else {
-					if ($first)
-						$query .= $key . ' = \'' . self::makeSafe($value) . '\'';
-					else {
-						$query .= ' AND ' . $key . ' = \'' . self::makeSafe($value) . '\'';
-					}
-				}
-
-				$first = false;
-			}
-		}
-
-		if (!empty($args['order_by']) && is_array($args['order_by'])) {
-			$query .= ' ORDER BY ' . implode(',', $args['order_by']);
-		} else if (!empty($args['order_by'])) {
-			$query .= ' ORDER BY ' . $args['order_by'];
-		}
-
-		$result = PVDatabase::query($query);
-
-		return $result;
-
-	}
-
-	public function deleteStatement(array $args, array $options = array()) {
-		$default = array(
-			'where' => '',
-			'into' => '',
-			'from' => '',
-			'join' => '',
-			'group_by' => '',
-			'having' => '',
-			'order_by' => '',
-			'limit' => '',
-			'offset' => '',
-		);
-
-		$args += $default;
-
-		$query = '';
-
-		$query .= 'DELETE FROM FROM ' . $args['table'] . ' ';
-
-		if (is_array($args['join'])) {
-			$query .= implode(',', $args['join']);
-		} else {
-			$query .= ' ' . $args['join'];
-		}
-
-		if (!empty($args['where']))
-			$query .= ' WHERE ';
-		if (is_array($args['where'])) {
-			$first = true;
-			foreach ($args['where'] as $key => $value) {
-				if (is_array($value))
-					$query .= self::parseOperators($key, $value, 'AND', '=', $first);
-				else {
-					if ($first)
-						$query .= $key . ' = \'' . self::makeSafe($value) . '\'';
-					else {
-						$query .= ' AND ' . $key . ' = \'' . self::makeSafe($value) . '\'';
-					}
-				}
-
-				$first = false;
-			}
-		} else {
-			$query .= $args['where'];
-		}
-
-		$result = PVDatabase::query($query);
-
-		return $result;
-	}
-
 	public function preparedQuery($query, $data, $formats = '') {
-		$result = pg_prepare(self::$link, '', $query);
-		$result = pg_execute(self::$link, '', $data);
 
-		return $result;
+		self::$link->prepare($query);
+		$count = 1;
+
+		foreach ($data as $key => $value) {
+			self::$link->bindParam($count, $value);
+			$count++;
+		}//end foreach
+
+		return self::$link->execute();
 	}
 
 	public function preparedInsert($table_name, $data, $formats = array()) {
@@ -478,16 +345,28 @@ class PVPostgreSql {
 
 		$template_name = md5($query);
 
-		$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($template_name));
+		$stmt = self::$link->prepare($query);
 
-		if (pg_num_rows($result) == 0) {
-			$result = pg_prepare(self::$link, $template_name, $query);
-
+		if (!$stmt) {
+			echo 'Error';
+			exit();
 		}
 
-		$result = pg_execute(self::$link, $template_name, $data);
+		$count = 1;
+		$refs = array();
+		$type = '';
 
-		return $result;
+		foreach ($data as $k => $v) {
+			$refs[$k] = &$data[$k];
+			$type .= 's';
+		}
+
+		call_user_func_array(array(
+			$stmt,
+			'bind_param'
+		), array_merge(array($type), $refs));
+
+		return $stmt->execute();
 
 	}
 
@@ -528,33 +407,21 @@ class PVPostgreSql {
 
 		$template_name = md5($query);
 
-		$template_name = md5($query . " RETURNING $returnField");
-
-		$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($template_name));
-
-		if (pg_num_rows($result) == 0) {
-			$result = pg_prepare(self::$link, $template_name, $query . " RETURNING $returnField");
+		$stmt = self::$link->prepare($query);
+		self::bindParameters($stmt, $params);
+		foreach ($data as $key => $value) {
+			$params[$key] = $value;
 		}
-
-		$result = pg_execute(self::$link, $template_name, $data);
-
-		if ($result == false) {
-			self::catchDBError();
-		}
-		$row = self::fetchArray($result);
-
-		$id = $row[$returnField];
+		$stmt->execute();
+		$id = self::$link->insert_id;
 
 		return $id;
-
 	}
 
 	public function preparedSelect($query, $data, array $formats = array(), array $options = array()) {
-
 		$params = array();
 
 		$count = 0;
-
 		foreach ($data as $key => $value) {
 			$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
 			$count++;
@@ -568,11 +435,22 @@ class PVPostgreSql {
 			$query = $query . $options['postquery'];
 		}
 
-		$result = pg_prepare(self::$link, '', $query);
-		$result = pg_execute(self::$link, '', $data);
+		$stmt = self::$link->prepare($query);
+
+		if (!empty($params)) {
+			self::bindParameters($stmt, $params);
+			foreach ($data as $key => $value) {
+				$params[$key] = $value;
+			}
+		}
+
+		$stmt->execute();
+		$stmt->store_result();
+		self::$row = array();
+		self::stmt_bind_assoc($stmt, self::$row);
+		$result = $stmt;
 
 		return $result;
-
 	}
 
 	public function selectPreparedStatement(array $args, array $options = array()) {
@@ -678,9 +556,12 @@ class PVPostgreSql {
 		}
 
 		$result = PVDatabase::query($query);
+
+		return $result;
 	}
 
 	public function preparedUpdate($table, $data, $wherelist, $formats = array(), $whereformats = array(), $options = array()) {
+
 		$query = 'UPDATE ' . $table . ' SET ';
 		$params = array();
 		$params_holder = array();
@@ -721,15 +602,14 @@ class PVPostgreSql {
 
 		$template_name = md5($query);
 
-		$result = pg_query_params(self::$link, $query, $params_holder);
+		$stmt = self::$link->prepare($query);
+		self::bindParameters($stmt, $params);
 
-		$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($template_name));
-
-		if (pg_num_rows($result) == 0) {
-			$result = pg_prepare(self::$link, $template_name, $query);
+		foreach ($params_holder as $key => $value) {
+			$params[$key] = $value;
 		}
 
-		$result = pg_execute(self::$link, $template_name, $params_holder);
+		$result = $stmt->execute();
 
 		return $result;
 	}
@@ -757,20 +637,19 @@ class PVPostgreSql {
 
 		$template_name = md5($query);
 
-		$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($template_name));
-
-		if (pg_num_rows($result) == 0) {
-			$result = pg_prepare(self::$link, $template_name, $query);
+		$stmt = self::$link->prepare($query);
+		self::bindParameters($stmt, $params);
+		foreach ($wherelist as $key => $value) {
+			$params[$key] = $value;
 		}
 
-		$result = pg_execute(self::$link, $template_name, $wherelist);
+		$result = $stmt->execute();
 
 		return $result;
 	}
 
 	public function getPreparedPlaceHolder($count = 1) {
-
-		$placeholder = '$' . $count;
+		$placeholder = '?';
 
 		return $placeholder;
 	}
@@ -785,55 +664,7 @@ class PVPostgreSql {
 		return $table_name;
 	}
 
-	protected function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true) {
-
-		$query = '';
-
-		if (PVValidator::isInteger($key)) {
-			$key = 'AND';
-		}
-
-		foreach ($args as $subkey => $arg) {
-
-			if (($subkey == '>=' || $subkey == '>' || $subkey == '<' || $subkey == '<=' || $subkey == '!=') && !PVValidator::isInteger($subkey))
-				$operator = $subkey;
-			else if (!PVValidator::isInteger($subkey))
-				$key = $subkey;
-
-			if (is_array($arg)) {
-				$query .= self::parseOperators($column, $arg, $key, $operator, $first);
-			} else {
-
-				if ($arg == 'IS NULL' || $arg == 'IS NOT NULL' || $arg == 'IS TRUE' || $arg == 'IS NOT TRUE' || $arg == 'IS FALSE' || $arg == 'IS NOT FALSE' || $arg == 'IS UNKNOWN' || $arg == 'IS NOT UNKNOWN') {
-					$operator = '';
-
-					if (!$first) {
-						$query .= ' ' . $key . ' ' . $column . ' ' . $operator . ' ' . self::makeSafe($arg) . ' ';
-					} else {
-
-						$query .= ' ' . $column . ' ' . $operator . ' ' . self::makeSafe($arg) . ' ';
-					}
-				} else {
-
-					if (!$first) {
-						$query .= ' ' . $key . ' ' . $column . ' ' . $operator . ' \'' . self::makeSafe($arg) . '\' ';
-					} else {
-
-						$query .= ' ' . $column . ' ' . $operator . ' \'' . self::makeSafe($arg) . '\' ';
-					}
-				}
-
-			}
-
-			$first = false;
-		}//end foreach
-
-		return $query;
-
-	}
-
 	protected function bindParameters(&$statement, &$params) {
-
 		$args = array();
 		$args[] = implode('', array_values($params));
 		foreach ($params as $paramName => $paramType) {
@@ -848,7 +679,6 @@ class PVPostgreSql {
 	}
 
 	protected function stmt_bind_assoc(&$stmt, &$out) {
-
 		$data = mysqli_stmt_result_metadata($stmt);
 		$fields = array();
 		$out = array();
@@ -861,7 +691,6 @@ class PVPostgreSql {
 			$count++;
 		}
 		@call_user_func_array(mysqli_stmt_bind_result, $fields);
-
 	}
 
 	public function createTable($table_name, $columns = array(), $options = array()) {
@@ -904,7 +733,6 @@ class PVPostgreSql {
 	}
 
 	public function addColumn($table_name, $column_name, $column_data = array(), $options = array()) {
-
 		$defaults = array(
 			'format_table' => false,
 			'execute' => true,
@@ -915,14 +743,19 @@ class PVPostgreSql {
 		if ($options['format_table'])
 			$table_name = self::formatTableName($table_name);
 
-		$query = 'ALTER TABLE ' . $table_name . ' ADD COLUMN ' . self::formatColumn($column_name, $column_data) . ';';
+		if (self::$dbtype === self::$mySQLConnection) {
+			$query = 'ALTER TABLE ' . $table_name . ' ADD ' . self::formatColumn($column_name, $column_data) . ';';
+		} else if (self::$dbtype === self::$postgreSQLConnection) {
+			$query = 'ALTER TABLE ' . $table_name . ' ADD COLUMN ' . self::formatColumn($column_name, $column_data) . ';';
+		} else if (self::$dbtype === self::$msSQLConnection) {
+			$query = 'ALTER TABLE ' . $table_name . ' ADD ' . self::formatColumn($column_name, $column_data) . ';';
+		}
 
 		if ($options['execute'])
 			PVDatabase::query($query);
 
 		if ($options['return_query'])
 			return $query;
-
 	}
 
 	public function formatColumn($name, $options = array()) {
@@ -940,13 +773,6 @@ class PVPostgreSql {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
-			'name' => $name,
-			'options' => $options
-		), array('event' => 'args'));
-		$name = $filtered['name'];
-		$options = $filtered['options'];
-
 		$precision = (!empty($options['precision'])) ? '(' . $options['precision'] . ')' : '';
 		$null = ($options['not_null'] == true) ? 'NOT NULL' : 'NULL';
 
@@ -960,22 +786,21 @@ class PVPostgreSql {
 		$auto_increment = ($options['auto_increment'] == true) ? self::getAutoIncrement() : '';
 		$unique = ($options['unique'] == true) ? 'UNIQUE' : '';
 
-		if ($options['auto_increment'] == true) {
-			$options['type'] = 'SERIAL';
-		}
-
 		$query = $name . ' ' . self::columnTypeMap($options['type']) . $precision . ' ' . $null . ' ' . $default . ' ' . $auto_increment . ' ' . $unique;
 
 		return $query;
 	}
 
 	protected function getAutoIncrement() {
-		return '';
+		$query = 'AUTO_INCREMENT';
+
+		return $query;
 	}
 
 	protected function columnTypeMap($type) {
-			
 		$type = strtolower($type);
+
+		$type = self::_applyFilter(get_class(), __FUNCTION__, $type, array('event' => 'args'));
 
 		$types = array(
 			'integers' => array(
@@ -1174,11 +999,9 @@ class PVPostgreSql {
 				return $match;
 			}//end if
 		}//end for each
-
 	}
 
 	public function dropColumn($table_name, $column_name, $options = array()) {
-
 		$defaults = array(
 			'format_table' => false,
 			'execute' => true,
@@ -1200,12 +1023,13 @@ class PVPostgreSql {
 	}
 
 	public function dropTable($table_name, $options = array()) {
-
+		
 		$defaults = array(
 			'format_table' => false,
 			'execute' => true,
 			'return_query' => true,
 		);
+		
 		$options += $defaults;
 
 		if ($options['format_table'])
@@ -1218,7 +1042,6 @@ class PVPostgreSql {
 
 		if ($options['return_query'])
 			return $query;
-
 	}
 
 	public function catchDBError() {

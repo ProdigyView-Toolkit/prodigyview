@@ -957,6 +957,7 @@ class PVDatabase extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, self::$dbtype);
+		
 		$dbtype = self::_applyFilter(get_class(), __FUNCTION__, self::$dbtype, array('event' => 'return'));
 
 		return $dbtype;
@@ -2157,6 +2158,7 @@ class PVDatabase extends PVStaticObject {
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name);
 
 		$table_name = self::_applyFilter(get_class(), __FUNCTION__, $table_name, array('event' => 'args'));
+		
 		$table_name = self::$dbprefix . $table_name;
 
 		if (!empty(self::$dbschema) && $append_schema ) {
@@ -2187,8 +2189,10 @@ class PVDatabase extends PVStaticObject {
 	protected static function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true){
 		
 		$query = '';
-		if(PVValidator::isInteger($key))
+		
+		if(PVValidator::isInteger($key)){
 			$key = 'AND';
+		}
 		
 		foreach($args as $subkey => $arg) {
 			
@@ -2305,6 +2309,7 @@ class PVDatabase extends PVStaticObject {
 		$options = $filtered['options'];
 
 		$column_query = '';
+		
 		if (!empty($columns) && is_array($columns)) {
 			$first = 1;
 			foreach ($columns as $column_name => $column) {
