@@ -101,36 +101,135 @@ interface DatabaseInterface {
 		return found;
 	}
 
-	public function columnExist($table_name, $field_name);
-
-	public function getSQLRandomOperator();
-
-	public function formatData($string);
-
-	public function dbAverageFunction($field);
-
-	public function getDatabaseType();
-
-	public function getConnectionName();
-
-	public function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count');
-
-	public function getDatabaseLink();
-
-	public function insertStatement($table_name, $data, $options = array()) {
-		$result = preparedReturnLastInsert($table_name, '', '', $data, array(), $options);
+	
+	public function columnExist($table_name, $field_name) {
+		
 	}
 
-	public function updateStatement($table, $data, $wherelist, $options = array()) {
+	
+	public function getSQLRandomOperator() {
+		
+	}
+
+	/**
+	 * DO NOT USE IN MONGO
+	 */
+	public function formatData($string){
+		
+	}
+
+	/**
+	 * Finds the average of a function. Should be used in conjunction with the
+	 * aggregation framework.
+	 * 
+	 * @param mixed $field Either a single field or an array of fields
+	 * 
+	 * @return array Returns the queryin the form of an array
+	 */
+	public function dbAverageFunction($field) {
+		
+		$query = array('$avg' => $field);
+		
+		return $query;
+		
+	}
+
+	/**
+	 * Gets the database type
+	 * 
+	 * @return string
+	 */
+	public function getDatabaseType() {
+		return 'mongodb';
+	}
+
+	public function getConnectionName() {
+		
+	}
+
+	/**
+	 * DO NOT USE WITH MONGO
+	 */
+	public function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count') {
+		
+	}
+
+	/**
+	 * Gets the handler for the current connection
+	 */
+	public function getDatabaseLink() {
+		
+		return $this->_handler;
+		
+	}
+
+	
+	/**
+	 * Inserts items into the database.Also can perform batch inserts
+	 * 
+	 * @param string $table_name The name of the collection to insert into
+	 * @param array $data The data to insert into the database. For batch inserting, seperate data at top level keys
+	 * @param array $options Options to further define how to insert the data
+	 * 					-boolean batchInsert Indicates to do a patch insert of multiple recods. Default is false
+	 * 					-boolean gridFS Indicates if the database part of the gridFS system
+	 * 
+	 * @return boolean Returns booleans based on the success or failure of the insert
+	 */
+	public function insertStatement($table_name, $data, $options = array()) {
+		$collection = self::_setMongoCollection($table_name, $options);
+
+		$result = null;
+		
+		if (isset($options['batchInsert']) && $options['batchInsert']) {
+			$result = $collection->batchInsert($data, $options);
+		} else if (isset($options['gridFS']) && isset($options['file']) && $options['gridFS']) {
+			$result = $collection->storeFile($options['file'], $data, $options);
+		} else {
+			if (class_exists('\\MongoDB\Driver\Manager')) {
+				$result = $collection->insertOne($data, $options);
+			} else {
+				$result = $collection->insert($data, $options);
+			}
+
+		}
+		
+		return $result;
+	}
+
+	/**
+	 * Updates an existing record in the database.
+	 * 
+	 * @param string $table The name of collection to insert the data
+	 * @param array $data The new data to update the record(s) with
+	 * @param array $wherelist The conditionals for deciding what data to update
+	 */
+	public function updateStatement(string $table, array $data, array $wherelist = array(), $options = array()) {
 		$collection = self::_setMongoCollection($table, $options);
 
+		$result = null;
+		
 		if (class_exists('\\MongoDB\Driver\Manager')) {
 			$result = $collection->updateMany($wherelist, array('$set' => $data), $options);
 		} else {
 			$result = $collection->update($wherelist, $data, $options);
 		}
+		
+		return $result;
 	}
 
+	/**
+	 * Queries MongoDB for records based on criteria
+	 * 
+	 * @param string $args The arguements that can be used to finding record(s)
+	 * 						-array 	'where': Conditionals of what to look for
+	 * 						-array 	'fields': Fields to return
+	 * 						-boolean	'findOne': Will only find one result, otherwise default will look for multiple records
+	 * 						-string	'order_by' How to order the datasets returned
+	 * 						-int		'limit': Limit the amount of results returned
+	 * 						-int		'offset':Have an offset from the results return
+	 * 
+	 * @return array $results
+	 */
 	public function selectStatement(array $args, array $options = array()) {
 		$where = (!empty($args['where'])) ? $args['where'] : array();
 		$fields = (!empty($args['fields']) && $args['fields'] != '*') ? $args['fields'] : array();
@@ -140,6 +239,7 @@ interface DatabaseInterface {
 		if (isset($options['findOne']) && $options['findOne']) {
 
 			$result = $collection->findOne($where, $fields);
+			
 		} else {
 			$result = $collection->find($where, $fields);
 
@@ -211,7 +311,9 @@ interface DatabaseInterface {
 		}
 	}
 
-	public function preparedSelect($query, $data, array $formats = array(), array $options = array());
+	public function preparedSelect($query, $data, array $formats = array(), array $options = array()) {
+		
+	}
 
 	public function selectPreparedStatement(array $args, array $options = array()) {
 
@@ -232,6 +334,16 @@ interface DatabaseInterface {
 
 	}
 
+	/**
+	 * Delete item(s) in a collection.
+	 * 
+	 * @param string $table The name of the table
+	 * @param array $wherelist A list of conditionals to look for when choosing the items
+	 * @param array $whereformats ignored for MongoDB
+	 * @param array $options Options used when deleting the items
+	 * 
+	 * @return void
+	 */
 	public function preparedDelete($table, $wherelist = array(), $whereformats = array(), $options = array()) {
 		$collection = self::_setMongoCollection($table, $options);
 		if (class_exists('\\MongoDB\Driver\Manager')) {
@@ -241,24 +353,38 @@ interface DatabaseInterface {
 		}
 	}
 
-	public function getPreparedPlaceHolder($count = 1);
+	/**
+	 * Do Not Use in MongoDB
+	 */
+	public function getPreparedPlaceHolder($count = 1) {
+		
+	}
 
+	/**
+	 * Do Not Use in MongoDB
+	 */
 	public function formatTableName($table_name, $append_schema = true, $append_prefix = true) {
 		
 		return $table_name;
 		
 	}
 
+	/**
+	 * Do Not Use in MongoDB
+	 */
 	protected function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true){
 		return $column;
 	}
 
-	protected function bindParameters(&$statement, &$params);
 
-	protected function stmt_bind_assoc(&$stmt, &$out);
-
+	/**
+	 * Do Not Use in MongoDB
+	 */
 	public function createTable($table_name, $columns = array(), $options = array());
-
+	
+	/**
+	 * Do Not Use in MongoDB
+	 */
 	public function addColumn($table_name, $column_name, $column_data = array(), $options = array()) {
 		
 	}
