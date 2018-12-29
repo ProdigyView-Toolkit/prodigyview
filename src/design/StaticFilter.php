@@ -15,7 +15,7 @@ trait StaticFilter {
 	/**
 	 * Boolean for following and logging filters that have been added
 	 */
-	private static $_traceFilters = false;
+	protected static $_traceFilters = false;
 	
 	/**
 	 * Adds a filter to the class. Filters are for modifying a value within a class and should not
@@ -158,7 +158,7 @@ trait StaticFilter {
 	 * @return void
 	 * @access private
 	 */
-	private static function _logFilter($data) {
+	protected static function _logFilter($data) {
 		$message = self::_prepareLogData($data);
 		Log::writeLog('filter', $message);
 	}

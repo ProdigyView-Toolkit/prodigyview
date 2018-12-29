@@ -38,7 +38,7 @@ trait Filter {
 	 * @return void
 	 * @access public
 	 */
-	public function addFilter($class, $method, $filter_class, $filter_method, $options = array()) {
+	public function addFilter(string $class, string $method, $filter_class, $filter_method, array $options = array()) {
 		
 		$defaults = array(
 			'object' => 'static',
@@ -65,15 +65,15 @@ trait Filter {
 	 * @param string $method The method the filter is in
 	 * @param mixed $data The data that is being passed to the filter
 	 * @param array $options options to be passed to the filter. Passed options we be passed to the
-	 * function.
+	 * 				function.
 	 * 			-'default_return' _mixed_: If no filter is return, the data passed in by default will be
-	 * return. Can be overriden
+	 * 			return. Can be overriden
 	 * 			-'event' _string_: An event to associate with the filter. Default is null
 	 *
 	 * @return mixed $data The data the function returns
 	 * @access protected
 	 */
-	protected function _applyFilter($class, $method, $data, $options = array()) {
+	protected function _applyFilter(string $class, string $method, $data, array $options = array()) {
 		
 		$defaults = array(
 			'default_return' => $data,
@@ -117,7 +117,7 @@ trait Filter {
 	 * @param string $class The class the filter is in
 	 * @param string $method The method of the class that the filter is in
 	 */
-	protected function _hasFilter($class, $method) {
+	protected function _hasFilter(string $class, string $method) {
 		
 		if (isset($this->_filters[$class][$method]))
 			return TRUE;
@@ -134,7 +134,7 @@ trait Filter {
 	 * @return void
 	 * @access public
 	 */
-	public function clearFilters($class, $method) {
+	public function clearFilters(string $class, string $method) {
 		unset($this->_filters[$class][$method]);
 	}
 	
@@ -147,7 +147,7 @@ trait Filter {
 	 * @return void
 	 * @access public
 	 */
-	public function setFilterTrace($trace = false) {
+	public function setFilterTrace(bool $trace = false) {
 		$this->_traceFilters = $trace;
 	}
 	
@@ -159,7 +159,7 @@ trait Filter {
 	 * @return void
 	 * @access private
 	 */
-	protected function _logFilter($data) {
+	protected function _logFilter(array $data) {
 		
 		$message = $this->_prepareLogData($data);
 		Log::writeLog('filter', $message);

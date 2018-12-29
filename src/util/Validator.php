@@ -59,7 +59,7 @@ class Validator {
 	 * @access public
 	 * @todo consider extending the config optiont actually have it doing something
 	 */
-	public static function init($config = array()) {
+	public static function init(array $config = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
@@ -273,7 +273,7 @@ class Validator {
 	 * @return void
 	 * @access public
 	 */
-	public static function addRule($rule, $options = array()) {
+	public static function addRule(string $rule, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $rule, $options);
@@ -307,7 +307,7 @@ class Validator {
 	 * @return mixed $validate Validates is generally a boolean and returns true or false
 	 * @access public
 	 */
-	public static function check($rule) {
+	public static function check(string $rule) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $rule);

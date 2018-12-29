@@ -15,7 +15,7 @@ trait Adapter {
 	/**
 	 * The boolean for following and printing out adapters as they are called
 	 */
-	private $_traceAdapters = false;
+	protected $_traceAdapters = false;
 	
 	/**
 	 * Adapters allows a method to be completely overwritten by calling a different class
@@ -27,20 +27,20 @@ trait Adapter {
 	 * @param string $call_class The new class to be called that has the same method name
 	 * @param array $options An array of options that be called
 	 * 			-'object' _string_ : Assumes that default method in the class to be called is static. If called
-	 * object
+	 * 			object
 	 * 			needs to be instantiated, change to object to 'instance' and one will be created before the
-	 * adapter calls the function
+	 * 			adapter calls the function
 	 * 			-'call_method' _string_: By default the method to be called to override the current one should
-	 * be the
+	 * 			be the
 	 * 			same name. But this can be ovveridden to call a different method.
 	 * 			-'type' _string_: The type of method being called. Default is class_method but if the method is
-	 * a closure,
+	 * 			a closure,
 	 * 			set the type to be 'closure' and make the $trigger_method the closure
 	 *
 	 * @return void
 	 * @access public
 	 */
-	public function addAdapter($trigger_class, $trigger_method, $call_class, $options = array()) {
+	public function addAdapter(string $trigger_class, string $trigger_method, $call_class, array $options = array()) {
 
 		$defaults = array(
 			'object' => 'static',
@@ -62,13 +62,12 @@ trait Adapter {
 	 * if the method in the trigger class has an adapter. This functionality can be very similiar to DI.
 	 *
 	 * @param mixed $trigger_class This can either be the name of the class or an object whose methods
-	 * will be adapted to another class.
+	 * 								will be adapted to another class.
 	 * @param string $call_class The call class is the classes methods that will be called in place of
-	 * the methods in the trigger_class.
-	 * @param array $options Options that be used to further distinguish the behavior of the adapters
-	 * added
+	 * 							the methods in the trigger_class.
+	 * @param array $options Options that be used to further distinguish the behavior of the adapters added
 	 * 			-'object' _string_: Determines if the object being adapted to is static or an instance.Default
-	 * is static
+	 * 			is static
 	 * 			-'call_class' _string_: The name of the class that the methods will be adapted too.
 	 * 			-'class' _string_: The name of the whose methods will be adapted to another class
 	 *
@@ -76,7 +75,7 @@ trait Adapter {
 	 * @access public
 	 * @todo Add ability to use singleton classes
 	 */
-	public function addClassAdapter($trigger_class, $call_class, $options = array()) {
+	public function addClassAdapter(string $trigger_class, $call_class, array $options = array()) {
 
 		$defaults = array(
 			'object' => 'static',
@@ -116,7 +115,7 @@ trait Adapter {
 	 * @return mixed $value A value that the adapter returns
 	 * @access protected
 	 */
-	protected function _callAdapter($class, $method) {
+	protected function _callAdapter(string $class, string $method) {
 		$args = func_get_args();
 		array_shift($args);
 		array_shift($args);
@@ -153,9 +152,9 @@ trait Adapter {
 	 * @return boolean $hasAdapter Returns true if it has an adapter or false if it does not
 	 * @access protected
 	 */
-	protected function _hasAdapter($class, $method) {
+	protected function _hasAdapter(string $class, string $method) {
 		
-		if (isset($this->_adapters[$class][$method])) {
+		if (!empty($this->_adapters[$class][$method])) {
 			return TRUE;
 		}
 		
@@ -171,7 +170,7 @@ trait Adapter {
 	 * @return void
 	 * @access public
 	 */
-	public function removeAdapter($class, $method) {
+	public function removeAdapter(string $class, string $method) {
 		unset($this->_adapters[$class][$method]);
 	}
 
@@ -183,7 +182,7 @@ trait Adapter {
 	 * @return void
 	 * @access public
 	 */
-	public function removeClassAdapter($class) {
+	public function removeClassAdapter(string $class) {
 		unset($this->_adapters[$class]);
 	}
 	
@@ -196,7 +195,7 @@ trait Adapter {
 	 * @return void
 	 * @access public
 	 */
-	public function setAdapterTrace($trace = false) {
+	public function setAdapterTrace(bool $trace = false) {
 		$this->_traceAdapters = $trace;
 	}
 	
@@ -208,7 +207,7 @@ trait Adapter {
 	 * @return void
 	 * @access private
 	 */
-	protected function _logAdapter($data) {
+	protected function _logAdapter(array $data) {
 		
 		$message = $this->_prepareLogData($data);
 		Log::writeLog('adapter', $message);

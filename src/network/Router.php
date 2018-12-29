@@ -422,6 +422,7 @@ class Router {
 			'url' => $url,
 			'options' => $options
 		), array('event' => 'args'));
+		
 		$url = $filtered['url'];
 		$options = $filtered['options'];
 

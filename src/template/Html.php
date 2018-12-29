@@ -6,6 +6,18 @@ use prodigyview\design\StaticObject;
 use prodigyview\util\Validator;
 use prodigyview\network\Router;
 
+if (!defined('PV_IMAGE')) {
+	define('PV_IMAGE', '');
+}
+
+if (!defined('PV_VIDEO')) {
+	define('PV_VIDEO', '');
+}
+
+if (!defined('PV_AUDIO')) {
+	define('PV_AUDIO', '');
+}
+
 /**
  * HTML is a class designed for generating HTML elements to display to the user.
  *
@@ -1379,7 +1391,7 @@ class Html {
 	 * @return string $attributes Returns the matched attributes as a string
 	 * @access public
 	 */
-	public static function getStandardAttributes($attributes = array()) {
+	public static function getStandardAttributes(array $attributes = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
@@ -1425,7 +1437,7 @@ class Html {
 	 *
 	 * @return string Html attributes if any matched
 	 */
-	public static function getEventAttributes($attributes = array()) {
+	public static function getEventAttributes(array $attributes = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);

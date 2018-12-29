@@ -102,7 +102,7 @@ class Cache {
 	 * @return void
 	 * @access public
 	 */
-	public static function init($config = array()) {
+	public static function init(array $config = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
@@ -180,7 +180,7 @@ class Cache {
 	 * @return void
 	 * @access public
 	 */
-	public static function writeCache($key, $content, $options = array()) {
+	public static function writeCache(string $key, $content, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $content, $options);
@@ -236,7 +236,7 @@ class Cache {
 	 * @return string $content The cached content
 	 * @access public
 	 */
-	public static function readCache($key, $options = array()) {
+	public static function readCache(string $key, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
@@ -291,7 +291,7 @@ class Cache {
 	 * @return boolean $expired Returns true if expired, otherwise false
 	 * @access public
 	 */
-	public static function hasExpired($key, $options = array()) {
+	public static function hasExpired(string $key, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
@@ -351,7 +351,7 @@ class Cache {
 	 * @return string $expired Returns the date to expire, in string format
 	 * @access public
 	 */
-	public static function getExpiration($key, $options = array()) {
+	public static function getExpiration(string $key, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
@@ -402,7 +402,7 @@ class Cache {
 	 * @return void
 	 * @access public
 	 */
-	public static function deleteCache($key, $options = array()) {
+	public static function deleteCache(string $key, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);

@@ -7,6 +7,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test the Conversions class to ensure that data is being properly converted between
  * several different formats.
+ * 
+ * @todo Add testing for encoding
  */
 class ConversionTests extends TestCase {
 	
@@ -49,6 +51,22 @@ class ConversionTests extends TestCase {
 		$output = Conversions::xmlToArray($this -> _testXML);
 		
 		Tools::replaceKeyNamesInArray($output, 'item_', '');
+		
+		$this->assertEquals($output, $this -> _testArray);
+	}
+	
+	public function testEncodingSameArray() {
+		
+		$output = $this -> _testArray;
+		Conversions::encodeRecursive($output);
+		
+		$this->assertEquals($output, $this -> _testArray);
+	}
+	
+	public function testEncodingDifferentArray() {
+		
+		$output = $this -> _testArray;
+		Conversions::encodeRecursive($output,'EUC-JP');
 		
 		$this->assertEquals($output, $this -> _testArray);
 	}

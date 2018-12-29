@@ -3,6 +3,11 @@ namespace prodigyview\util;
 
 use prodigyview\design\StaticObject;
 
+//Define the directory seperator
+if (!defined('DS')) {
+	define('DS', '/');
+}
+
 /**
  * FileManager allows easy manipulation of the file system such as making directories or getting
  * mime types.
@@ -21,17 +26,18 @@ use prodigyview\design\StaticObject;
  * ```
  *
  * @package util
+ * @todo Add capabilites for streaming large files
  */
 class FileManager {
 	
 	use StaticObject;
 
 	/**
-	 * @params File information to upload
+	 * @param $array File information to upload
 	 *
 	 * @todo figure out a point for this function. So do not use in the mean time.
 	 */
-	public static function phpFileUpload($params) {
+	public static function phpFileUpload(array $params) {
 
 		$allow_upload = 1;
 
@@ -122,7 +128,7 @@ class FileManager {
 	 * @return boolean $size Returns the size of the file
 	 * @access public
 	 */
-	public static function getFileSize_NTFS($file) {
+	public static function getFileSize_NTFS(string $file) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file);
@@ -142,7 +148,7 @@ class FileManager {
 	 * @return boolean $size Returns the size of the file
 	 * @access public
 	 */
-	public static function getFileSize_PERL($file) {
+	public static function getFileSize_PERL(string $file) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file);
@@ -161,16 +167,14 @@ class FileManager {
 	 * @param string $directory The directory to be scanned
 	 * @param array $options Options that can alter how the directory is scanned
 	 * 			-'verbose' _boolean_: Enabling this mode will return everything in array of arrays. The array
-	 * will contain
-	 * 			more detailed information such as mime_type, extension, base name, etc. Default is false.
-	 * 			-'magic_file' _string_: If finfo is installed and verbose is set to true, use this option to
-	 * specifiy the magic
+	 * 			will contain more detailed information such as mime_type, extension, base name, etc. Default is false.
+	 * 			-'magic_file' _string_: If finfo is installed and verbose is set to true, use this option to specifiy the magic
 	 * 			file to use when getting the mime type of the file. Default is null
 	 *
 	 * @return array $files An array of subdirectories and fules
 	 * @access public
 	 */
-	public static function getFilesInDirectory($directory, $options = array()) {
+	public static function getFilesInDirectory(string $directory, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $directory, $options);
@@ -238,7 +242,7 @@ class FileManager {
 	 * @return string $mime_type The mime type of the file.
 	 * @access public
 	 */
-	public static function getFileMimeType($file, $options = array()) {
+	public static function getFileMimeType(string $file, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $options);
@@ -288,7 +292,7 @@ class FileManager {
 	 * @return string $contents The contents read from the file
 	 * @access public
 	 */
-	public static function readFile($file, $mode = 'r', $encoding = '', $stream = true) {
+	public static function readFile(string $file, string $mode = 'r', string $encoding = '', bool $stream = true) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $mode, $encoding);
@@ -309,11 +313,12 @@ class FileManager {
 			return false;
 		}
 
-		if ($stream === false || floatval(phpversion()) >= 4.3) {
+		if ($stream === false) {
 			$returnData = file_get_contents($file);
 		} else {
 
 			$handler = fopen($file, $mode);
+			
 			if (!$handler) {
 				return false;
 			}
@@ -344,7 +349,7 @@ class FileManager {
 	 * @return boolean $written Returns true if the file was written, otherwise false
 	 * @access public
 	 */
-	public static function writeFile($file, $content, $mode = 'w', $encoding = '') {
+	public static function writeFile(string $file, $content, string $mode = 'w', string $encoding = '') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
@@ -374,6 +379,7 @@ class FileManager {
 		}
 
 		fclose($handle);
+		
 		return TRUE;
 	}//end writeFile
 
@@ -389,7 +395,7 @@ class FileManager {
 	 * @access public
 	 * @todo Defaults for mode, content and encoding, Add a way for encoding file.
 	 */
-	public static function writeNewFile($file, $content, $mode = 'w', $encoding = '') {
+	public static function writeNewFile(string $file, $content, string $mode = 'w', string $encoding = '') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
@@ -423,7 +429,7 @@ class FileManager {
 	 * @return boolean $written Returns true if the file was written, otherwise false
 	 * @access public
 	 */
-	public static function rewriteNewFile($file, $content, $mode = 'w', $encoding = '') {
+	public static function rewriteNewFile(string $file, $content, string $mode = 'w', string $encoding = '') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
@@ -455,7 +461,7 @@ class FileManager {
 	 * @return boolean $copied Returns true if the file was succesfully copied
 	 * @access public
 	 */
-	public static function copyFile($currentFile, $newFile) {
+	public static function copyFile(string $currentFile, string $newFile) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $currentFile, $newFile);
@@ -493,7 +499,7 @@ class FileManager {
 	 * @return boolean $copied Returns true if the file was succesfully copied
 	 * @access public
 	 */
-	public static function copyNewFile($currentFile, $newFile) {
+	public static function copyNewFile(string $currentFile, string $newFile) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $currentFile, $newFile);
@@ -521,7 +527,7 @@ class FileManager {
 	 * @return void
 	 * @access public
 	 */
-	public static function copyDirectory($oldDirectory, $newDirectory) {
+	public static function copyDirectory(string $oldDirectory, string $newDirectory) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $oldDirectory, $newDirectory);
@@ -583,7 +589,7 @@ class FileManager {
 	 * @return void
 	 * @access public
 	 */
-	public static function copyNewDirectory($oldDirectory, $newDirectory) {
+	public static function copyNewDirectory(string $oldDirectory, string $newDirectory) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $oldDirectory, $newDirectory);
@@ -611,7 +617,7 @@ class FileManager {
 	 *
 	 * @return boolean $success Returns true if the file was succesfully copied
 	 */
-	public static function copyFileFromUrl($url, $destination, $filename = '') {
+	public static function copyFileFromUrl(string $url, string $destination, string $filename = '') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $url, $destination, $filename);
@@ -657,7 +663,7 @@ class FileManager {
 	 * @return string $file The file that was modified in that directory
 	 * @access public
 	 */
-	public static function getLastestFileInDirectory($directory) {
+	public static function getLastestFileInDirectory(string $directory) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $directory);
@@ -683,7 +689,7 @@ class FileManager {
 	 * @return boolean $deleted Returns true if the file was successfully deleted. Otherwise false.
 	 * @access public
 	 */
-	public static function deleteFile($file) {
+	public static function deleteFile(string $file) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $file);

@@ -3,6 +3,11 @@ namespace prodigyview\util;
 
 use prodigyview\design\StaticObject;
 
+//Define the directory seperator
+if (!defined('DS')) {
+	define('DS', '/');
+}
+
 /**
  * Log is used to write information to a log for record keeping.
  *
@@ -74,7 +79,7 @@ class Log {
 	 * @return void
 	 * @access public
 	 */
-	public static function init($config = array()) {
+	public static function init(array $config = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
@@ -119,7 +124,7 @@ class Log {
 	 * @return boolean Returns true if the file is successfully written
 	 * @access public
 	 */
-	public static function writeLog($priority, $message, $options = array()) {
+	public static function writeLog(string $priority, string $message, array $options = array()) : bool {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $priority, $message, $options);
@@ -162,7 +167,7 @@ class Log {
 	 * @return string $log Returns the log if readable and exist. Otherwise returns false
 	 * @access public
 	 */
-	public static function readLog($priority, $options = array()) {
+	public static function readLog(string $priority, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $priority, $options);

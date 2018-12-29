@@ -11,7 +11,7 @@ trait StaticObserver {
 	/**
 	 * Boolean for following and logging observers that have been added.
 	 */
-	private static $_traceObservers = false;
+	protected static $_traceObservers = false;
 	
 	/**
 	 * Adds an observer to the class. Observer events can fired in any method
@@ -121,7 +121,7 @@ trait StaticObserver {
 	 * @return void
 	 * @access private
 	 */
-	private static function _logObserver($data) {
+	protected static function _logObserver($data) {
 		$message = self::_prepareLogData($data);
 		Log::writeLog('observer', $message);
 	}

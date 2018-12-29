@@ -43,7 +43,7 @@ class Tools {
 	 * @return string $string The auto generated string
 	 * @access public
 	 */
-	public static function generateRandomString($char_count = 15, $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890') {
+	public static function generateRandomString(int $char_count = 15, string $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890') : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $char_count, $chars);
@@ -89,7 +89,7 @@ class Tools {
 	 * @return string $truncated A The string when truncated
 	 * @access public
 	 */
-	public static function truncateText($string, $length = 10, $trailing = '...', $strip_tags = TRUE, $allowed_tags = '') {
+	public static function truncateText(string $string, int $length = 10, string $trailing = '...', bool $strip_tags = TRUE, string $allowed_tags = '') : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string, $length, $trailing, $strip_tags, $allowed_tags);
@@ -125,6 +125,35 @@ class Tools {
 
 		return $truncated;
 	}//end truncateText
+	
+	
+	/**
+	 * Removes whitespace from a string. Whitespace include tabs, newlines, blank space, etc.
+	 * 
+	 * @param string $string The string to remove whitespace
+	 *
+	 * @return string 
+	 */
+	public function removeWhiteSpace(string $string) : string {
+		
+		$string = preg_replace('/\s+/', '', $string);
+		
+		return $string;
+	}
+
+	/**
+	 * Removes non-ASCII (characters that cannot be printed) from the string
+	 * 
+	 * @param string $string The string to remove characters from
+	 *
+	 * @return string 
+	 */
+	public function removeNonAsciiCharacters(string $string) : string {
+		
+		$string = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $string);
+		
+		return $string;
+	}
 
 	/**
 	 * Returns the full url of the current page. Inclded in the return will be if the page is being https
@@ -134,7 +163,7 @@ class Tools {
 	 * @return string $url Url of the current page.
 	 * @access public
 	 */
-	public static function getCurrentUrl() {
+	public static function getCurrentUrl() : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
@@ -166,7 +195,7 @@ class Tools {
 	 * @return string $url The current url without the uri
 	 * @access public
 	 */
-	public static function getCurrentBaseUrl() {
+	public static function getCurrentBaseUrl() : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
@@ -198,7 +227,7 @@ class Tools {
 	 * @return string The array uri into string format
 	 * @access public
 	 */
-	public static function formUrlParameters($variables) {
+	public static function formUrlParameters(array $variables) : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $variables);
@@ -233,7 +262,7 @@ class Tools {
 	 * @return string The array uri into string format
 	 * @access public
 	 */
-	public static function formUrlPath($variables) {
+	public static function formUrlPath(array $variables) : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $variables);
@@ -270,7 +299,7 @@ class Tools {
 	 * @return mixed $path Returns a path if the array was found, otherwise returns false
 	 * @access public
 	 */
-	function arraySearchRecursive($needle, $haystack, $strict = false, $path = array()) {
+	function arraySearchRecursive(string $needle, array $haystack, bool $strict = false, array $path = array()){
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $needle, $haystack, $strict, $path);
@@ -326,7 +355,7 @@ class Tools {
 	 * 
 	 * @return $array This function is pass by reference, return is not needed
 	 */
-	public static function replaceKeyNamesInArray(&$array, $search, $replace) {
+	public static function replaceKeyNamesInArray(array &$array, string $search, string $replace) {
 		
 		foreach($array as $key => $value) {
 			

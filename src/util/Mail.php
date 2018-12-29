@@ -392,7 +392,7 @@ Content-Disposition: attachment
 				$html= $html_message;
 			}
 			
-			$mime = new Mail_mime("\n");
+			$mime = new \Mail_mime("\n");
 			$mime->setTXTBody($text);
 			$mime->setHTMLBody($html);
 			if(!empty($attachment)){
@@ -409,7 +409,7 @@ Content-Disposition: attachment
 			$body = $mime->get();
 			$headers = $mime->headers($headers);
 			
-			$smtp = Mail::factory('smtp', $stmp_info);
+			$smtp = \Mail::factory('smtp', $stmp_info);
 			$mail = $smtp->send($receiver, $headers, $body);
 			self::_notify(get_class().'::'.__FUNCTION__, $args);
 			

@@ -82,7 +82,7 @@ class Conversions {
 	 * @return array $array The xml documented converted into an array
 	 * @access public
 	 */
-	public static function xmlToArray($xml) {
+	public static function xmlToArray(string $xml) : array {
 		
 		if (empty($xml))
 			return false;
@@ -110,7 +110,7 @@ class Conversions {
 	 * 
 	 * @return string $xml
 	 */
-	public static function arrayToXml($data, &$xml_data = null, $numeric_key_name = 'item_' , $simple_xml_data = '<root/>') {
+	public static function arrayToXml(array $data, \SimpleXMLElement &$xml_data = null, string $numeric_key_name = 'item_' , string $simple_xml_data = '<root/>') : string {
 		
 		if(!$xml_data) {
 			$xml_data = new \SimpleXMLElement($simple_xml_data);
@@ -121,7 +121,7 @@ class Conversions {
 	            $key = $numeric_key_name.$key; //dealing with <0/>..<n/> issues
 	        }
 	        if( is_array($value) ) {
-	            $subnode = $xml_data->addChild($key);
+	            $xml_data->addChild($key);
 	            self::arrayToXml($value, $xml_data -> $key, $numeric_key_name);
 	        } else {
 	            $xml_data->addChild("$key",htmlspecialchars("$value"));
@@ -140,13 +140,13 @@ class Conversions {
 	 * 
 	 * @return void
 	 */
-	public static function encodeRecursive(&$input, $encoding = 'UTF-8') {
+	public static function encodeRecursive(&$input, string $encoding = 'UTF-8') : void {
 		
 		 if (is_string($input)) {
 	        $input = mb_convert_encoding ($input, $encoding);
 	    } else if (is_array($input)) {
 	        foreach ($input as &$value) {
-	            self::encodeRecursive($value);
+	            self::encodeRecursive($value, $encoding);
 	        }
 			
 	        unset($value);
@@ -154,7 +154,7 @@ class Conversions {
 	        $vars = array_keys(get_object_vars($input));
 	
 	        foreach ($vars as $var) {
-	            self::encodeRecursive($input->$var);
+	            self::encodeRecursive($input->$var, $encoding);
 	        }
 	    }
 	}
@@ -166,7 +166,7 @@ class Conversions {
 	 *
 	 * @return boolean
 	 */
-	public static function convertTextBoolean($boolean) {
+	public static function convertTextBoolean(string $boolean) : bool {
 		
 		if ($boolean === 'true') {
 			return true;
