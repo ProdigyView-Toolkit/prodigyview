@@ -6,6 +6,21 @@ use prodigyview\util\Tools;
 use prodigyview\util\Validator;
 use prodigyview\design\StaticObject;
 
+//Define the directory seperator
+if (!defined('DS')) {
+	define('DS', '/');
+}
+
+//Define the PV IMAGE
+if (!defined('PV_IMAGE')) {
+	define('PV_IMAGE', '');
+}
+
+//Define the PV_ROOT
+if (!defined('PV_ROOT')) {
+	define('PV_ROOT', './');
+}
+
 /**
  * Image is a class for handling the processing and format of all image files.
  *
@@ -59,15 +74,15 @@ class Image {
 	 * 			-'converter' _string_: The tool to be used for conversion. Default is Imagick
 	 * 			-'write_image' _boolean_: Specifies to write the image to file. Default is true
 	 * 			-'write_image_location' _string_: The default location to write the image to. Default is
-	 * PV_ROOT.PV_IMAGE defines.
+	 * 			PV_ROOT.PV_IMAGE defines.
 	 * 			-'display_image' _boolean_: The default boolean to display the image in a header after
-	 * processing of method is complete. Default is false.
+	 * 			processing of method is complete. Default is false.
 	 * 			-'add_extension' _boolean_: Will add an extension to then of the file if it is written. The
-	 * extension will be the image type
+	 * 			extension will be the image type
 	 * 			-'return' _string_: The default return. The default set is image_location to return the
-	 * location of the written image file. The
+	 * 			location of the written image file. The
 	 * 			other option is 'image_object' which return the object to manipuate the image or 'image_bytes'
-	 * which will return the image in a string of bytes
+	 * 			which will return the image in a string of bytes
 	 *
 	 * @return void
 	 * @access public
@@ -197,10 +212,10 @@ class Image {
 	 * 			-'converter' _string_: The default converter set by the init function.
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'display_image' _boolean_: Determines if the image is to be displayed automatically in a
-	 * header. Default is false.
+	 * 			header. Default is false.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
 	 * 			-'format' _string_: The format to save the image in. Default is png.
@@ -324,15 +339,15 @@ class Image {
 	 * 			-'converter' _string_: The default converter set by the init function.
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'display_image' _boolean_: Determines if the image is to be displayed automatically in a
-	 * header. Default is false.
+	 * 			header. Default is false.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
 	 * 			-'format' _string_: The format to save the image in. Default is png.
 	 * 			-'type' _string_: The format the image is in before manipulation. If a blob fo byties is being
-	 * passed set type to 'blob', otherwise type will be file.
+	 * 			passed set type to 'blob', otherwise type will be file.
 	 * 			-'offest_x' _int_: The offset on the x_coordinate when placing the drop shadow. Default is 0
 	 * 			-'offeset_y' _int_: The offset on the y_coordinate when placing the drop shadow. Default is 0.
 	 *
@@ -450,7 +465,7 @@ class Image {
 	 * 			-'converter' _string_: The default converter set by the init function
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
@@ -545,7 +560,7 @@ class Image {
 	 * 			-'converter' _string_: The default converter set by the init function
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
@@ -744,7 +759,7 @@ class Image {
 	 * 			-'converter' _string_: The default converter set by the init function
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
@@ -852,7 +867,7 @@ class Image {
 	 * set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'display_image' _boolean_: Determines if the image is to be displayed automatically in a
-	 * header. Default is false.
+	 * 			header. Default is false.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
 	 * 			-'format' _string_: The format to save the image in. Default is gif.
@@ -868,9 +883,9 @@ class Image {
 	 * 			-'position_y' _int_: The starting position of the text on the y-coordinate. Default is 0.
 	 * 			-'rotation' _int_: The number of degress to rotate the text. Default is 0.
 	 * 			-'gravity' _int_: The imagick defined constant on the gravity of the text. Default is
-	 * Imagick::GRAVITY_CENTER
+	 * 			Imagick::GRAVITY_CENTER
 	 * 			-'pixel_color' _string_: Serves as the background color the text will be placed on. Default is
-	 * white
+	 * 			white
 	 *
 	 * @return mixed $return The data to be return. Return is set in the options
 	 * @access public
@@ -975,10 +990,10 @@ class Image {
 	 * 			-'converter' _string_: The default converter set by the init function.
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'display_image' _boolean_: Determines if the image is to be displayed automatically in a
-	 * header. Default is false.
+	 * 			header. Default is false.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
 	 * 			-'format' _string_: The format to save the image in. Default is gif.
@@ -994,9 +1009,9 @@ class Image {
 	 * 			-'position_y' _int_: The starting position of the text on the y-coordinate. Default is 0.
 	 * 			-'rotation' _int_: The number of degress to rotate the text. Default is 0.
 	 * 			-'gravity' _int_: The imagick defined constant on the gravity of the text. Default is
-	 * Imagick::GRAVITY_CENTER
+	 * 			Imagick::GRAVITY_CENTER
 	 * 			-'pixel_color' _string_: Serves as the background color the text will be placed on. Default is
-	 * white
+	 * 			white
 	 *
 	 * @return mixed $return The data to be returned. The type of data that is returned is set in the
 	 * options
@@ -1103,10 +1118,10 @@ class Image {
 	 * 			-'converter' _string_: The default converter set by the init function.
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'display_image' _boolean_: Determines if the image is to be displayed automatically in a
-	 * header. Default is false.
+	 * 			header. Default is false.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
 	 * 			-'format' _string_: The format to save the image in. Default is png.
@@ -1191,17 +1206,17 @@ class Image {
 	 * 			-'converter' _string_: The default converter set by the init function.
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'display_image' _boolean_: Determines if the image is to be displayed automatically in a
-	 * header. Default is false.
+	 * 			header. Default is false.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
 	 * 			-'format' _string_: The format to save the image in. Default is png.
 	 * 			-'offest_x' _int_: The offset on the x_coordinate when drawing the ellipse. Default is the
-	 * width/2
+	 * 			width/2
 	 * 			-'offeset_y' _int_: The offset on the y_coordinate when drawign the ellipse. Default is
-	 * height/2
+	 * 			height/2
 	 * 			-'radius_x' _int_: Default is width/2
 	 * 			-'radius_y' _int_: Default height /2
 	 *
@@ -1290,16 +1305,16 @@ class Image {
 	 * Creates a drop shadown behind an image.
 	 *
 	 * @param mixed $image The value passed in can either be the location on a file system or the images
-	 * in bytes. If
+	 * 			in bytes. If
 	 * 			the image is bytes, the options 'type' = blob my be set.
 	 * @param array $options Options that can be used for further configuring the dropshadow
 	 * 			-'converter' _string_: The default converter set by the init function.
 	 * 			-'write_image' _boolean_: Write the image out to file. Default is true.
 	 * 			-'write_image_location' _string_: The location to save the image. Default is the save location
-	 * set in the init
+	 * 			set in the init
 	 * 			-'write_image_name' _string_: A name to save the image as. Default is a random string.
 	 * 			-'display_image' _boolean_: Determines if the image is to be displayed automatically in a
-	 * header. Default is false.
+	 * 			header. Default is false.
 	 * 			-'add_extension' _boolean_: Add a file extension to the write_image_name. Default is true.
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
 	 * 			-'format' _string_: The format to save the image in. Default is png.

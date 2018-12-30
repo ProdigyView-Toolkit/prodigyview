@@ -1,4 +1,7 @@
 <?php
+namespace prodigyview\design;
+
+use prodigyview\util\Log;
 
 trait Observer {
 	
@@ -19,23 +22,21 @@ trait Observer {
 	 * to trigger a response.
 	 *
 	 * @param string $event The name of the event that will cause a certain class and method to fire
-	 * @param string $class The name of the class that contains the function that will be fired for this
-	 * event
+	 * @param string $class The name of the class that contains the function that will be fired for this event
 	 * @param string $method The name of the method that will be fired when the event occurs
 	 * @param array $options Options to further the define the firing of an event
 	 * 			-'object' _string_ : If the method being called is static, should be set to static. Else set to
-	 * instance
-	 * 			-'class' _stinrg_ : The name of the class to be called. Default is the class that is passed in.
+	 * 			instance
+	 * 			-'class' _string_ : The name of the class to be called. Default is the class that is passed in.
 	 * 			-'method' _string_: The name of the method to be called. Default is the method that is passed
-	 * in.
+	 * 			in.
 	 * 			-'type' _string_: The type of function being called. Default is class_method but if the
-	 * function is a closure,
-	 * 			set the type to be 'closure' and make the $method the closure
+	 * 			function is a closure, set the type to be 'closure' and make the $method the closure
 	 *
 	 * @return void
 	 * @access public
 	 */
-	public function addObserver($event, $class, $method, $options = array()) {
+	public function addObserver(string $event, $class, $method, array $options = array()) {
 		
 		$default = array(
 			'object' => 'static',
@@ -59,7 +60,7 @@ trait Observer {
 	 * @return void
 	 * @access protected
 	 */
-	protected function _notify($event) {
+	protected function _notify(string $event) {
 		
 		$args = func_get_args();
 		array_shift($args);
@@ -97,7 +98,7 @@ trait Observer {
 	 * @return void
 	 * @access public
 	 */
-	public function clearObservers($event) {
+	public function clearObservers(string $event) {
 		unset($this->_observers[$event]);
 	}
 	
@@ -110,7 +111,7 @@ trait Observer {
 	 * @return void
 	 * @access public
 	 */
-	public function setObserverTrace($trace = false) {
+	public function setObserverTrace(bool $trace = false) {
 		$this->_traceObservers = $trace;
 	}
 	
@@ -122,7 +123,7 @@ trait Observer {
 	 * @return void
 	 * @access private
 	 */
-	protected function _logObserver($data) {
+	protected function _logObserver(array $data) {
 		
 		$message = $this->_prepareLogData($data);
 		Log::writeLog('observer', $message);

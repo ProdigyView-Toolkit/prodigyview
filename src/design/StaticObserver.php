@@ -1,7 +1,11 @@
 <?php
 namespace prodigyview\design;
 
+use prodigyview\util\Log;
+
 trait StaticObserver {
+	
+	use StaticInvoke;
 	
 	/**
 	 * Observers that have been added

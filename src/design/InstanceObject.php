@@ -46,7 +46,7 @@ namespace prodigyview\design;
  *
  * @package data
  */
-class Object {
+trait InstanceObject {
 
 	use Adapter, Filter, Observer {
         	Adapter::_invokeMethod insteadof Filter, Observer;
