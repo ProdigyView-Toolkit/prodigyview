@@ -48,13 +48,12 @@ class Forms {
 	 * @param sring $type The type of input being generated
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
 	 * around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -105,13 +104,12 @@ class Forms {
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
 	 * around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -126,6 +124,7 @@ class Forms {
 			'options' => $options,
 			'css_options' => $css_options
 		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$options = $filtered['options'];
 		$css_options = $filtered['css_options'];
@@ -151,13 +150,12 @@ class Forms {
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
-	 * around the element.
+	 * 				around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -198,13 +196,12 @@ class Forms {
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
 	 * around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -245,13 +242,12 @@ class Forms {
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
-	 * around the element.
+	 * 				around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -292,13 +288,12 @@ class Forms {
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
-	 * around the element.
+	 * 				around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -339,13 +334,12 @@ class Forms {
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
 	 * around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -386,13 +380,12 @@ class Forms {
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
-	 * around the element.
+	 * 				around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -433,13 +426,12 @@ class Forms {
 	 * @param string $name The name of the input being generated. Will be the input field's name
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
+	 * 				HTML::getEventAttributes
 	 * 				and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
 	 * around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
@@ -481,13 +473,11 @@ class Forms {
 	 * @param string $value The display output of the button.
 	 * @param array $options Options than can be used to further distinguish the element. The options are
 	 * 				the same values that will be passed through HTML::getStandardAttributes,
-	 * HTML::getEventAttributes
-	 * 				and get the self::getFormAttributes funtions
+	 * 				HTML::getEventAttributes and get the self::getFormAttributes funtions
 	 * @param array $css_options Options than can define how the CSS is styled around the form the div
-	 * around the element.
+	 * 				around the element.
 	 * 				Options will be passed to HTML::getStandardAttributes() and HTML::getEventAttributes().
-	 * Have the option
-	 * 				'disable_css' will disable the div surrouding the element.
+	 * 				Have the option 'disable_css' will disable the div surrouding the element.
 	 *
 	 * @return string $element The string that creates the element
 	 * @access public
