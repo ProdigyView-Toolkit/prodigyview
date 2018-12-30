@@ -54,7 +54,7 @@ class Collection implements \IteratorAggregate {
 	 * @access public
 	 */
 	public function getIterator() {
-		return new \Iterator($this->dataset);
+		return new Iterator($this->dataset);
 	}
 
 	/**

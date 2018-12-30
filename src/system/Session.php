@@ -122,6 +122,7 @@ class Session {
 			return self::_callAdapter(get_class(), __FUNCTION__, $session_vars);
 
 		if(!self::$_initialized) {
+			
 			$defaults = array(
 				'cookie_path' => '/',
 				'cookie_domain' => $_SERVER['HTTP_HOST'],
@@ -158,11 +159,14 @@ class Session {
 			self::$hash_cookie = $session_vars['hash_cookie'];
 			self::$hash_session = $session_vars['hash_session'];
 	
-			session_name($session_vars['session_name']);
-			session_set_cookie_params($session_vars['session_lifetime'], $session_vars['session_path'], $session_vars['session_domain'], $session_vars['session_secure'], $session_vars['session_httponly']);
+			if (session_status() == PHP_SESSION_NONE) {
+				session_name($session_vars['session_name']);
+				session_set_cookie_params($session_vars['session_lifetime'], $session_vars['session_path'], $session_vars['session_domain'], $session_vars['session_secure'], $session_vars['session_httponly']);
+			}
 	
-			if ($session_vars['session_start'])
+			if ($session_vars['session_start'] && session_status() == PHP_SESSION_NONE) {
 				session_start();
+			}
 	
 			self::_notify(get_class() . '::' . __FUNCTION__, $session_vars);
 			
@@ -188,7 +192,7 @@ class Session {
 	 *
 	 * @return void
 	 */
-	public static function writeCookie($name, $value, $options = array()) {
+	public static function writeCookie(string $name, $value, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
@@ -215,7 +219,9 @@ class Session {
 			$name = Security::encrypt($name);
 			$value = Security::encrypt($value);
 		}
+		
 		setcookie($name, $value, time() + $cookie_lifetime, $cookie_path, $cookie_domain, $cookie_secure, $cookie_httponly);
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $name, $value, $options);
 	}
 
@@ -231,7 +237,7 @@ class Session {
 	 * unseralized and returned.
 	 * @access public
 	 */
-	public static function readCookie($name, $options = array()) {
+	public static function readCookie(string $name, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
@@ -278,7 +284,7 @@ class Session {
 	 * 			-'cookie_secure' _boolean_:
 	 * 			-'cookie_httponly' _boolean_:
 	 */
-	public static function deleteCookie($name, $options = array()) {
+	public static function deleteCookie(string $name, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
@@ -317,7 +323,7 @@ class Session {
 	 * @return void
 	 * @access public
 	 */
-	public static function writeSession($name, $value, $options = array()) {
+	public static function writeSession(string $name, $value, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
@@ -360,7 +366,7 @@ class Session {
 	 * @return mixed $stored_value
 	 * @access public
 	 */
-	public static function readSession($name, $options = array()) {
+	public static function readSession(string $name, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
@@ -406,7 +412,7 @@ class Session {
 	 * @return void
 	 * @access public
 	 */
-	public static function deleteSession($name, $options = array()) {
+	public static function deleteSession(string $name, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);

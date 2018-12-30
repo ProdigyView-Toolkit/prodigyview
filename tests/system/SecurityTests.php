@@ -35,6 +35,20 @@ class SecurityTests extends TestCase {
 		
 		$this -> assertEquals(strlen($token), $length*2);
 	}
+	
+	public function testHMacSignature() {
+		
+		$public_key = 'public_key';
+		
+		$private_key = 'private_key';
+		
+		$signature_1 = Security::encodeHmacSignature($public_key, $private_key);
+		
+		$signature_2 = Security::encodeHmacSignature($public_key, $private_key);
+		
+		$this->assertTrue(hash_equals($signature_1, $signature_2));
+		
+	}
 		
 }
 	
