@@ -68,32 +68,6 @@ class ToolsTests extends TestCase {
 		$this->assertEquals('<p>Everything s...', $text);
 	}
 
-	public function testGetCurrentUrlPort80() {
-
-		$_SERVER['SERVER_PORT'] = 80;
-
-		$_SERVER['HTTP_HOST'] = 'www.example.com';
-
-		$_SERVER['REQUEST_URI'] = '?item=1';
-
-		$url = Tools::getCurrentUrl();
-
-		$this->assertEquals('http://www.example.com?item=1', $url);
-	}
-
-	public function testGetCurrentUrlNotPort80() {
-
-		$_SERVER['SERVER_PORT'] = 8080;
-
-		$_SERVER['HTTP_HOST'] = 'www.example.com';
-
-		$_SERVER['REQUEST_URI'] = '?item=1';
-
-		$url = Tools::getCurrentUrl();
-
-		$this->assertEquals('http://www.example.com:8080?item=1', $url);
-	}
-
 	public function testArrayRecursiveFound() {
 
 		$result = Tools::arraySearchRecursive('wine',$this -> _largeArray);

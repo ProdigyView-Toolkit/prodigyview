@@ -2452,6 +2452,7 @@ class Database  {
 		} else {
 			$default = (isset($options['default'])) ? 'DEFAULT \'' . $options['default'].'\'' : '';
 		}
+		
 		$auto_increment = ($options['auto_increment'] == true) ? self::getAutoIncrement() : '';
 		$unique = ($options['unique'] == true) ? 'UNIQUE' : '';
 

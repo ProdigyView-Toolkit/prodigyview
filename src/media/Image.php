@@ -220,7 +220,7 @@ class Image {
 	 * 			-'return' _string_: Specifiy to return an object or file location. Default is set in the init()
 	 * 			-'format' _string_: The format to save the image in. Default is png.
 	 * 			-'type' _string_: The format the image is in before manipulation. If a blob fo byties is being
-	 * passed set type to 'blob', otherwise type will be file.
+	 * 			passed set type to 'blob', otherwise type will be file.
 	 *
 	 *
 	 *

@@ -447,8 +447,8 @@ class Router {
 			$replacement = '/';
 			$url = preg_replace($pattern, $replacement, $url);
 		}
-		if (!Validator::isValidUrl($url) && strpos($url, Tools::getCurrentBaseUrl()) === false) {
-			//$url=Tools::getCurrentBaseUrl().$url;
+		if (!Validator::isValidUrl($url) && strpos($url, Router::getCurrentBaseUrl()) === false) {
+			//$url=Router::getCurrentBaseUrl().$url;
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $url);
@@ -502,5 +502,138 @@ class Router {
 
 		return true;
 	}
+	
+	/**
+	 * Returns the full url of the current page. Inclded in the return will be if the page is being https
+	 * connect,
+	 * a port if any, and the uri.
+	 *
+	 * @return string $url Url of the current page.
+	 * @access public
+	 */
+	public static function getCurrentUrl() : string {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+
+		$current_page_url = 'http';
+
+		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+			$current_page_url .= 's';
+		}
+
+		$current_page_url .= '://';
+
+		if ($_SERVER['SERVER_PORT'] != '80') {
+			$current_page_url .= $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'] . $_SERVER['REQUEST_URI'];
+		} else {
+			$current_page_url .= $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		}
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $current_page_url);
+		$current_page_url = self::_applyFilter(get_class(), __FUNCTION__, $current_page_url, array('event' => 'return'));
+
+		return $current_page_url;
+	}//end getCurrentCurl
+
+	/**
+	 * Returns the current url with the uri. The url at max will only be
+	 * www.example.com
+	 *
+	 * @return string $url The current url without the uri
+	 * @access public
+	 */
+	public static function getCurrentBaseUrl() : string {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__);
+
+		$current_page_url = 'http';
+
+		if (@$_SERVER['HTTPS'] === 'on') { $current_page_url .= 's';
+		}
+		$current_page_url .= '://';
+
+		if ($_SERVER['SERVER_PORT'] != '80') {
+			$current_page_url .= $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'];
+		} else {
+			$current_page_url .= $_SERVER['HTTP_HOST'];
+		}
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $current_page_url);
+		$current_page_url = self::_applyFilter(get_class(), __FUNCTION__, $current_page_url, array('event' => 'return'));
+
+		return $current_page_url;
+	}//end getCurrentCurl
+
+	/**
+	 * Takes in an array and forms that array into a query string with ? & =. Passing in array such as
+	 * array('arg1'='doo', 'arg2'=>'sec''rae', 'arg3'=>'me') with return '?$arg1=doo&arg2=rae&arg3=me'
+	 *
+	 * @param array variables A string of variables to turn into a query string
+	 *
+	 * @return string The array uri into string format
+	 * @access public
+	 */
+	public static function formUrlParameters(array $variables) : string {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $variables);
+
+		$variables = self::_applyFilter(get_class(), __FUNCTION__, $variables, array('event' => 'args'));
+
+		$appendix = '?';
+
+		$first = 1;
+		foreach ($variables as $key => $value) {
+			if ($first === 1) {
+				$appendix .= $key . '=' . urlencode($value);
+			} else {
+				$appendix .= '&' . $key . '=' . urlencode($value);
+			}
+			$first = 0;
+		}//end foreach
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $appendix, $variables);
+		$appendix = self::_applyFilter(get_class(), __FUNCTION__, $appendix, array('event' => 'return'));
+
+		return $appendix;
+
+	}//end form url
+
+	/**
+	 * Takes in an array and forms that array into a query string with /'s. Passing in array such as
+	 * array('arg1'='doo', 'arg2'=>'sec''rae', 'arg3'=>'me') with return 'doo/rae/me'
+	 *
+	 * @param array variables A string of variables to turn into a query string
+	 *
+	 * @return string The array uri into string format
+	 * @access public
+	 */
+	public static function formUrlPath(array $variables) : string {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $variables);
+
+		$variables = self::_applyFilter(get_class(), __FUNCTION__, $variables, array('event' => 'args'));
+
+		$appendix = '';
+
+		$first = 1;
+		foreach ($variables as $key => $value) {
+			if ($first === 1) {
+				$appendix .= urlencode($value);
+			} else {
+				$appendix .= '/' . urlencode($value);
+			}
+			$first = 0;
+		}//end foreach
+
+		self::_notify(get_class() . '::' . __FUNCTION__, $appendix, $variables);
+		$appendix = self::_applyFilter(get_class(), __FUNCTION__, $appendix, array('event' => 'return'));
+
+		return $appendix;
+
+	}//end form url
 
 }//end class

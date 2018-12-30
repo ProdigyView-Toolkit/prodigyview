@@ -3,11 +3,11 @@ use prodigyview\design\StaticInstance;
 
 use PHPUnit\Framework\TestCase;
 
-class InstanceTest {	
+class StaticInstanceObject {	
 	use StaticInstance;
 }
 
-class StaticInstanceTests extends TestCase {
+class StaticStaticInstanceObjects extends TestCase {
 	
 	private $_data = array(
 		'bark' => 'Dog',
@@ -17,7 +17,7 @@ class StaticInstanceTests extends TestCase {
 	
 	public function testInstanceAddDataWithSetters() {
 		
-		$instance = new InstanceTest();
+		$instance = new StaticInstanceObject();
 		
 		foreach($this ->_data as $key => $value) {
 			
@@ -30,7 +30,7 @@ class StaticInstanceTests extends TestCase {
 	
 	public function testInstanceAddDataWithAddWithName() {
 		
-		$instance = new InstanceTest();
+		$instance = new StaticInstanceObject();
 		
 		foreach($this ->_data as $key => $value) {
 			
@@ -43,7 +43,7 @@ class StaticInstanceTests extends TestCase {
 	
 	public function testInstanceAddDataWithAddWithoutName() {
 		
-		$instance = new InstanceTest();
+		$instance = new StaticInstanceObject();
 		
 		foreach($this ->_data as $key => $value) {
 			
@@ -56,7 +56,7 @@ class StaticInstanceTests extends TestCase {
 	
 	public function testInstanceWithMethod() {
 		
-		$instance = new InstanceTest();
+		$instance = new StaticInstanceObject();
 		
 		$instance->addMethod('foo', function($string) {
 			return 'bar-'.$string;

@@ -4,7 +4,7 @@ use prodigyview\design\StaticObserver;
 
 use PHPUnit\Framework\TestCase;
 
-class TestInstance {
+class ObserverTestInstance {
 	
 	use Observer;
 	
@@ -15,7 +15,7 @@ class TestInstance {
 	}
 }
 
-class TestStatic {
+class ObserverTestStatic {
 	
 	use StaticObserver;
 	
@@ -51,9 +51,9 @@ class ObserverTests extends TestCase {
 		
 		$string = 'Pass Me Along';
 		
-		$instance = new TestInstance();
+		$instance = new ObserverTestInstance();
 		
-		$instance -> addObserver('observe', 'TestInstance', function($object, $string, $unit) {
+		$instance -> addObserver('observe', 'ObserverTestInstance', function($object, $string, $unit) {
 			
 			$unit -> assertEquals('Pass Me Along', $string);
 			
@@ -67,7 +67,7 @@ class ObserverTests extends TestCase {
 		
 		$string = 'Pass Me Along To Instance';
 		
-		$instance = new TestInstance();
+		$instance = new ObserverTestInstance();
 		
 		$listener = new InstanceListener();
 		
@@ -81,7 +81,7 @@ class ObserverTests extends TestCase {
 		
 		$string = 'Pass Me Along To Static';
 		
-		$instance = new TestInstance();
+		$instance = new ObserverTestInstance();
 		
 		$instance -> setObserverTrace(true);
 		
@@ -94,41 +94,41 @@ class ObserverTests extends TestCase {
 		
 		$string = 'Pass Me Along';
 		
-		TestStatic::addObserver('observe', 'TestStatic', function($object, $string, $unit) {
+		ObserverTestStatic::addObserver('observe', 'ObserverTestStatic', function($object, $string, $unit) {
 			
 			$unit -> assertEquals('Pass Me Along', $string);
 			
 		}, array('type' => 'closure'));
 		
-		TestStatic::observe($string, $this);
+		ObserverTestStatic::observe($string, $this);
 		
 	}
 	
 	public function testStaticWithInstance() {
 		
-		TestStatic::clearObservers('observe');
+		ObserverTestStatic::clearObservers('observe');
 		
 		$string = 'Pass Me Along To Instance';
 		
 		$listener = new InstanceListener();
 		
-		TestStatic::addObserver('observe', $listener , 'observed', array('type' => 'instance'));
+		ObserverTestStatic::addObserver('observe', $listener , 'observed', array('type' => 'instance'));
 		
-		TestStatic::setObserverTrace(true);
+		ObserverTestStatic::setObserverTrace(true);
 		
-		TestStatic::observe($string, $this);
+		ObserverTestStatic::observe($string, $this);
 		
 	}
 	
 	public function testStaticWithStatic() {
 		
-		TestStatic::clearObservers('observe');
+		ObserverTestStatic::clearObservers('observe');
 		
 		$string = 'Pass Me Along To Static';
 		
-		TestStatic::addObserver('observe', 'StaticListener' , 'observed', array('type' => 'static'));
+		ObserverTestStatic::addObserver('observe', 'StaticListener' , 'observed', array('type' => 'static'));
 		
-		TestStatic::observe($string, $this);
+		ObserverTestStatic::observe($string, $this);
 	}
 	
 }

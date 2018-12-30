@@ -7,6 +7,18 @@ use prodigyview\system\Configuration;
 use prodigyview\system\Libraries;
 use prodigyview\util\Tools;
 
+if (!defined('DS')) {
+	define('DS', '/');
+}
+
+if (!defined('PV_CSS')) {
+	define('PV_CSS', '');
+}
+
+if (!defined('PV_JAVASCRIPT')) {
+	define('PV_JAVASCRIPT', '');
+}
+
 /**
  * Template is a generic template wrapper class that is used as a basis for creating a templating
  * system.
@@ -40,6 +52,11 @@ class Template {
 	private static $siteKeywords;
 	
 	/**
+	 * Store flash messages to be displayed
+	 */
+	 private static $flashMessages = array();
+	
+	/**
 	 * Protects the class from being initalized multiple times via init
 	 */
 	protected static $_initialized = false;
@@ -55,7 +72,7 @@ class Template {
 	 * @return void
 	 * @access public
 	 */
-	public static function init($config = array()) {
+	public static function init(array $config = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
@@ -87,7 +104,7 @@ class Template {
 	 * @return string siteTitle: The sets title.
 	 * @access public
 	 */
-	public static function getSiteTitle() {
+	public static function getSiteTitle() : ?string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
@@ -105,7 +122,7 @@ class Template {
 	 * @return string
 	 * @access public
 	 */
-	public static function getSiteKeywords() {
+	public static function getSiteKeywords() : ?string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
@@ -123,7 +140,7 @@ class Template {
 	 * @return string siteTitle: The sets title.
 	 * @access public
 	 */
-	public static function getSiteMetaDescription() {
+	public static function getSiteMetaDescription() : ?string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
@@ -141,7 +158,7 @@ class Template {
 	 * @return string meta_tags: The sets title.
 	 * @access public
 	 */
-	public static function getSiteMetaTags() {
+	public static function getSiteMetaTags() : ?string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
@@ -159,12 +176,13 @@ class Template {
 	 * @param string title: Site title
 	 * @access public
 	 */
-	public static function setSiteTitle($string) {
+	public static function setSiteTitle(string $string) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		
 		self::$siteTitle = $string;
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
@@ -176,13 +194,15 @@ class Template {
 	 * @param string keywords: Site keywords
 	 * @access public
 	 */
-	public static function setSiteKeywords($string) {
+	public static function setSiteKeywords(string $string) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		
 		self::$siteKeywords = $string;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
@@ -194,7 +214,7 @@ class Template {
 	 * @return void
 	 * @access public
 	 */
-	public static function appendSiteTitle($string) {
+	public static function appendSiteTitle(string $string) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
@@ -202,6 +222,7 @@ class Template {
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteTitle .= $string;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
@@ -213,7 +234,7 @@ class Template {
 	 * @return void
 	 * @access public
 	 */
-	public static function setSiteMetaTags($string) {
+	public static function setSiteMetaTags(string $string) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
@@ -221,6 +242,7 @@ class Template {
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteMetaTags = $string;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
@@ -231,7 +253,7 @@ class Template {
 	 *
 	 * @return void
 	 */
-	public static function appendSiteMetaTags($string) {
+	public static function appendSiteMetaTags(string $string) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
@@ -239,6 +261,7 @@ class Template {
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteMetaTags .= $string;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
@@ -250,7 +273,7 @@ class Template {
 	 * @return void
 	 * @access public
 	 */
-	public static function setSiteMetaDescription($string) {
+	public static function setSiteMetaDescription(string $string) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
@@ -258,6 +281,7 @@ class Template {
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteMetaDescription = $string;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
@@ -269,7 +293,7 @@ class Template {
 	 * @return void
 	 * @access public
 	 */
-	public static function appendSiteMetaDescription($string) {
+	public static function appendSiteMetaDescription(string $string) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string);
@@ -277,6 +301,7 @@ class Template {
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteMetaDescription .= $string;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $string);
 	}
 
@@ -291,7 +316,7 @@ class Template {
 	 * @return string $div Returns a div with the error message inside.
 	 * @access public
 	 */
-	public static function errorMessage($message, $options = array()) {
+	public static function errorMessage(string $message, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $message, $options);
@@ -327,7 +352,7 @@ class Template {
 	 * @return string $div Returns a div with the success message inside.
 	 * @access public
 	 */
-	public static function successMessage($message, $options = array()) {
+	public static function successMessage(string $message, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $message, $options);
@@ -350,6 +375,80 @@ class Template {
 		$div = self::_applyFilter(get_class(), __FUNCTION__, $div, array('event' => 'return'));
 
 		return $div;
+	}
+	
+	/**
+	 * Adds a flash message to a queue to be displayed later
+	 *
+	 * @param string $type The type of message, ie success, error, etc.
+	 * @param string $message The message to be displayed
+	 * @param array $options Options that define the parameters.
+	 * 				-'session' string The name of session
+	 *
+	 * @return string $div Returns a div with the success message inside.
+	 * @access public
+	 */
+	public static function addFlashMessage(string $type, string $message, array $options = array()) {
+
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $type, $message, $options);
+
+		$defaults = array('session' => 'default');
+		$options += $defaults;
+
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'type' => $type,
+			'message' => $message,
+			'options' => $options
+		), array('event' => 'args'));
+		
+		$type = $filtered['type'];
+		$message = $filtered['message'];
+		$options = $filtered['options'];
+
+		self::$flashMessages[$options['session']][$type][] = $message;
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $div, $message, $options);
+	}
+	
+	/**
+	 * Get the flash messages stored from previous sessions.
+	 * 
+	 * @param string $type The type of message to retrieves
+	 * @param array $options Options used
+	 */
+	public static function getFlashMessages(string $type, array $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $type);
+		
+		$defaults = array('unset_messages' => true, 'session' => 'default');
+		$options += $defaults;
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'type' => $type,
+			'options' => $options
+		), array('event' => 'args'));
+		
+		$type = $filtered['type'];
+		$options = $filtered['options'];
+		
+		$messages = array();
+		
+		if(isset(self::$flashMessages[$options['session']][$type])) {
+			$messages = self::$flashMessages[$options['session']][$type];
+			
+			//Delete the messages
+			if($options['unset_messages']) {
+				unset(self::$flashMessages[$options['session']][$type]);
+			}
+		}
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $messages, $type, $options);
+		
+		$messages = self::_applyFilter(get_class(), __FUNCTION__, $messages, array('event' => 'return'));
+		
+		return $messages;
 	}
 
 	/**
@@ -432,7 +531,7 @@ class Template {
 	 * @return string $libraries <script /> string with the libraries found
 	 * @access public
 	 */
-	public static function getHeader($options = array()) {
+	public static function getHeader(array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
@@ -449,10 +548,8 @@ class Template {
 		
 		extract($options);
 
-		$siteConfiguration = Configuration::getSiteCompleteConfiguration();
-
 		if ($options['append_url']) {
-			$url = Tools::getCurrentBaseUrl();
+			$url = Router::getCurrentBaseUrl();
 		}
 
 		if ($options['version']) {
@@ -504,12 +601,13 @@ class Template {
 		
 		$options += $defaults;
 		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
+		
 		extract($options);
 
-		$javascript = (PV_IS_ADMIN) ? PV_ADMIN_JAVASCRIPT : PV_JAVASCRIPT;
+		$javascript = PV_JAVASCRIPT;
 
 		if ($options['append_url']) {
-			$url = Tools::getCurrentBaseUrl();
+			$url = Router::getCurrentBaseUrl();
 		}
 
 		if ($options['version']) {
@@ -540,7 +638,7 @@ class Template {
 	 * @return string $libraries <script /> string with the libraries found
 	 * @access public
 	 */
-	public static function getCSSHeader($options = array()) {
+	public static function getCSSHeader(array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $options);
@@ -559,7 +657,7 @@ class Template {
 		$css = PV_CSS;
 
 		if ($options['append_url']) {
-			$url = Tools::getCurrentBaseUrl();
+			$url = Router::getCurrentBaseUrl();
 		}
 
 		if ($options['version']) {
