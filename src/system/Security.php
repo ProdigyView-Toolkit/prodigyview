@@ -101,7 +101,7 @@ class Security {
 	 * @return void
 	 * @access public
 	 */
-	public static function init($args = array()) {
+	public static function init(array $args = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
@@ -171,7 +171,7 @@ class Security {
 	 * @return string $encrypted_string Returns an encryped string of data
 	 * @access public
 	 */
-	public static function encrypt($string, $options = array()) {
+	public static function encrypt(string $string, array $options = array()) : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string, $option);
@@ -225,7 +225,7 @@ class Security {
 	 * @return string $decrypted_string The string decrypted
 	 * @access public
 	 */
-	public static function decrypt($string, $options = array()) {
+	public static function decrypt(string $string, array $options = array()) : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string, $options);
@@ -431,7 +431,7 @@ class Security {
 	 * @return string $hashed_string Returns the hashed string
 	 * @access public
 	 */
-	public static function hash($string, $salt = null) {
+	public static function hash(string $string, $salt = null) : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $string, $salt);
@@ -460,7 +460,7 @@ class Security {
 	 * 
 	 * @return string
 	 */
-	public static function generateToken($length = 64) {
+	public static function generateToken(int $length = 64) : string {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $length);
@@ -487,7 +487,7 @@ class Security {
 	 * 
 	 * @return string Encoded string
 	 */
-	public static function encodeHmacSignature($public, $key, $method = 'sha1', $raw_output= true) {
+	public static function encodeHmacSignature(string $public, string $key, string $method = 'sha1', bool $raw_output= false) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $public, $key, $method, $raw_output);

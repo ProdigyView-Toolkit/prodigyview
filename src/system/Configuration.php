@@ -3,6 +3,7 @@
 namespace prodigyview\system;
 
 use prodigyview\design\StaticObject;
+use prodigyview\util\Conversions;
 
 /**
  * The Configuration acts a global registry for system-wide configuration options for the
@@ -66,7 +67,7 @@ class Configuration {
 	 * @return void
 	 * @access public
 	 */
-	public static function init($args = array()) {
+	public static function init(array $args = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $args);
@@ -104,7 +105,7 @@ class Configuration {
 	 * @return void
 	 * @access public
 	 */
-	public static function addConfiguration($key, $value, $options = array()) {
+	public static function addConfiguration(string $key, $value, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key, $value);
@@ -117,6 +118,7 @@ class Configuration {
 			'value' => $value,
 			'options' => $options
 		), array('event' => 'args'));
+		
 		$key = $filtered['key'];
 		$value = $filtered['value'];
 		$options = $filtered['options'];
@@ -138,7 +140,7 @@ class Configuration {
 	 * @return string $configuration
 	 * @access pulbic
 	 */
-	public static function getConfiguration($key, $options = array()) {
+	public static function getConfiguration(string $key, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $key);
@@ -150,12 +152,13 @@ class Configuration {
 			'key' => $key,
 			'options' => $options
 		), array('event' => 'args'));
+		
 		$key = $filtered['key'];
 		$options = $filtered['options'];
 
 		$environment = $options['environment'];
 
-		$value = parent::get($key . '_' . $environment);
+		$value = self::get($key . '_' . $environment);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $key, $value);
 		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
@@ -172,359 +175,28 @@ class Configuration {
 	 * @return void mixed $config Any infomration retrieved from that node
 	 * @access public
 	 */
-	public static function loadXMLConfigurationFromFile($node_name) {
+	public static function loadXMLConfiguration(string $file_location, array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $node_name);
+			return self::_callAdapter(get_class(), __FUNCTION__, $file_location);
 
-		$node_name = self::_applyFilter(get_class(), __FUNCTION__, $node_name, array('event' => 'args'));
+		$file_location = self::_applyFilter(get_class(), __FUNCTION__, $file_location, array('event' => 'args'));
 
-		$filename = PV_CONFIG;
-		$parameter_array = array();
-
-		$doc = new DOMDocument();
-		$doc->formatOutput = true;
-		$doc->preserveWhiteSpace = false;
-		$doc->load($filename);
-		$node_array = $doc->getElementsByTagName($node_name);
-
-		foreach ($node_array as $node) {
-			if ($node->childNodes->length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i->nodeName] = $i->nodeValue;
-					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
+		$xml = simplexml_load_file($file_location);
+		
+		$data = Conversions::convertXmlToArray($xml);
+		
+		foreach($data as $key => $value) {
+			self::addConfiguration($key, $value);
+		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $node_name, $parameter_array);
-		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
+		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
 
-		return $parameter_array;
+		return $data;
 	}
 
-	/**
-	 * Retrieve the preferences in the sites xml
-	 * configuration. The configuration options retrieved will be
-	 * the elements betweeen the <email></email> tags.
-	 *
-	 * @return array email_options: Returns the email options in an array
-	 * @access public
-	 */
-	public static function getSiteEmailConfiguration() {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$filename = PV_CONFIG;
-		$parameter_array = array();
-
-		$doc = new DOMDocument();
-		$doc->formatOutput = true;
-		$doc->preserveWhiteSpace = false;
-		$doc->load($filename);
-		$node_array = $doc->getElementsByTagName('email');
-
-		foreach ($node_array as $node) {
-			if ($node->childNodes->length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i->nodeName] = $i->nodeValue;
-					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $parameter_array);
-		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
-
-		return $parameter_array;
-	}//end getSiteEmailConfiguration
-
-	/**
-	 * Retrieve the preferences in the sites xml
-	 * configuration. The configuration options retrieved will be
-	 * the elements betweeen the <sessions></sessions> tags.
-	 *
-	 * @return array $session_options Returns the session options in an array
-	 * @access public
-	 */
-	public static function getSiteSessionConfiguration() {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$filename = PV_CONFIG;
-		$parameter_array = array();
-
-		$doc = new DOMDocument();
-		$doc->formatOutput = true;
-		$doc->preserveWhiteSpace = false;
-		$doc->load($filename);
-		$node_array = $doc->getElementsByTagName('sessions');
-
-		foreach ($node_array as $node) {
-			if ($node->childNodes->length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i->nodeName] = $i->nodeValue;
-					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $parameter_array);
-		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
-
-		return $parameter_array;
-	}//end getSiteEmailConfiguration
-
-	/**
-	 * Retrieve the preferences in the sites xml
-	 * configuration. The configuration options retrieved will be
-	 * all the xml in the file.
-	 *
-	 * @return array options Returns all the options in an array
-	 * @access public
-	 */
-	public static function getSiteCompleteConfiguration() {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$parameter_array = array();
-		if (defined('PV_CONFIG') && file_exists(PV_CONFIG)) {
-			$filename = PV_CONFIG;
-
-			$doc = new DOMDocument();
-			$doc->formatOutput = true;
-			$doc->preserveWhiteSpace = false;
-			$doc->load($filename);
-			$node_array = $doc->getElementsByTagName('general');
-
-			foreach ($node_array as $node) {
-				if ($node->childNodes->length) {
-					foreach ($node->childNodes as $i) {
-						$parameter_array[$i->nodeName] = $i->nodeValue;
-					}//end foreach
-				}//end if
-			}//end foreach
-
-			$node_array = $doc->getElementsByTagName('email');
-
-			foreach ($node_array as $node) {
-				if ($node->childNodes->length) {
-					foreach ($node->childNodes as $i) {
-						$parameter_array[$i->nodeName] = $i->nodeValue;
-						self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-					}//end foreach
-				}//end if
-
-			}//end foreach
-
-			$node_array = $doc->getElementsByTagName('system');
-
-			foreach ($node_array as $node) {
-				if ($node->childNodes->length) {
-					foreach ($node->childNodes as $i) {
-						$parameter_array[$i->nodeName] = $i->nodeValue;
-						self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-					}//end foreach
-				}//end if
-
-			}//end foreach
-
-			$node_array = $doc->getElementsByTagName('libraries');
-
-			foreach ($node_array as $node) {
-				if ($node->childNodes->length) {
-					foreach ($node->childNodes as $i) {
-						$parameter_array[$i->nodeName] = $i->nodeValue;
-						self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-					}//end foreach
-				}//end if
-			}//end foreach
-
-			$node_array = $doc->getElementsByTagName('sessions');
-
-			foreach ($node_array as $node) {
-				if ($node->childNodes->length) {
-					foreach ($node->childNodes as $i) {
-						$parameter_array[$i->nodeName] = $i->nodeValue;
-						self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-					}//end foreach
-				}//end if
-			}
-		}
-		self::_notify(get_class() . '::' . __FUNCTION__, $parameter_array);
-		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
-
-		return $parameter_array;
-	}//end getSiteEmailConfiguration
-
-	/**
-	 * Retrieve the preferences in the sites xml
-	 * configuration. The configuration options retrieved will be
-	 * the one elements betweeen the <general></general> and <email></email> tags.
-	 *
-	 * @return array $general_options Returns the general options in an array
-	 * @access public
-	 */
-	public static function getSiteGeneralConfiguration() {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$filename = PV_CONFIG;
-		$parameter_array = array();
-
-		$doc = new DOMDocument();
-		$doc->formatOutput = true;
-		$doc->preserveWhiteSpace = false;
-		$doc->load($filename);
-		$node_array = $doc->getElementsByTagName('general');
-
-		foreach ($node_array as $node) {
-			if ($node->childNodes->length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i->nodeName] = $i->nodeValue;
-					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		$node_array = $doc->getElementsByTagName('email');
-
-		foreach ($node_array as $node) {
-			if ($node->childNodes->length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i->nodeName] = $i->nodeValue;
-					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $parameter_array);
-		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
-
-		return $parameter_array;
-	}//end getSiteEmailConfiguration
-
-	/**
-	 * Retrieve the preferences in the sites xml
-	 * configuration. The configuration options retrieved will be
-	 * the one elements betweeen the <system></system> tags.
-	 *
-	 * @return array $system_options Returns the system options in an array
-	 * @access public
-	 */
-	public static function getSystemConfiguration() {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$filename = PV_CONFIG;
-		$parameter_array = array();
-
-		$doc = new DOMDocument();
-		$doc->formatOutput = true;
-		$doc->preserveWhiteSpace = false;
-		$doc->load($filename);
-		$node_array = $doc->getElementsByTagName('system');
-
-		foreach ($node_array as $node) {
-			if ($node->childNodes->length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i->nodeName] = $i->nodeValue;
-					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $parameter_array);
-		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
-
-		return $parameter_array;
-	}//end systemConfiguration
-
-	/**
-	 * Retrieve the preferences in the sites xml
-	 * configuration. The configuration options retrieved will be
-	 * the one elements betweeen the <general></general> tags.
-	 *
-	 * @return array site_options: Returns the site options in an array
-	 * @access public
-	 */
-	public static function getSiteConfiguration() {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$filename = PV_CONFIG;
-		$parameter_array = array();
-
-		$doc = new DOMDocument();
-		$doc->formatOutput = true;
-		$doc->preserveWhiteSpace = false;
-		$doc->load($filename);
-		$node_array = $doc->getElementsByTagName('general');
-
-		foreach ($node_array as $node) {
-			if ($node->childNodes->length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i->nodeName] = $i->nodeValue;
-					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $parameter_array);
-		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
-
-		return $parameter_array;
-	}//end getSiteEmailConfiguration
-
-	/**
-	 * Retrieve the preferences in the sites xml
-	 * configuration. The configuration options retrieved will be
-	 * the one elements betweeen the <server></server> tags.
-	 *
-	 * @return array $sever_options Returns the site server in an array
-	 * @access public
-	 */
-	public static function getServerConfiguration() {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$filename = PV_CONFIG;
-		$parameter_array = array();
-
-		$doc = new DOMDocument();
-		$doc->formatOutput = true;
-		$doc->preserveWhiteSpace = false;
-		$doc->load($filename);
-		$node_array = $doc->getElementsByTagName('server');
-
-		foreach ($node_array as $node) {
-			if ($node->childNodes->length) {
-				foreach ($node->childNodes as $i) {
-					$parameter_array[$i->nodeName] = $i->nodeValue;
-					self::addToCollectionWithName($i->nodeName, $i->nodeValue);
-				}//end foreach
-			}//end if
-
-		}//end foreach
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $parameter_array);
-		$parameter_array = self::_applyFilter(get_class(), __FUNCTION__, $parameter_array, array('event' => 'return'));
-
-		return $parameter_array;
-	}//end getSiteEmailConfiguration
+	
+	
 
 }//end class

@@ -1,8 +1,18 @@
 <?php
 namespace prodigyview\system;
 
-use prog	idyview\util\FileManager;
+use prodigyview\util\FileManager;
 use prodigyview\design\StaticObject;
+
+//Define the directory seperator
+if (!defined('DS')) {
+	define('DS', '/');
+}
+
+if (!defined('PV_LIBRARIES')) {
+	define('PV_LIBRARIES', '');
+}
+
 
 /**
  * Libraries is designed to load external libraries into the system, especially those that are not
@@ -101,7 +111,7 @@ class Libraries {
 			self::$_namespaced = $config['namespaced'];
 	
 			spl_autoload_register(array(
-				'Libraries',
+				'prodigyview\system\Libraries',
 				'_autoload'
 			));
 	
@@ -128,6 +138,7 @@ class Libraries {
 		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
 		
 		self::$javascript_libraries_array[$script] = $script;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $script);
 	}
 
@@ -149,6 +160,7 @@ class Libraries {
 		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
 		
 		self::$css_files_array[$script] = $script;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $script);
 	}
 
@@ -264,6 +276,7 @@ class Libraries {
 		);
 
 		$options += $defaults;
+		
 		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
 			'folder_name' => $folder_name,
 			'options' => $options
@@ -273,6 +286,7 @@ class Libraries {
 		$options = $filtered['options'];
 
 		self::$libraries[$folder_name] = $options;
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $folder_name, $options);
 	}
 
@@ -397,12 +411,14 @@ class Libraries {
 		foreach (self::$libraries as $library) {
 
 			if ($library['auto_load']) {
+				
 				$allow_extensions = $library['extensions'];
 
 				$directory_iterator = new RecursiveDirectoryIterator($library['path']);
 				$iterator_iterator = new RecursiveIteratorIterator($directory_iterator, RecursiveIteratorIterator::SELF_FIRST);
 				
 				foreach ($iterator_iterator as $file) {
+					
 					$extensions_allowed = (is_array($allow_extensions)) ? implode($allow_extensions, '|') : $allow_extensions;
 
 					if (false === strpos($file->getFilename(), '~') && 0 < strpos($file->getFilename(), '.php') && preg_match('/' . $extensions_allowed . '/', $file->getBasename(), $matches)) {
@@ -413,8 +429,10 @@ class Libraries {
 							} else {
 								$namespace = str_replace(PV_LIBRARIES, '', $file->getPathname());
 							}
+							
 							$namespace = str_replace($matches[0], '', $namespace);
 							self::$_autoloadClasses[$namespace] = $file->getPathname();
+							
 						} else {
 							self::$_autoloadClasses[$file->getBasename($matches[0])] = $file->getPathname();
 						}

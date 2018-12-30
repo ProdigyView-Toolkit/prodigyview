@@ -22,7 +22,7 @@ use prodigyview\util\Conversions;
  * ```
  * @package data
  */
-class Collection implements IteratorAggregate {
+class Collection implements \IteratorAggregate {
 	/**
 	 * The items stored in the collection, key=>value pair
 	 */
@@ -42,7 +42,7 @@ class Collection implements IteratorAggregate {
 	 * @return void
 	 * @access public
 	 */
-	public function __construct($data = array()) {
+	public function __construct(array $data = array()) {
 		$this->dataset = $data;
 		$this->count = count($data);
 	}
@@ -54,7 +54,7 @@ class Collection implements IteratorAggregate {
 	 * @access public
 	 */
 	public function getIterator() {
-		return new Iterator($this->dataset);
+		return new \Iterator($this->dataset);
 	}
 
 	/**
@@ -111,7 +111,7 @@ class Collection implements IteratorAggregate {
 	 * @return void
 	 * @access public
 	 */
-	public function addWithName($name, $data) {
+	public function addWithName(string $name, $data) {
 
 		if (is_array($data)) {
 			$this->dataset[$name] = Conversions::arrayToObject($data);
@@ -147,7 +147,7 @@ class Collection implements IteratorAggregate {
 /**
  * A class used for iterating over items in loops.
  */
-class Iterator implements Iterator {
+class Iterator implements \Iterator {
 
 	/**
 	 * The items to iterate over
@@ -163,7 +163,7 @@ class Iterator implements Iterator {
 	 * @return void
 	 * @access public
 	 */
-	public function __construct($array = array()) {
+	public function __construct(array $array = array()) {
 		if (is_array($array)) {
 			$this->data = $array;
 		}
