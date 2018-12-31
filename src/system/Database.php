@@ -317,7 +317,7 @@ class Database  {
 		if (self::$dbtype === self::$mySQLConnection) {
 			mysqli_report(self::$mysql_error_report);
 			$port = !empty(self::$dbport) ? self::$dbport : 3306;
-			self::$link = new mysqli(self::$dbhost, self::$dbuser, self::$dbpass, self::$dbname, $port);
+			self::$link = new \mysqli(self::$dbhost, self::$dbuser, self::$dbpass, self::$dbname, $port);
 		} else if (self::$dbtype === self::$postgreSQLConnection) {
 			$port = !empty(self::$dbport) ? self::$dbport : 5432;
 			self::$link = pg_connect('host=' . self::$dbhost . ' port=' . $port . ' dbname=' . self::$dbname . ' user=' . self::$dbuser . ' password=' . self::$dbpass );
@@ -327,15 +327,15 @@ class Database  {
 			self::$link = sqlite_open(self::$dbname);
 		} else if (self::$dbtype == self::$oracleConnection) {
 			self::$link = oci_connect($user, $pass, $host);
-			$d = new PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
+			$d = new \PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
 		} else if (self::$dbtype === self::$mongoConnection) {
 			
 			if(class_exists('\\MongoDB\Driver\Manager')) {	
 				//self::$link = new \MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
-				self::$link = new MongoDB\Client('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+				self::$link = new \MongoDB\Client('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 				self::$link ->selectDatabase(self::$dbname);
 			} else if(class_exists ('MongoClient')) {
-				self::$link = new MongoClient('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
+				self::$link = new \MongoClient('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
 				$database = self::$dbname;
 				self::$link = self::$link ->selectDB($database);
 			} else {

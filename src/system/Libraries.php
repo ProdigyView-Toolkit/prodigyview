@@ -414,8 +414,8 @@ class Libraries {
 				
 				$allow_extensions = $library['extensions'];
 
-				$directory_iterator = new RecursiveDirectoryIterator($library['path']);
-				$iterator_iterator = new RecursiveIteratorIterator($directory_iterator, RecursiveIteratorIterator::SELF_FIRST);
+				$directory_iterator = new \RecursiveDirectoryIterator($library['path']);
+				$iterator_iterator = new \RecursiveIteratorIterator($directory_iterator, \RecursiveIteratorIterator::SELF_FIRST);
 				
 				foreach ($iterator_iterator as $file) {
 					

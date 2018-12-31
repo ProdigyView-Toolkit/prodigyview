@@ -3,6 +3,7 @@
 namespace prodigyview\template;
 
 use prodigyview\design\StaticObject;
+use prodigyview\network\Router;
 use prodigyview\system\Configuration;
 use prodigyview\system\Libraries;
 use prodigyview\util\Tools;

@@ -31,6 +31,8 @@ if (!defined('PV_ROOT')) {
  */
 class Image {
 
+	use StaticObject;
+	
 	/**
 	 * The tool used to process images, default imagic but can be GD or another class
 	 */
@@ -271,13 +273,13 @@ class Image {
 		if ($options['converter'] == 'imagick') {
 
 			if ($options['type'] == 'blob') {
-				$im = new Imagick();
+				$im = new \Imagick();
 				$im->readImageBlob($image);
 			} else {
-				$im = new Imagick($image);
+				$im = new \Imagick($image);
 			}
 
-			$draw = new ImagickDraw();
+			$draw = new \ImagickDraw();
 			$draw->setFont($options['font']);
 			$draw->setFontSize($options['font_size']);
 			$draw->setFontStyle($options['font_size']);
@@ -396,17 +398,17 @@ class Image {
 		if ($options['converter'] == 'imagick') {
 
 			if ($options['type'] == 'blob') {
-				$im = new Imagick();
+				$im = new \Imagick();
 				$im->readImageBlob($image);
 			} else {
-				$im = new Imagick($image);
+				$im = new \Imagick($image);
 			}
 
 			if ($options['watermark_type'] == 'blob') {
-				$watermark_im = new Imagick();
+				$watermark_im = new \Imagick();
 				$watermark_im->readImageBlob($watermark);
 			} else {
-				$watermark_im = new Imagick($watermark);
+				$watermark_im = new \Imagick($watermark);
 			}
 
 			$im->compositeImage($watermark_im, $options['composite'], $options['offset_x'], $options['offset_y']);
@@ -504,13 +506,13 @@ class Image {
 		$format = $filtered['format'];
 		$options = $filtered['options'];
 
-		$im = new Imagick();
+		$im = new \Imagick();
 
 		if ($options['type'] == 'blob') {
-			$im = new Imagick();
+			$im = new \Imagick();
 			$im->readImageBlob($image);
 		} else {
-			$im = new Imagick($image);
+			$im = new \Imagick($image);
 			$im->pingImage($image);
 			$im->readImage($image);
 		}
@@ -607,10 +609,10 @@ class Image {
 
 		if ($options['converter'] == 'imagick') {
 			if ($options['type'] == 'blob') {
-				$im = new Imagick();
+				$im = new \Imagick();
 				$im->readImageBlob($image);
 			} else {
-				$im = new Imagick($image);
+				$im = new \Imagick($image);
 			}
 
 			$im->scaleImage($width, $height, $options['bestfit']);
@@ -678,10 +680,10 @@ class Image {
 		if ($options['converter'] == 'imagick') {
 
 			if ($options['type'] == 'blob') {
-				$im = new Imagick();
+				$im = new \Imagick();
 				$im->readImageBlob($image);
 			} else {
-				$im = new Imagick($image);
+				$im = new \Imagick($image);
 			}
 
 			$width = $im->getImageWidth();
@@ -729,10 +731,10 @@ class Image {
 
 		if ($options['converter'] == 'imagick') {
 			if ($options['type'] == 'blob') {
-				$im = new Imagick();
+				$im = new \Imagick();
 				$im->readImageBlob($image);
 			} else {
-				$im = new Imagick($image);
+				$im = new \Imagick($image);
 			}
 
 			$height = $im->getImageHeight();
@@ -802,19 +804,19 @@ class Image {
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
-		$im = new Imagick();
+		$im = new \Imagick();
 		$im->setFormat($options['format']);
 
 		foreach ($data as $key => $value) {
 
 			if (is_string($value) && !file_exists($value)) {
-				$tmp = new Imagick();
+				$tmp = new \Imagick();
 				$tmp->readImageBlob($value);
 
 				$im->addImage($tmp);
 				$tmp->destroy();
 			} else if (is_string($value) && file_exists($value)) {
-				$tmp = new Imagick();
+				$tmp = new \Imagick();
 				$tmp->readImage($value);
 				$im->addImage($tmp);
 				$tmp->destroy();
@@ -929,13 +931,13 @@ class Image {
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 
-		$im = new Imagick();
+		$im = new \Imagick();
 		$im->setFormat($options['format']);
 
-		$color = new ImagickPixel($options['pixel_color']);
+		$color = new \ImagickPixel($options['pixel_color']);
 		$color->setColor($options['pixel_color']);
 
-		$draw = new ImagickDraw();
+		$draw = new \ImagickDraw();
 		$draw->setFont($options['font']);
 		$draw->setFontSize($options['font_size']);
 		$draw->setFontStyle($options['font_size']);
@@ -1058,8 +1060,8 @@ class Image {
 		$string = $filtered['string'];
 		$options = $filtered['options'];
 
-		$im = new Imagick();
-		$draw = new ImagickDraw();
+		$im = new \Imagick();
+		$draw = new \ImagickDraw();
 
 		$draw->setFont($options['font']);
 		$draw->setFontSize($options['font_size']);
@@ -1067,7 +1069,7 @@ class Image {
 		$draw->setFillAlpha($options['fill_alpha']);
 		$draw->setFillColor($options['font_color']);
 
-		$pixel = new ImagickPixel($options['pixel_color']);
+		$pixel = new \ImagickPixel($options['pixel_color']);
 		$font_info = $im->queryFontMetrics($draw, $string);
 
 		$width = $font_info['textWidth'];
@@ -1161,7 +1163,7 @@ class Image {
 		$height = $filtered['height'];
 		$options = $filtered['options'];
 
-		$im = new Imagick();
+		$im = new \Imagick();
 
 		$im->newImage($width, $height, $color, $options['format']);
 
@@ -1260,11 +1262,11 @@ class Image {
 		$height = $filtered['height'];
 		$options = $filtered['options'];
 
-		$im = new Imagick();
-		$im->newImage($width, $height, new ImagickPixel('transparent'));
+		$im = new \Imagick();
+		$im->newImage($width, $height, new \ImagickPixel('transparent'));
 
-		$draw = new ImagickDraw();
-		$draw->setFillColor(new ImagickPixel($color));
+		$draw = new \ImagickDraw();
+		$draw->setFillColor(new \ImagickPixel($color));
 		$draw->ellipse($options['offset_x'], $options['offset_x'], $options['radius_x'], $options['radius_y'], $options['start_angle'], $options['end_angle']);
 
 		$im->drawImage($draw);
@@ -1364,15 +1366,15 @@ class Image {
 		$options = $filtered['options'];
 
 		if ($options['type'] == 'blob') {
-			$im = new Imagick();
+			$im = new \Imagick();
 			$im->readImageBlob($image);
 		} else {
-			$im = new Imagick($image);
+			$im = new \Imagick($image);
 		}
 
 		$im->setImageFormat($options['format']);
 		$shadow = $im->clone();
-		$shadow->setImageBackgroundColor(new ImagickPixel($options['pixel_color']));
+		$shadow->setImageBackgroundColor(new \ImagickPixel($options['pixel_color']));
 		$shadow->shadowImage($options['opacity'], $options['float'], $options['position_x'], $options['position_y']);
 		$shadow->compositeImage($im, $options['composite'], $options['offset_x'], $options['offset_y']);
 		$im->destroy();
