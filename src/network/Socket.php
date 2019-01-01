@@ -21,6 +21,8 @@ use prodigyview\design\InstanceObject;
  * 		return 'The World Hears You!';
  * }, 'closure');
  * ```
+ * 
+ * @package network
  */
 class Socket {
 	

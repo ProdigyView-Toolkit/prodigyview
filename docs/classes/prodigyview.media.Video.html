@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <meta charset="utf-8"/>
+    <title>    API Documentation &raquo; \prodigyview\media\Video
+</title>
+    <meta name="author" content=""/>
+    <meta name="description" content=""/>
+
+            <link href="../css/template.css" rel="stylesheet" media="all"/>
+    
+            <!--[if lt IE 9]>
+        <script src="https://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+        <![endif]-->
+        <script src="../js/jquery-1.7.1.min.js" type="text/javascript"></script>
+        <script src="../js/jquery-ui-1.8.2.custom.min.js" type="text/javascript"></script>
+        <script src="../js/jquery.mousewheel.min.js" type="text/javascript"></script>
+        <script src="../js/bootstrap.js" type="text/javascript"></script>
+        <script src="../js/template.js" type="text/javascript"></script>
+        <script src="../js/prettify/prettify.min.js" type="text/javascript"></script>
+    
+            <link rel="shortcut icon" href="../img/favicon.ico"/>
+        <link rel="apple-touch-icon" href="../img/apple-touch-icon.png"/>
+        <link rel="apple-touch-icon" sizes="72x72" href="../img/apple-touch-icon-72x72.png"/>
+        <link rel="apple-touch-icon" sizes="114x114" href="../img/apple-touch-icon-114x114.png"/>
+    </head>
+<body>
+
+        <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span> <span class="icon-bar"></span>
+                    <span class="icon-bar"></span> </a>
+                <a class="brand" href="../index.html">API Documentation</a>
+
+                <div class="nav-collapse">
+                    <ul class="nav">
+                        <li class="dropdown">
+                            <a href="#api" class="dropdown-toggle" data-toggle="dropdown">
+                                API Documentation <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                                                    <li><a>Namespaces</a></li>
+                                                                        <li><a href="../namespaces/prodigyview.html">prodigyview</a></li>
+                                                                                                    
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7098   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:61
+   13.7098   31866896  26. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->block_header() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7117   31867272  27. twig_length_filter() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:213
+
+                            </ul>
+                        </li>
+                        <li class="dropdown" id="charts-menu">
+                            <a href="#charts" class="dropdown-toggle" data-toggle="dropdown">
+                                Charts <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="../graph_class.html">
+                                        <i class="icon-list-alt"></i>&#160;Class hierarchy diagram
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown" id="reports-menu">
+                            <a href="#reports" class="dropdown-toggle" data-toggle="dropdown">
+                                Reports <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="../errors.html">
+                                        <i class="icon-list-alt"></i>&#160;Errors
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="../markers.html">
+                                        <i class="icon-list-alt"></i>&#160;Markers
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="../deprecated.html">
+                                        <i class="icon-list-alt"></i>&#160;Deprecated
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="go_to_top">
+            <a href="#___" style="color: inherit">Back to top&#160;&#160;<i class="icon-upload icon-white"></i></a>
+        </div>
+    </div>
+    
+    <div id="___" class="container">
+        <noscript>
+            <div class="alert alert-warning">
+                Javascript is disabled; several features are only available if Javascript is enabled.
+            </div>
+        </noscript>
+
+        
+            <style>
+        .deprecated h2 {
+            text-decoration: line-through;
+        }
+    </style>
+    <div class="row">
+        <div class="span4">
+                    <div class="btn-group view pull-right" data-toggle="buttons-radio">
+        <button class="btn details" title="Show descriptions and method names"><i class="icon-list"></i></button>
+        <button class="btn simple" title="Show only method names"><i class="icon-align-justify"></i></button>
+    </div>
+    <div class="btn-group visibility" data-toggle="buttons-checkbox">
+        <button class="btn public active" title="Show public elements">Public</button>
+        <button class="btn protected" title="Show protected elements">Protected</button>
+        <button class="btn private" title="Show private elements">Private</button>
+        <button class="btn inherited active" title="Show inherited elements">Inherited</button>
+    </div>
+
+        <ul class="side-nav nav nav-list">
+        <li class="nav-header">
+            <i class="icon-custom icon-method"></i> Methods
+            <ul>
+                                                                                                    <li class="method public inherited">
+        <a href="#method___callStatic" title="__callStatic :: Uses the magic method __call and executes a closure/anonymous function that has been added
+to the classes $_methods using the addMethod()  method.">
+            <span class="description">Uses the magic method __call and executes a closure/anonymous function that has been added
+to the classes $_methods using the addMethod()  method.</span><pre>__callStatic</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
+        <a href="#method_addMethod" title="addMethod :: Adds a closure/anonymous function to the object that can be called.">
+            <span class="description">Adds a closure/anonymous function to the object that can be called.</span><pre>addMethod</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
+        <a href="#method_addToCollection" title="addToCollection :: Adds a data to the public collection, index will be assigned automatically. Primarily used for
+adding
+launch quanties of data to the collection">
+            <span class="description">Adds a data to the public collection, index will be assigned automatically. Primarily used for
+adding
+launch quanties of data to the collection</span><pre>addToCollection</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
+        <a href="#method_addToCollectionWithName" title="addToCollectionWithName :: Adds data to the public collection. The data is assigned a key/index. If the key/index is already
+set, new information
+will override the old one.">
+            <span class="description">Adds data to the public collection. The data is assigned a key/index. If the key/index is already
+set, new information
+will override the old one.</span><pre>addToCollectionWithName</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public">
+        <a href="#method_convertVideoFile" title="convertVideoFile :: Convert the video file using a converter to another format or a different settings of the same
+format.">
+            <span class="description">Convert the video file using a converter to another format or a different settings of the same
+format.</span><pre>convertVideoFile</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
+        <a href="#method_get" title="get :: Retrieves a value that is in the public data collection or was pass through
+by the set method.">
+            <span class="description">Retrieves a value that is in the public data collection or was pass through
+by the set method.</span><pre>get</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
+        <a href="#method_getIterator" title="getIterator :: Returns the iterator for iterating through the values stored in the classes collection.">
+            <span class="description">Returns the iterator for iterating through the values stored in the classes collection.</span><pre>getIterator</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public">
+        <a href="#method_init" title="init :: Initialize the static class. Currently can be used for modifying the default converter
+tool and its location, which is simply ffmpeg.">
+            <span class="description">Initialize the static class. Currently can be used for modifying the default converter
+tool and its location, which is simply ffmpeg.</span><pre>init</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public inherited">
+        <a href="#method_set" title="set :: Adds a value to the classes Collection. By default the collection is stored
+in the public collection. The stored instance can be retrieved later by called
+in it&#039;s key value.">
+            <span class="description">Adds a value to the classes Collection. By default the collection is stored
+in the public collection. The stored instance can be retrieved later by called
+in it&#039;s key value.</span><pre>set</pre>
+        </a>
+    </li>
+
+                                                                                                        <li class="method public">
+        <a href="#method_setEncodingOptions" title="setEncodingOptions :: The encoding options on how to encode a file using FFMPPEG. The options should be run in a command
+line
+formated. The current formmating will only handle options passed through that deal with video
+manipulation">
+            <span class="description">The encoding options on how to encode a file using FFMPPEG. The options should be run in a command
+line
+formated. The current formmating will only handle options passed through that deal with video
+manipulation</span><pre>setEncodingOptions</pre>
+        </a>
+    </li>
+
+                                                </ul>
+        </li>
+        <li class="nav-header protected">» Protected
+            <ul>
+                                                                                                                                                                                                                                                                                                                                                                                                                    </ul>
+        </li>
+        <li class="nav-header private">» Private
+            <ul>
+                                                                                                                                                                                                                                                                                                                                                                                                                    </ul>
+        </li>
+        <li class="nav-header">
+            <i class="icon-custom icon-constant"></i> Constants
+            <ul>
+                            </ul>
+        </li>
+    </ul>
+
+
+        </div>
+
+        <div class="span8">
+            <div class="element class">
+                <h1>Video</h1>
+                <small style="display: block; text-align: right">
+                                                        </small>
+                <p class="short_description">Video is a class designed to manipulate video files and transcoding to various formats.</p>
+                <div class="details">
+                    <div class="long_description">
+                        <p>Video works with all kinds of audio files: mp4, mov, ogg, etc. It utilizes command tools like
+FFMPEG to do the transcoding and will return the results from the command line.</p>
+<p>Example:</p>
+<pre><code class="language-php">//Set the file to be converted
+$old_file = '/path/to/file/video.mov';
+
+//Set the path of the new file
+$new_file =  '/path/to/file/video.mp4';
+
+//Options to pass to the FFmpeg or other conversion tools
+//The following will place a -f infront of the input
+$options = array('input_f' =&gt; '');
+
+//Run the conversion
+Video::init();
+Video::convertAudioFile($old_file, $new_file , $options );</code></pre>
+                    </div>
+                    <table class="table table-bordered">
+                                                                                    <tr>
+                                    <th>
+                                        package
+                                                                            </th>
+                                    <td>
+                                                                                    
+                                                                                <p>media</p>
+                                    </td>
+                                </tr>
+                                                                                                                                                                                </table>
+
+                    <h3><i class="icon-custom icon-method"></i> Methods</h3>
+                                                                <a id="method___callStatic"></a>
+                        <div class="element clickable method public  method___callStatic inherited" data-toggle="collapse" data-target=".method___callStatic .collapse">
+                            <h2>Uses the magic method __call and executes a closure/anonymous function that has been added
+to the classes $_methods using the addMethod()  method.</h2>
+                            <pre>__callStatic(string $method, mixed $args = array()) : mixed</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7483   31888368  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7483   31888424  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7483   31888424  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7503   31889816  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7483   31888368  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7483   31888424  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7483   31888424  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7507   31889816  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$method</h4>
+                                                <code>string</code><p><p>The key/name assigned to the method when added</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$args</h4>
+                                                <code>mixed</code><p><p>Arguements to pass to the annoymous function. The function is called using
+call_user_func_array.</p></p>
+                                            </div>
+                                                                            
+                                                                            <h3>Response</h3>
+                                        <code>mixed</code><p><p>$value The value returned is the value the stored function returns</p></p>
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_addMethod"></a>
+                        <div class="element clickable method public  method_addMethod inherited" data-toggle="collapse" data-target=".method_addMethod .collapse">
+                            <h2>Adds a closure/anonymous function to the object that can be called.</h2>
+                            <pre>addMethod(string $method, \prodigyview\design\function $closure) : void</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7605   31904752  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7606   31904808  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7606   31904808  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7625   31906200  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7605   31904752  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7606   31904808  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7606   31904808  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7630   31906200  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$method</h4>
+                                                <code>string</code><p><p>The key/value that will be used to call the function</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$closure</h4>
+                                                <code>\prodigyview\design\function</code><p><p>The anonymous function/closure to be added</p></p>
+                                            </div>
+                                                                            
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_addToCollection"></a>
+                        <div class="element clickable method public  method_addToCollection inherited" data-toggle="collapse" data-target=".method_addToCollection .collapse">
+                            <h2>Adds a data to the public collection, index will be assigned automatically. Primarily used for
+adding
+launch quanties of data to the collection</h2>
+                            <pre>addToCollection(mixed $data) : void</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7702   31904752  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7703   31904808  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7703   31904808  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7721   31922584  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7702   31904752  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7703   31904808  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7703   31904808  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7726   31922584  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$data</h4>
+                                                <code>mixed</code><p><p>Any data type( Object, Array, int, etc) to add to the public data collection</p></p>
+                                            </div>
+                                                                            
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_addToCollectionWithName"></a>
+                        <div class="element clickable method public  method_addToCollectionWithName inherited" data-toggle="collapse" data-target=".method_addToCollectionWithName .collapse">
+                            <h2>Adds data to the public collection. The data is assigned a key/index. If the key/index is already
+set, new information
+will override the old one.</h2>
+                            <pre>addToCollectionWithName(string $name, mixed $data) : void</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <th>
+                                                    todo
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>check the relevance of get and set</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7791   31921136  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7792   31921192  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7792   31921192  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7818   31922584  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7791   31921136  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7792   31921192  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7792   31921192  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7823   31938968  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$name</h4>
+                                                <code>string</code><p><p>The key/index to assign the value to</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$data</h4>
+                                                <code>mixed</code><p><p>Data to be stored in the collection</p></p>
+                                            </div>
+                                                                            
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_convertVideoFile"></a>
+                        <div class="element clickable method public  method_convertVideoFile" data-toggle="collapse" data-target=".method_convertVideoFile .collapse">
+                            <h2>Convert the video file using a converter to another format or a different settings of the same
+format.</h2>
+                            <pre>convertVideoFile(string $current_file_location, string $new_file_location, array $options = array()) : void</pre>
+                            <div class="labels">
+                                                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7912   31937520  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7913   31937576  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7913   31937576  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7931   31938968  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.7912   31937520  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.7913   31937576  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7913   31937576  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7936   31955352  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$current_file_location</h4>
+                                                <code>string</code><p><p>The location of the file that is going to be converted</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$new_file_location</h4>
+                                                <code>string</code><p><p>The location of the new file</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$options</h4>
+                                                <code>array</code><p><p>Options that can control how the conversion takes place.
+'conveter' <em>string</em>: The convert to be used and the location. Default is ffmpeg. To further
+define
+either added the path to the converter + ffmpeg or path to another converter besides ffmpeg.
+'input<em>' array: Should be an array that of options for how to treat the input file. The options
+should be the same options passed through the setEncodingOptions except the prefix should have
+'input</em>'.
+For example if the option is 'ar' as in setEncodingOptions, add 'input<em>ar' as the option key.
+'output</em>' array: Should be an array that of options for how to treat the output file. The
+options
+should be the same options passed through the setEncodingOptions except the prefix should have
+'output_'.
+For example if the option is 'ar' as in setEncodingOptions, add 'input_ar' as the option key.</p></p>
+                                            </div>
+                                                                            
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_get"></a>
+                        <div class="element clickable method public  method_get inherited" data-toggle="collapse" data-target=".method_get .collapse">
+                            <h2>Retrieves a value that is in the public data collection or was pass through
+by the set method.</h2>
+                            <pre>get(string $index) : mixed</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8107   31953904  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8108   31953960  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8108   31953960  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8125   31955352  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8107   31953904  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8108   31953960  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8108   31953960  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8130   31955352  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$index</h4>
+                                                <code>string</code><p><p>The index to retrieve a value from</p></p>
+                                            </div>
+                                                                            
+                                                                            <h3>Response</h3>
+                                        <code>mixed</code><p><p>$data The data that was stored at that index</p></p>
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_getIterator"></a>
+                        <div class="element clickable method public  method_getIterator inherited" data-toggle="collapse" data-target=".method_getIterator .collapse">
+                            <h2>Returns the iterator for iterating through the values stored in the classes collection.</h2>
+                            <pre>getIterator() : \prodigyview\design\Iterator</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    
+                                                </th>
+                                                <td>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8202   31970288  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8202   31970344  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8202   31970344  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8213   31971736  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8202   31970288  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8202   31970344  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8202   31970344  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8217   31971736  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                    
+                                                                            <h3>Response</h3>
+                                        <code>\prodigyview\design\Iterator</code><p><p>$iterator The classes collection in an iteratable form</p>
+<h1>access public</h1></p>
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_init"></a>
+                        <div class="element clickable method public  method_init" data-toggle="collapse" data-target=".method_init .collapse">
+                            <h2>Initialize the static class. Currently can be used for modifying the default converter
+tool and its location, which is simply ffmpeg.</h2>
+                            <pre>init(array $config = array()) : void</pre>
+                            <div class="labels">
+                                                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8276   31986672  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8277   31986728  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8277   31986728  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8296   31988120  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8276   31986672  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8277   31986728  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8277   31986728  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8300   31988120  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$config</h4>
+                                                <code>array</code><p><p>An array of configurations
+-'converter' <em>string</em>: The converter tool and its location. Default is ffmpeg</p></p>
+                                            </div>
+                                                                            
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_set"></a>
+                        <div class="element clickable method public  method_set inherited" data-toggle="collapse" data-target=".method_set .collapse">
+                            <h2>Adds a value to the classes Collection. By default the collection is stored
+in the public collection. The stored instance can be retrieved later by called
+in it&#039;s key value.</h2>
+                            <pre>set(string $index, mixed $value) : void</pre>
+                            <div class="labels">
+                                <span class="label">inherited</span>                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8369   32003056  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8369   32003112  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8370   32003112  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8389   32004504  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8369   32003056  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8369   32003112  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8370   32003112  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8394   32004504  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$index</h4>
+                                                <code>string</code><p><p>The key or index to store the value at</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$value</h4>
+                                                <code>mixed</code><p><p>A mixed value that can be anytype</p></p>
+                                            </div>
+                                                                            
+                                                                    </div>
+                            </div>
+
+                        </div>
+                                            <a id="method_setEncodingOptions"></a>
+                        <div class="element clickable method public  method_setEncodingOptions" data-toggle="collapse" data-target=".method_setEncodingOptions .collapse">
+                            <h2>The encoding options on how to encode a file using FFMPPEG. The options should be run in a command
+line
+formated. The current formmating will only handle options passed through that deal with video
+manipulation</h2>
+                            <pre>setEncodingOptions(array $options = array(), string $input_type = &#039;&#039;) : string</pre>
+                            <div class="labels">
+                                                                <span class="label">static</span>                                                                                                                            </div>
+
+                            
+                            <div class="row collapse">
+                                <div class="detail-description">
+                                    <div class="long_description"></div>
+
+                                    <table class="table">
+                                                                                    <tr>
+                                                <th>
+                                                    see
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                            <a href="http://www.ffmpeg.org/ffmpeg.html">http://www.ffmpeg.org/ffmpeg.html</a>
+                                                                                                                
+                                                                                                                                                                        
+                                                                                                                                                                            <a href="http://www.ffmpeg.org/ffmpeg.html#Video-Options">http://www.ffmpeg.org/ffmpeg.html#Video-Options</a>
+                                                                                                                
+                                                                                                                                                                        
+                                                                                                                                                                            <a href="http://www.ffmpeg.org/ffmpeg.html#Advanced-Video-Options">http://www.ffmpeg.org/ffmpeg.html#Advanced-Video-Options</a>
+                                                                                                                
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <th>
+                                                    access
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>public</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <th>
+                                                    todo
+                                                </th>
+                                                <td>
+                                                                                                                                                                        
+                                                                                                                                                                        <p>find ffmpeg documentation and use isset to remove notices</p>
+                                                                                                    </td>
+                                            </tr>
+                                                                                
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8469   32003056  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8470   32003112  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8470   32003112  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8544   32022552  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+
+Warning: count(): Parameter must be an array or an object that implements Countable in phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Extension/Core.php on line 1293
+
+Call Stack:
+    0.7470    2220888   1. {main}() /phpDocumentor.phar:0
+    0.7497    2216056   2. require('phar:///phpDocumentor.phar/bin/phpdoc') /phpDocumentor.phar:10
+    1.0782   10871592   3. phpDocumentor\Application->run() phar:///phpDocumentor.phar/bin/phpdoc:23
+    1.0820   11598616   4. Cilex\Provider\Console\ContainerAwareApplication->run() phar:///phpDocumentor.phar/src/phpDocumentor/Application.php:183
+    1.0838   11598616   5. Cilex\Provider\Console\ContainerAwareApplication->doRun() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    1.0845   11598616   6. Cilex\Provider\Console\ContainerAwareApplication->doRunCommand() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    1.0846   11598616   7. phpDocumentor\Command\Project\RunCommand->run() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    1.0884   11601712   8. phpDocumentor\Command\Project\RunCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    5.2907   26294648   9. phpDocumentor\Transformer\Command\Project\TransformCommand->run() phar:///phpDocumentor.phar/src/phpDocumentor/Command/Project/RunCommand.php:275
+    5.2982   26296816  10. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() phar:///phpDocumentor.phar/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:257
+    8.1573   27891848  11. phpDocumentor\Console\Output\Output->writeTimedLog() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    8.1582   27891848  12. call_user_func_array:{phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59}() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1582   27892240  13. phpDocumentor\Transformer\Transformer->execute() phar:///phpDocumentor.phar/src/phpDocumentor/Console/Output/Output.php:59
+    8.1661   27899208  14. phpDocumentor\Transformer\Transformer->transformProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:141
+   11.5742   30913192  15. phpDocumentor\Transformer\Transformer->applyTransformationToProject() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:275
+   11.5755   30913352  16. phpDocumentor\Plugin\Twig\Writer\Twig->transform() phar:///phpDocumentor.phar/src/phpDocumentor/Transformer/Transformer.php:312
+   13.7022   31774368  17. Twig_Environment->render() phar:///phpDocumentor.phar/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+   13.7036   31784336  18. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->render() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Environment.php:334
+   13.7036   31800848  19. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->display() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:366
+   13.7037   31801976  20. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7038   31801976  21. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7041   31803448  22. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:41
+   13.7041   31804144  23. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.7042   31804144  24. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.7127   31866896  25. __TwigTemplate_75a7c4ebf230ff09a5dc8a7ad0fb1ee6f1c4e0102a5c71dc24c055ca34528a26->displayBlock() /tmp/phpdoc-twig-cache/2/0/200e4723f8b2aee99a6ecd5c3ea83a7e183c8fd1797340a89188ad70f63b5201.php:78
+   13.7128   31866896  26. __TwigTemplate_042b4af0327c0e97daf08543134b788fc72997836a3bf14058449357a9f4c566->block_content() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:167
+   13.8469   32003056  27. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->display() /tmp/phpdoc-twig-cache/a/7/a76c0f42bb79f181bd56d9e05e07777ab3945f7940758f94eb196a1ec563256b.php:286
+   13.8470   32003112  28. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->displayWithErrorHandling() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:355
+   13.8470   32003112  29. __TwigTemplate_03485ecb30757127f56bb7b76653332be35a9358e9cacadb12dc7ec494575037->doDisplay() phar:///phpDocumentor.phar/vendor/twig/twig/lib/Twig/Template.php:381
+   13.8548   32022552  30. twig_length_filter() /tmp/phpdoc-twig-cache/b/1/b176530730fc4bef03cacf120d1629fb18d21e89a9843f60ee237928cc5c9ebc.php:88
+
+                                    </table>
+
+                                                                            <h3>Arguments</h3>
+                                                                                    <div class="subelement argument">
+                                                <h4>$options</h4>
+                                                <code>array</code><p><p>Defined options to be used in the conversion. Options relate to those passed
+in a normal
+FFMPEG command line fashion.The key of the array corresponds the command and the value
+responds to the command
+value.</p></p>
+                                            </div>
+                                                                                    <div class="subelement argument">
+                                                <h4>$input_type</h4>
+                                                <code>string</code><p><p>If the options have a prefix in front of the key, the prefix should be
+defined either.</p></p>
+                                            </div>
+                                                                            
+                                                                            <h3>Response</h3>
+                                        <code>string</code><p><p>$options A string of options that should be used on the command line with ffmpeg</p></p>
+                                                                    </div>
+                            </div>
+
+                        </div>
+                    
+                    
+                                                                <h3><i class="icon-custom icon-property"></i> Properties</h3>
+                                                    <a id="property_converter"> </a>
+                            <div class="element clickable property  protected property_converter" data-toggle="collapse" data-target=".property_converter .collapse">
+                                <h2>The type of convet to use, default is ffmpeg</h2>
+                                <pre>converter : </pre>
+                                <div class="labels">
+                                                                        <span class="label">static</span>                                </div>
+                                <div class="row collapse">
+                                    <div class="detail-description">
+                                        <div class="long_description"></div>
+
+                                        <table class="table">
+                                                                                            <tr>
+                                                    <th>
+                                                        
+                                                    </th>
+                                                    <td>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+
+                                                                                    <h3>Type(s)</h3>
+                                            <code></code>
+                                                                            </div>
+                                </div>
+                            </div>
+                                                    <a id="property__initialized"> </a>
+                            <div class="element clickable property  protected property__initialized" data-toggle="collapse" data-target=".property__initialized .collapse">
+                                <h2>Protects the class from being initalized multiple times via init</h2>
+                                <pre>_initialized : </pre>
+                                <div class="labels">
+                                                                        <span class="label">static</span>                                </div>
+                                <div class="row collapse">
+                                    <div class="detail-description">
+                                        <div class="long_description"></div>
+
+                                        <table class="table">
+                                                                                            <tr>
+                                                    <th>
+                                                        
+                                                    </th>
+                                                    <td>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+
+                                                                                    <h3>Type(s)</h3>
+                                            <code></code>
+                                                                            </div>
+                                </div>
+                            </div>
+                                                    <a id="property__collection"> </a>
+                            <div class="element clickable property  protected property__collection inherited" data-toggle="collapse" data-target=".property__collection .collapse">
+                                <h2>A collection of items that belong to this class</h2>
+                                <pre>_collection : </pre>
+                                <div class="labels">
+                                    <span class="label">inherited</span>                                    <span class="label">static</span>                                </div>
+                                <div class="row collapse">
+                                    <div class="detail-description">
+                                        <div class="long_description"></div>
+
+                                        <table class="table">
+                                                                                            <tr>
+                                                    <th>
+                                                        
+                                                    </th>
+                                                    <td>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+
+                                                                                    <h3>Type(s)</h3>
+                                            <code></code>
+                                                                            </div>
+                                </div>
+                            </div>
+                                                    <a id="property__methods"> </a>
+                            <div class="element clickable property  protected property__methods inherited" data-toggle="collapse" data-target=".property__methods .collapse">
+                                <h2>A collection of dynamically added methods that below to this class</h2>
+                                <pre>_methods : </pre>
+                                <div class="labels">
+                                    <span class="label">inherited</span>                                    <span class="label">static</span>                                </div>
+                                <div class="row collapse">
+                                    <div class="detail-description">
+                                        <div class="long_description"></div>
+
+                                        <table class="table">
+                                                                                            <tr>
+                                                    <th>
+                                                        
+                                                    </th>
+                                                    <td>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+
+                                                                                    <h3>Type(s)</h3>
+                                            <code></code>
+                                                                            </div>
+                                </div>
+                            </div>
+                                                            </div>
+            </div>
+            <a id="\prodigyview\media\Video"></a>
+            <ul class="breadcrumb">
+                <li><a href="../index.html"><i class="icon-custom icon-class"></i></a></li>
+                    
+    
+    <li><span class="divider">\</span><a href="../namespaces/prodigyview.media.html">media</a></li>
+
+                <li class="active"><span class="divider">\</span><a href="../classes/prodigyview.media.Video.html">Video</a></li>
+            </ul>
+        </div>
+    </div>
+
+    </div>
+
+        <footer class="span12">
+            Template is built using <a href="http://twitter.github.com/bootstrap/">Twitter Bootstrap 2</a> and icons provided by
+            <a href="http://glyphicons.com/">Glyphicons</a>.<br/>
+            Documentation is powered by <a href="http://www.phpdoc.org/">phpDocumentor </a> and<br/>
+            generated on Tue, 01 Jan 2019 17:42:30 +0000.<br/>
+    </footer>
+    </body>
+</html>

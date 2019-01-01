@@ -20,7 +20,7 @@ use prodigyview\util\Conversions;
  * 	echo $value;
  * }
  * ```
- * @package data
+ * @package util
  */
 class Collection implements \IteratorAggregate {
 	/**
