@@ -1,5 +1,5 @@
 <?php
-namespace prodigyview\design;
+namespace prodigyview\util;
 
 use prodigyview\util\Conversions;
 
