@@ -1,6 +1,7 @@
 <?php
 namespace prodigyview\design;
 
+use prodigyview\util\Collection;
 use prodigyview\util\Log;
 
 /**

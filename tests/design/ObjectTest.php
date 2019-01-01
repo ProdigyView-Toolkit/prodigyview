@@ -1,5 +1,5 @@
 <?php
-use prodigyview\design\Collection;
+use prodigyview\util\Collection;
 use prodigyview\design\InstanceObject;
 use prodigyview\design\StaticObject;
 

@@ -1,6 +1,8 @@
 <?php
 namespace prodigyview\design;
 
+use prodigyview\util\Collection;
+
 /**
  *StaticInstance is a hybrid class that combines that usage of static design patterns of Adatper, Obsver and Filter
  * in an the instance of object.

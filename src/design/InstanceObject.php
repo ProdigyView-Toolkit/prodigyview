@@ -1,6 +1,8 @@
 <?php
 namespace prodigyview\design;
 
+use prodigyview\util\Collection;
+
 /**
  * Object is an extendable class used to enhance an object that can be instantiated.
  *

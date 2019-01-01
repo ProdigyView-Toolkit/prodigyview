@@ -49,15 +49,21 @@ class Socket {
 		$defaults = array(
 			'domain' => AF_INET,
 			'type' => SOCK_STREAM,
-			'protocol' => 0
+			'protocol' => 0,
+			'bind' => false,
+			'listen' => false
 		);
 		
-		$options += $default;
+		$options += $defaults;
 		
 		$this -> create($options['domain'], $options['type'], $options['protocol']);
 		
-		if($host) {
+		if($options['bind']) {
 			$this -> bind($host, $post);
+		}
+		
+		if($options['listen']) {
+			$this -> listen();
 		}
 		
 	}
@@ -69,7 +75,7 @@ class Socket {
 	 * @param int $type The type parameter selects the type of communication to be used by the socket.
 	 * @param int $protocol The protocol parameter sets the specific protocol within the specified domain to be used when communicating on the returned socket. 
 	 */
-	public function create(int $domain = AF_INET , int $type = SOCK_STREAM , int $protocol = 0) {
+	public function create(int $domain = AF_INET , int $type = SOCK_STREAM , ?int $protocol = 0) {
 			
 		$this ->_socket = socket_create($domain , $type, $protocol);
 		
@@ -85,7 +91,7 @@ class Socket {
 	 * @param string $host The host to bind the socket the too
 	 * @param string $port The port to bind on.
 	 */
-	public function bind(string $host, int $port = 0) {
+	public function bind(string $host, ?int $port = 0) {
 		$result = socket_bind($this ->_socket, $host, $port);
 		
 		if(!$result) {
