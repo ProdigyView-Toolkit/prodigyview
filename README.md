@@ -93,7 +93,15 @@ $is_mobile = $request -> isMobile();
 
 And a lot of other tools from hashing, generating a random string, connecting with databases, etc. Using these tools can help speed up your application development.
 
-### Development Principles
+## RoadMap
+
+Forks and contributors are more than welcome!!!!
+
+- Redo the PVDatabase. Seperate into different classes per database and potentially used DI or another pattern for referencing connection. Important to allow connection pooling to continue in implementation. Checkout the db_rewrite branch.
+- Work on PVCommunicator SOAP and Socket Implementation
+- Add namespacing into the system.
+
+## Development Principles
 
 For hardcore developers that focus on IoC, S.O.L.I.D and other principles, this section is for you.As you get started with ProdigyView, it is good to understand some of the principles behind the framework.
 
