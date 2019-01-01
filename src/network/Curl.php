@@ -66,6 +66,12 @@ class Curl {
 	 * The data to send to send
 	 */
 	protected $_data = null;
+	
+	/**
+	 * Store the url of the destination
+	 */
+	 
+	protected $_url = '';
 
 	/**
 	 * An error response if communication fales
@@ -92,7 +98,7 @@ class Curl {
 	 * @return void
 	 */
 	public function __construct($url) {
-
+		
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
 			return $this->_callAdapter(get_class(), __FUNCTION__, $url);
 		
@@ -126,7 +132,7 @@ class Curl {
 		if ($method === 'post') {
 			return $this->_post($data);
 		} else if ($method === 'get') {
-			return $this->_get($url, $data);
+			return $this->_get($data);
 		} else if ($method === 'put') {
 			return $this->_put($data);
 		} else if ($method === 'delete') {
@@ -183,8 +189,10 @@ class Curl {
 	 * @return void
 	 */
 	public function openConnection($url) {
-
+		$this->_url = $url;
+		
 		$this->_handler = curl_init($url);
+		
 		curl_setopt($this->_handler, CURLOPT_URL, $url);		
 
 		$this->connectionActive = true;
@@ -222,7 +230,9 @@ class Curl {
 	 * @param string $url The url to curl
 	 * @param array $data Data to be sent
 	 */
-	protected function _get($url, $data = array()) {
+	protected function _get($data = array()) {
+		$url = $this->_url;
+		
 		$url .= '?' . http_build_query($data);
 		curl_setopt($this->_handler, CURLOPT_URL, $url);
 		return $this->_sendCurl();
@@ -375,11 +385,11 @@ class Curl {
 	}
 
 	/**
-	 * Retrieves the full response
+	 * Retrieves the full response with the header and body
 	 *
 	 * @param string
 	 */
-	public function getResponse() {
+	public function getFullResponse() {
 
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
 			return $this->_callAdapter(get_class(), __FUNCTION__);
@@ -418,7 +428,7 @@ class Curl {
 	 *
 	 * @return $string
 	 */
-	public function getResponseBody() {
+	public function getResponse() {
 
 		if ($this->_hasAdapter(get_class(), __FUNCTION__))
 			return $this->_callAdapter(get_class(), __FUNCTION__);
