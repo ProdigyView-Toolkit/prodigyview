@@ -53,7 +53,8 @@ class Socket {
 			'type' => SOCK_STREAM,
 			'protocol' => 0,
 			'bind' => false,
-			'listen' => false
+			'listen' => false,
+			'connect' => false
 		);
 		
 		$options += $defaults;
@@ -61,7 +62,11 @@ class Socket {
 		$this -> create($options['domain'], $options['type'], $options['protocol']);
 		
 		if($options['bind']) {
-			$this -> bind($host, $post);
+			$this -> bind($host, $port);
+		}
+		
+		if($options['connect']) {
+			$this -> connect($host, $port);
 		}
 		
 		if($options['listen']) {
@@ -102,6 +107,23 @@ class Socket {
 	}
 	
 	/**
+	 * Connect the socket a server that you will eventually send messages too.
+	 * 
+	 * @param string $host The host name
+	 * @param int $port The port id
+	 * 
+	 * @return void
+	 */
+	public function connect(string $host, ?int $port = 0) {
+		
+		$result = socket_connect($this->_socket, $host, $port);
+		
+		if(!$result) {
+			throw new Exception( sprintf( "Unable to connect to server %s:%s %s", $host, $port, socket_strerror( socket_last_error() ) ) ); 
+		}
+	}
+	
+	/**
 	 * Listens for a connection made to the socket from another service.
 	 * 
 	 * @param int $backlog A maximum of backlog incoming connections will be queued for processing.
@@ -124,10 +146,10 @@ class Socket {
 	public function addCallback($class, $method, string  $type = 'closure', int $max_read_length = 5000, int $read_type = PHP_BINARY_READ) {
 		$this -> _client = socket_accept($this -> _socket);
 		
-		$input = receive($max_read_length, $read_type, $this -> _client);
+		$input = $this -> receive($max_read_length, $read_type, $this -> _client);
 		
 		if ($type === 'closure')
-			$response = call_user_func_array($method, $input);
+			$response = call_user_func_array($method, array($input));
 		else if ($type === 'instance')
 			$response = $this->_invokeMethod($class, $method, $input);
 		else
@@ -171,7 +193,7 @@ class Socket {
 	 * @param boolean $wait_for_response Will tell the socket to execute a recieve function for waiting
 	 * @param socket $socket Optional for defining what socket to use.
 	 */
-	public function send(string $message, bool $wait_for_response = true, $socket = null) {
+	public function send(?string $message, bool $wait_for_response = true, $socket = null) {
 		
 		$response = null;
 			
@@ -186,10 +208,10 @@ class Socket {
 		}
 		
 		if($wait_for_response) {
-			$response = receive(5000, $PHP_BINARY_READ);
+			$response = $this -> receive(5000, $PHP_BINARY_READ);
 		}
 		
-		return response;
+		return $response;
 	}
 	
 	/**
@@ -200,7 +222,7 @@ class Socket {
 	 * 
 	 * @return string
 	 */
-	public function receive($max_read_length = 5000, $read_type = PHP_BINARY_READ, int $socket = null){
+	public function receive($max_read_length = 5000, $read_type = PHP_BINARY_READ, $socket = null){
 			
 		if($socket == null) {
 			$socket = $this -> _socket;
@@ -208,7 +230,7 @@ class Socket {
 		
 		$result = '';
 		
-		while($buffer = socket_read($this -> _client, $max_read_length, $read_type)){
+		while($buffer = socket_read($socket, $max_read_length, $read_type)){
 			
 			if($buffer === false) {
 				throw new Exception( sprintf( "Unable to read from socket: %s", socket_strerror( socket_last_error() ) ) ); 
