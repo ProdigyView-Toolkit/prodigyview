@@ -217,8 +217,7 @@ class Curl {
 	 */
 	protected function _put($data = array()) {
 		$this->_prepareData($data);
-
-		curl_setopt($this->_handler, CURLOPT_PUT, 1);
+		
 		curl_setopt($this->_handler, CURLOPT_CUSTOMREQUEST, 'PUT');
 
 		return $this->_sendCurl();
@@ -259,30 +258,24 @@ class Curl {
 	 * @return void
 	 */
 	protected function _prepareData($data = array()) {
-		if ($this->_protocol === 'socket') {
-			if (is_array($data)) {
-				$data = implode(' ', $data);
+	
+		if ($this->_files) {
+			$files = array();
+
+			foreach ($this -> _files as $key => $file) {
+				$file_key = 'blob[' . $key . ']';
+				$file[$file_key] = '@' . realpath($file);
 			}
 
-			$this->_data = $data;
-		} else {
-			if ($this->_files) {
-				$files = array();
+			curl_setopt($this->_handler, CURLOPT_POSTFIELDS, $files);
 
-				foreach ($this -> _files as $key => $file) {
-					$file_key = 'blob[' . $key . ']';
-					$file[$file_key] = '@' . realpath($file);
-				}
+			$this->_data = $files;
+		} else if ($data) {
+			$this->_data = http_build_query($data);
 
-				curl_setopt($this->_handler, CURLOPT_POSTFIELDS, $files);
-
-				$this->_data = $files;
-			} else if ($data) {
-				$this->_data = http_build_query($data);
-
-				curl_setopt($this->_handler, CURLOPT_POSTFIELDS, $this->_data);
-			}
+			curl_setopt($this->_handler, CURLOPT_POSTFIELDS, $this->_data);
 		}
+		
 	}
 
 	/**
