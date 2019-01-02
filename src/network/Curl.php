@@ -339,6 +339,16 @@ class Curl {
 		curl_setopt($this->_handler, CURLOPT_FOLLOWLOCATION, $proxy);
 		curl_setopt($this->_handler, CURLOPT_PROXY, $proxy);
 	}
+	
+	/**
+	 * Set options and custom options to the curl option.
+	 * 
+	 * @param mixed $option An option definedin curl
+	 * @param mixed $value The value to be set with the option
+	 */
+	public function setOption($option, $value) {
+		curl_setopt($this->_handler, $option, $value);
+	}
 
 	/**
 	 * Enable verbose dislpay for debugging

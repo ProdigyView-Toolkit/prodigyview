@@ -10,12 +10,14 @@ use prodigyview\design\InstanceObject;
  * 
  * ```
  * //Send A Message
- * $socket = new Socket('www.example.com', 1000);
+ * $socket = new Socket('www.example.com', 1000, array('connect' => true));
  * $response = $socket->send('Hello World');
  * 
  * //Socket Server Example
- * $socket = new Socket('127.0.0.1', 5000);
- * $socket->listen(1000)
+ * $socket = new Socket('127.0.0.1', 5000, array(
+ *	'bind' => true,
+ *	'listen' => true
+ *	));
  * 
  * $socket->startServer('none', function($message) {
  * 		return 'The World Hears You!';
