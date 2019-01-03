@@ -240,13 +240,13 @@ class Image {
 			'font' => 'Helvetica',
 			'font_size' => 30,
 			'font_color' => 'black',
-			'font_style' => Imagick::STYLE_NORMAL,
+			'font_style' => \Imagick::STYLE_NORMAL,
 			'fill_alpha' => 0.4,
 			'position_x' => 0,
 			'position_y' => 0,
 			'rotation' => 0,
 			'type' => 'file',
-			'gravity' => Imagick::GRAVITY_CENTER,
+			'gravity' => \Imagick::GRAVITY_CENTER,
 			'converter' => self::$_converter,
 			'write_image' => self::$_write_image,
 			'write_image_location' => self::$_write_image_location,
@@ -367,11 +367,11 @@ class Image {
 		$defaults = array(
 			'offset_y' => 0,
 			'offset_x' => 0,
-			'composite' => Imagick::COMPOSITE_OVER,
+			'composite' => \Imagick::COMPOSITE_OVER,
 			'type' => 'file',
 			'watermark_type' => 'file',
 			'watermark_opactiy' => 1,
-			'gravity' => Imagick::GRAVITY_CENTER,
+			'gravity' => \Imagick::GRAVITY_CENTER,
 			'converter' => self::$_converter,
 			'write_image' => self::$_write_image,
 			'write_image_location' => self::$_write_image_location,
@@ -879,13 +879,13 @@ class Image {
 	 * 			-'font' _string_: The font to be used when writing text. Defaultis Helvetica
 	 * 			-'font_size' _int_: The size of the font to be used. Default is 20
 	 * 			-'font_color' _string_: The color of the font. Default is black.
-	 * 			-'font_style' _int_: The style of the font. Default is Imagick::Style_Normal
+	 * 			-'font_style' _int_: The style of the font. Default is \Imagick::Style_Normal
 	 * 			-'fill_alpha' _double: The number between 0 and 1 on how transparent the text is. Default is 1.
 	 * 			-'position_x' _int_: The starting position of the text on the x-coordinate. Default is 0.
 	 * 			-'position_y' _int_: The starting position of the text on the y-coordinate. Default is 0.
 	 * 			-'rotation' _int_: The number of degress to rotate the text. Default is 0.
 	 * 			-'gravity' _int_: The imagick defined constant on the gravity of the text. Default is
-	 * 			Imagick::GRAVITY_CENTER
+	 * 			\Imagick::GRAVITY_CENTER
 	 * 			-'pixel_color' _string_: Serves as the background color the text will be placed on. Default is
 	 * 			white
 	 *
@@ -902,12 +902,12 @@ class Image {
 			'font' => 'Helvetica',
 			'font_size' => 20,
 			'font_color' => 'black',
-			'font_style' => Imagick::STYLE_NORMAL,
+			'font_style' => \Imagick::STYLE_NORMAL,
 			'fill_alpha' => 1,
 			'position_x' => 0,
 			'position_y' => 0,
 			'rotation' => 0,
-			'gravity' => Imagick::GRAVITY_CENTER,
+			'gravity' => \Imagick::GRAVITY_CENTER,
 			'converter' => self::$_converter,
 			'write_image' => self::$_write_image,
 			'write_image_location' => self::$_write_image_location,
@@ -1005,13 +1005,13 @@ class Image {
 	 * 			-'font' _string_: The font to be used when writing text. Defaultis Helvetica
 	 * 			-'font_size' _int_: The size of the font to be used. Default is 20
 	 * 			-'font_color' _string_: The color of the font. Default is black.
-	 * 			-'font_style' _int_: The style of the font. Default is Imagick::Style_Normal
+	 * 			-'font_style' _int_: The style of the font. Default is \Imagick::Style_Normal
 	 * 			-'fill_alpha' _double: The number between 0 and 1 on how transparent the text is. Default is 1.
 	 * 			-'position_x' _int_: The starting position of the text on the x-coordinate. Default is 0.
 	 * 			-'position_y' _int_: The starting position of the text on the y-coordinate. Default is 0.
 	 * 			-'rotation' _int_: The number of degress to rotate the text. Default is 0.
 	 * 			-'gravity' _int_: The imagick defined constant on the gravity of the text. Default is
-	 * 			Imagick::GRAVITY_CENTER
+	 * 			\Imagick::GRAVITY_CENTER
 	 * 			-'pixel_color' _string_: Serves as the background color the text will be placed on. Default is
 	 * 			white
 	 *
@@ -1029,13 +1029,13 @@ class Image {
 			'font' => 'Helvetica',
 			'font_size' => 30,
 			'font_color' => 'black',
-			'font_style' => Imagick::STYLE_NORMAL,
+			'font_style' => \Imagick::STYLE_NORMAL,
 			'fill_alpha' => 0,
 			'position_x' => 10,
 			'position_y' => 10,
 			'rotation' => 0,
 			'type' => 'file',
-			'gravity' => Imagick::GRAVITY_CENTER,
+			'gravity' => \Imagick::GRAVITY_CENTER,
 			'converter' => self::$_converter,
 			'write_image' => self::$_write_image,
 			'write_image_location' => self::$_write_image_location,
@@ -1338,13 +1338,13 @@ class Image {
 		$defaults = array(
 			'offset_y' => 0,
 			'offset_x' => 0,
-			'composite' => Imagick::COMPOSITE_OVER,
+			'composite' => \Imagick::COMPOSITE_OVER,
 			'opacity' => 50,
 			'position_x' => 0,
 			'position_y' => 0,
 			'float' => 2,
 			'type' => 'file',
-			'gravity' => Imagick::GRAVITY_CENTER,
+			'gravity' => \Imagick::GRAVITY_CENTER,
 			'converter' => self::$_converter,
 			'write_image' => self::$_write_image,
 			'write_image_location' => self::$_write_image_location,

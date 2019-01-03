@@ -174,7 +174,7 @@ class Security {
 	public static function encrypt(string $string, array $options = array()) : string {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string, $option);
+			return self::_callAdapter(get_class(), __FUNCTION__, $string, $options);
 
 		$options += self::_getEncryptDefaults();
 

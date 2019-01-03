@@ -129,6 +129,8 @@ class Socket {
 	 * Listens for a connection made to the socket from another service.
 	 * 
 	 * @param int $backlog A maximum of backlog incoming connections will be queued for processing.
+	 * 
+	 * @return void
 	 */
 	public function listen(int $backlog = 100) {
 		$result = socket_listen($this ->_socket, $backlog);
@@ -143,7 +145,7 @@ class Socket {
 	 * @param int $max_read_length The maximum number of bytes read. Can use \r, \n, or \0 to end reading as well
 	 * @param int $read_type Optional type parameter of PHP_BINARY_READ or PHP_NORMAL_READ
 	 * 
-	 * 
+	 * @return void
 	 */
 	public function addCallback($class, $method, string  $type = 'closure', int $max_read_length = 5000, int $read_type = PHP_BINARY_READ) {
 		$this -> _client = socket_accept($this -> _socket);
@@ -169,7 +171,7 @@ class Socket {
 	 * @param int $max_read_length The maximum number of bytes read. Can use \r, \n, or \0 to end reading as well
 	 * @param int $read_type Optional type parameter of PHP_BINARY_READ or PHP_NORMAL_READ
 	 * 
-	 * 
+	 * @return void
 	 */
 	public function startServer($class, $method, string  $type = 'closure', int $max_read_length = 5000, int $read_type = PHP_BINARY_READ) {
 		
@@ -183,6 +185,8 @@ class Socket {
 	
 	/**
 	 * Stops the socket server
+	 * 
+	 * @return void
 	 */
 	public function stopServer() {
 		$this -> _serverRunning = 0;
@@ -254,7 +258,29 @@ class Socket {
 	}
 	
 	/**
+	 * Sets the resource to either be blocking/synchronous, or none-blocking/asynchronous.
+	 * 
+	 * @param boolean $block If set to true with block. If set to false, will run in none blocking
+	 * @param resource $socket An optional $socket to specify, otherwise, will use default socket.
+	 * 
+	 * @return void
+	 */
+	public function setBlocking(bool $block, $socket = null) {
+		if(!$socket) {
+			$socket = $this -> _socket;
+		}
+		
+		if($block) {
+			socket_set_block($socket);
+		} else {
+			socket_set_nonblock($socket);
+		}
+	}
+	
+	/**
 	 * Close the connection to the socket
+	 * 
+	 * @return void
 	 */
 	public function close() {
 		if($this -> _client) {

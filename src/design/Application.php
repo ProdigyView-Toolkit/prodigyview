@@ -31,7 +31,7 @@ namespace prodigyview\design;
 
 abstract class Application  {
 	
-	use Object;
+	use InstanceObject;
 
 	/**
 	 * Takes in a command and arguements and if the command exist, will pass that command to

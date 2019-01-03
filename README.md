@@ -1,6 +1,12 @@
 # ProdigyView: The Toolkit For Building Micro: Frameworks / Applications / Services
 
-Welcome to the ProdigyView Toolkit, a powerful PHP enhancement tool designed to make PHP coding faster, less mundane and highly extendable. This document will go over how to install the toolkit, use some of the features, and extend objects with the built-in design patterns.
+Welcome to the ProdigyView Toolkit, a powerful PHP enhancement tool designed to make PHP coding faster, less mundane and highly extendable. The toolkit was designed too:
+
+1. Tackle Inversion Of Control in more targeted ways than current solutions methodologies like dependency injection
+2. Provide tools to build applications with enforcing a structure
+3. Quickly build and easily maintain micro-applications and micro-frameworks
+
+This document will go over how to install the toolkit, use some of the features, and extend objects with the built-in design patterns.
 
 ## Installation
 
@@ -37,7 +43,7 @@ In this git repo, there are several version available for download. Download the
 Inside the main folder, there is a file called _classLoader.php. Include that file any page you want use the toolkit like so:
 
 ```php
-include_once ('/path/to/toolkit/_classLoader.php');
+include_once ('/path/to/toolkit/src/_classLoader.php');
 ```
 
 And you are done with the installation.
@@ -52,46 +58,50 @@ Before getting into the examples below, there are several materials available to
 
 Please feel free to use any of the resources to help you get started.
 
-## Tools vs. Design Patterns
-
-ProdigyView has two key elements to use with development. There first is the toolset designed to make every day easier, and the second is its ability to extend classes and add design patterns of Adapters, Filters, and Observers to class.
-
-### Toolkit Examples
+## Toolkit Examples
 
 Below are various examples of how the toolkit can make programming easier with built-in functions:
 
 ##### Get A File Mime Type
 ```php
 <?php
-$mime = PVFileManager::getFileMimeType($file);
+use prodigyview\util\FileManager;
+
+$mime = FileManager::getFileMimeType($file);
 ?>
 ```
 
 ##### Validate If A File Is An Image
 ```php
 <?php
-$is_image = PVValidator::check('image_file', $mime); ?>
+use prodigyview\util\Validator;
+
+$is_image = Validator::check('image_file', $mime); ?>
 ?>
 ```
 
 ##### Execute a CURL post
 ```php
 <?php
+use prodigyview\network\Curl;
+
 $url = 'http://api.example.com';
 $data = array('abc' => '123');
-$communicator = new PVCommunicator();
-$communicator ->send('post',  $url, $data);
+$communicator = new Curl($url);
+$communicator ->send('post',$data);
 ```
 
 ##### Is an Ajax Request and Mobile Request
 ```php
 <?php
-$request = new PVRequest();
+use prodigyview\network\Request;
+
+$request = new Request();
 $is_ajax = $request -> isAjaxRequest();
 $is_mobile = $request -> isMobile();
 ```
 
-And a lot of other tools from hashing, generating a random string, connecting with databases, etc. Using these tools can help speed up your application development.
+There are a lot of other tools from hashing, generating a random string, connecting with databases, etc. Using these tools can help speed up your application development.
 
 ## RoadMap
 
@@ -99,7 +109,6 @@ Forks and contributors are more than welcome!!!!
 
 - Redo the PVDatabase. Seperate into different classes per database and potentially used DI or another pattern for referencing connection. Important to allow connection pooling to continue in implementation. Checkout the db_rewrite branch.
 - Work on PVCommunicator SOAP and Socket Implementation
-- Add namespacing into the system.
 
 ## Development Principles
 
