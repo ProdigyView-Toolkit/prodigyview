@@ -137,6 +137,47 @@ class Socket {
 	}
 	
 	/**
+	 * Sets the option for a socket as specified in: http://php.net/manual/en/function.socket-set-option.php
+	 * 
+	 * @param int $level The level parameter specifies the protocol level at which the option resides.
+	 * @param int $optname The available socket options are the same as those for the socket_get_option() function.
+	 * @param mixed $value The option value.
+	 * @param socket $socket Optional for defining what socket to use.
+	 * 
+	 * @param boolean Returns true if set correctly
+	 */
+	public function setOption(int $level , int $optname, $value, $socket = null) {
+		
+		if($socket == null) {
+			$socket = $this -> _socket;
+		}
+		
+		$result = socket_set_option($socket , $level , $optname, $value);
+		
+		return $result;
+	}
+	
+	/**
+	 * Gets an option that has been specified, indiciated in http://php.net/manual/en/function.socket-get-option.php
+	 * 
+	 * @param int $level The level parameter specifies the protocol level at which the option resides.
+	 * @param int $optionname The associated $option name
+	 * @param socket $socket Optional for defining what socket to use.
+	 * 
+	 * @return mixed The vaue of the given option or false.
+	 */
+	public function getOption(int $level , int $optname, $socket = null) {
+		
+		if($socket == null) {
+			$socket = $this -> _socket;
+		}
+		
+		$result = socket_get_option($socket , $level , $optname);
+		
+		return $result;
+	}
+	
+	/**
 	 * Adds a callback for the socket when a message has been sent. The callback can be a closure, instance of static method.
 	 * 
 	 * @param mixed $class If an instance, pass the instance. If static, pass the full name of the class. If closure, put anything.
@@ -214,7 +255,7 @@ class Socket {
 		}
 		
 		if($wait_for_response) {
-			$response = $this -> receive(5000, $PHP_BINARY_READ);
+			$response = $this -> receive(5000, PHP_BINARY_READ);
 		}
 		
 		return $response;
