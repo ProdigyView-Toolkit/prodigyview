@@ -89,7 +89,7 @@ class Socket {
 		$this ->_socket = socket_create($domain , $type, $protocol);
 		
 		if(!$this ->_socket) {
-			throw new Exception( sprintf( "Unable to create a socket: %s", socket_strerror( socket_last_error() ) ) ); 
+			throw new \Exception( sprintf( "Unable to create a socket: %s", socket_strerror( socket_last_error() ) ) ); 
 		}
 		
 	}
@@ -104,7 +104,7 @@ class Socket {
 		$result = socket_bind($this ->_socket, $host, $port);
 		
 		if(!$result) {
-			throw new Exception( sprintf( "Unable to connect to server %s:%s %s", $host, $port, socket_strerror( socket_last_error() ) ) ); 
+			throw new \Exception( sprintf( "Unable to connect to server %s:%s %s", $host, $port, socket_strerror( socket_last_error() ) ) ); 
 		}
 	}
 	
@@ -121,7 +121,7 @@ class Socket {
 		$result = socket_connect($this->_socket, $host, $port);
 		
 		if(!$result) {
-			throw new Exception( sprintf( "Unable to connect to server %s:%s %s", $host, $port, socket_strerror( socket_last_error() ) ) ); 
+			throw new \Exception( sprintf( "Unable to connect to server %s:%s %s", $host, $port, socket_strerror( socket_last_error() ) ) ); 
 		}
 	}
 	
@@ -251,7 +251,7 @@ class Socket {
 		$result = socket_write($socket, $message, strlen($message));
 		
 		if($result === false) {
-			throw new Exception( sprintf( "Unable to write to socket: %s", socket_strerror( socket_last_error() ) ) ); 
+			throw new \Exception( sprintf( "Unable to write to socket: %s", socket_strerror( socket_last_error() ) ) ); 
 		}
 		
 		if($wait_for_response) {
@@ -280,7 +280,7 @@ class Socket {
 		while($buffer = socket_read($socket, $max_read_length, $read_type)){
 			
 			if($buffer === false) {
-				throw new Exception( sprintf( "Unable to read from socket: %s", socket_strerror( socket_last_error() ) ) ); 
+				throw new \Exception( sprintf( "Unable to read from socket: %s", socket_strerror( socket_last_error() ) ) ); 
 			}
 			
 			$break = false;

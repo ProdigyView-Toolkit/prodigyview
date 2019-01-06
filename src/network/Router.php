@@ -50,6 +50,11 @@ class Router {
 	private static $default_route_replace = '(?P<\1>[^/]+)';
 	
 	/**
+	 * Set if the allow REQUEST METHOD is set forthe current route
+	 */
+	private static $correct_request_method = null;
+	
+	/**
 	 * Protects the class from being initalized multiple times via init
 	 */
 	protected static $_initialized = false;
@@ -69,7 +74,7 @@ class Router {
 	 * @return void
 	 * @access public
 	 */
-	public static function init($config = array()) {
+	public static function init(array $config = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
@@ -166,7 +171,7 @@ class Router {
 	 * Adds a rule to the router. The rule determines how the
 	 * router will react..
 	 *
-	 * @param mixed $route Can a string that merely sets a rule or an array with configuration
+	 * @param mixed $route Can be a string that merely sets a rule or an array with configuration
 	 * information for rule.
 	 * 			- 'rule' _string_: A rule to follow that will be matched using a preg_match.
 	 * 			- 'redirect' _string_: A location to redirect if the uri matches the rule
@@ -176,6 +181,7 @@ class Router {
 	 * 			- 'user_roles' _array_: An array of user roles that are allowed to access this location
 	 * 			- 'user_roles_redirect' _string_: A location to be redirected to if the route matches and the
 	 * 				required role was not present.
+	 * 			- 'listen' _string_: Restrict routes to certian request. Default is *, other values can be GET, POST, PUT, DELETE
 	 *
 	 * @return void
 	 */
@@ -192,7 +198,9 @@ class Router {
 			'user_roles_redirect' => null,
 			'rule' => null,
 			'activate_ssl' => false,
-			'deactivate_ssl' => false
+			'deactivate_ssl' => false,
+			'callback'=> null,
+			'listen'=>'*'
 		);
 
 		if (!is_array($route)) {
@@ -207,6 +215,146 @@ class Router {
 	}
 
 	/**
+	 * Creates a route that only listens for POST requests.
+	 * 
+	 * @param string $route The route either as a url or with regular expressions to listen too
+	 * @param string An array of options that define the route.
+	 * 
+	 * @see addRouteRule to see the option
+	 * @return void
+	 */
+	public static function post(string $route, array $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		
+		$defaults = array(
+			'listen'=>'POST',
+			'route' => $route,
+			'rule'=> $route
+		);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'route' => $route,
+			'options' => $options
+		), array('event' => 'args'));
+		
+		$route = $filtered['route'];
+		$options = $filtered['options'];
+		
+		$options += $defaults;
+		
+		self::addRouteRule($options);
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+	}
+	
+	/**
+	 * Creates a route that only listens for GET requests.
+	 * 
+	 * @param string $route The route either as a url or with regular expressions to listen too
+	 * @param string An array of options that define the route.
+	 * 
+	 * @see addRouteRule to see the option
+	 * @return void
+	 */
+	public static function get(string $route, array $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		
+		$defaults = array(
+			'listen'=>'GET',
+			'route' => $route,
+			'rule'=> $route
+		);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'route' => $route,
+			'options' => $options
+		), array('event' => 'args'));
+		
+		$route = $filtered['route'];
+		$options = $filtered['options'];
+		
+		$options += $defaults;
+		
+		self::addRouteRule($options);
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+	}
+	
+	/**
+	 * Creates a route that only listens for PUT requests.
+	 * 
+	 * @param string $route The route either as a url or with regular expressions to listen too
+	 * @param string An array of options that define the route.
+	 * 
+	 * @see addRouteRule to see the option
+	 * @return void
+	 */
+	public static function put(string $route, array $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		
+		$defaults = array(
+			'listen'=>'POST',
+			'route' => $route,
+			'rule'=> $route
+		);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'route' => $route,
+			'options' => $options
+		), array('event' => 'args'));
+		
+		$route = $filtered['route'];
+		$options = $filtered['options'];
+		
+		$options += $defaults;
+		
+		self::addRouteRule($options);
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+	}
+	
+	/**
+	 * Creates a route that only listens for DELETE requests.
+	 * 
+	 * @param string $route The route either as a url or with regular expressions to listen too
+	 * @param string An array of options that define the route.
+	 * 
+	 * @see addRouteRule to see the option
+	 * @return void
+	 */
+	public static function delete(string $route, array $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		
+		$defaults = array(
+			'listen'=>'POST',
+			'route' => $route,
+			'rule'=> $route
+		);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'route' => $route,
+			'options' => $options
+		), array('event' => 'args'));
+		
+		$route = $filtered['route'];
+		$options = $filtered['options'];
+		
+		$options += $defaults;
+		
+		self::addRouteRule($options);
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+	}
+
+	/**
 	 * Sets the current uri. If the uri is empty, the default uri will be used. How the uri
 	 * will react depends on how the route rules are specified. If redirects are set and the uri
 	 * matches a rule, a redirect will be automatically instantied.
@@ -216,13 +364,13 @@ class Router {
 	 * @return void
 	 * @access public
 	 */
-	public static function setRoute($uri = '') {
+	public static function setRoute(string $uri = '') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $uri);
 
 		$uri = self::_applyFilter(get_class(), __FUNCTION__, $uri, array('event' => 'args'));
-
+		
 		if (empty($uri)) {
 			$uri = $_SERVER['REQUEST_URI'];
 		}
@@ -249,37 +397,43 @@ class Router {
 
 		$uri_parts = array_values($uri_parts);
 		$uri = '/' . implode('/', $uri_parts);
-
+		
 		$assigned_route = array();
 		$default_route = array();
 		$assigned_route_options = array();
 		$default_route_options = array();
-
+		
+		$method = (isset($_SERVER['REQUEST_METHOD'])) ? $method = $_SERVER['REQUEST_METHOD'] : null;
+		
 		foreach (self::$routes as $route) {
-			$reRule = preg_replace(self::$default_rule_replace, self::$default_route_replace, $route['rule']);
-			$reRule = str_replace('/', '\/', $reRule);
-
-			if (preg_match('/' . $reRule . '/', $uri, $matches)) {
-
-				$uri_match = '';
-				foreach ($matches as $key => $value) {
-					if (!Validator::isInteger($key)) {
-						$uri_match .= '/' . $value;
+			
+			if(self::_isAllowRequest($route['listen'], $method)) {
+				
+				$reRule = preg_replace(self::$default_rule_replace, self::$default_route_replace, $route['rule']);
+				$reRule = str_replace('/', '\/', $reRule);
+	
+				if (preg_match('/' . $reRule . '/', $uri, $matches)) {
+	
+					$uri_match = '';
+					foreach ($matches as $key => $value) {
+						if (!Validator::isInteger($key)) {
+							$uri_match .= '/' . $value;
+						}
+					}//end foreach
+	
+					$match_1 = str_replace($uri_match, '', $uri);
+					$match_2 = str_replace($uri_match, '', $matches[0]);
+	
+					if ($match_1 === $match_2 && !empty($match_1)) {
+						$assigned_route = $matches;
+						$assigned_route_options = $route;
+						break;
+					} else if ($match_1 === $match_2 && empty($match_1)) {
+						$default_route = $matches;
+						$default_route_options = $route;
 					}
-				}//end foreach
-
-				$match_1 = str_replace($uri_match, '', $uri);
-				$match_2 = str_replace($uri_match, '', $matches[0]);
-
-				if ($match_1 === $match_2 && !empty($match_1)) {
-					$assigned_route = $matches;
-					$assigned_route_options = $route;
-					break;
-				} else if ($match_1 === $match_2 && empty($match_1)) {
-					$default_route = $matches;
-					$default_route_options = $route;
-				}
-			}//end if prgrack mage
+				}//end if prgrack mage
+			}
 		}//end first for
 
 		if (!empty($assigned_route)) {
@@ -298,20 +452,51 @@ class Router {
 
 		self::$route_parameters = $final_route;
 		self::$route_options = $route_options;
+		
+		$method = (isset($_SERVER['REQUEST_METHOD'])) ? $method = $_SERVER['REQUEST_METHOD'] : null;
+		
+		if($route_options['listen'] == '*') {
+			self::$correct_request_method = true;
+		} else {
+			$listen = strtoupper($route_options['listen']);
+			
+			if(strpos($listen, $method )!== false) {
+				self::$correct_request_method = true;
+			} else {
+				self::$correct_request_method = false;
+			}
+		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $final_route, $route_options);
 
-		if (!empty($route_options['activate_ssl']) && $route_options['activate_ssl'] && !self::isSecureConnection()) {
-			self::activateSSL();
-		} else if (!empty($route_options['deactivate_ssl']) && $route_options['deactivate_ssl'] && self::isSecureConnection()) {
-			self::deactivateSSL();
-		}
-
-		if (!empty($route_options['redirect'])) {
-			self::redirect($route_options['redirect']);
+		if(self::$correct_request_method) {
+			
+			if (!empty($route_options['activate_ssl']) && $route_options['activate_ssl'] && !self::isSecureConnection()) {
+				self::activateSSL();
+			} else if (!empty($route_options['deactivate_ssl']) && $route_options['deactivate_ssl'] && self::isSecureConnection()) {
+				self::deactivateSSL();
+			}
+	
+			if (!empty($route_options['redirect'])) {
+				self::redirect($route_options['redirect']);
+			}
+			
+			if (!empty($route_options['callback'])) {
+				return call_user_func_array($route_options['callback'], array(new Request()));
+			}
 		}
 
 	}//end checkRouteRule
+	
+	/**
+	 * Based on the route options that is listened to, check to see if this route is allowed with the request
+	 * method. Meaning does this route allow GET, PUT, DELETE, POST or other.
+	 * 
+	 * @return boolean true or false if the route is allowed
+	 */
+	public static function isAllowedRouteRequest() {
+		return self::$correct_request_method;
+	}
 
 	/**
 	 * Gets the variable if specified in a rule.
@@ -635,5 +820,22 @@ class Router {
 		return $appendix;
 
 	}//end form url
+	
+	private function _isAllowRequest($allowed_request_types, $current_request) {
+		
+		$allowed = false;
+			
+		if($allowed_request_types == '*') {
+			$allowed = true;
+		} else {
+			$allowed_request_types = strtoupper($allowed_request_types);
+			
+			if(strpos($allowed_request_types, $current_request)!== false) {
+				$allowed = true;
+			}
+		}
+		
+		return $allowed;
+	}
 
 }//end class
