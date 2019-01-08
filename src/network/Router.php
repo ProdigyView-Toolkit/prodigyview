@@ -821,7 +821,7 @@ class Router {
 
 	}//end form url
 	
-	private function _isAllowRequest($allowed_request_types, $current_request) {
+	private static function _isAllowRequest($allowed_request_types, $current_request) {
 		
 		$allowed = false;
 			
