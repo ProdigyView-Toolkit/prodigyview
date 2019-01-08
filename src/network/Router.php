@@ -364,7 +364,7 @@ class Router {
 	 * @return void
 	 * @access public
 	 */
-	public static function setRoute(string ?$uri = '') {
+	public static function setRoute(string $uri = '') {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $uri);
