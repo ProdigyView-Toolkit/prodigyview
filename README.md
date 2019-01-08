@@ -2,8 +2,8 @@
 
 Welcome to the ProdigyView Toolkit, a powerful PHP enhancement tool designed to make PHP coding faster, less mundane and highly extendable. The toolkit was designed too:
 
-1. Tackle Inversion Of Control in more targeted ways than current solutions methodologies like dependency injection
-2. Provide tools to build applications with enforcing a structure
+1. Tackle Inversion Of Control in more targeted way than current solutions such as dependency injection
+2. Provide tools to build applications without enforcing a structure or requiring a framework
 3. Quickly build and easily maintain micro-applications and micro-frameworks
 
 This document will go over how to install the toolkit, use some of the features, and extend objects with the built-in design patterns.
