@@ -2,25 +2,94 @@
 
 namespace prodigyview\database;
 
-class Mysql {
+use prodigyview\design\InstanceObject;
+use prodigyview\util\Validator;
+
+class Mysql implements DBInterface {
 
 	use InstanceObject, SQL;
+	
+	protected $_link = null;
+	
+	protected $_host = null;
+	
+	protected $_port = null;
+	
+	protected $_database = null;
+	
+	protected $_schema = null;
+	
+	protected $_login = null;
+	
+	protected $_connectionType = null;
+	
+	protected $_connectionName = null;
+	
+	protected $_type = 'mysql';
+	
+	protected $_row = array();
+	
+	public function getHost() {
+		return $this->_host;
+	}
+	
+	public function getPort() {
+		return $this->_port;
+	}
+	
+	public function getLogin() {
+		return $this->_login;
+	}
+	
+	public function getDatabase() {
+		return $this->_database;
+	}
+	
+	public function connect($name, $options = array()) {
+		
+		$defaults = array(
+			'port'=> 3306,
+			'schema'=> '',
+			'password' => '',
+			'connect_type' => PGSQL_CONNECT_FORCE_NEW
+		);
+		
+		$options += $defaults;
+		
+		$this->_connectionName = $name;
+		$this->_host = $options['host'];
+		$this->_port = $options['port'];
+		$this->_database = $options['database'];
+		$this->_schema = $options['schema'];
+		$this->_login = $options['login'];
+		$this->_connectionType=$options['connect_type'];
+		
+		$this->_link = new \mysqli($options['host'], $options['login'], $options['password'], $options['database'], $options['port']);
+				
+		return $this->_link;
+		
+	}
 
 	public function query($query) {
-		$result = self::$link->query($query);
+		$result = $this->_link->query($query);
+		
+		if(!$result && $this->_link->error) {
+			error_log($this->_link->error);
+			
+		}
 
 		return $result;
 	}
 
-	public function return_last_insert_query($query, $returnField = '', $returnTable = '') {
-		self::$link->query($query);
-		$id = self::$link->insert_id;
+	public function returnLastInsert($query, $returnField = '', $returnTable = '') {
+		$this->_link->query($query);
+		$id = $this->_link->insert_id;
 
 		return $id;
 	}
 
 	public function resultRowCount($result) {
-		$count = self::$link->affected_rows;
+		$count = $this->_link->affected_rows;
 
 		return $count;
 	}
@@ -31,10 +100,9 @@ class Mysql {
 			$array = $result->fetch_array();
 		} else if (get_class($result) == 'mysqli_stmt') {
 			$result->fetch();
-			//return self::$row;
 
 			$array = array();
-			foreach (self::$row as $key => $value) {
+			foreach ($this->_row as $key => $value) {
 				$array[$key] = $value;
 			}
 		}
@@ -42,12 +110,12 @@ class Mysql {
 		return $array;
 	}
 
-	public function fetchFields($result) {
+	public function fetchFields($result, $type = MYSQLI_BOTH) {
 
 		$fields = null;
 
 		if (method_exists($result, 'fetch_all')) {
-			$fields = $result->fetch_all(MYSQLI_BOTH);
+			$fields = $result->fetch_all($type);
 		} else {
 			$fields = array();
 			while ($row = $result->fetch_assoc()) {
@@ -59,24 +127,24 @@ class Mysql {
 
 	public function makeSafe($string) {
 
-		$sanitized_string = self::$link->real_escape_string($string);
+		$sanitized_string = $this->_link->real_escape_string($string);
 
 		return $sanitized_string;
 
 	}
 
 	public function closeDB() {
-		self::$link->close();
+		$this->_link->close();
 	}
 
 	public function getSchema($append_period = true) {
 
-		if (empty(self::$dbschema)) {
+		if (empty($this->_schema)) {
 			$schema = '';
 		} else if ($append_period) {
-			$schema = self::$dbschema . ".";
+			$schema = $this->_schema . ".";
 		} else {
-			$schema = self::$dbschema;
+			$schema = $this->_schema;
 		}
 
 		return $schema;
@@ -84,18 +152,18 @@ class Mysql {
 
 	public function clearTableData($tablename, $options = '') {
 
-		$tablename = self::makeSafe($tablename);
+		$tablename = $this->makeSafe($tablename);
 
 		$query = "TRUNCATE TABLE $tablename $options";
 
-		self::query($query);
+		$this->query($query);
 	}
 
 	public function tableExist($tablename, $schema = '') {
 		$query = "show tables like \"$tablename\";";
 
-		$result = self::query($query);
-		$count = self::resultRowCount($result);
+		$result = $this->query($query);
+		$count = $this->resultRowCount($result);
 
 		if ($count <= 0 && empty($count)) {
 			return FALSE;
@@ -106,10 +174,10 @@ class Mysql {
 
 	public function columnExist($table_name, $field_name) {
 
-		$query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = '" . self::$dbname . "' AND table_name = '$table_name' AND column_name = '$field_name' ";
+		$query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = '" . $this->_database . "' AND table_name = '$table_name' AND column_name = '$field_name' ";
 
-		$result = self::query($query);
-		$count = self::resultRowCount($result);
+		$result = $this->query($query);
+		$count = $this->resultRowCount($result);
 		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
 
 		if ($count <= 0) {
@@ -131,7 +199,7 @@ class Mysql {
 		if (is_array($string)) {
 			$return_array = array();
 			foreach ($string as $key => $value) {
-				$return_array[$key] = self::formatData($value);
+				$return_array[$key] = $this->formatData($value);
 			}
 		} else {
 
@@ -167,19 +235,19 @@ class Mysql {
 			$first = true;
 			foreach ($where_clause as $key => $value) {
 				if (is_array($value))
-					$query .= self::parseOperators($key, $value, 'AND', '=', $first);
+					$query .= $this->parseOperators($key, $value, 'AND', '=', $first);
 				else {
 					if ($first) {
-						if (PVValidator::isInteger($key)) {
+						if (Validator::isInteger($key)) {
 							$query .= ' ' . $value . ' ';
 						} else {
-							$query .= $key . ' = \'' . self::makeSafe($value) . '\'';
+							$query .= $key . ' = \'' . $this->makeSafe($value) . '\'';
 						}
 					} else {
-						if (PVValidator::isInteger($key)) {
+						if (Validator::isInteger($key)) {
 							$query .= ' AND ' . $value . ' ';
 						} else {
-							$query .= ' AND ' . $key . ' = \'' . self::makeSafe($value) . '\'';
+							$query .= ' AND ' . $key . ' = \'' . $this->makeSafe($value) . '\'';
 						}
 					}
 				}
@@ -192,8 +260,8 @@ class Mysql {
 
 		$query = "SELECT $fields FROM $table $join_clause $where_clause";
 
-		$result = self::query($query);
-		$total_pages = self::fetchArray($result);
+		$result = $this->query($query);
+		$total_pages = $this->fetchArray($result);
 		$total_pages = $total_pages['count'];
 		$from_clause = '';
 
@@ -212,7 +280,7 @@ class Mysql {
 			$current_page = $last_page;
 		}
 
-		$database_type = self::getDatabaseType();
+		$database_type = $this->getDatabaseType();
 
 		$limit_offset = ' LIMIT ' . ($current_page - 1) * $results_per_page . ',' . $results_per_page;
 
@@ -229,87 +297,20 @@ class Mysql {
 	}
 
 	public function getDatabaseLink() {
-		return $this->_handler;
-	}
-
-	public function insertStatement($table_name, $data, $options = array()) {
-
-		$result = null;
-
-		if (!empty($table_name)) {
-			$first = 1;
-			foreach ($data as $key => $value) {
-
-				if ($first == 0) {
-					$columns .= ' ,' . $key;
-					$values .= ' ,\'' . self::makeSafe($value) . '\' ';
-				} else {
-					$columns = $key;
-					$values = ' \'' . self::makeSafe($value) . '\' ';
-				}
-
-				$first = 0;
-			}//end foreach
-
-			$query = 'INSERT INTO ' . $table_name . '(' . $columns . ') VALUES(' . $values . ')';
-			$result = self::query($query);
-		}
-
-		return $result;
-	}
-
-	public function updateStatement($table, $data, $wherelist, $options = array()) {
-		$query = 'UPDATE ' . $table . ' SET ';
-		$params = array();
-		$params_holder = array();
-
-		if (is_array($data)) {
-			foreach ($data as $key => $value) {
-				$query .= $key . ' = \'' . self::makeSafe($value) . '\'';
-			}//end foreach
-
-		} else {
-			$query .= $data;
-		}
-
-		if (is_array($wherelist) && !empty($wherelist)) {
-			$query .= ' WHERE ';
-			$first = true;
-
-			foreach ($wherelist as $key => $value) {
-				if (is_array($value))
-					$query .= self::parseOperators($key, $value, 'AND', '=', $first);
-				else {
-					if ($first)
-						$query .= $key . ' = \'' . self::makeSafe($value) . '\'';
-					else {
-						$query .= ' AND ' . $key . ' = \'' . self::makeSafe($value) . '\'';
-					}
-				}
-
-				$first = false;
-			}//end foreach
-
-		} else if (!empty($wherelist)) {
-			$query .= ' WHERE ' . $wherelist;
-		}
-
-		$result = self::query($query);
-
-		return $result;
+		return $this->_link;
 	}
 
 	public function preparedQuery($query, $data, $formats = '') {
 
-		self::$link->prepare($query);
+		$this->_link->prepare($query);
 		$count = 1;
 
 		foreach ($data as $key => $value) {
-			self::$link->bindParam($count, $value);
+			$this->_link->bindParam($count, $value);
 			$count++;
 		}//end foreach
 
-		return self::$link->execute();
+		return $this->_link->execute();
 	}
 
 	public function preparedInsert($table_name, $data, $formats = array()) {
@@ -328,10 +329,10 @@ class Mysql {
 		foreach ($data as $key => $value) {
 			if ($first) {
 				$values .= $key;
-				$placeholders .= ' ' . self::getPreparedPlaceHolder($count + 1) . ' ';
+				$placeholders .= ' ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 			} else {
 				$values .= ' , ' . $key;
-				$placeholders .= ', ' . self::getPreparedPlaceHolder($count + 1) . ' ';
+				$placeholders .= ', ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 			}
 
 			$first = 0;
@@ -347,11 +348,11 @@ class Mysql {
 
 		$template_name = md5($query);
 
-		$stmt = self::$link->prepare($query);
+		$stmt = $this->_link->prepare($query);
 
 		if (!$stmt) {
-			echo 'Error';
-			exit();
+			error_log('Unable To Prepare Query:' . $query);
+			//exit();
 		}
 
 		$count = 1;
@@ -386,13 +387,14 @@ class Mysql {
 		$first = 1;
 		$params = array();
 		$count = 0;
+		
 		foreach ($data as $key => $value) {
 			if ($first) {
 				$values .= $key;
-				$placeholders .= ' ' . self::getPreparedPlaceHolder($count + 1) . ' ';
+				$placeholders .= ' ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 			} else {
 				$values .= ' , ' . $key;
-				$placeholders .= ', ' . self::getPreparedPlaceHolder($count + 1) . ' ';
+				$placeholders .= ', ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 			}
 
 			$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
@@ -409,13 +411,13 @@ class Mysql {
 
 		$template_name = md5($query);
 
-		$stmt = self::$link->prepare($query);
-		self::bindParameters($stmt, $params);
+		$stmt = $this->_link->prepare($query);
+		$this->bindParameters($stmt, $params);
 		foreach ($data as $key => $value) {
 			$params[$key] = $value;
 		}
 		$stmt->execute();
-		$id = self::$link->insert_id;
+		$id = $this->_link->insert_id;
 
 		return $id;
 	}
@@ -437,10 +439,10 @@ class Mysql {
 			$query = $query . $options['postquery'];
 		}
 
-		$stmt = self::$link->prepare($query);
+		$stmt = $this->_link->prepare($query);
 
 		if (!empty($params)) {
-			self::bindParameters($stmt, $params);
+			$this->bindParameters($stmt, $params);
 			foreach ($data as $key => $value) {
 				$params[$key] = $value;
 			}
@@ -448,14 +450,14 @@ class Mysql {
 
 		$stmt->execute();
 		$stmt->store_result();
-		self::$row = array();
-		self::stmt_bind_assoc($stmt, self::$row);
+		$this->_row = array();
+		$this->stmt_bind_assoc($stmt, $this->_row);
 		$result = $stmt;
 
 		return $result;
 	}
 
-	public function selectPreparedStatement(array $args, array $options = array()) {
+	public function preparedSelectStatement(array $args, array $options = array()) {
 		$default = array(
 			'fields' => '*',
 			'where' => '',
@@ -506,19 +508,19 @@ class Mysql {
 			$first = true;
 			foreach ($args['where'] as $key => $value) {
 				if (is_array($value))
-					$query .= self::parseOperators($key, $value, 'AND', '=', $first);
+					$query .= $this->parseOperators($key, $value, 'AND', '=', $first);
 				else {
 					if ($first) {
-						if (PVValidator::isInteger($key)) {
+						if (Validator::isInteger($key)) {
 							$query .= ' ' . $value . ' ';
 						} else {
-							$query .= $key . ' = \'' . self::makeSafe($value) . '\'';
+							$query .= $key . ' = \'' . $this->makeSafe($value) . '\'';
 						}
 					} else {
-						if (PVValidator::isInteger($key)) {
+						if (Validator::isInteger($key)) {
 							$query .= ' AND ' . $value . ' ';
 						} else {
-							$query .= ' AND ' . $key . ' = \'' . self::makeSafe($value) . '\'';
+							$query .= ' AND ' . $key . ' = \'' . $this->makeSafe($value) . '\'';
 						}
 					}
 				}
@@ -557,7 +559,7 @@ class Mysql {
 			$query = $query . $options['postquery'];
 		}
 
-		$result = PVDatabase::query($query);
+		$result = $this->query($query);
 
 		return $result;
 	}
@@ -575,9 +577,9 @@ class Mysql {
 			$params_holder[] = $value;
 
 			if ($first) {
-				$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+				$query .= $key . '=' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 			} else {
-				$query .= ',' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+				$query .= ',' . $key . '=' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 			}
 			$count++;
 			$first = 0;
@@ -592,9 +594,9 @@ class Mysql {
 				$params_holder[] = $value;
 
 				if ($first) {
-					$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					$query .= $key . '=' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 				} else {
-					$query .= ' AND ' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					$query .= ' AND ' . $key . '=' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 				}
 				$count++;
 				$count2++;
@@ -604,8 +606,8 @@ class Mysql {
 
 		$template_name = md5($query);
 
-		$stmt = self::$link->prepare($query);
-		self::bindParameters($stmt, $params);
+		$stmt = $this->_link->prepare($query);
+		$this->bindParameters($stmt, $params);
 
 		foreach ($params_holder as $key => $value) {
 			$params[$key] = $value;
@@ -627,9 +629,9 @@ class Mysql {
 			foreach ($wherelist as $key => $value) {
 				$params[$key] = (isset($wherelist[$count])) ? $formats[$count] : 's';
 				if ($first) {
-					$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					$query .= $key . '=' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 				} else {
-					$query .= ' AND ' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
+					$query .= ' AND ' . $key . '=' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 				}
 
 				$first = 0;
@@ -639,8 +641,10 @@ class Mysql {
 
 		$template_name = md5($query);
 
-		$stmt = self::$link->prepare($query);
-		self::bindParameters($stmt, $params);
+		$stmt = $this->_link->prepare($query);
+		
+		$this->bindParameters($stmt, $params);
+		
 		foreach ($wherelist as $key => $value) {
 			$params[$key] = $value;
 		}
@@ -657,16 +661,18 @@ class Mysql {
 	}
 
 	public function formatTableName($table_name, $append_schema = true, $append_prefix = true) {
-		$table_name = self::$dbprefix . $table_name;
+		if($append_prefix) {
+			
+		}
 
-		if (!empty(self::$dbschema) && $append_schema) {
-			$table_name = self::$dbschema . '.' . $table_name;
+		if (!empty($this->_schema) && $append_schema) {
+			$table_name = $this->_schema . '.' . $table_name;
 		}
 
 		return $table_name;
 	}
 
-	protected function bindParameters(&$statement, &$params) {
+	public function bindParameters(&$statement, &$params) {
 		$args = array();
 		$args[] = implode('', array_values($params));
 		foreach ($params as $paramName => $paramType) {
@@ -680,7 +686,7 @@ class Mysql {
 		), $args);
 	}
 
-	protected function stmt_bind_assoc(&$stmt, &$out) {
+	public function stmt_bind_assoc(&$stmt, &$out) {
 		$data = mysqli_stmt_result_metadata($stmt);
 		$fields = array();
 		$out = array();
@@ -711,7 +717,7 @@ class Mysql {
 			$first = 1;
 			foreach ($columns as $column_name => $column) {
 				$column_query .= (!$first) ? ',' : '';
-				$column_query .= self::formatColumn($column_name, $column);
+				$column_query .= $this->formatColumn($column_name, $column);
 				$first = 0;
 			}
 		}
@@ -723,12 +729,12 @@ class Mysql {
 			$column_query = '(' . $column_query . ')';
 
 		if ($options['format_table'])
-			$table_name = self::formatTableName($table_name);
+			$table_name = $this->formatTableName($table_name);
 
 		$query = 'CREATE TABLE ' . $table_name . ' ' . $column_query . ';';
 
 		if ($options['execute'])
-			PVDatabase::query($query);
+			$this->query($query);
 
 		if ($options['return_query'])
 			return $query;
@@ -743,18 +749,14 @@ class Mysql {
 		$options += $defaults;
 
 		if ($options['format_table'])
-			$table_name = self::formatTableName($table_name);
+			$table_name = $this->formatTableName($table_name);
 
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' ADD ' . self::formatColumn($column_name, $column_data) . ';';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' ADD COLUMN ' . self::formatColumn($column_name, $column_data) . ';';
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' ADD ' . self::formatColumn($column_name, $column_data) . ';';
-		}
+		
+		$query = 'ALTER TABLE ' . $table_name . ' ADD ' . $this->formatColumn($column_name, $column_data) . ';';
+		
 
 		if ($options['execute'])
-			PVDatabase::query($query);
+			$this->query($query);
 
 		if ($options['return_query'])
 			return $query;
@@ -785,222 +787,18 @@ class Mysql {
 		} else {
 			$default = (isset($options['default'])) ? 'DEFAULT \'' . $options['default'] . '\'' : '';
 		}
-		$auto_increment = ($options['auto_increment'] == true) ? self::getAutoIncrement() : '';
+		$auto_increment = ($options['auto_increment'] == true) ? $this->getAutoIncrement() : '';
 		$unique = ($options['unique'] == true) ? 'UNIQUE' : '';
 
-		$query = $name . ' ' . self::columnTypeMap($options['type']) . $precision . ' ' . $null . ' ' . $default . ' ' . $auto_increment . ' ' . $unique;
+		$query = $name . ' ' . $this->columnTypeMap($options['type']) . $precision . ' ' . $null . ' ' . $default . ' ' . $auto_increment . ' ' . $unique;
 
 		return $query;
 	}
 
-	protected function getAutoIncrement() {
+	public function getAutoIncrement() {
 		$query = 'AUTO_INCREMENT';
 
 		return $query;
-	}
-
-	protected function columnTypeMap($type) {
-		$type = strtolower($type);
-
-		$type = self::_applyFilter(get_class(), __FUNCTION__, $type, array('event' => 'args'));
-
-		$types = array(
-			'integers' => array(
-				'match' => array(
-					'int',
-					'integer',
-					'numeric'
-				),
-				'database' => array(
-					'mysql' => 'INT',
-					'mssql' => 'INT',
-					'postgresql' => 'INTEGER',
-					'sqlite' => 'INTEGER'
-				)
-			),
-			'bigintegers' => array(
-				'match' => array('bigint'),
-				'database' => array(
-					'mysql' => 'BIGINT',
-					'mssql' => 'BIGINT',
-					'postgresql' => 'BIGINT',
-					'sqlite' => 'INTEGER'
-				)
-			),
-			'double' => array(
-				'match' => array(
-					'double',
-					'float',
-					'real'
-				),
-				'database' => array(
-					'mysql' => 'DOUBLE',
-					'mssql' => 'FLOAT',
-					'postgresql' => 'DOUBLE PRECISION',
-					'sqlite' => 'REAL'
-				)
-			),
-			'string' => array(
-				'match' => array(
-					'string',
-					'varchar',
-					'character varying',
-					'nchar',
-					'native character',
-					'nvarchar'
-				),
-				'database' => array(
-					'mysql' => 'VARCHAR',
-					'mssql' => 'VARCHAR',
-					'postgresql' => 'CHARACTER VARYING',
-					'sqlite' => 'TEXT'
-				)
-			),
-			'text' => array(
-				'match' => array(
-					'text',
-					'clob'
-				),
-				'database' => array(
-					'mysql' => 'TEXT',
-					'mssql' => 'TEXT',
-					'postgresql' => 'TEXT',
-					'sqlite' => 'TEXT'
-				)
-			),
-			'blob' => array(
-				'match' => array(
-					'blob',
-					'bytea'
-				),
-				'database' => array(
-					'mysql' => 'BLOB',
-					'mssql' => 'BLOB',
-					'postgresql' => 'BYTEA',
-					'sqlite' => 'TEXT'
-				)
-			),
-			'boolean' => array(
-				'match' => array('boolean'),
-				'database' => array(
-					'mysql' => 'BOOLEAN',
-					'mssql' => 'BIT',
-					'postgresql' => 'BOOLEAN',
-					'sqlite' => 'INTEGER'
-				)
-			),
-			'tinyint' => array(
-				'match' => array(
-					'tinyint',
-					'smallint'
-				),
-				'database' => array(
-					'mysql' => 'tinyint',
-					'mssql' => 'tinyint',
-					'postgresql' => 'smallint',
-					'sqlite' => 'INTEGER'
-				)
-			),
-			'timestamp' => array(
-				'match' => array('timestamp'),
-				'database' => array(
-					'mysql' => 'TIMESTAMP',
-					'mssql' => 'datetime',
-					'postgresql' => 'TIMESTAMP',
-					'sqlite' => 'TEXT'
-				)
-			),
-			'date' => array(
-				'match' => array(
-					'date',
-					'date/time',
-					'datetime'
-				),
-				'database' => array(
-					'mysql' => 'TIMESTAMP',
-					'mssql' => 'datetime',
-					'postgresql' => 'TIMESTAMP',
-					'sqlite' => 'TEXT'
-				)
-			),
-			'serial' => array(
-				'match' => array('serial'),
-				'database' => array(
-					'mysql' => 'SERIAL',
-					'mssql' => 'unknown',
-					'postgresql' => 'serial',
-					'sqlite' => 'INTEGER'
-				)
-			),
-			'bigserial' => array(
-				'match' => array('bigserial'),
-				'database' => array(
-					'mysql' => 'unknown',
-					'mssql' => 'unknown',
-					'postgresql' => 'bigserial',
-					'sqlite' => 'INTEGER'
-				)
-			),
-			'hstore' => array(
-				'match' => array('hstore'),
-				'database' => array(
-					'mysql' => 'unknown',
-					'mssql' => 'unknown',
-					'postgresql' => 'hstore',
-					'sqlite' => 'unknown'
-				)
-			),
-			'uuid' => array(
-				'match' => array(
-					'uuid',
-					'guid'
-				),
-				'database' => array(
-					'mysql' => 'unknown',
-					'mssql' => 'guid',
-					'postgresql' => 'uuid',
-					'sqlite' => 'TEXT'
-				)
-			),
-			'ip' => array(
-				'match' => array(
-					'ip',
-					'ipv4'
-				),
-				'database' => array(
-					'mysql' => 'varchar',
-					'mssql' => 'varchar',
-					'postgresql' => 'cidr',
-					'sqlite' => 'TEXT'
-				)
-			),
-			'ipv6' => array(
-				'match' => array('ipv6'),
-				'database' => array(
-					'mysql' => 'varchar',
-					'mssql' => 'varchar',
-					'postgresql' => 'inet',
-					'sqlite' => 'TEXT'
-				)
-			),
-			'json' => array(
-				'match' => array('json'),
-				'database' => array(
-					'mysql' => 'TEXT',
-					'mssql' => 'varchar',
-					'postgresql' => 'json',
-					'sqlite' => 'TEXT'
-				)
-			),
-		);
-
-		foreach ($types as $key => $value) {
-			if (in_array($type, $value['match'])) {
-				$match = $value['database'][self::$dbtype];
-				$match = self::_applyFilter(get_class(), __FUNCTION__, $match, array('event' => 'return'));
-				return $match;
-			}//end if
-		}//end for each
 	}
 
 	public function dropColumn($table_name, $column_name, $options = array()) {
@@ -1013,12 +811,12 @@ class Mysql {
 		$options += $defaults;
 
 		if ($options['format_table'])
-			$table_name = self::formatTableName($table_name);
+			$table_name = $this->formatTableName($table_name);
 
 		$query = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name . ';';
 
 		if ($options['execute'])
-			PVDatabase::query($query);
+			$this->query($query);
 
 		if ($options['return_query'])
 			return $query;
@@ -1035,12 +833,12 @@ class Mysql {
 		$options += $defaults;
 
 		if ($options['format_table'])
-			$table_name = self::formatTableName($table_name);
+			$table_name = $this->formatTableName($table_name);
 
 		$query = 'DROP TABLE ' . $table_name . ';';
 
 		if ($options['execute'])
-			PVDatabase::query($query);
+			$this->query($query);
 
 		if ($options['return_query'])
 			return $query;

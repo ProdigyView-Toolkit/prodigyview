@@ -159,7 +159,7 @@ trait SQL {
 				),
 				'database' => array(
 					'mysql' => 'TINYINT',
-					'mssql' => 'TINYINTt',
+					'mssql' => 'TINYINT',
 					'postgresql' => 'SMALLINT',
 					'sqlite' => 'INTEGER'
 				)
@@ -232,8 +232,8 @@ trait SQL {
 					'cidr'
 				),
 				'database' => array(
-					'mysql' => 'varchar',
-					'mssql' => 'varchar',
+					'mysql' => 'VARCHAR',
+					'mssql' => 'VARCHAR',
 					'postgresql' => 'CIDR',
 					'sqlite' => 'TEXT'
 				)
@@ -241,8 +241,8 @@ trait SQL {
 			'ipv6' => array(
 				'match' => array('ipv6','inet', 'address','address/y'),
 				'database' => array(
-					'mysql' => 'varchar',
-					'mssql' => 'varchar',
+					'mysql' => 'VARCHAR',
+					'mssql' => 'VARCHAR',
 					'postgresql' => 'INET',
 					'sqlite' => 'TEXT'
 				)
@@ -250,8 +250,8 @@ trait SQL {
 			'macaddr' => array(
 				'match' => array('macaddr','macaddress'),
 				'database' => array(
-					'mysql' => 'varchar',
-					'mssql' => 'varchar',
+					'mysql' => 'VARCHAR',
+					'mssql' => 'VARCHAR',
 					'postgresql' => 'MACADDR',
 					'sqlite' => 'TEXT'
 				)
@@ -259,7 +259,7 @@ trait SQL {
 			'json' => array(
 				'match' => array('json'),
 				'database' => array(
-					'mysql' => 'TEXT',
+					'mysql' => 'JSON',
 					'mssql' => 'varchar',
 					'postgresql' => 'JSON',
 					'sqlite' => 'TEXT'
@@ -417,9 +417,9 @@ trait SQL {
 		} else if (!empty($args['order_by'])) {
 			$query .= ' ORDER BY ' . $args['order_by'];
 		}
-
+		
 		$result = $this->query($query);
-
+		
 		return $result;
 
 	}

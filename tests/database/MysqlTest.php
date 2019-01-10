@@ -1,6 +1,6 @@
 <?php
 
-use prodigyview\database\Postgresql;
+use prodigyview\database\Mysql;
 use PHPUnit\Framework\TestCase;
 
 class MysqlTest extends TestCase{
@@ -9,11 +9,11 @@ class MysqlTest extends TestCase{
 	
 	private $_table = 'users';
 	
-	private $_host = 'postgres';
+	private $_host = 'mysql';
 	
-	private $_port = 5432;
+	private $_port = 3306;
 	
-	private $_connectionName = 'testdb';
+	private $_connectionName = 'testmysql';
 	
 	private $_login = 'prodigyview';
 	
@@ -22,10 +22,10 @@ class MysqlTest extends TestCase{
 	private $_database= 'prodigyview';
 	
 	private $_columns = array(
-		'id'=> array('type' => 'serial', 'auto_increment' => true, 'primary_key'=> true),
+		'id'=> array('type' => 'int', 'auto_increment' => true, 'primary_key'=> true),
 		'email'=> array('type' => 'string', 'precision'=>255, 'unique'=> true),
 		'name' => array('type' => 'string', 'precision'=> 100, 'not_null' => false),
-		'bio' => array('type' => 'string', 'default' => '')
+		'bio' => array('type' => 'text')
 	);
 	
 	private $_addColumn = array(
@@ -38,17 +38,19 @@ class MysqlTest extends TestCase{
 	);
 	
 	protected function setUp() {
-		$this->_db = new Postgresql();
+		$this->_db = new Mysql();
 		
 		$this->_db->connect($this->_connectionName, array(
 			'host'=> $this->_host,
 			'database' => $this->_database,
 			'login'=>$this->_login,
-			'password'=>$this->_password
+			'password'=>$this->_password,
+			'port'=>$this->_port
 		));
 	}
 	
 	public function testConnectionVariables() {
+		
 		$this->assertEquals($this->_login, $this->_db->getLogin());
 		$this->assertEquals($this->_host, $this->_db->getHost());	
 		$this->assertEquals($this->_port, $this->_db->getPort());	
@@ -59,7 +61,6 @@ class MysqlTest extends TestCase{
 	public function testTableExistFalse() {
 		
 		$result = $this->_db ->tableExist('not_found_table');
-		
 		$this->assertFalse($result);
 	}
 	
@@ -76,7 +77,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('int');
 		
-		$this->assertEquals('INTEGER', $result);
+		$this->assertEquals('INT', $result);
 		
 	}
 	
@@ -92,7 +93,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('double');
 		
-		$this->assertEquals('DOUBLE PRECISION', $result);
+		$this->assertEquals('DOUBLE', $result);
 		
 	}
 	
@@ -100,7 +101,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('string');
 		
-		$this->assertEquals('CHARACTER VARYING', $result);
+		$this->assertEquals('VARCHAR', $result);
 		
 	}
 
@@ -116,7 +117,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('blob');
 		
-		$this->assertEquals('BYTEA', $result);
+		$this->assertEquals('BLOB', $result);
 		
 	}
 	
@@ -132,7 +133,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('tinyint');
 		
-		$this->assertEquals('SMALLINT', $result);
+		$this->assertEquals('TINYINT', $result);
 		
 	}
 	
@@ -165,7 +166,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('bigserial');
 		
-		$this->assertEquals('BIGSERIAL', $result);
+		$this->assertEquals('SERIAL', $result);
 		
 	}
 	
@@ -173,7 +174,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('hstore');
 		
-		$this->assertEquals('HSTORE', $result);
+		$this->assertEquals('unknown', $result);
 		
 	}
 	
@@ -181,7 +182,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('uuid');
 		
-		$this->assertEquals('UUID', $result);
+		$this->assertEquals('VARCHAR', $result);
 		
 	}
 	
@@ -189,7 +190,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('ip');
 		
-		$this->assertEquals('CIDR', $result);
+		$this->assertEquals('VARCHAR', $result);
 		
 	}
 	
@@ -197,7 +198,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->columnTypeMap('inet');
 		
-		$this->assertEquals('INET', $result);
+		$this->assertEquals('VARCHAR', $result);
 		
 	}
 	
@@ -215,7 +216,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->formatColumn($column, $this->_columns[$column]);
 		
-		$this ->assertEquals('id SERIAL NOT NULL', trim($result));
+		$this ->assertEquals('id INT NOT NULL  AUTO_INCREMENT', trim($result));
 		
 	}
 	
@@ -225,7 +226,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->formatColumn($column, $this->_columns[$column]);
 		
-		$this ->assertEquals('email CHARACTER VARYING(255) NOT NULL   UNIQUE', trim($result));
+		$this ->assertEquals('email VARCHAR(255) NOT NULL   UNIQUE', trim($result));
 		
 	}
 	
@@ -235,7 +236,7 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->formatColumn($column, $this->_columns[$column]);
 		
-		$this ->assertEquals('name CHARACTER VARYING(100) NULL', trim($result));
+		$this ->assertEquals('name VARCHAR(100) NULL', trim($result));
 		
 	}
 	
@@ -245,14 +246,14 @@ class MysqlTest extends TestCase{
 		
 		$result = $this->_db->formatColumn($column, $this->_columns[$column]);
 		
-		$this ->assertEquals('bio CHARACTER VARYING NOT NULL DEFAULT \'\'', trim($result));
+		$this ->assertEquals('bio TEXT NOT NULL', trim($result));
 		
 	}
 	
 	public function testCreateTableExecute() {
 		
 		if(!$this->_db ->tableExist($this->_table)) {
-			$result = $this->_db ->createTable($this->_table, $this->_columns, array('execute'=>true));
+			$result = $this->_db ->createTable($this->_table, $this->_columns, array('execute'=>true, 'primary_key' => 'id'));
 		}
 		
 		$this->assertTrue($this->_db ->tableExist($this->_table));
@@ -284,7 +285,7 @@ class MysqlTest extends TestCase{
 		$result=$this->_db->addColumn($this->_table, $column, $this->_addColumn[$column], array('execute' => false));
 		
 		
-		$this->assertEquals('ALTER TABLE users ADD COLUMN is_active SMALLINT NOT NULL DEFAULT \'0\'  ;', $result);
+		$this->assertEquals('ALTER TABLE users ADD is_active TINYINT NOT NULL DEFAULT \'0\'  ;', $result);
 		$this->assertFalse($this->_db ->columnExist($this->_table, $column));
 	}
 	
@@ -339,7 +340,7 @@ class MysqlTest extends TestCase{
 		
 		$result  = $this->_db->selectStatement($query);
 		
-		$this->assertTrue(is_resource($result));
+		$this->assertTrue($result instanceof \mysqli_result);
 	}
 	
 	public function testSelectJonFetchArray() {
@@ -353,6 +354,7 @@ class MysqlTest extends TestCase{
 		);
 		
 		$result  = $this->_db->selectStatement($query);
+		
 		
 		$data = $this->_db->fetchArray($result);
 		
@@ -373,7 +375,7 @@ class MysqlTest extends TestCase{
 		
 		$data = $this->_db->fetchFields($result);
 		
-		$this->assertEquals($data['email'], $this->_data[0]['email']);
+		$this->assertEquals($data[0]['email'], $this->_data[0]['email']);
 	}
 	
 	public function testChangeJonWithBob() {
@@ -392,7 +394,7 @@ class MysqlTest extends TestCase{
 		
 		$data = $this->_db->fetchFields($result);
 		
-		$this->assertEquals($data['name'], 'Bob');
+		$this->assertEquals($data[0]['name'], 'Bob');
 	}
 	
 	public function testDeleteJon() {
@@ -411,7 +413,7 @@ class MysqlTest extends TestCase{
 		
 		$data = $this->_db->fetchFields($result);
 		
-		$this->assertFalse($data);
+		$this->assertTrue(empty($data));
 	}
 	
 	public function testPreparedInsertFindJon() {
@@ -425,8 +427,7 @@ class MysqlTest extends TestCase{
 		
 		$result  = $this->_db->preparedSelectStatement($query);
 		
-		
-		$this->assertTrue(is_resource($result));
+		$this->assertTrue($result instanceof \mysqli_result);
 	}
 	
 	public function testPreparedSelectJonFetchArray() {
@@ -460,7 +461,7 @@ class MysqlTest extends TestCase{
 		
 		$data = $this->_db->fetchFields($result);
 		
-		$this->assertEquals($data['email'], $this->_data[0]['email']);
+		$this->assertEquals($data[0]['email'], $this->_data[0]['email']);
 	}
 	
 	public function testPreparedChangeJonWithBob() {
@@ -479,7 +480,7 @@ class MysqlTest extends TestCase{
 		
 		$data = $this->_db->fetchFields($result);
 		
-		$this->assertEquals($data['name'], 'Bob');
+		$this->assertEquals($data[0]['name'], 'Bob');
 	}
 	
 	public function testPreparedDeleteJon() {
@@ -498,7 +499,7 @@ class MysqlTest extends TestCase{
 		
 		$data = $this->_db->fetchFields($result);
 		
-		$this->assertFalse($data);
+		$this->assertTrue(empty($data));
 	}
 	
 	public function testDropTable() {

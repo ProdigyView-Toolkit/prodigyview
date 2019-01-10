@@ -57,6 +57,7 @@ class Postgresql implements DBInterface {
 		$defaults = array(
 			'port'=> 5432,
 			'schema'=> '',
+			'password' => '',
 			'connect_type' => PGSQL_CONNECT_FORCE_NEW
 		);
 		
