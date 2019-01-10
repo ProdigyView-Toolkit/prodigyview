@@ -420,32 +420,14 @@ class Database  {
 			return self::_callAdapter(get_class(), __FUNCTION__, $result);
 
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'args'));
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$data = $connection->fetchArray($result);
 
-		if (self::$dbtype === self::$mySQLConnection && get_class($result) == 'mysqli_result') {
-			$array = $result -> fetch_array();
-		} else if (self::$dbtype === self::$mySQLConnection && get_class($result) == 'mysqli_stmt') {
-			$result -> fetch();
-			//return self::$row;
-
-			$array = array();
-			foreach (self::$row as $key => $value) {
-				$array[$key] = $value;
-			}
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$array = pg_fetch_array($result);
-		} else if (self::$dbtype === self::$msSQLConnection && !empty($result)) {
-			$array = sqlsrv_fetch_array($result);
-		} else if (self::$dbtype === self::$sqLiteConnection) {
-			$array = sqlite_fetch_array($result);
-		} else if (self::$dbtype == self::$oracleConnection) {
-			$stid = oci_parse(self::$link, $result);
-			$array = oci_fetch_array($stid, OCI_ASSOC);
-		} else {
-			$array = $result;
-		}
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $array, $result);
-		$array = self::_applyFilter(get_class(), __FUNCTION__, $array, array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $data, $result);
+		
+		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
 
 		return $array;
 	}//end fetchArray
@@ -470,41 +452,14 @@ class Database  {
 			return self::_callAdapter(get_class(), __FUNCTION__, $result);
 
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'args'));
-
-		if (self::$dbtype === self::$mySQLConnection && get_class($result) == 'mysqli_result') {
-			if(method_exists($result, 'fetch_all')) {
-				$fields = $result -> fetch_all(MYSQLI_BOTH);
-			} else {
-				$fields = array();
-				while($row = $result->fetch_assoc()) {
-					$fields[] = $row;
-				}
-			}
-		} else if (self::$dbtype === self::$mySQLConnection && get_class($result) == 'mysqli_stmt') {
-			$result_set = new Collection();
-
-			while ($result -> fetch()) {
-				$object = new stdclass();
-				foreach (self::$row as $key => $value) {
-					$object -> $key = $value;
-				}
-				$data = self::$row;
-				$result_set -> add($object);
-			}
-
-			$fields = $result_set;
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$fields = pg_fetch_assoc($result);
-		} else if (self::$dbtype === self::$msSQLConnection && !empty($result)) {
-			$fields = sqlsrv_fetch_array($result);
-		} else if (self::$dbtype === self::$sqLiteConnection) {
-			$fields = sqlite_fetch_array($result);
-		} else if (self::$dbtype == self::$oracleConnection) {
-			$stid = oci_parse(self::$link, $result);
-			$fields = oci_fetch_array($stid, OCI_ASSOC);
-		}
+		
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$fields = $connection->fetchFields($result);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $fields, $result);
+		
 		$fields = self::_applyFilter(get_class(), __FUNCTION__, $fields, array('event' => 'return'));
 
 		return $fields;
@@ -533,50 +488,13 @@ class Database  {
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 
-		if (is_array($string)) {
-			$return_array = array();
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$string = $connection->makeSafe($string);
 
-			foreach ($string as $key => $value) {
-				$return_array[$key] = self::makeSafe($value);
-			}
+		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'return'));
 
-		} else {
-			if (self::$dbtype === self::$mySQLConnection) {
-				$return_array = self::$link -> real_escape_string($string);
-			} else if (self::$dbtype === self::$postgreSQLConnection) {
-				$return_array = pg_escape_string(self::$link, $string);
-			} else if (self::$dbtype === self::$msSQLConnection) {
-
-				if (!isset($string) or empty($string))
-					return '';
-				if (is_numeric($string))
-					return $string;
-
-				$non_displayables = array('/%0[0-8bcef]/', // url encoded 00-08, 11, 12, 14, 15
-					'/%1[0-9a-f]/', // url encoded 16-31
-					'/[\x00-\x08]/', // 00-08
-					'/\x0b/', // 11
-					'/\x0c/', // 12
-					'/[\x0e-\x1f]/'             // 14-31
-				);
-				foreach ($non_displayables as $regex) {
-					$string = preg_replace($regex, '', $string);
-				}//end for each
-
-				$string = str_replace("'", "''", $string);
-
-				$return_array = $string;
-			} else if (self::$dbtype === self::$sqLiteConnection) {
-				$return_array = sqlite_escape_string($string);
-			} else if (self::$dbtype == self::$oracleConnection) {
-				$stid = oci_parse(self::$link, $result);
-				$return_array = oci_fetch_array($stid, OCI_ASSOC);
-			}
-		}//end else
-
-		$return_array = self::_applyFilter(get_class(), __FUNCTION__, $return_array, array('event' => 'return'));
-
-		return $return_array;
+		return $string;
 
 	}//end fetchArray
 
@@ -592,17 +510,9 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
-		if (self::$dbtype === self::$mySQLConnection) {
-			self::$link -> close();
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			pg_close(self::$link);
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			sqlsrv_close(self::$link);
-		} else if (self::$dbtype === self::$sqLiteConnection) {
-			sqlite_close(self::$link);
-		} else if (self::$dbtype == self::$oracleConnection) {
-			oci_close(self::$link);
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$connection->closeDB();
 
 		self::_notify(get_class() . '::' . __FUNCTION__);
 
@@ -627,16 +537,13 @@ class Database  {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		if (empty(self::$dbschema)) {
-			$schema = '';
-		} else if($append_period) {
-			$schema = self::$dbschema . ".";
-		} else {
-			$schema = self::$dbschema;
-		}
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$schema = $connection->getSchema($append_period);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $schema);
+		
 		$schema = self::_applyFilter(get_class(), __FUNCTION__, $schema, array('event' => 'return'));
 
 		return $schema;
@@ -656,14 +563,17 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $tablename, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('tablename' => $tablename, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'tablename' => $tablename, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$tablename = $filtered['tablename'];
 		$options = $filtered['options'];
 
-		$tablename = self::makeSafe($tablename);
-
-		$query = "TRUNCATE TABLE $tablename $options";
-		self::query($query);
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$connection->clearTableData($tablename, $options);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $query, $tablename, $options);
 
@@ -690,31 +600,14 @@ class Database  {
 
 		$tablename = self::_applyFilter(get_class(), __FUNCTION__, $tablename, array('event' => 'args'));
 
-		$query = '';
-
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = "show tables like \"$tablename\";";
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = "select * from information_schema.tables where table_name  = '$tablename' ";
-			if(!empty($schema))
-				$query.= "AND table_schema = '$schema'";
-		} else if (self::$dbtype === self::$sqLiteConnection) {
-			$query = "SELECT name FROM sqlite_master WHERE type='table' AND name='$tablename'; ";
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = "SELECT * FROM SysObjects WHERE [Name] = '$tablename'; ";
-		} else if (self::$dbtype == self::$oracleConnection) {
-			//To be Filed in
-		}
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		$result = self::query($query);
-		$count = self::resultRowCount($result);
-		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result, $tablename);
+		$exist = $connection-> tableExist($tablename, $schema);
 		
-		if ($count <= 0 && empty($count)) {
-			return FALSE;
-		}
-
-		return TRUE;
+		self::_notify(get_class() . '::' . __FUNCTION__, $exist , $result, $tablename);
+		
+		return $exist;
+		
 	}//end
 
 	/**
@@ -736,29 +629,22 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $field_name);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'field_name' => $field_name), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table_name' => $table_name, 
+			'field_name' => $field_name
+		), array('event' => 'args'));
+		
 		$table_name = $filtered['table_name'];
 		$field_name = $filtered['field_name'];
 
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = '" . self::$dbname . "' AND table_name = '$table_name' AND column_name = '$field_name' ";
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = "SELECT * FROM information_schema.columns WHERE table_schema = '".self::getSchema(false)."' AND table_name = '$table_name' AND column_name = '$field_name';";
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='$table_name' AND COLUMN_NAME='$field_name';";
-		} else if (self::$dbtype == self::$oracleConnection) {
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$exist = $connection->columnExist($table_name, $field_name);
 
-		}
+		self::_notify(get_class() . '::' . __FUNCTION__, $exist, $result, $table_name, $field_name);
 
-		$result = self::query($query);
-		$count = self::resultRowCount($result);
-		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
-
-		if ($count <= 0) {
-			return FALSE;
-		}
-
-		return TRUE;
+		return $exist;
+		
 	}//end fieldexist
 
 	/**
@@ -776,20 +662,13 @@ class Database  {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
-
-		$function = '';
 		
-		if (self::$dbtype === self::$mySQLConnection) {
-			$function = 'RAND()';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$function = 'RANDOM()';
-		} else if (self::$dbtype == self::$oracleConnection) {
-			$function = 'RAND()';
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$function = 'RAND()';
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$function = $connections->getSQLRandomOperator();
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $function);
+		
 		$function = self::_applyFilter(get_class(), __FUNCTION__, $function, array('event' => 'return'));
 
 		return $function;
@@ -814,22 +693,11 @@ class Database  {
 
 		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
 
-		if (is_array($string)) {
-			$return_array = array();
-			foreach ($string as $key => $value) {
-				$return_array[$key] = self::formatData($value);
-			}
-		} else {
-			if (self::$dbtype === self::$mySQLConnection) {
-				$return_array = stripslashes($string);
-			} else {
-				$return_array = $string;
-			}
-		}//end else
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$result = $connection->formatData($string);		
 
-		$return_array = self::_applyFilter(get_class(), __FUNCTION__, $return_array, array('event' => 'return'));
-
-		return $return_array;
+		return $result;
 	}//end formatRow
 
 	/**
@@ -850,19 +718,12 @@ class Database  {
 
 		$field = self::_applyFilter(get_class(), __FUNCTION__, $field, array('event' => 'args'));
 		
-		$function = '';
-
-		if (self::$dbtype === self::$mySQLConnection) {
-			$function = ' AVG(' . $field . ') ';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$function = ' AVG(' . $field . ') ';
-		} else if (self::$dbtype == self::$oracleConnection) {
-			$function = ' AVG(' . $field . ') ';
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$function = ' AVG(' . $field . ') ';
-		}
-
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$function = $connection->dbAverageFunction($field);
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $function, $field);
+		
 		$function = self::_applyFilter(get_class(), __FUNCTION__, $function, array('event' => 'return'));
 
 		return $function;
@@ -877,11 +738,16 @@ class Database  {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$type = $connection->getDatabaseType();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$dbtype);
-		$dbtype = self::_applyFilter(get_class(), __FUNCTION__, self::$dbtype, array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $type);
+		
+		$type = self::_applyFilter(get_class(), __FUNCTION__, $type, array('event' => 'return'));
 
-		return $dbtype;
+		return $type;
 	}
 	
 	/**
@@ -893,11 +759,16 @@ class Database  {
 	public static function getConnectionName() {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$name = $connection->getConnectionName();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$dbtype);
-		$current_connecton = self::_applyFilter(get_class(), __FUNCTION__, self:: $current_connecton, array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $name);
+		
+		$name = self::_applyFilter(get_class(), __FUNCTION__, $name, array('event' => 'return'));
 
-		return $current_connecton;
+		return $name;
 	}
 
 	/**
@@ -919,7 +790,15 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table' => $table, 'join_clause' => $join_clause, 'where_clause' => $where_clause, 'current_page' => $current_page, 'results_per_page' => $results_per_page, 'order_by' => $order_by), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table' => $table, 
+			'join_clause' => $join_clause, 
+			'where_clause' => $where_clause, 
+			'current_page' => $current_page, 
+			'results_per_page' => $results_per_page, 
+			'order_by' => $order_by
+		), array('event' => 'args'));
+		
 		$table = $filtered['table'];
 		$join_clause = $filtered['join_clause'];
 		$where_clause = $filtered['where_clause'];
@@ -927,75 +806,15 @@ class Database  {
 		$results_per_page = $filtered['results_per_page'];
 		$order_by = $filtered['order_by'];
 		
-		if(!empty($where_clause) && !is_array($where_clause))
-				$where_clause .= ' WHERE '.$args['where'];
-			else if(is_array($where_clause) && !empty($where_clause)) {
-				$query = ' WHERE ';
-				$first = true;
-				foreach($where_clause as $key => $value) {
-					if(is_array($value))
-						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
-					else {
-						if($first) {
-							if(Validator::isInteger($key)) {
-								$query .= ' ' .$value.' ';
-							} else {
-								$query .= $key.' = \''.self::makeSafe($value).'\'';
-							}
-						} else {
-							if(Validator::isInteger($key)) {
-								$query .= ' AND ' .$value.' ';
-							} else {
-								$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
-							}
-						}
-					}
-					
-					$first = false;
-				}
-				
-				$where_clause = $query;
-			}
-
-		$query = "SELECT $fields FROM $table $join_clause $where_clause";
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		$result = self::query($query);
-		$total_pages = self::fetchArray($result);
-		$total_pages = $total_pages['count'];
-		$from_clause = '';
-
-		//Get The Start Page
-		if ($current_page) {
-			$start_location = ($current_page - 1) * $results_per_page;
-		} else {
-			$start_location = 0;
-		}
-
-		$last_page = ceil($total_pages / $results_per_page);
-
-		if ($current_page < 1) {
-			$current_page = 1;
-		} else if ($current_page > $last_page) {
-			$current_page = $last_page;
-		}
-
-		$database_type = self::getDatabaseType();
-
-		if ($database_type == 'mysql') {
-			$limit_offset = ' LIMIT ' . ($current_page - 1) * $results_per_page . ',' . $results_per_page;
-		} else if ($database_type == 'postgresql') {
-			$limit_offset = ' LIMIT ' . ($current_page - 1) * $results_per_page . ' OFFSET ' . $results_per_page;
-		} else if ($database_type == 'mssql') {
-			$limit_offset = ' RowNum >= ' . $start_location . ' RowNum < ' . $start_location + $results_per_page;
-			$from_clause = " ( SELECT    ROW_NUMBER() OVER ( ORDER BY $order_by ) AS RowNum, * FROM      $table $where_clause ) AS RowConstrainedResult ";
-		}
-
-		$return_array = array('limit_offset' => $limit_offset, 'current_page' => $current_page, 'last_page' => $last_page, 'start_location' => $start_location, 'total_pages' => $total_pages, 'from_clause' => $from_clause);
+		$data = $connection->getPagininationOffset($table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by, $fields);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $return_array, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
-		$return_array = self::_applyFilter(get_class(), __FUNCTION__, $return_array, array('event' => 'return'));
+		
+		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
 
-		return $return_array;
+		return $data;
 
 	}//end
 
@@ -1009,9 +828,13 @@ class Database  {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$link = $connection->getDatabaseLink();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$link);
-		$link = self::_applyFilter(get_class(), __FUNCTION__, self::$link, array('event' => 'return'));
+		self::_notify(get_class() . '::' . __FUNCTION__, $link);
+		$link = self::_applyFilter(get_class(), __FUNCTION__, $link , array('event' => 'return'));
 
 		return $link;
 	}//end getDatabaseLink
@@ -1032,41 +855,22 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $data, $options);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'data' => $data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table_name' => $table_name, 
+			'data' => $data, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$table_name = $filtered['table_name'];
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 		
-		if (self::$dbtype === self::$mySQLConnection || self::$dbtype === self::$postgreSQLConnection || self::$dbtype === self::$msSQLConnection) {
-			
-			$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'data' => $data, 'options' => $options), array('event' => 'args'));
-			$table_name = $filtered['table_name'];
-			$data = $filtered['data'];
-			$options = $filtered['options'];
-	
-			if (!empty($table_name)) {
-				$first = 1;
-				foreach ($data as $key => $value) {
-	
-					if ($first == 0) {
-						$columns .= ' ,' . $key;
-						$values .= ' ,\'' . self::makeSafe( $value ) . '\' ';
-					} else {
-						$columns = $key;
-						$values = ' \'' . self::makeSafe($value) . '\' ';
-					}
-	
-					$first = 0;
-				}//end foreach
-	
-				$query = 'INSERT INTO ' . $table_name . '(' . $columns . ') VALUES(' . $values . ')';
-				$result = self::query($query);
-			}
-		} else if (self::$dbtype === self::$mongoConnection) {
-			$result = preparedReturnLastInsert($table_name, '', '', $data, array(), $options );
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$result = $connection->insertStatement($table_name, $data, $options);
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table_name, $data, $options);
+		
 		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
 		
 		return $result;

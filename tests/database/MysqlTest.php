@@ -57,6 +57,8 @@ class MysqlTest extends TestCase{
 		$this->assertEquals($this->_host, $this->_db->getHost());	
 		$this->assertEquals($this->_port, $this->_db->getPort());	
 		$this->assertEquals($this->_database, $this->_db->getDatabase());		
+		$this->assertEquals($this->_connectionName, $this->_db->getConnectionName());	
+		$this->assertEquals('mysql', $this->_db->getDatabaseType());	
 		
 	}
 	
@@ -507,6 +509,13 @@ class MysqlTest extends TestCase{
 	public function testDropTable() {
 		$this->_db->dropTable($this->_table);
 		$this->assertFalse($this->_db ->tableExist($this->_table));
+	}
+	
+	public function testLink() {
+		$link = $this->_db->getDatabaseLink();
+		
+		
+		$this->assertTrue($link instanceof \mysqli);
 	}
 	
 	

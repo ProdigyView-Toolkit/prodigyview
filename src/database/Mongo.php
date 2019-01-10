@@ -248,7 +248,7 @@ class Mongo implements DBInterface {
 	}
 
 	public function getConnectionName() {
-		
+		return $this->_connectionName;
 	}
 
 	/**
@@ -263,7 +263,7 @@ class Mongo implements DBInterface {
 	 */
 	public function getDatabaseLink() {
 		
-		return $this->_handler;
+		return $this->_link;
 		
 	}
 

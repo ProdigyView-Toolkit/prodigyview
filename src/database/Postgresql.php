@@ -260,7 +260,7 @@ class Postgresql implements DBInterface {
 	}
 
 	public function getConnectionName() {
-		$this->_connectionName;
+		return $this->_connectionName;
 	}
 
 	public function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count') {
