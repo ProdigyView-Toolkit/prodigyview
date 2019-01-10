@@ -4,18 +4,9 @@ namespace prodigyview\database;
 
 use prodigyview\design\InstanceObject;
 use prodigyview\util\Validator;
-use \resource;
 
-if(!defined('PGSQL_CONNECT_FORCE_NEW')) {
-	define('PGSQL_CONNECT_FORCE_NEW', 1);
-}
+class SQLite implements DBInterface {
 
-if(!defined('PGSQL_BOTH')) {
-	define('PGSQL_BOTH', 0);
-}
-
-class Postgresql implements DBInterface {
-	
 	use InstanceObject, SQL;
 	
 	protected $_link = null;
@@ -30,13 +21,13 @@ class Postgresql implements DBInterface {
 	
 	protected $_login = null;
 	
-	protected $_password = null;
-	
 	protected $_connectionType = null;
 	
 	protected $_connectionName = null;
 	
-	protected $_type = 'postgresql';
+	protected $_type = 'sqlite';
+	
+	protected $_row = array();
 	
 	public function getHost() {
 		return $this->_host;
@@ -54,13 +45,13 @@ class Postgresql implements DBInterface {
 		return $this->_database;
 	}
 	
-	public function setConnection($name, $options = array()) {
-			
+	public function connect($name, $options = array()) {
+		
 		$defaults = array(
-			'port'=> 5432,
+			'port'=> 3306,
 			'schema'=> '',
 			'password' => '',
-			'connect_type' => PGSQL_CONNECT_FORCE_NEW
+			'socket' => ini_get("mysqli.default_socket")
 		);
 		
 		$options += $defaults;
@@ -71,113 +62,76 @@ class Postgresql implements DBInterface {
 		$this->_database = $options['database'];
 		$this->_schema = $options['schema'];
 		$this->_login = $options['login'];
-		$this->_password = $options['password'];
-		$this->_connectionType = $options['connect_type'];
+		$this->_connectionType=$options['connect_type'];
 		
-		$options += $defaults;
-		
-	}
-	
-	public function connect() {
-		
-		$this->_link = pg_connect('host=' . $this->_host  . ' port=' . $this->_port . ' dbname=' . $this->_database . ' user=' . $this->_login . ' password=' . $this->_password, $this->_connectionType );
-		
+		$this->_link = new SQLite3('mysqlitedb.db');
+				
 		return $this->_link;
 		
 	}
-	
-	public function isActive() {
-		
-		if($this->_link) {
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Execute a query.
-	 * 
-	 * @param string $query
-	 */
-	public function query($query) {
 
-		$result = pg_query($this->_link, $query);
+	public function query($query) {
+		$result = $this->_link->query($query);
 
 		return $result;
 	}
 
-	/**
-	 * Returns the last interested id of a query.
-	 * 
-	 * @param string $query The query to be executed
-	 * @param string $returnField The returning field
-	 * @param string $returnTable Void in this case, not used
-	 */
 	public function returnLastInsert($query, $returnField = '', $returnTable = '') {
-
-		$result = pg_exec($query . " RETURNING $returnField ");
-		$row = $this->fetchArray($result);
-		$id = $row[$returnField];
+		$this->_link->query($query);
+		$id = $this->_link->lastInsertRowID();
 
 		return $id;
-
 	}
 
-	/**
-	 * Gets the number of rows found in a result
-	 * 
-	 * @param resource $result The result
-	 * 
-	 * @return int
-	 */
 	public function resultRowCount($result) {
-		$count = pg_num_rows($result);
+		$data = $result->fetchArray();
+		$count = $data['count'];
+		
 
 		return $count;
 	}
-	
-	/**
-	 * Fetches the the results of a row in the form of an array
-	 * 
-	 * @param resource $result A resource from an executed query
-	 * 
-	 * @return
-	 */
-	public function fetchArray($result, $row = null, $type = PGSQL_BOTH) {
-		$array = pg_fetch_array($result, $row, $type);
+
+	public function fetchArray($result) {
+
+		if (get_class($result) == 'mysqli_result') {
+			$array = $result->fetch_array();
+		} else if (get_class($result) == 'mysqli_stmt') {
+			$result->fetch();
+
+			$array = array();
+			foreach ($this->_row as $key => $value) {
+				$array[$key] = $value;
+			}
+		}
 
 		return $array;
 	}
 
-	public function fetchFields($result, $row = null) {
+	public function fetchFields($result, $type = MYSQLI_BOTH) {
 
-		$fields = pg_fetch_assoc($result, $row);
+		$fields = null;
 
+		if (method_exists($result, 'fetch_all')) {
+			$fields = $result->fetch_all($type);
+		} else {
+			$fields = array();
+			while ($row = $result->fetch_assoc()) {
+				$fields[] = $row;
+			}
+		}
 		return $fields;
-
 	}
 
 	public function makeSafe($string) {
-		if (is_array($string)) {
-			$return_array = array();
 
-			foreach ($string as $key => $value) {
-				$return_array[$key] = $this->makeSafe($value);
-			}
+		$sanitized_string = $this->_link->real_escape_string($string);
 
-		} else {
+		return $sanitized_string;
 
-			$return_array = pg_escape_string($this->_link, $string);
-		}
-
-		return $return_array;
 	}
 
 	public function closeDB() {
-
-		pg_close($this->_link);
-
+		$this->_link->close();
 	}
 
 	public function getSchema($append_period = true) {
@@ -194,17 +148,16 @@ class Postgresql implements DBInterface {
 	}
 
 	public function clearTableData($tablename, $options = '') {
+
 		$tablename = $this->makeSafe($tablename);
 
 		$query = "TRUNCATE TABLE $tablename $options";
+
 		$this->query($query);
 	}
 
 	public function tableExist($tablename, $schema = '') {
-
-		$query = "select * from information_schema.tables where table_name  = '$tablename' ";
-		if (!empty($schema))
-			$query .= "AND table_schema = '$schema'";
+		$query = "show tables like \"$tablename\";";
 
 		$result = $this->query($query);
 		$count = $this->resultRowCount($result);
@@ -216,20 +169,14 @@ class Postgresql implements DBInterface {
 		return TRUE;
 	}
 
-	public function columnExist($table_name, $field_name, $schema = false) {
-		
-		$schema_query = '';
-		
-		if($this->getSchema($schema)) {
-			$schema_query = 'table_schema = '. $this->getSchema($schema) . ' AND';
-		}
+	public function columnExist($table_name, $field_name) {
 
-		$query = "SELECT * FROM information_schema.columns WHERE {$schema_query} table_name = '$table_name' AND column_name = '$field_name';";
+		$query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = '" . $this->_database . "' AND table_name = '$table_name' AND column_name = '$field_name' ";
 
 		$result = $this->query($query);
 		$count = $this->resultRowCount($result);
-		$this->_notify(get_class() . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
-		
+		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
+
 		if ($count <= 0) {
 			return FALSE;
 		}
@@ -239,13 +186,25 @@ class Postgresql implements DBInterface {
 	}
 
 	public function getSQLRandomOperator() {
-		$function = 'RANDOM()';
+		$function = 'RAND()';
 
 		return $function;
 	}
 
 	public function formatData($string) {
 
+		if (is_array($string)) {
+			$return_array = array();
+			foreach ($string as $key => $value) {
+				$return_array[$key] = $this->formatData($value);
+			}
+		} else {
+
+			$return_array = stripslashes($string);
+
+		}//end else
+
+		return $return_array;
 	}
 
 	public function dbAverageFunction($field) {
@@ -253,17 +212,19 @@ class Postgresql implements DBInterface {
 		$function = ' AVG(' . $field . ') ';
 
 		return $function;
+
 	}
 
 	public function getDatabaseType() {
-		return $this->_type;
+		return 'mysql';
 	}
 
 	public function getConnectionName() {
-		$this->_connectionName;
+
 	}
 
 	public function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count') {
+
 		if (!empty($where_clause) && !is_array($where_clause))
 			$where_clause .= ' WHERE ' . $args['where'];
 		else if (is_array($where_clause) && !empty($where_clause)) {
@@ -318,7 +279,7 @@ class Postgresql implements DBInterface {
 
 		$database_type = $this->getDatabaseType();
 
-		$limit_offset = ' LIMIT ' . ($current_page - 1) * $results_per_page . ' OFFSET ' . $results_per_page;
+		$limit_offset = ' LIMIT ' . ($current_page - 1) * $results_per_page . ',' . $results_per_page;
 
 		$return_array = array(
 			'limit_offset' => $limit_offset,
@@ -330,19 +291,23 @@ class Postgresql implements DBInterface {
 		);
 
 		return $return_array;
-
 	}
 
 	public function getDatabaseLink() {
 		return $this->_link;
 	}
 
-
 	public function preparedQuery($query, $data, $formats = '') {
-		$result = pg_prepare($this->_link, '', $query);
-		$result = pg_execute($this->_link, '', $data);
 
-		return $result;
+		$this->_link->prepare($query);
+		$count = 1;
+
+		foreach ($data as $key => $value) {
+			$this->_link->bindParam($count, $value);
+			$count++;
+		}//end foreach
+
+		return $this->_link->execute();
 	}
 
 	public function preparedInsert($table_name, $data, $formats = array()) {
@@ -380,16 +345,28 @@ class Postgresql implements DBInterface {
 
 		$template_name = md5($query);
 
-		$result = pg_query_params($this->_link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($template_name));
+		$stmt = $this->_link->prepare($query);
 
-		if (pg_num_rows($result) == 0) {
-			$result = pg_prepare($this->_link, $template_name, $query);
-
+		if (!$stmt) {
+			error_log('Unable To Prepare Query:' . $query);
+			//exit();
 		}
 
-		$result = pg_execute($this->_link, $template_name, $data);
+		$count = 1;
+		$refs = array();
+		$type = '';
 
-		return $result;
+		foreach ($data as $k => $v) {
+			$refs[$k] = &$data[$k];
+			$type .= 's';
+		}
+
+		call_user_func_array(array(
+			$stmt,
+			'bind_param'
+		), array_merge(array($type), $refs));
+
+		return $stmt->execute();
 
 	}
 
@@ -407,6 +384,7 @@ class Postgresql implements DBInterface {
 		$first = 1;
 		$params = array();
 		$count = 0;
+		
 		foreach ($data as $key => $value) {
 			if ($first) {
 				$values .= $key;
@@ -430,33 +408,21 @@ class Postgresql implements DBInterface {
 
 		$template_name = md5($query);
 
-		$template_name = md5($query . " RETURNING $returnField");
-
-		$result = pg_query_params($this->_link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($template_name));
-
-		if (pg_num_rows($result) == 0) {
-			$result = pg_prepare($this->_link, $template_name, $query . " RETURNING $returnField");
+		$stmt = $this->_link->prepare($query);
+		$this->bindParameters($stmt, $params);
+		foreach ($data as $key => $value) {
+			$params[$key] = $value;
 		}
-
-		$result = pg_execute($this->_link, $template_name, $data);
-
-		if ($result == false) {
-			$this->catchDBError();
-		}
-		$row = $this->fetchArray($result);
-
-		$id = $row[$returnField];
+		$stmt->execute();
+		$id = $this->_link->insert_id;
 
 		return $id;
-
 	}
 
 	public function preparedSelect($query, $data, array $formats = array(), array $options = array()) {
-
 		$params = array();
 
 		$count = 0;
-
 		foreach ($data as $key => $value) {
 			$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
 			$count++;
@@ -470,11 +436,22 @@ class Postgresql implements DBInterface {
 			$query = $query . $options['postquery'];
 		}
 
-		$result = pg_prepare($this->_link, '', $query);
-		$result = pg_execute($this->_link, '', $data);
+		$stmt = $this->_link->prepare($query);
+
+		if (!empty($params)) {
+			$this->bindParameters($stmt, $params);
+			foreach ($data as $key => $value) {
+				$params[$key] = $value;
+			}
+		}
+
+		$stmt->execute();
+		$stmt->store_result();
+		$this->_row = array();
+		$this->stmt_bind_assoc($stmt, $this->_row);
+		$result = $stmt;
 
 		return $result;
-
 	}
 
 	public function preparedSelectStatement(array $args, array $options = array()) {
@@ -494,8 +471,6 @@ class Postgresql implements DBInterface {
 		);
 
 		$args += $default;
-		
-		$placeheld_variables = array();
 
 		$query = '';
 
@@ -528,8 +503,6 @@ class Postgresql implements DBInterface {
 			$query .= ' WHERE ';
 		if (is_array($args['where'])) {
 			$first = true;
-			$count = 0;
-			
 			foreach ($args['where'] as $key => $value) {
 				if (is_array($value))
 					$query .= $this->parseOperators($key, $value, 'AND', '=', $first);
@@ -538,15 +511,13 @@ class Postgresql implements DBInterface {
 						if (Validator::isInteger($key)) {
 							$query .= ' ' . $value . ' ';
 						} else {
-							$placeheld_variables[] = $value;
-							$query .= $key . ' = ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
+							$query .= $key . ' = \'' . $this->makeSafe($value) . '\'';
 						}
 					} else {
 						if (Validator::isInteger($key)) {
 							$query .= ' AND ' . $value . ' ';
 						} else {
-							$placeheld_variables[] = $value;
-							$query .= ' AND ' . $key . ' = ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
+							$query .= ' AND ' . $key . ' = \'' . $this->makeSafe($value) . '\'';
 						}
 					}
 				}
@@ -584,21 +555,14 @@ class Postgresql implements DBInterface {
 		if (isset($options['postquery']) && !empty($options['postquery'])) {
 			$query = $query . $options['postquery'];
 		}
-	
-		$query_name = md5($query);
-		
-		// Prepare a query for execution
-		$result = pg_prepare($this->_link, $query_name, $query);
-		
-		// Execute the prepared query. 
-		$result = pg_execute($this->_link, $query_name, $placeheld_variables);
-		
-		//$result = $this->query($query);
-		
+
+		$result = $this->query($query);
+
 		return $result;
 	}
 
 	public function preparedUpdate($table, $data, $wherelist, $formats = array(), $whereformats = array(), $options = array()) {
+
 		$query = 'UPDATE ' . $table . ' SET ';
 		$params = array();
 		$params_holder = array();
@@ -639,15 +603,14 @@ class Postgresql implements DBInterface {
 
 		$template_name = md5($query);
 
-		$result = pg_query_params($this->_link, $query, $params_holder);
+		$stmt = $this->_link->prepare($query);
+		$this->bindParameters($stmt, $params);
 
-		$result = pg_query_params($this->_link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($template_name));
-
-		if (pg_num_rows($result) == 0) {
-			$result = pg_prepare($this->_link, $template_name, $query);
+		foreach ($params_holder as $key => $value) {
+			$params[$key] = $value;
 		}
 
-		$result = pg_execute($this->_link, $template_name, $params_holder);
+		$result = $stmt->execute();
 
 		return $result;
 	}
@@ -675,37 +638,38 @@ class Postgresql implements DBInterface {
 
 		$template_name = md5($query);
 
-		$result = pg_query_params($this->_link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($template_name));
-
-		if (pg_num_rows($result) == 0) {
-			$result = pg_prepare($this->_link, $template_name, $query);
+		$stmt = $this->_link->prepare($query);
+		
+		$this->bindParameters($stmt, $params);
+		
+		foreach ($wherelist as $key => $value) {
+			$params[$key] = $value;
 		}
 
-		$result = pg_execute($this->_link, $template_name, $wherelist);
+		$result = $stmt->execute();
 
 		return $result;
 	}
 
 	public function getPreparedPlaceHolder($count = 1) {
-
-		$placeholder = '$' . $count;
+		$placeholder = '?';
 
 		return $placeholder;
 	}
 
 	public function formatTableName($table_name, $append_schema = true, $append_prefix = true) {
-		$table_name = $this->$dbprefix . $table_name;
+		if($append_prefix) {
+			
+		}
 
-		if ($this->getSchema() && $append_schema) {
-			$table_name = $this->getSchema() . '.' . $table_name;
+		if (!empty($this->_schema) && $append_schema) {
+			$table_name = $this->_schema . '.' . $table_name;
 		}
 
 		return $table_name;
 	}
 
-
 	public function bindParameters(&$statement, &$params) {
-
 		$args = array();
 		$args[] = implode('', array_values($params));
 		foreach ($params as $paramName => $paramType) {
@@ -720,7 +684,6 @@ class Postgresql implements DBInterface {
 	}
 
 	public function stmt_bind_assoc(&$stmt, &$out) {
-
 		$data = mysqli_stmt_result_metadata($stmt);
 		$fields = array();
 		$out = array();
@@ -733,7 +696,6 @@ class Postgresql implements DBInterface {
 			$count++;
 		}
 		@call_user_func_array(mysqli_stmt_bind_result, $fields);
-
 	}
 
 	public function createTable($table_name, $columns = array(), $options = array()) {
@@ -744,7 +706,6 @@ class Postgresql implements DBInterface {
 			'return_query' => true,
 			'primary_key' => '',
 		);
-		
 		$options += $defaults;
 
 		$column_query = '';
@@ -777,26 +738,25 @@ class Postgresql implements DBInterface {
 	}
 
 	public function addColumn($table_name, $column_name, $column_data = array(), $options = array()) {
-
 		$defaults = array(
 			'format_table' => false,
 			'execute' => true,
 			'return_query' => true,
 		);
-		
 		$options += $defaults;
 
 		if ($options['format_table'])
 			$table_name = $this->formatTableName($table_name);
 
-		$query = 'ALTER TABLE ' . $table_name . ' ADD COLUMN ' . $this->formatColumn($column_name, $column_data) . ';';
+		
+		$query = 'ALTER TABLE ' . $table_name . ' ADD ' . $this->formatColumn($column_name, $column_data) . ';';
+		
 
 		if ($options['execute'])
 			$this->query($query);
 
 		if ($options['return_query'])
 			return $query;
-
 	}
 
 	public function formatColumn($name, $options = array()) {
@@ -814,14 +774,6 @@ class Postgresql implements DBInterface {
 
 		$options += $defaults;
 
-		$filtered = $this->_applyFilter(get_class(), __FUNCTION__, array(
-			'name' => $name,
-			'options' => $options
-		), array('event' => 'args'));
-		
-		$name = $filtered['name'];
-		$options = $filtered['options'];
-
 		$precision = (!empty($options['precision'])) ? '(' . $options['precision'] . ')' : '';
 		$null = ($options['not_null'] == true) ? 'NOT NULL' : 'NULL';
 
@@ -832,14 +784,8 @@ class Postgresql implements DBInterface {
 		} else {
 			$default = (isset($options['default'])) ? 'DEFAULT \'' . $options['default'] . '\'' : '';
 		}
-		
 		$auto_increment = ($options['auto_increment'] == true) ? $this->getAutoIncrement() : '';
-		
 		$unique = ($options['unique'] == true) ? 'UNIQUE' : '';
-
-		if ($options['auto_increment'] == true) {
-			$options['type'] = 'SERIAL';
-		}
 
 		$query = $name . ' ' . $this->columnTypeMap($options['type']) . $precision . ' ' . $null . ' ' . $default . ' ' . $auto_increment . ' ' . $unique;
 
@@ -847,12 +793,12 @@ class Postgresql implements DBInterface {
 	}
 
 	public function getAutoIncrement() {
-		return '';
+		$query = 'AUTO_INCREMENT';
+
+		return $query;
 	}
 
-
 	public function dropColumn($table_name, $column_name, $options = array()) {
-
 		$defaults = array(
 			'format_table' => false,
 			'execute' => true,
@@ -874,12 +820,13 @@ class Postgresql implements DBInterface {
 	}
 
 	public function dropTable($table_name, $options = array()) {
-
+		
 		$defaults = array(
 			'format_table' => false,
 			'execute' => true,
 			'return_query' => true,
 		);
+		
 		$options += $defaults;
 
 		if ($options['format_table'])
@@ -892,7 +839,6 @@ class Postgresql implements DBInterface {
 
 		if ($options['return_query'])
 			return $query;
-
 	}
 
 	public function catchDBError() {

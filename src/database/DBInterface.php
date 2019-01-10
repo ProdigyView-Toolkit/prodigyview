@@ -18,7 +18,11 @@ interface DBInterface {
 	
 	public function getSchema($append_period = true);
 	
-	public function connect(string $name, array $options = array());
+	public function setConnection(string $name, array $options = array());
+	
+	public function connect();
+	
+	public function isActive();
 	
 	public function query($query);
 	

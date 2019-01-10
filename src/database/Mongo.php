@@ -21,11 +21,13 @@ class Mongo implements DBInterface {
 	
 	protected $_login = null;
 	
+	protected $_password = null;
+	
 	protected $_connectionType = null;
 	
 	protected $_connectionName = null;
 	
-	protected $_type = 'mongodb';
+	protected $_type = 'mongo';
 	
 	protected $_row = array();
 	
@@ -45,7 +47,7 @@ class Mongo implements DBInterface {
 		return $this->_database;
 	}
 	
-	public function connect($name, $options = array()) {
+	public function setConnection($name, $options = array()) {
 		
 		$defaults = array(
 			'port'=> '',
@@ -62,22 +64,35 @@ class Mongo implements DBInterface {
 		$this->_database = $options['database'];
 		$this->_schema = $options['schema'];
 		$this->_login = $options['login'];
+		$this->_password = $options['password'];
 		$this->_connectionType=$options['connect_type'];
 		
+	}
+	
+	public function connect() {
+		
 		if(class_exists('\\MongoDB\Driver\Manager')) {	
-			$this->_link = new \MongoDB\Client('mongodb://'.$options['login'].':'.$options['password'].'@'.$options['host'], [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
-			$this->_link->selectDatabase($options['database']);
+			$this->_link = new \MongoDB\Client('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+			$this->_link->selectDatabase($this->_database);
 		} else if(class_exists ('MongoClient')) {
-			$this->_link = new \MongoClient('mongodb://'.$options['login'].':'.$options['password'].'@'.$options['host']);
-			$this->_link = $this->_link ->selectDB($options['database']);
+			$this->_link = new \MongoClient('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host);
+			$this->_link = $this->_link ->selectDB($this->_database);
 		} else {
-			$this->_link = new Mongo('mongodb://'.$options['login'].':'.$options['password'].'@'.$options['host']);
-			$this->_link = $this->_link ->selectDB($options['database']);
+			$this->_link = new Mongo('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host);
+			$this->_link = $this->_link ->selectDB($this->_database);
 		}
 		
 				
 		return $this->_link;
+	}
+	
+	public function isActive() {
 		
+		if($this->_link) {
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -229,7 +244,7 @@ class Mongo implements DBInterface {
 	 * @return string
 	 */
 	public function getDatabaseType() {
-		return 'mongodb';
+		return $this->_type;
 	}
 
 	public function getConnectionName() {

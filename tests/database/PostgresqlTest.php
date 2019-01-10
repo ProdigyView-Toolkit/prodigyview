@@ -40,12 +40,14 @@ class PostgresqlTest extends TestCase{
 	protected function setUp() {
 		$this->_db = new Postgresql();
 		
-		$this->_db->connect($this->_connectionName, array(
+		$this->_db->setConnection($this->_connectionName, array(
 			'host'=> $this->_host,
 			'database' => $this->_database,
 			'login'=>$this->_login,
 			'password'=>$this->_password
 		));
+		
+		$this->_db->connect();
 	}
 	
 	public function testConnectionVariables() {

@@ -65,23 +65,6 @@ class Database  {
 			
 	use StaticObject;
 
-	/**
-	 * The current query being executed
-	 */
-	private static $theQuery;
-	
-	/**
-	 * The connection to the datbase
-	 */
-	private static $link;
-	
-	/**
-	 * Not sure what this was for
-	 */
-	private static $version;
-
-	//Assigns the connection types values
-	//Important for deciding which database to connect to
 	
 	/**
 	 * MYSQL Connection indicator
@@ -117,62 +100,11 @@ class Database  {
 	 * An array of possible connections that have been added
 	 */
 	private static $connections = array();
-
-	/**
-	 * Ability to execute myself connections
-	 */
-	private static $mysql_error_report = MYSQLI_REPORT_ERROR;
-
-	//Database Implementation
-	/**
-	 * The host of the current datbase
-	 */
-	private static $dbhost = '';
-	
-	/**
-	 * The name of the current database
-	 */
-	private static $dbname = '';
-	
-	/**
-	 * The user to login to the current datbase
-	 */
-	private static $dbuser = '';
-	
-	/**
-	 * The password to access the current database
-	 */
-	private static $dbpass = '';
-	
-	/**
-	 * The type of DB being accessed(Postgresql, Mysql, ETC)
-	 */
-	private static $dbtype = '';
-	
-	/**
-	 * A schema to be accessed, if any
-	 */
-	private static $dbschema = '';
-	
-	/**
-	 * Optional prefixes for the tables
-	 */
-	private static $dbprefix = '';
-	
-	/**
-	 * The port for the current database
-	 */
-	private static $dbport = '';
 	
 	/**
 	 * The current database connection being referenced
 	 */
 	private static $current_connecton = '';
-
-	/**
-	 * A row of data
-	 */
-	private static $row;
 	
 	/**
 	 * Protects the class from being initalized multiple times via init
@@ -186,7 +118,7 @@ class Database  {
 	 * 
 	 * @return void
 	 */
-	public static function init($config = array()) {
+	public static function init(array $config = array(), bool $lock = true) {
 		
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
@@ -234,71 +166,117 @@ class Database  {
 	 * @return void
 	 * @access public
 	 */
-	public static function addConnection($connection_name, $args) {
+	public static function addConnection(string $connection_name, array $args) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $connection_name, $args);
 
 		$defaults = array(
-			'dbhost' => '', 
-			'dbname' => '', 
-			'dbuser' => '', 
-			'dbpass' => '', 
 			'dbtype' => '', 
-			'dbschema' => '', 
-			'dbprefix' => '', 
-			'dbport' => ''
 		);
 		
 		$args += $defaults;
+		$args = _fixConnectionStrings($args);
 
 		$args = self::_applyFilter(get_class(), __FUNCTION__, $args, array('event' => 'args'));
-
-		self::$connections[$connection_name]['dbhost'] = $args['dbhost'];
-		self::$connections[$connection_name]['dbname'] = $args['dbname'];
-		self::$connections[$connection_name]['dbuser'] = $args['dbuser'];
-		self::$connections[$connection_name]['dbpass'] = $args['dbpass'];
-		self::$connections[$connection_name]['dbtype'] = $args['dbtype'];
-		self::$connections[$connection_name]['dbschema'] = $args['dbschema'];
-		self::$connections[$connection_name]['dbprefix'] = $args['dbprefix'];
-		self::$connections[$connection_name]['dbport'] = $args['dbport'];
+		
+		if($args['type']== self::$mySQLConnection) {
+			$connection = new Mysql();
+		} else if($args['type']== self::$postgreSQLConnection) {
+			$connection = new Postgresql();
+		} else if($args['type']== self::$mongoConnection) {
+			$connection = new Mongo();
+		} else if(!empty($args['class'])) {
+			$connection = $args['class'];
+		}
+		
+		$connection->setConnection($connection_name, _fixConnectionStrings($args));
+		
+		self::_setConnection($connection_name, $connection);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $connection_name, $args);
 	}
 
 	/**
-	 *Set the database to one in the configuration file or to one passed used the
-	 * Database::addConnection method(). Will close the other database link if open
-	 * and create a new one.
+	 * Fixes the legacy connection strings
+	 * 
+	 * @param array $args cConnection arguements
+	 * 
+	 * @return array $args The args reformatted if they were incorrect
+	 */
+	private static function _fixConnectionStrings(array $args) {
+		
+		if(isset($args['dbhost'])) {
+			$args['host']=$args['dbhost'];
+		}
+		
+		if(isset($args['dbname'])) {
+			$args['database']=$args['dbname'];
+		}
+		
+		if(isset($args['dbuser'])) {
+			$args['login']=$args['dbuser'];
+		}
+		
+		if(isset($args['dbpass'])) {
+			$args['password']=$args['dbpass'];
+		}
+		
+		if(isset($args['dbtype'])) {
+			$args['type']=$args['dbtype'];
+		}
+
+		if(isset($args['dbschema'])) {
+			$args['schema']=$args['dbschema'];
+		}
+		
+		if(isset($args['dbport'])) {
+			$args['port']=$args['dbport'];
+		}
+		
+		return $args;
+	}
+
+	/**
+	 * Set the database to one of the configurations passed in the Database::addConnection method.
+	 * This method can be used to change in between connections
 	 *
 	 * Example:
-	 * Database::setDatabase(0);
+	 * Database::setDatabase('sql');
 	 *
-	 * @param int profile_id: The ID of the profile set in the config.php file
+	 * @param string $connection_name: The ID of connection to connect with
+	 * @param boolean $connect Attemtp to connect to the database
+	 * @param boolean $close_connection Close the current connection before the switch
+	 * 
 	 * @return void
 	 * @access public
 	 */
-	public static function setDatabase($profile_id = 0) {
+	public static function setDatabase(string $connection_name, bool $connect = true, bool $close_connection = false) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $profile_id);
 
-		self::closeDB();
+		if($close_connection) {
+			self::closeDB();
+		}
 
-		$profile_id = self::_applyFilter(get_class(), __FUNCTION__, $profile_id, array('event' => 'args'));
-		self:: $current_connecton = $profile_id;
+		$connection_name = self::_applyFilter(get_class(), __FUNCTION__, $connection_name, array('event' => 'args'));
 		
-		self::$dbhost = self::$connections[$profile_id]['dbhost'];
-		self::$dbuser = self::$connections[$profile_id]['dbuser'];
-		self::$dbpass = self::$connections[$profile_id]['dbpass'];
-		self::$dbtype = self::$connections[$profile_id]['dbtype'];
-		self::$dbname = self::$connections[$profile_id]['dbname'];
-		self::$dbport = self::$connections[$profile_id]['dbport'];
-		self::$dbschema = self::$connections[$profile_id]['dbschema'];
-		self::$dbprefix = self::$connections[$profile_id]['dbprefix'];
-		self::connect();
+		self::$current_connecton = $connection_name;
+		
+		if($connect) {
+			self::connect();
+		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $profile_id);
+		self::_notify(get_class() . '::' . __FUNCTION__, $connection_name);
+	}
+	
+	private static _setConnection($key, &$value) {
+		static::$connections[$key]= &$value;
+	}
+	
+	private static &_getConnection($key) {
+		return static $connections[$key];
 	}
 
 	/**
@@ -313,37 +291,10 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
-		// Connect to the database
-		if (self::$dbtype === self::$mySQLConnection) {
-			mysqli_report(self::$mysql_error_report);
-			$port = !empty(self::$dbport) ? self::$dbport : 3306;
-			self::$link = new \mysqli(self::$dbhost, self::$dbuser, self::$dbpass, self::$dbname, $port);
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$port = !empty(self::$dbport) ? self::$dbport : 5432;
-			self::$link = pg_connect('host=' . self::$dbhost . ' port=' . $port . ' dbname=' . self::$dbname . ' user=' . self::$dbuser . ' password=' . self::$dbpass );
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			self::$link = sqlsrv_connect(self::$dbhost, array("UID" => self::$dbuser, "PWD" => self::$dbpass, "Database" => self::$dbname, 'ReturnDatesAsStrings' => true));
-		} else if (self::$dbtype === self::$sqLiteConnection) {
-			self::$link = sqlite_open(self::$dbname);
-		} else if (self::$dbtype == self::$oracleConnection) {
-			self::$link = oci_connect($user, $pass, $host);
-			$d = new \PDO('oci:dbname=$dbname', '$dbuser', '$dbpass');
-		} else if (self::$dbtype === self::$mongoConnection) {
-			
-			if(class_exists('\\MongoDB\Driver\Manager')) {	
-				//self::$link = new \MongoDB\Driver\Manager('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
-				self::$link = new \MongoDB\Client('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
-				self::$link ->selectDatabase(self::$dbname);
-			} else if(class_exists ('MongoClient')) {
-				self::$link = new \MongoClient('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
-				$database = self::$dbname;
-				self::$link = self::$link ->selectDB($database);
-			} else {
-				self::$link = new Mongo('mongodb://'.self::$dbuser.':'.self::$dbpass.'@'.self::$dbhost);
-				$database = self::$dbname;
-				self::$link = self::$link ->selectDB($database);
-			}
-			
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		if(!$connection->isActive()) {
+			$connection->connection();
 		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__);
@@ -366,27 +317,12 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $query);
 
-		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'args'));
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		if (self::$dbtype === self::$mySQLConnection) {
-			self::$theQuery = $query;
-			$result = self::$link -> query($query);
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			self::$theQuery = $query;
-			$result = pg_query(self::$link, $query);
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			self::$theQuery = $query;
-			$result = sqlsrv_query(self::$link, $query, array(), array("Scrollable" => SQLSRV_CURSOR_KEYSET));
-		} else if (self::$dbtype === self::$sqLiteConnection) {
-			self::$theQuery = $query;
-			$result = sqlite_query(self::$link, $query);
-		} else if (self::$dbtype == self::$oracleConnection) {
-			self::$theQuery = $query;
-			$stid = oci_parse(self::$link, $query);
-			$result = oci_execute($stid);
-		}
+		$result = $connection->query($query);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $query, $result);
+		
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
 
 		return $result;
@@ -412,35 +348,22 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $query, $returnField, $returnTable);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('query' => $query, 'returnField' => $returnField, 'returnTable' => $returnTable), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'query' => $query, 
+			'returnField' => $returnField, 
+			'returnTable' => $returnTable
+		), array('event' => 'args'));
+		
 		$query = $filtered['query'];
 		$returnField = $filtered['returnField'];
 		$returnTable = $filtered['returnTable'];
 
-		if (self::$dbtype === self::$mySQLConnection) {
-			self::$theQuery = $query;
-			self::$link -> query($query);
-			$id = self::$link -> insert_id;
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			self::$theQuery = $query . " RETURNING $returnField ";
-			$result = pg_exec($query . " RETURNING $returnField ");
-			$row = self::fetchArray($result);
-			$id = $row[$returnField];
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			self::$theQuery = $query;
-			sqlsrv_query(self::$link, $query);
-			$query = "SELECT @@IDENTITY AS $returnField FROM $returnTable;";
-			$result = self::query($query);
-			$row = self::fetchArray($result);
-			$field_value = $row[$returnField];
-			$id = $field_value;
-		} else if (self::$dbtype == self::$oracleConnection) {
-			self::$theQuery = $query;
-			$stid = oci_parse(self::$link, $query);
-			$id = oci_execute($stid);
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$id = $connection->returnLastInsert($query, $returnField, $returnTable);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $id, $query, $returnField, $returnTable);
+		
 		$id = self::_applyFilter(get_class(), __FUNCTION__, $id, array('event' => 'return'));
 
 		return $id;
@@ -466,22 +389,13 @@ class Database  {
 			return self::_callAdapter(get_class(), __FUNCTION__, $result);
 
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'args'));
-
-		if (self::$dbtype === self::$mySQLConnection) {
-			$count = self::$link -> affected_rows;
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$count = pg_num_rows($result);
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$count = sqlsrv_num_rows($result);
-		} else if (self::$dbtype === self::$sqLiteConnection) {
-			$count = sqlite_num_rows($result);
-		} else if (self::$dbtype == self::$oracleConnection) {
-			self::$theQuery = $query;
-			$stid = oci_parse(self::$link, $query);
-			$count = oci_execute($stid);
-		}
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$count = $connection-> resultRowCount($result);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result);
+		
 		$count = self::_applyFilter(get_class(), __FUNCTION__, $count, array('event' => 'return'));
 
 		return $count;

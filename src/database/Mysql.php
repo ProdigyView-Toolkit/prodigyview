@@ -21,9 +21,13 @@ class Mysql implements DBInterface {
 	
 	protected $_login = null;
 	
+	protected $_password = null;
+	
 	protected $_connectionType = null;
 	
 	protected $_connectionName = null;
+	
+	protected $_socket = null;
 	
 	protected $_type = 'mysql';
 	
@@ -45,7 +49,7 @@ class Mysql implements DBInterface {
 		return $this->_database;
 	}
 	
-	public function connect($name, $options = array()) {
+	public function setConnection($name, array $options = array()) {
 		
 		$defaults = array(
 			'port'=> 3306,
@@ -62,12 +66,27 @@ class Mysql implements DBInterface {
 		$this->_database = $options['database'];
 		$this->_schema = $options['schema'];
 		$this->_login = $options['login'];
+		$this->_password = $options['password'];
 		$this->_connectionType=$options['connect_type'];
+		$this->_socket= $options['socket'];
 		
-		$this->_link = new \mysqli($options['host'], $options['login'], $options['password'], $options['database'], $options['port'], $options['socket']);
+	}
+	
+	public function connect() {
+		
+		$this->_link = new \mysqli($this -> _host, $this->_login, $this->_password, $this->_database, $this->_port, $this->_socket);
 				
 		return $this->_link;
 		
+	}
+	
+	public function isActive() {
+		
+		if($this->_link) {
+			return true;
+		}
+		
+		return false;
 	}
 
 	public function query($query) {
