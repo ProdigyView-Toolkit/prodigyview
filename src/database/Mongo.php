@@ -2,9 +2,83 @@
 
 namespace prodigyview\database;
 
-class Mongo {
+use prodigyview\design\InstanceObject;
+use prodigyview\util\Validator;
+
+class Mongo implements DBInterface {
 	
 	use InstanceObject, SQL;
+	
+	protected $_link = null;
+	
+	protected $_host = null;
+	
+	protected $_port = null;
+	
+	protected $_database = null;
+	
+	protected $_schema = null;
+	
+	protected $_login = null;
+	
+	protected $_connectionType = null;
+	
+	protected $_connectionName = null;
+	
+	protected $_type = 'mongodb';
+	
+	protected $_row = array();
+	
+	public function getHost() {
+		return $this->_host;
+	}
+	
+	public function getPort() {
+		return $this->_port;
+	}
+	
+	public function getLogin() {
+		return $this->_login;
+	}
+	
+	public function getDatabase() {
+		return $this->_database;
+	}
+	
+	public function connect($name, $options = array()) {
+		
+		$defaults = array(
+			'port'=> '',
+			'schema'=> '',
+			'password' => '',
+			'connect_type' => PGSQL_CONNECT_FORCE_NEW
+		);
+		
+		$options += $defaults;
+		
+		$this->_connectionName = $name;
+		$this->_host = $options['host'];
+		$this->_port = $options['port'];
+		$this->_database = $options['database'];
+		$this->_schema = $options['schema'];
+		$this->_login = $options['login'];
+		$this->_connectionType=$options['connect_type'];
+		
+		if(class_exists('\\MongoDB\Driver\Manager')) {	
+			$this->_link = new \MongoDB\Client('mongodb://'.$options['login'].':'.$options['password'].'@'.$options['host'], [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+			$this->_link->selectDatabase($options['database']);
+		} else if(class_exists ('MongoClient')) {
+			$this->_link = new \MongoClient('mongodb://'.$options['login'].':'.$options['password'].'@'.$options['host']);
+			$this->_link = $this->_link ->selectDB($options['database']);
+		} else {
+			$this->_link = new Mongo('mongodb://'.$options['login'].':'.$options['password'].'@'.$options['host']);
+			$this->_link = $this->_link ->selectDB($options['database']);
+		}
+		
+				
+		return $this->_link;
+		
+	}
 
 	/**
 	 * Because MongoDV does not have a true query, this function will act as a find, and pass the details to
@@ -14,7 +88,7 @@ class Mongo {
 	 * 
 	 * @return mixed
 	 */
-	public function query(array $query) {
+	public function query($query) {
 		return $this -> selectStatement($query);
 
 	}
@@ -22,7 +96,7 @@ class Mongo {
 	/**
 	 * DO NOT USE. Please use preparedReturnLastInsert instead
 	 */
-	public function return_last_insert_query($query, $returnField = '', $returnTable = ''){
+	public function returnLastInsert($query, $returnField = '', $returnTable = ''){
 		return false;
 	}
 
@@ -38,13 +112,24 @@ class Mongo {
 	 */
 	public function fetchArray($result) {
 		
+		$data = array();
+		
+		if(!$result) {
+			return $data;
+		}
+		
+		foreach ($result as $key => $value) {
+			$data[] = $value;
+		}
+		
+		return $data;
 	}
 
 	/**
 	 * DO NOT USE WITH MONGO
 	 */
 	public function fetchFields($result) {
-		
+		return $this->fetchArray($result);
 	}
 
 	/**
@@ -77,7 +162,7 @@ class Mongo {
 	 * 
 	 * @return mixed
 	 */
-	public function clearTableData($tablename, $options = '') {
+	public function clearTableData($table_name, $options = '') {
 		
 		return $this->dropTable($table_name);
 		
@@ -92,17 +177,17 @@ class Mongo {
 	 * @return boolean
 	 */
 	public function tableExist($tablename, $schema = '') {
-		$collections = self::$link->getCollectionNames();
 		
-		$found = false;
+		$collections = $this->_link->selectDatabase($this->_database)->listCollections();
+		
 		
 		foreach($collections as $collection) {
-			if($collection == $tablename) {
-				$found = true;
+			if($collection->getName() == $tablename) {
+				return true;
 			}
 		}
 		
-		return found;
+		return false;
 	}
 
 	
@@ -180,7 +265,7 @@ class Mongo {
 	 * @return boolean Returns booleans based on the success or failure of the insert
 	 */
 	public function insertStatement($table_name, $data, $options = array()) {
-		$collection = self::_setMongoCollection($table_name, $options);
+		$collection = $this->_setMongoCollection($table_name, $options);
 
 		$result = null;
 		
@@ -207,8 +292,8 @@ class Mongo {
 	 * @param array $data The new data to update the record(s) with
 	 * @param array $wherelist The conditionals for deciding what data to update
 	 */
-	public function updateStatement(string $table, array $data, array $wherelist = array(), $options = array()) {
-		$collection = self::_setMongoCollection($table, $options);
+	public function updateStatement($table, $data, $wherelist = array(), $options = array()) {
+		$collection = $this->_setMongoCollection($table, $options);
 
 		$result = null;
 		
@@ -235,10 +320,11 @@ class Mongo {
 	 * @return array $results
 	 */
 	public function selectStatement(array $args, array $options = array()) {
+		
 		$where = (!empty($args['where'])) ? $args['where'] : array();
 		$fields = (!empty($args['fields']) && $args['fields'] != '*') ? $args['fields'] : array();
 
-		$collection = self::_setMongoCollection($args['table'], $options);
+		$collection = $this->_setMongoCollection($args['table'], $options);
 
 		if (isset($options['findOne']) && $options['findOne']) {
 
@@ -260,10 +346,12 @@ class Mongo {
 			}
 
 		}
+		
+		return $result;
 	}
 
 	public function deleteStatement(array $args, array $options = array()) {
-		$collection = self::_setMongoCollection($args['table'], $options);
+		$collection = $this->_setMongoCollection($args['table'], $options);
 		$where = (!empty($args['where'])) ? $args['where'] : array();
 
 		if (class_exists('\\MongoDB\Driver\Manager')) {
@@ -273,11 +361,13 @@ class Mongo {
 		}
 	}
 
-	public function preparedQuery($query, $data, $formats = '');
+	public function preparedQuery($query, $data, $formats = '') {
+		
+	}
 
 	public function preparedInsert($table_name, $data, $formats = array()) {
 
-		$collection = self::_setMongoCollection($table);
+		$collection = $this->_setMongoCollection($table_name);
 
 		if (class_exists('\\MongoDB\Driver\Manager')) {
 			$collection->insertOne($data);
@@ -289,7 +379,7 @@ class Mongo {
 
 	public function preparedReturnLastInsert($table_name, $returnField, $returnTable, $data, $formats = array(), $options = array()) {
 
-		$collection = self::_setMongoCollection($table_name, $options);
+		$collection = $this->_setMongoCollection($table_name, $options);
 
 		if (isset($options['batchInsert']) && $options['batchInsert']) {
 			$collection->batchInsert($data, $options);
@@ -319,17 +409,15 @@ class Mongo {
 		
 	}
 
-	public function selectPreparedStatement(array $args, array $options = array()) {
+	public function preparedSelectStatement(array $args, array $options = array()) {
 
-		$collection = self::_setMongoCollection(self::$link->$table_name);
-
-		$result = $collection->find($args);
+		return $this->selectStatement($args);
 
 	}
 
 	public function preparedUpdate($table, $data, $wherelist, $formats = array(), $whereformats = array(), $options = array()) {
 
-		$collection = self::_setMongoCollection($table, $options);
+		$collection = $this->_setMongoCollection($table, $options);
 		if (class_exists('\\MongoDB\Driver\Manager')) {
 			$result = $collection->updateMany($wherelist, array('$set' => $data), $options);
 		} else {
@@ -349,7 +437,7 @@ class Mongo {
 	 * @return void
 	 */
 	public function preparedDelete($table, $wherelist = array(), $whereformats = array(), $options = array()) {
-		$collection = self::_setMongoCollection($table, $options);
+		$collection = $this->_setMongoCollection($table, $options);
 		if (class_exists('\\MongoDB\Driver\Manager')) {
 			$result = $collection->deleteMany($wherelist, $options);
 		} else {
@@ -376,15 +464,20 @@ class Mongo {
 	/**
 	 * Do Not Use in MongoDB
 	 */
-	protected function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true){
+	public function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true){
 		return $column;
 	}
 
 
 	/**
 	 * Do Not Use in MongoDB
+	 * 
+	 * @todo figureout how
 	 */
-	public function createTable($table_name, $columns = array(), $options = array());
+	public function createTable($table_name, $columns = array(), $options = array()) {
+		
+		//$this->command($table_name, $options);
+	}
 	
 	/**
 	 * Do Not Use in MongoDB
@@ -397,29 +490,32 @@ class Mongo {
 		
 	}
 
-	protected function getAutoIncrement() {
-		
+	public function getAutoIncrement() {
+		return '';
 	}
 
-	protected function columnTypeMap($type) {
+	public function columnTypeMap($type) {
+		return $type;
 	}
 
 	public function dropColumn($table_name, $column_name, $options = array()) {
-		$collection = self::_setMongoCollection($table, $options);
-		$update = array('$unset' => array($column_name => true));
+		$collection = $this->_setMongoCollection($table_name, $options);
+		$update = array('$unset' => array($column_name => true), 'table' => $table_name);
 		
 		$this -> query($update);
 	}
 
 	public function dropTable($table_name, $options = array()) {
-		$collection = self::_setMongoCollection($table, $options);
-
+		$collection = $this->_setMongoCollection($table_name, $options);
+		
 		$response = $collection->drop();
 
 		return $response;
 	}
 
-	public function catchDBError();
+	public function catchDBError() {
+		
+	}
 
 	/**
 	 * Sets the current MongoDB collection to use
@@ -430,20 +526,20 @@ class Mongo {
 	 *
 	 * @return object The collection
 	 */
-	protected static function _setMongoCollection($table_name, $options = array()) {
+	protected function _setMongoCollection($table_name, $options = array()) {
 
 		$defaults = array('gridFS' => false);
 
 		$options += $defaults;
 
 		if (class_exists('\\MongoDB\Driver\Manager')) {
-			$collection = self::$link->selectCollection(self::$dbname, $table_name);
+			$collection = $this->_link->selectCollection($this->_database, $table_name);
 		} else {
 
 			if ($options['gridFS']) {
-				$collection = self::$link->getGridFS($table_name);
+				$collection = $this->_link->getGridFS($table_name);
 			} else {
-				$collection = self::$link->$table_name;
+				$collection = $this->_link->$table_name;
 			}
 		}
 

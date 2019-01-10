@@ -51,7 +51,7 @@ class Mysql implements DBInterface {
 			'port'=> 3306,
 			'schema'=> '',
 			'password' => '',
-			'connect_type' => PGSQL_CONNECT_FORCE_NEW
+			'socket' => ini_get("mysqli.default_socket")
 		);
 		
 		$options += $defaults;
@@ -64,7 +64,7 @@ class Mysql implements DBInterface {
 		$this->_login = $options['login'];
 		$this->_connectionType=$options['connect_type'];
 		
-		$this->_link = new \mysqli($options['host'], $options['login'], $options['password'], $options['database'], $options['port']);
+		$this->_link = new \mysqli($options['host'], $options['login'], $options['password'], $options['database'], $options['port'], $options['socket']);
 				
 		return $this->_link;
 		

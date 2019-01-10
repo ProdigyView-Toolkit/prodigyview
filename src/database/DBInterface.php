@@ -78,10 +78,6 @@ interface DBInterface {
 	
 	public function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true);
 	
-	public function bindParameters(&$statement, &$params);
-	
-	public function stmt_bind_assoc(&$stmt, &$out);
-	
 	public function createTable($table_name, $columns = array(), $options = array());
 	
 	public function addColumn($table_name, $column_name, $column_data = array(), $options = array());
