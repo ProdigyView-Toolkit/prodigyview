@@ -101,7 +101,7 @@ trait StaticFilter {
 
 				if ($function['type'] === 'closure')
 					$passable_args[0] = call_user_func_array($function['method'], $passable_args);
-				else if ($function['object'] === 'instance')
+				else if ($function['type'] === 'instance')
 					$passable_args[0] = self::_invokeMethod($function['class'], $function['method'], $passable_args);
 				else
 					$passable_args[0] = self::_invokeStaticMethod($function['class'], $function['method'], $passable_args);

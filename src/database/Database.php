@@ -588,7 +588,7 @@ class Database  {
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
-		$connection->clearTableData($tablename, $options);
+		$query = $connection->clearTableData($tablename, $options);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $query, $tablename, $options);
 

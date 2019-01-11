@@ -134,7 +134,7 @@ class Tools {
 	 *
 	 * @return string 
 	 */
-	public function removeWhiteSpace(string $string) : string {
+	public static function removeWhiteSpace(string $string) : string {
 		
 		$string = preg_replace('/\s+/', '', $string);
 		
@@ -148,7 +148,7 @@ class Tools {
 	 *
 	 * @return string 
 	 */
-	public function removeNonAsciiCharacters(string $string) : string {
+	public static function removeNonAsciiCharacters(string $string) : string {
 		
 		$string = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $string);
 		
@@ -166,7 +166,7 @@ class Tools {
 	 * @return mixed $path Returns a path if the array was found, otherwise returns false
 	 * @access public
 	 */
-	function arraySearchRecursive(string $needle, array $haystack, bool $strict = false, array $path = array()){
+	public static function arraySearchRecursive(string $needle, array $haystack, bool $strict = false, array $path = array()){
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $needle, $haystack, $strict, $path);

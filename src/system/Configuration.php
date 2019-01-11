@@ -165,6 +165,38 @@ class Configuration {
 
 		return $value;
 	}
+	
+	/**
+	 * Load a configuration option from the ENV of the server. Otherwise a default ENV will be used.
+	 * 
+	 * @param string $value The ENV value to look for
+	 * @param string $default a default value to return
+	 * 
+	 * @return string $env
+	 */
+	public static function env(string $value, string $default = '') {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $value, $default);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'value' => $value,
+			'default' => $default
+		), array('event' => 'args'));
+		
+		$value = $filtered['value'];
+		$default = $filtered['default'];
+		
+		$env_value = getenv($value);
+		
+		if($env_value === false) {
+			$env_value = $default;
+		}
+		
+		$env_value = self::_applyFilter(get_class(), __FUNCTION__, $env_value, array('event' => 'return'));
+		
+		return $env_value;
+	}
 
 	/**
 	 * Outside of the standardrd xml file reading, a custom xml configuration

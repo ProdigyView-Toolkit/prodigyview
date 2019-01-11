@@ -226,16 +226,12 @@ class Server {
 
 		if ($mem < 1024) {
 
-			$$memory = $mem . ' B';
+			$memory = $mem . ' B';
 
 		} elseif ($mem < 1048576) {
-
 			$memory = round($mem / 1024, 2) . ' KB';
-
 		} else {
-
 			$memory = round($mem / 1048576, 2) . ' MB';
-
 		}
 
 		$memory = self::_applyFilter(get_class(), __FUNCTION__, $memory, array('event' => 'return'));

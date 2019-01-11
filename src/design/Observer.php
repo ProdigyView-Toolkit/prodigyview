@@ -81,10 +81,10 @@ trait Observer {
 
 				if ($options['type'] === 'closure')
 					call_user_func_array($options['method'], $passable_args);
-				else if ($options['object'] === 'instance')
-					self::_invokeMethod($options['class'], $options['method'], $passable_args);
+				else if ($options['type'] === 'instance')
+					$this->_invokeMethod($options['class'], $options['method'], $passable_args);
 				else
-					self::_invokeStaticMethod($options['class'], $options['method'], $passable_args);
+					$this->_invokeStaticMethod($options['class'], $options['method'], $passable_args);
 			}//end for each
 		}
 

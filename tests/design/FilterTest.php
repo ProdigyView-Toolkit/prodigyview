@@ -57,7 +57,7 @@ class FilterInstanceTest {
  */
 class FilterStaticTest {
 	
-	public function filter($string) {
+	public static function filter($string) {
 		return $string . '_instance_static';
 	}
 }

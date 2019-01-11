@@ -409,7 +409,7 @@ class Template {
 
 		self::$flashMessages[$options['session']][$type][] = $message;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $div, $message, $options);
+		self::_notify(get_class() . '::' . __FUNCTION__, $type, $message, $options);
 	}
 	
 	/**

@@ -83,7 +83,7 @@ trait StaticObserver {
 
 				if ($options['type'] === 'closure')
 					call_user_func_array($options['method'], $passable_args);
-				else if ($options['object'] === 'instance')
+				else if ($options['type'] === 'instance')
 					self::_invokeMethod($options['class'], $options['method'], $passable_args);
 				else
 					self::_invokeStaticMethod($options['class'], $options['method'], $passable_args);

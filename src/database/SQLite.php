@@ -5,6 +5,10 @@ namespace prodigyview\database;
 use prodigyview\design\InstanceObject;
 use prodigyview\util\Validator;
 
+if(!defined('SQLITE3_ASSOC')) {
+	define('SQLITE3_ASSOC', 1);
+}
+
 class SQLite implements DBInterface {
 
 	use InstanceObject, SQL;
@@ -20,8 +24,6 @@ class SQLite implements DBInterface {
 	protected $_schema = null;
 	
 	protected $_login = null;
-	
-	protected $_connectionType = null;
 	
 	protected $_connectionName = null;
 	
@@ -62,7 +64,6 @@ class SQLite implements DBInterface {
 		$this->_database = $options['database'];
 		$this->_schema = $options['schema'];
 		$this->_login = $options['login'];
-		$this->_connectionType=$options['connect_type'];
 		
 		$this->_link = new SQLite3('mysqlitedb.db');
 				
@@ -91,40 +92,21 @@ class SQLite implements DBInterface {
 		return $count;
 	}
 
-	public function fetchArray($result) {
+	public function fetchArray($result, $mode=SQLITE3_ASSOC) {
 
-		if (get_class($result) == 'mysqli_result') {
-			$array = $result->fetch_array();
-		} else if (get_class($result) == 'mysqli_stmt') {
-			$result->fetch();
+		$data = $result->fetchArray($mode);
 
-			$array = array();
-			foreach ($this->_row as $key => $value) {
-				$array[$key] = $value;
-			}
-		}
-
-		return $array;
+		return $data;
 	}
 
-	public function fetchFields($result, $type = MYSQLI_BOTH) {
+	public function fetchFields($result, $mode = SQLITE3_ASSOC) {
 
-		$fields = null;
-
-		if (method_exists($result, 'fetch_all')) {
-			$fields = $result->fetch_all($type);
-		} else {
-			$fields = array();
-			while ($row = $result->fetch_assoc()) {
-				$fields[] = $row;
-			}
-		}
-		return $fields;
+		return $this->fetchArray($result, $mode);
 	}
 
 	public function makeSafe($string) {
 
-		$sanitized_string = $this->_link->real_escape_string($string);
+		$sanitized_string = $this->_link->escapeString($string);
 
 		return $sanitized_string;
 
@@ -151,15 +133,16 @@ class SQLite implements DBInterface {
 
 		$tablename = $this->makeSafe($tablename);
 
-		$query = "TRUNCATE TABLE $tablename $options";
+		$query = "DELETE FROM  $tablename $options";
 
 		$this->query($query);
 	}
 
 	public function tableExist($tablename, $schema = '') {
-		$query = "show tables like \"$tablename\";";
+		$query = "SELECT name FROM sqlite_master WHERE type='table' AND name='$tablename'; ";
 
 		$result = $this->query($query);
+		
 		$count = $this->resultRowCount($result);
 
 		if ($count <= 0 && empty($count)) {
@@ -171,18 +154,23 @@ class SQLite implements DBInterface {
 
 	public function columnExist($table_name, $field_name) {
 
-		$query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = '" . $this->_database . "' AND table_name = '$table_name' AND column_name = '$field_name' ";
+		$exist = false;
+		
+		$table_name = $this->makeSafe($table_name);
+		
+		$query = "PRAGMA table_info({$table_name}); ";
 
 		$result = $this->query($query);
-		$count = $this->resultRowCount($result);
-		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
-
-		if ($count <= 0) {
-			return FALSE;
+		
+		while($col = $this->fetchArray($result)) {
+			if($col == $field_name) {
+				$exist = true;
+			}
 		}
+		$count = $this->resultRowCount($result);
+		self::_notify(get_class() . '::' . __FUNCTION__, $exist, $result, $table_name, $field_name);
 
-		return TRUE;
-
+		return $exist;
 	}
 
 	public function getSQLRandomOperator() {
@@ -216,11 +204,11 @@ class SQLite implements DBInterface {
 	}
 
 	public function getDatabaseType() {
-		return 'mysql';
+		return $this->_type;
 	}
 
 	public function getConnectionName() {
-
+		return $this->_connectionName;
 	}
 
 	public function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count') {
@@ -323,13 +311,14 @@ class SQLite implements DBInterface {
 
 		$first = 1;
 		$count = 0;
+		
 		foreach ($data as $key => $value) {
 			if ($first) {
 				$values .= $key;
-				$placeholders .= ' ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
+				$placeholders .= ' ' . $this->getPreparedPlaceHolder($key) . ' ';
 			} else {
 				$values .= ' , ' . $key;
-				$placeholders .= ', ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
+				$placeholders .= ', ' . $this->getPreparedPlaceHolder($key) . ' ';
 			}
 
 			$first = 0;
@@ -343,30 +332,15 @@ class SQLite implements DBInterface {
 
 		$query .= $values . ' VALUES' . $placeholders;
 
-		$template_name = md5($query);
-
 		$stmt = $this->_link->prepare($query);
-
-		if (!$stmt) {
-			error_log('Unable To Prepare Query:' . $query);
-			//exit();
-		}
-
-		$count = 1;
-		$refs = array();
-		$type = '';
-
-		foreach ($data as $k => $v) {
-			$refs[$k] = &$data[$k];
-			$type .= 's';
-		}
-
-		call_user_func_array(array(
-			$stmt,
-			'bind_param'
-		), array_merge(array($type), $refs));
-
-		return $stmt->execute();
+		
+		foreach ($data as $key => $value) {
+			$stmt->bindValue(':'.$key, $value, SQLITE3_TEXT);
+		}//end foreach;
+		
+		$result = $stmt->execute();
+		
+		return $result;
 
 	}
 
@@ -388,10 +362,10 @@ class SQLite implements DBInterface {
 		foreach ($data as $key => $value) {
 			if ($first) {
 				$values .= $key;
-				$placeholders .= ' ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
+				$placeholders .= ' ' . $this->getPreparedPlaceHolder($key) . ' ';
 			} else {
 				$values .= ' , ' . $key;
-				$placeholders .= ', ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
+				$placeholders .= ', ' . $this->getPreparedPlaceHolder($key) . ' ';
 			}
 
 			$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
@@ -406,13 +380,13 @@ class SQLite implements DBInterface {
 
 		$query .= $values . $placeholders;
 
-		$template_name = md5($query);
-
 		$stmt = $this->_link->prepare($query);
-		$this->bindParameters($stmt, $params);
+		
 		foreach ($data as $key => $value) {
-			$params[$key] = $value;
-		}
+			$stmt->bindValue(':'.$key, $value, SQLITE3_TEXT);
+		}//end foreach;
+		
+		
 		$stmt->execute();
 		$id = $this->_link->insert_id;
 
@@ -651,8 +625,8 @@ class SQLite implements DBInterface {
 		return $result;
 	}
 
-	public function getPreparedPlaceHolder($count = 1) {
-		$placeholder = '?';
+	public function getPreparedPlaceHolder($key) {
+		$placeholder = ':'.$key;
 
 		return $placeholder;
 	}
@@ -749,7 +723,7 @@ class SQLite implements DBInterface {
 			$table_name = $this->formatTableName($table_name);
 
 		
-		$query = 'ALTER TABLE ' . $table_name . ' ADD ' . $this->formatColumn($column_name, $column_data) . ';';
+		$query = 'ALTER TABLE ' . $table_name . ' ADD COLUMN ' . $this->formatColumn($column_name, $column_data) . ';';
 		
 
 		if ($options['execute'])

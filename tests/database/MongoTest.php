@@ -216,7 +216,7 @@ class MongoTest extends TestCase{
 	
 	public function testIDColumn() {
 		
-		$column = 'id';
+		$column = '_id';
 		
 		$result = $this->_db->formatColumn($column, $this->_columns[$column]);
 		

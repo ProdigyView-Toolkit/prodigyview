@@ -136,10 +136,10 @@ trait Adapter {
 
 		if ($options['type'] === 'closure')
 			return call_user_func_array($options['call_class'], $passable_args);
-		else if ($options['object'] === 'instance')
-			return self::_invokeMethod($options['call_class'], $options['call_method'], $passable_args);
+		else if ($options['type'] === 'instance')
+			return $this->_invokeMethod($options['call_class'], $options['call_method'], $passable_args);
 		else
-			return self::_invokeStaticMethod($options['call_class'], $options['call_method'], $passable_args);
+			return $this->_invokeStaticMethod($options['call_class'], $options['call_method'], $passable_args);
 
 	}//end _callAdapter
 
