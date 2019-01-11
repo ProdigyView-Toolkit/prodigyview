@@ -27,6 +27,7 @@ use prodigyview\design\StaticInstance;
  * ```
  *
  * @package network
+ * @deprecated No longer need with CURL and Socket
  */
 class Communicator {
 	

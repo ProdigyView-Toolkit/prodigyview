@@ -7,6 +7,8 @@ use prodigyview\design\StaticObject;
 /**
  * The Server class is designd to interface with the server to give information on
  * the current hardware and the operating system.
+ * 
+ * @package system
  */
 class Server {
 	

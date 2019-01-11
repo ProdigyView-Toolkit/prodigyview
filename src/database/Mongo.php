@@ -23,8 +23,6 @@ class Mongo implements DBInterface {
 	
 	protected $_password = null;
 	
-	protected $_connectionType = null;
-	
 	protected $_connectionName = null;
 	
 	protected $_type = 'mongo';
@@ -53,7 +51,6 @@ class Mongo implements DBInterface {
 			'port'=> '',
 			'schema'=> '',
 			'password' => '',
-			'connect_type' => PGSQL_CONNECT_FORCE_NEW
 		);
 		
 		$options += $defaults;
@@ -65,7 +62,6 @@ class Mongo implements DBInterface {
 		$this->_schema = $options['schema'];
 		$this->_login = $options['login'];
 		$this->_password = $options['password'];
-		$this->_connectionType=$options['connect_type'];
 		
 	}
 	
@@ -308,7 +304,12 @@ class Mongo implements DBInterface {
 	 * @param array $wherelist The conditionals for deciding what data to update
 	 */
 	public function updateStatement($table, $data, $wherelist = array(), $options = array()) {
+		
 		$collection = $this->_setMongoCollection($table, $options);
+		
+		if(isset($wherelist['_id']) && !($wherelist['_id'] instanceof \MongoDB\BSON\ObjectId)) {
+			$wherelist['_id'] = new \MongoDB\BSON\ObjectId($wherelist['_id']);
+		}
 
 		$result = null;
 		
@@ -338,7 +339,11 @@ class Mongo implements DBInterface {
 		
 		$where = (!empty($args['where'])) ? $args['where'] : array();
 		$fields = (!empty($args['fields']) && $args['fields'] != '*') ? $args['fields'] : array();
-
+		
+		if(isset($where['_id']) && !($where['_id'] instanceof \MongoDB\BSON\ObjectId)) {
+			$where['_id'] = new \MongoDB\BSON\ObjectId($where['_id']);
+		}
+		
 		$collection = $this->_setMongoCollection($args['table'], $options);
 
 		if (isset($options['findOne']) && $options['findOne']) {
@@ -368,6 +373,10 @@ class Mongo implements DBInterface {
 	public function deleteStatement(array $args, array $options = array()) {
 		$collection = $this->_setMongoCollection($args['table'], $options);
 		$where = (!empty($args['where'])) ? $args['where'] : array();
+		
+		if(isset($where['_id']) && !($where['_id'] instanceof \MongoDB\BSON\ObjectId)) {
+			$where['_id'] = new \MongoDB\BSON\ObjectId($where['_id']);
+		}
 
 		if (class_exists('\\MongoDB\Driver\Manager')) {
 			$result = $collection->deleteMany($where, $options);
@@ -395,6 +404,7 @@ class Mongo implements DBInterface {
 	public function preparedReturnLastInsert($table_name, $returnField, $returnTable, $data, $formats = array(), $options = array()) {
 
 		$collection = $this->_setMongoCollection($table_name, $options);
+		
 
 		if (isset($options['batchInsert']) && $options['batchInsert']) {
 			$collection->batchInsert($data, $options);
@@ -418,6 +428,8 @@ class Mongo implements DBInterface {
 				$id = $data['_id'];
 			}
 		}
+		
+		return $id->__toString();
 	}
 
 	public function preparedSelect($query, $data, array $formats = array(), array $options = array()) {
@@ -433,6 +445,11 @@ class Mongo implements DBInterface {
 	public function preparedUpdate($table, $data, $wherelist, $formats = array(), $whereformats = array(), $options = array()) {
 
 		$collection = $this->_setMongoCollection($table, $options);
+		
+		if(isset($wherelist['_id']) && !($wherelist['_id'] instanceof \MongoDB\BSON\ObjectId)) {
+			$wherelist['_id'] = new \MongoDB\BSON\ObjectId($wherelist['_id']);
+		}
+		
 		if (class_exists('\\MongoDB\Driver\Manager')) {
 			$result = $collection->updateMany($wherelist, array('$set' => $data), $options);
 		} else {
@@ -453,6 +470,11 @@ class Mongo implements DBInterface {
 	 */
 	public function preparedDelete($table, $wherelist = array(), $whereformats = array(), $options = array()) {
 		$collection = $this->_setMongoCollection($table, $options);
+		
+		if(isset($wherelist['_id'])) {
+			$wherelist['_id'] = new \MongoDB\BSON\ObjectId($wherelist['_id']);
+		}
+		
 		if (class_exists('\\MongoDB\Driver\Manager')) {
 			$result = $collection->deleteMany($wherelist, $options);
 		} else {
