@@ -1,6 +1,9 @@
 <?php
 namespace prodigyview\database;
 
+use prodigyview\util\Validator;
+
+
 trait SQL {
 
 	/**
@@ -21,15 +24,15 @@ trait SQL {
 		
 		$query = '';
 		
-		if(PVValidator::isInteger($key)){
+		if(Validator::isInteger($key)){
 			$key = 'AND';
 		}
 		
 		foreach($args as $subkey => $arg) {
 			
-			if(($subkey == '>=' ||  $subkey ==  '>' || $subkey ==  '<' || $subkey ==  '<=' || $subkey ==  '!=') && !PVValidator::isInteger($subkey)) 
+			if(($subkey == '>=' ||  $subkey ==  '>' || $subkey ==  '<' || $subkey ==  '<=' || $subkey ==  '!=') && !Validator::isInteger($subkey)) 
 					$operator = $subkey;
-			else if(!PVValidator::isInteger($subkey))
+			else if(!Validator::isInteger($subkey))
 				$key = $subkey;
 			
 			if(is_array($arg)) {
