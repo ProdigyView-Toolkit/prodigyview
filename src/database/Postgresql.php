@@ -14,6 +14,10 @@ if(!defined('PGSQL_BOTH')) {
 	define('PGSQL_BOTH', 0);
 }
 
+if(!defined('PGSQL_ASSOC')) {
+	define('PGSQL_ASSOC', 1);
+}
+
 class Postgresql implements DBInterface {
 	
 	use InstanceObject, SQL;
@@ -37,6 +41,8 @@ class Postgresql implements DBInterface {
 	protected $_connectionName = null;
 	
 	protected $_type = 'postgresql';
+	
+	protected $_fetchDataResultType = PGSQL_ASSOC;
 	
 	public function getHost() {
 		return $this->_host;
@@ -73,6 +79,11 @@ class Postgresql implements DBInterface {
 		$this->_login = $options['login'];
 		$this->_password = $options['password'];
 		$this->_connectionType = $options['connect_type'];
+		
+		//Change the result type
+		if(isset($options['fetch_data_result_type'])) {
+			$this->_fetchDataResultType=$options['fetch_data_result_type'];
+		}
 		
 		$options += $defaults;
 		
@@ -144,7 +155,12 @@ class Postgresql implements DBInterface {
 	 * 
 	 * @return
 	 */
-	public function fetchArray($result, $row = null, $type = PGSQL_BOTH) {
+	public function fetchArray($result, $row = null, $type = null) {
+		
+		if(!$type) {
+			$type = $this->_fetchDataResultType;
+		}
+		
 		$array = pg_fetch_array($result, $row, $type);
 
 		return $array;
@@ -588,7 +604,11 @@ class Postgresql implements DBInterface {
 		$query_name = md5($query);
 		
 		// Prepare a query for execution
-		$result = pg_prepare($this->_link, $query_name, $query);
+		$result = pg_query_params($this->_link, 'SELECT name FROM pg_prepared_statements WHERE name = $1', array($query_name));
+
+		if (pg_num_rows($result) == 0) {
+			$result = pg_prepare($this->_link, $query_name, $query);
+		}
 		
 		// Execute the prepared query. 
 		$result = pg_execute($this->_link, $query_name, $placeheld_variables);

@@ -1,6 +1,6 @@
 <?php
 
-namespace prodigyview\system;
+namespace prodigyview\database;
 
 use prodigyview\design\StaticObject;
 use prodigyview\util\Validator;
@@ -124,14 +124,13 @@ class Database  {
 			return self::_callAdapter(get_class(), __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
-			$defaults = array('mysql_error_report' => MYSQLI_REPORT_ERROR);
-			$config += $defaults;
-	
-			self::$mysql_error_report = $config['mysql_error_report'];
+			
 	
 			self::$connections = array();
 		
-			self::$_initialized = true;
+			if($lock) {
+				self::$_initialized = true;
+			}
 		}
 
 	}//end init
@@ -172,11 +171,11 @@ class Database  {
 			return self::_callAdapter(get_class(), __FUNCTION__, $connection_name, $args);
 
 		$defaults = array(
-			'dbtype' => '', 
+			'type' => '', 
 		);
 		
 		$args += $defaults;
-		$args = _fixConnectionStrings($args);
+		$args = self::_fixConnectionStrings($args);
 
 		$args = self::_applyFilter(get_class(), __FUNCTION__, $args, array('event' => 'args'));
 		
@@ -190,7 +189,7 @@ class Database  {
 			$connection = $args['class'];
 		}
 		
-		$connection->setConnection($connection_name, _fixConnectionStrings($args));
+		$connection->setConnection($connection_name, $args);
 		
 		self::_setConnection($connection_name, $connection);
 
@@ -271,12 +270,28 @@ class Database  {
 		self::_notify(get_class() . '::' . __FUNCTION__, $connection_name);
 	}
 	
-	private static _setConnection($key, &$value) {
-		static::$connections[$key]= &$value;
+	public static function hasConnection($connection_name) {
+		return !empty(static::$connections[$connection_name]);
 	}
 	
-	private static &_getConnection($key) {
-		return static $connections[$key];
+	private static function _setConnection($key, &$value) {
+		static::$connections[$key]= &$value;
+		
+		if(count(static::$connections) === 1) {
+			self::setDatabase($key, false);
+		}
+	}
+	
+	private static function &_getConnection($key, $connect = true) {
+		
+		if(empty(static::$connections[$key])) {
+			throw new NoDatabaseException('No database connection has been set.');
+		}
+		
+		if(!static::$connections[$key]->isActive()) {
+			static::$connections[$key]->connect();
+		}
+		return static::$connections[$key];
 	}
 
 	/**
@@ -429,7 +444,7 @@ class Database  {
 		
 		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
 
-		return $array;
+		return $data;
 	}//end fetchArray
 
 	/**
@@ -834,6 +849,7 @@ class Database  {
 		$link = $connection->getDatabaseLink();
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $link);
+		
 		$link = self::_applyFilter(get_class(), __FUNCTION__, $link , array('event' => 'return'));
 
 		return $link;
@@ -892,61 +908,22 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table, $data, $wherelist, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table' => $table, 'data' => $data, 'wherelist' => $wherelist, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table' => $table, 
+			'data' => $data, 
+			'wherelist' => $wherelist, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$table = $filtered['table'];
 		$data = $filtered['data'];
 		$options = $filtered['options'];
 		$wherelist = $filtered['wherelist'];
-
-		if (self::$dbtype === self::$mySQLConnection || self::$dbtype === self::$postgreSQLConnection || self::$dbtype === self::$msSQLConnection) {
-			$query = 'UPDATE ' . $table . ' SET ';
-			$params = array();
-			$params_holder = array();
-			
-			if(is_array($data)) {
-				foreach ($data as $key => $value) {
-					$query .= $key. ' = \''.self::makeSafe($value).'\'';
-				}//end foreach
-			
-			} else {
-				$query.= $data;
-			}
-	
-			if (is_array($wherelist) && !empty($wherelist)) {
-				$query .= ' WHERE ';
-				$first = true;
-				
-				foreach($wherelist as $key => $value) {
-					if(is_array($value))
-						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
-					else {
-						if($first)
-							$query .= $key.' = \''.self::makeSafe($value).'\'';
-						else {
-							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
-						}
-					}
-						
-					$first = false;
-				}//end foreach
-				
-			} else if (!empty($wherelist)) {
-				$query .= ' WHERE '.$wherelist;
-			}
 		
-			$result = self::query($query);
-		
-		} else if (self::$dbtype === self::$mongoConnection) {
-			$collection = self::_setMongoCollection($table, $options);
-			
-			if(class_exists('\\MongoDB\Driver\Manager')) {
-    			$result = $collection->updateMany($wherelist, array('$set' =>$data), $options);
-			} else {
-				$result = $collection -> update($wherelist, $data, $options);
-			}
-			
-		}
+		$connection = self::_getConnection(self::$current_connecton);
 
+		$result = $connection->updateStatement($table, $data, $wherelist, $options);
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $options);
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
 
@@ -968,113 +945,21 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $args, $options);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('args' => $args, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'args' => $args, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$args= $filtered['args'];
 		$options = $filtered['options'];
 		
-		if (self::$dbtype === self::$mySQLConnection || self::$dbtype === self::$postgreSQLConnection || self::$dbtype === self::$msSQLConnection) {
-			$default = array(
-				'fields'=>'*',
-				'where' => '',
-				'into' => '',
-				'from' => '',
-				'join' => '',
-				'group_by' => '',
-				'having' => '',
-				'order_by' => '',
-				'limit' => '',
-				'offset' => '',
-				'paged' => false,
-				'results_per_page' => 10,
-				'current_page' => 0
-			);
-			
-			$args += $default;
-			
-			$query = '';
-			
-			if(is_array($args['fields'])) {
-				$fields = implode(',', $args['fields']);
-			} else {
-				$fields = $args['fields'];
-			}
-			
-			$query .= 'SELECT ' . $fields . ' ';
-			
-			$query .= ' FROM '.$args['table'] . ' ';
-			
-			if(is_array($args['join'])) {
-				foreach($args['join'] as $key => $value) {
-					if(is_array($value)){
-						$type = isset($value['type']) ? $value['type'] : ' NATURAL JOIN ';
-						$table = isset($value['table']) ? $value['table'] : $key ;
-						$on = isset($value['on']) ? $value['on'] : '' ;
-						
-						$query .= $type. ' ' . $table. ' ' .$on;
-					} else {
-						$query .= ' JOIN '.$value;
-					}
-				}
-			} else {
-				$query .= ' '.$args['join'];
-			}
-			
-			if(!empty($args['where']) && !is_array($args['where']))
-				$query .= ' WHERE '.$args['where'];
-			else if(is_array($args['where']) && !empty($args['where'])) {
-				$query .= ' WHERE ';
-				$first = true;
-				foreach($args['where'] as $key => $value) {
-					if(is_array($value))
-						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
-					else {
-						if($first)
-							$query .= $key.' = \''.self::makeSafe($value).'\'';
-						else {
-							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
-						}
-					}
-					
-					$first = false;
-				}
-			}
-			
-			
-			if(!empty($args['order_by']) && is_array($args['order_by'])) {
-				$query .= ' ORDER BY '.implode(',', $args['order_by']);
-			} else if(!empty($args['order_by'])) {
-				$query .= ' ORDER BY '. $args['order_by'];
-			}
-			
-			$result = Database::query($query);	
-		} else if(self::$dbtype === self::$mongoConnection) {
-			$where = (!empty($args['where'])) ? $args['where'] : array();
-			$fields = (!empty($args['fields']) && $args['fields'] != '*' ) ? $args['fields'] : array();
-			
-			$collection = self::_setMongoCollection($args['table'], $options);
-			
-			if(isset($options['findOne']) && $options['findOne'] ){
-				
-				$result = $collection -> findOne($where, $fields);
-			} else {
-				$result = $collection -> find($where, $fields);
-			
-				if(!empty($args['order_by']) && !class_exists('\\MongoDB\Driver\Manager')) {
-					$result = $result -> sort($args['order_by']);
-				}
-				
-				if(!empty($args['limit']) && !class_exists('\\MongoDB\Driver\Manager')) {
-					$result = $result -> limit($args['limit']);
-				}
-				
-				if(!empty($args['offset']) && !class_exists('\\MongoDB\Driver\Manager')) {
-					$result = $result -> skip($args['offset']);
-				}
-				
-			}
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$result = $connection->selectStatement($args, 
+		$options);
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
+		
 		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
 		
 		return $result;
@@ -1093,69 +978,20 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $args, $options);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('args' => $args, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'args' => $args, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$args= $filtered['args'];
 		$options = $filtered['options'];
 		
-		if (self::$dbtype === self::$mySQLConnection || self::$dbtype === self::$postgreSQLConnection || self::$dbtype === self::$msSQLConnection) {
-			$default = array(
-				'where' => '',
-				'into' => '',
-				'from' => '',
-				'join' => '',
-				'group_by' => '',
-				'having' => '',
-				'order_by' => '',
-				'limit' => '',
-				'offset' => '',
-			);
-			
-			$args += $default;
-			
-			$query = '';
-			
-			$query .= 'DELETE FROM FROM '.$args['table'] . ' ';
-			
-			if(is_array($args['join'])) {
-				$query .= implode(',', $args['join']);
-			} else {
-				$query .= ' '.$args['join'];
-			}
-			
-			if(!empty($args['where']))
-				$query .= ' WHERE ';
-			if(is_array($args['where'])) {
-				$first = true;
-				foreach($args['where'] as $key => $value) {
-					if(is_array($value))
-						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
-					else {
-						if($first)
-							$query .= $key.' = \''.self::makeSafe($value).'\'';
-						else {
-							$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
-						}
-					}
-					
-					$first = false;
-				}
-			} else {
-				$query .= $args['where'];
-			}
-			
-			$result = Database::query($query);	
-		} else if(self::$dbtype === self::$mongoConnection) {
-			$collection = self::_setMongoCollection($args['table'], $options);
-			$where = (!empty($args['where'])) ? $args['where'] : array();
-			
-			if(class_exists('\\MongoDB\Driver\Manager')) {
-				$result = $collection -> deleteMany($where, $options);
-			} else {
-				$result = $collection -> remove($where, $options);
-			}
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$result = $connection-> deleteStatement($args,$options);
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
+		
 		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
 		
 		return $result;
@@ -1175,27 +1011,11 @@ class Database  {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $query, $data, $formats);
-
-		if (self::$dbtype === self::$mySQLConnection) {
-			self::$link -> prepare($query);
-			$count = 1;
-
-			foreach ($data as $key => $value) {
-				self::$link -> bindParam($count, $value);
-				$count++;
-			}//end foreach
-
-			return self::$link -> execute();
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$result = pg_prepare(self::$link, '', $query);
-			$result = pg_execute(self::$link, '', $data);
-			return $result;
-		} else if (self::$dbtype == self::$oracleConnection) {
-
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$stmt = sqlsrv_prepare(self::$link, $query, $data);
-			return sqlsrv_execute($stmt);
-		}
+		
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$connection->preparedQuery($query, $data, $formats);
 
 	}//end preparedQuery
 
@@ -1214,86 +1034,9 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $data, $formats);
 
-		$query = 'INSERT INTO ' . $table_name;
-		$values = '';
-		$placeholders = '';
-
-		if (!empty($data)) {
-			$values .= '(';
-			$placeholders .= '(';
-		}//end if
-
-		$first = 1;
-		$count = 0;
-		foreach ($data as $key => $value) {
-			if ($first) {
-				$values .= $key;
-				$placeholders .= ' ' . self::getPreparedPlaceHolder($count + 1) . ' ';
-			} else {
-				$values .= ' , ' . $key;
-				$placeholders .= ', ' . self::getPreparedPlaceHolder($count + 1) . ' ';
-			}
-
-			$first = 0;
-			$count++;
-		}//end foreach
-
-		if (!empty($data)) {
-			$values .= ')';
-			$placeholders .= ')';
-		}//end if
-
-		$query .= $values . ' VALUES'.$placeholders;
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		$template_name = md5($query);
-		
-		if (self::$dbtype === self::$mySQLConnection) {
-
-		 	$stmt = self::$link -> prepare($query);
-                        if(!$stmt) {
-                                echo 'Error';
-                                exit();
-                        }
-
-  	                $count = 1;
-                        $refs = array();
-                        $type = '';
-                        foreach($data as $k => $v) {
-                                $refs[$k] = &$data[$k];
-                                $type .= 's';
-         	 	}
-                                       
-                        call_user_func_array(array($stmt, 'bind_param'), array_merge(array($type), $refs));
-
-                        return $stmt  -> execute();
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			
-			$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
-
-			if (pg_num_rows($result) == 0) {
-    			$result = pg_prepare(self::$link, $template_name, $query);
-				
-			}
-
-			$result = pg_execute(self::$link, $template_name, $data);
-			return $result;
-
-		} else if (self::$dbtype == self::$oracleConnection) {
-
-		} else if (self::$dbtype === self::$msSQLConnection) {
-
-			$stmt = sqlsrv_prepare(self::$link, $query, $data);
-
-			return sqlsrv_execute($stmt);
-		} else if (self::$dbtype === self::$mongoConnection) {
-			$collection = self::_setMongoCollection($table);
-			
-			if(class_exists('\\MongoDB\Driver\Manager')){
-				$collection -> insertOne($data);
-			} else {
-				$collection -> insert($data);
-			}
-		}
+		$connection->preparedInsert($table_name, $data, $formats);
 
 	}//end preparedInsert
 
@@ -1317,119 +1060,26 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $returnField, $returnTable, $data, $formats);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'data' => $data, 'returnField' => $returnField, 'returnTable' => $returnTable, 'formats' => $formats), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table_name' => $table_name, 
+			'data' => $data, 
+			'returnField' => $returnField, 
+			'returnTable' => $returnTable, 
+			'formats' => $formats
+		), array('event' => 'args'));
+		
 		$table_name = $filtered['table_name'];
 		$returnField = $filtered['returnField'];
 		$returnTable = $filtered['returnTable'];
 		$data = $filtered['data'];
 		$formats = $filtered['formats'];
 		
-		if(self::getDatabaseType() == 'mongo' ) {
-			$collection = self::_setMongoCollection($table_name, $options);
-			
-			if(isset($options['batchInsert']) && $options['batchInsert']) {
-				$collection -> batchInsert($data, $options);
-			} else if(isset($options['gridFS']) && isset($options['file']) && $options['gridFS']) {
-				$id = $collection -> storeFile($options['file'] ,$data, $options);
-			} else {
-				if(class_exists('\\MongoDB\Driver\Manager')){
-					$result = $collection -> insertOne($data,$options);
-				} else {
-					$result = $collection -> insert($data,$options);
-				}
-				
-			}
-			
-			if(isset($options['batchInsert']) && $options['batchInsert']) {
-				$id = $data;
-			} else if(isset($options['gridFS']) == false) {
-				if(class_exists('\\MongoDB\Driver\Manager')){
-					$id = $result->getInsertedId();
-				} else {
-					$id = $data['_id'];
-				}
-			}
-				
-		} else {
-
-			$query = 'INSERT INTO ' . $table_name;
-			$values = '';
-			$placeholders = ' VALUES';
-	
-			if (!empty($data)) {
-				$values .= '(';
-				$placeholders .= '(';
-			}//end if
-	
-			$first = 1;
-			$params = array();
-			$count = 0;
-			foreach ($data as $key => $value) {
-				if ($first) {
-					$values .= $key;
-					$placeholders .= ' ' . self::getPreparedPlaceHolder($count + 1) . ' ';
-				} else {
-					$values .= ' , ' . $key;
-					$placeholders .= ', ' . self::getPreparedPlaceHolder($count + 1) . ' ';
-				}
-	
-				$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
-				$count++;
-				$first = 0;
-			}//end foreach
-	
-			if (!empty($data)) {
-				$values .= ')';
-				$placeholders .= ')';
-			}//end if
-	
-			$query .= $values . $placeholders;
-			
-			$template_name = md5($query);
-	
-			if (self::$dbtype === self::$mySQLConnection) {
-				$stmt = self::$link -> prepare($query);
-				self::bindParameters($stmt, $params);
-				foreach ($data as $key => $value) {
-					$params[$key] = $value;
-				}
-				$stmt -> execute();
-				$id = self::$link -> insert_id;
-	
-			} else if (self::$dbtype === self::$postgreSQLConnection) {
-				$template_name = md5($query . " RETURNING $returnField");
-				
-				$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
-
-				if (pg_num_rows($result) == 0) {
-	    			$result = pg_prepare(self::$link, $template_name , $query . " RETURNING $returnField");
-				}
-			
-				$result = pg_execute(self::$link, $template_name , $data);
-				
-				if($result == false) {
-					self::catchDBError();
-				}
-				$row = self::fetchArray($result);
-				
-				$id = $row[$returnField];
-			} else if (self::$dbtype == self::$oracleConnection) {
-	
-			} else if (self::$dbtype === self::$msSQLConnection) {
-	
-				$stmt = sqlsrv_prepare(self::$link, $query, $data);
-	
-				sqlsrv_execute($stmt);
-	
-				$query = "SELECT @@IDENTITY AS $returnField FROM $returnTable;";
-				$result = self::query($query);
-				$row = self::fetchArray($result);
-				$field_value = $row[$returnField];
-				$id = $field_value;
-			}
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$id = $connection->preparedReturnLastInsert($table_name, $returnField, $returnTable, $data, $formats, $options);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $id, $table_name, $returnField, $returnTable, $data, $formats);
+		
 		$id = self::_applyFilter(get_class(), __FUNCTION__, $id, array('event' => 'return'));
 		
 		return $id;
@@ -1457,57 +1107,26 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $query, $data, $formats);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('query' => $query, 'data' => $data, 'formats' => $formats,  'options' => $options ), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'query' => $query, 
+			'data' => $data, 
+			'formats' => $formats,  
+			'options' => $options 
+		), array('event' => 'args'));
+		
 		$query = $filtered['query'];
 		$data = $filtered['data'];
 		$formats = $filtered['formats'];
 		$options = $filtered['options'];
 
-		$params = array();
-
-		$count = 0;
-		foreach ($data as $key => $value) {
-			$params[$key] = (isset($formats[$count])) ? $formats[$count] : 's';
-			$count++;
-		}//end foreach
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		if(isset($options['prequery']) && !empty($options['prequery'])) {
-			$query = $options['prequery'] . $query;
-		}
-		
-		if(isset($options['postquery']) && !empty($options['postquery'])) {
-			$query = $query. $options['postquery'];
-		}
-
-		if (self::$dbtype === self::$mySQLConnection) {
-
-			$stmt = self::$link -> prepare($query);
-
-			if (!empty($params)) {
-				self::bindParameters($stmt, $params);
-				foreach ($data as $key => $value) {
-					$params[$key] = $value;
-				}
-			}
-
-			$stmt -> execute();
-			$stmt -> store_result();
-			self::$row = array();
-			self::stmt_bind_assoc($stmt, self::$row);
-			$result = $stmt;
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$result = pg_prepare(self::$link, '', $query);
-			$result = pg_execute(self::$link, '', $data);
-		} else if (self::$dbtype == self::$oracleConnection) {
-
-		} else if (self::$dbtype === self::$msSQLConnection) {
-
-			$stmt = sqlsrv_prepare(self::$link, $query, $data);
-			$result = sqlsrv_execute($stmt);
-		}
+		$result = $connection->preparedSelect($query, $data, $formats, $options);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $query, $data, $formats);
+		
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
+		
 		return $result;
 
 	}//end preparedSelect
@@ -1518,116 +1137,11 @@ class Database  {
 	 * @param array $args
 	 * @param array $options
 	 */
-	public static function selectPreparedStatement(array $args, array $options = array()){
+	public static function preparedSelectStatement(array $args, array $options = array()){
 		
-		if (self::$dbtype === self::$mySQLConnection || self::$dbtype === self::$postgreSQLConnection || self::$dbtype === self::$msSQLConnection) {
-			$default = array(
-				'fields'=>'*',
-				'where' => '',
-				'into' => '',
-				'from' => '',
-				'join' => '',
-				'group_by' => '',
-				'having' => '',
-				'order_by' => '',
-				'limit' => '',
-				'offset' => '',
-				'prequery' => '',
-				'postquery' => '',
-			);
-			
-			$args += $default;
-			
-			$query = '';
-			
-			if(is_array($args['fields'])) {
-				$fields = implode(',', $args['fields']);
-			} else {
-				$fields = $args['fields'];
-			}
-			
-			$query .= 'SELECT ' . $fields . ' ';
-			
-			$query .= ' FROM '.$args['table'] . ' ';
-			
-			if(is_array($args['join'])) {
-				foreach($args['join'] as $key => $value) {
-					if(is_array($value)){
-						$type = isset($value['type']) ? $value['type'] : ' NATURAL JOIN ';
-						$table = isset($value['table']) ? $value['table'] : $key ;
-						
-						$query .= $type. ' ' . $table;
-					} else {
-						$query .= ' JOIN '.$value;
-					}
-				}
-			} else {
-				$query .= ' '.$args['join'];
-			}
-			
-			if(!empty($args['where']))
-				$query .= ' WHERE ';
-			if(is_array($args['where'])) {
-				$first = true;
-				foreach($args['where'] as $key => $value) {
-					if(is_array($value))
-						$query .= self::parseOperators($key, $value, 'AND', '=', $first);
-					else {
-						if($first) {
-							if(Validator::isInteger($key)) {
-								$query .= ' ' .$value.' ';
-							} else {
-								$query .= $key.' = \''.self::makeSafe($value).'\'';
-							}
-						} else {
-							if(Validator::isInteger($key)) {
-								$query .= ' AND ' .$value.' ';
-							} else {
-								$query .= ' AND '.$key.' = \''.self::makeSafe($value).'\'';
-							}
-						}
-					}
-					
-					$first = false;
-				}
-			} else {
-				$query .= $args['where'];
-			}
-			
-			if(!empty($args['group_by']) && is_array($args['group_by'])) {
-				$query .= ' GROUP BY '.implode(',', $args['group_by']);
-			} else if(!empty($args['group_by'])) {
-				$query .= ' GROUP BY '. $args['group_by'];
-			}
-			
-			if(!empty($args['order_by']) && is_array($args['order_by'])) {
-				$query .= ' ORDER BY '.implode(',', $args['order_by']);
-			} else if(!empty($args['order_by'])) {
-				$query .= ' ORDER BY '. $args['order_by'];
-			}
-			
-			if(!empty($args['limit'])) {
-				$query .= ' LIMIT '. $args['limit'];
-			} 
-			
-			if(isset($options['prequery']) && !empty($options['prequery'])) {
-				$query = $options['prequery'] . $query;
-			}
-			
-			if(!empty($args['offset'])) {
-				$query .= ' OFFSET '. $args['offset'];
-			}
+		$connection = self::_getConnection(self::$current_connecton);
 		
-			if(isset($options['postquery']) && !empty($options['postquery'])) {
-				$query = $query . $options['postquery'];
-			}
-		
-			$result = Database::query($query);	
-		} else if(self::$dbtype === self::$mongoConnection) {
-			$collection = self::_setMongoCollection(self::$link->$table_name);
-			
-			$result = $collection -> find($args);
-		}
+		$result = $connection->preparedSelectStatement($args,$options);
 		
 		return $result;
 	}
@@ -1652,93 +1166,26 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table, $data, $wherelist, $formats, $whereformats);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table' => $table, 'data' => $data, 'wherelist' => $wherelist, 'whereformats' => $whereformats, 'formats' => $formats), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table' => $table, 
+			'data' => $data, 
+			'wherelist' => $wherelist, 
+			'whereformats' => $whereformats, 
+			'formats' => $formats
+		), array('event' => 'args'));
+		
 		$table = $filtered['table'];
 		$data = $filtered['data'];
 		$formats = $filtered['formats'];
 		$wherelist = $filtered['wherelist'];
 		$whereformats = $filtered['whereformats'];
 		
-		if(self::getDatabaseType() == 'mongo' ) {
-			$collection = self::_setMongoCollection($table, $options);
-			if(class_exists('\\MongoDB\Driver\Manager')) {
-				$result = $collection -> updateMany($wherelist, array('$set' =>$data), $options);
-			} else {
-				$result = $collection -> update($wherelist, $data, $options);
-			}
-		} else {
-
-			$query = 'UPDATE ' . $table . ' SET ';
-			$params = array();
-			$params_holder = array();
-	
-			$first = 1;
-			$count = 0;
-			foreach ($data as $key => $value) {
-				$params[] = (isset($formats[$count])) ? $formats[$count] : 's';
-				$params_holder[] = $value;
-	
-				if ($first) {
-					$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-				} else {
-					$query .= ',' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-				}
-				$count++;
-				$first = 0;
-			}//end foreach
-	
-			$first = 1;
-			if (is_array($wherelist) && !empty($wherelist)) {
-				$query .= ' WHERE ';
-				$count2 = 0;
-				foreach ($wherelist as $key => $value) {
-					$params[] = (isset($wherelist[$count2])) ? $formats[$count2] : 's';
-					$params_holder[] = $value;
-	
-					if ($first) {
-						$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-					} else {
-						$query .= ' AND ' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-					}
-					$count++;
-					$count2++;
-					$first = 0;
-				}//end foreach
-			}//end if is_array and not emptys
-			
-			$template_name = md5($query);
-			
-			if (self::$dbtype === self::$mySQLConnection) {
-	
-				$stmt = self::$link -> prepare($query);
-				self::bindParameters($stmt, $params);
-				
-				foreach ($params_holder as $key => $value) {
-					$params[$key] = $value;
-				}
-			
-				$result = $stmt -> execute();
-			} else if (self::$dbtype === self::$postgreSQLConnection) {
-				
-				$result = pg_query_params(self::$link, $query, $params_holder);
-
-				$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
-
-				if (pg_num_rows($result) == 0) {
-    				$result = pg_prepare(self::$link, $template_name, $query);
-				}
-	
-				$result = pg_execute(self::$link, $template_name, $params_holder);
-	
-			} else if (self::$dbtype == self::$oracleConnection) {
-	
-			} else if (self::$dbtype === self::$msSQLConnection) {
-				$stmt = sqlsrv_prepare(self::$link, $query, $params);
-				$result = sqlsrv_execute($stmt);
-			} 
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		}
+		$result = $connection->preparedUpdate($table, $data, $wherelist, $formats, $whereformats, $options);
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $formats, $whereformats);
+		
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
 
 		return $result;
@@ -1761,72 +1208,22 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $table, $wherelist, $whereformats);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table' => $table, 'wherelist' => $wherelist, 'whereformats' => $whereformats, ), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table' => $table, 
+			'wherelist' => $wherelist, 
+			'whereformats' => $whereformats 
+		), array('event' => 'args'));
+		
 		$table = $filtered['table'];
 		$wherelist = $filtered['wherelist'];
 		$whereformats = $filtered['whereformats'];
 
-		if (self::$dbtype === self::$mongoConnection) {
-			$collection = self::_setMongoCollection($table, $options);
-			if(class_exists('\\MongoDB\Driver\Manager')) {
-				$result = $collection -> deleteMany($wherelist, $options);
-			} else {
-				$result = $collection -> remove($wherelist, $options);
-			}
-			
-		} else {
-			$query = 'DELETE FROM ' . $table;
-	
-			if (is_array($wherelist) && !empty($wherelist)) {
-				$params = array();
-				$query .= ' WHERE ';
-				$count = 0;
-				$first = 1;
-				foreach ($wherelist as $key => $value) {
-					$params[$key] = (isset($wherelist[$count])) ? $formats[$count] : 's';
-					if ($first) {
-						$query .= $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-					} else {
-						$query .= ' AND ' . $key . '=' . self::getPreparedPlaceHolder($count + 1) . ' ';
-					}
-	
-					$first = 0;
-					$count++;
-				}//end foreach
-			}
-	
-			$template_name = md5($query);
-			
-			if (self::$dbtype === self::$mySQLConnection) {
-	
-				$stmt = self::$link -> prepare($query);
-				self::bindParameters($stmt, $params);
-				foreach ($wherelist as $key => $value) {
-					$params[$key] = $value;
-				}
-	
-				$result = $stmt -> execute();
-	
-			} else if (self::$dbtype === self::$postgreSQLConnection) {
-				
-				$result = pg_query_params(self::$link, 'SELECT name FROM pg_prepared_statements WHERE name = $1' , array($template_name));
-
-				if (pg_num_rows($result) == 0) {
-    				$result = pg_prepare(self::$link, $template_name, $query);
-				}
-	
-				$result = pg_execute(self::$link, $template_name, $wherelist);
-	
-			} else if (self::$dbtype == self::$oracleConnection) {
-	
-			} else if (self::$dbtype === self::$msSQLConnection) {
-	
-				$stmt = sqlsrv_prepare(self::$link, $query, $wherelist);
-				$result = sqlsrv_execute($stmt);
-			} 
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$result = $connection->preparedDelete($table, $wherelist, $whereformats, $options);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $wherelist, $whereformats);
+		
 		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
 
 		return $result;
@@ -1883,122 +1280,14 @@ class Database  {
 			return self::_callAdapter(get_class(), __FUNCTION__, $table_name);
 
 		$table_name = self::_applyFilter(get_class(), __FUNCTION__, $table_name, array('event' => 'args'));
-		$table_name = self::$dbprefix . $table_name;
-
-		if (!empty(self::$dbschema) && $append_schema ) {
-			$table_name = self::$dbschema . '.' . $table_name;
-		}
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $table_name);
-		$table_name = self::_applyFilter(get_class(), __FUNCTION__, $table_name, array('event' => 'return'));
+		
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$table_name = $connection->formatTableName($table_name, $append_schema, $append_prefix);
 
 		return $table_name;
 
 	}//end  getApplicationPermissionsTable
-	
-	/**
-	 * Takes in an array of values that is formated like a query, and parse it to become a SQL query. For example:
-	 * 
-	 * array('>' = '5') will become column > 5
-	 * 
-	 * @param string $column The name of column to do the comparison operation
-	 * @param array $args The args in key value and subkey value. The keys are conditionals and the value are what te conditio is being compparied too
-	 * @param string $key They conditional, either AND or OR for the query
-	 * @param string $operator How to compare values
-	 * @param boolean $first For recursive operation, is this the first value
-	 * 
-	 * @return string $query A query to execute
-	 * @todo Rewrite this function and description for clarity
-	 */
-	protected static function parseOperators($column, $args = array(), $key = 'AND', $operator = '=', $first = true){
-		
-		$query = '';
-		if(Validator::isInteger($key))
-			$key = 'AND';
-		
-		foreach($args as $subkey => $arg) {
-			
-			if(($subkey == '>=' ||  $subkey ==  '>' || $subkey ==  '<' || $subkey ==  '<=' || $subkey ==  '!=') && !Validator::isInteger($subkey)) 
-					$operator = $subkey;
-			else if(!Validator::isInteger($subkey))
-				$key = $subkey;
-			
-			if(is_array($arg)) {
-				$query.= self::parseOperators($column, $arg, $key, $operator, $first);
-			} else {
-			
-				if($arg == 'IS NULL' || $arg == 'IS NOT NULL' || $arg == 'IS TRUE' || $arg == 'IS NOT TRUE' || $arg == 'IS FALSE' || $arg == 'IS NOT FALSE' || $arg == 'IS UNKNOWN' || $arg == 'IS NOT UNKNOWN' ) {
-					$operator = '';
-						
-					if(!$first) {
-						$query .=  ' '.$key . ' '.$column. ' '.$operator.' ' . self::makeSafe($arg).' ';
-				 	} else  {
-				 	
-				 		$query .=  ' '.$column. ' '.$operator.' ' . self::makeSafe($arg).' ';
-				 	}
-				} else {
-				
-					if(!$first) {
-						$query .=  ' '.$key . ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
-				 	} else  {
-				 	
-				 		$query .=  ' '.$column. ' '.$operator.' \'' . self::makeSafe($arg).'\' ';
-				 	}
-				}
-			 
-			}
-			
-			$first = false;	
-		}//end foreach
-		
-		return $query;
-	}
-
-	/**
-	 * For prepared statements, binds the parameters with placeholders.
-	 * 
-	 * @param string $statement The sql statement
-	 * @param array $params The parameters to bind with
-	 */
-	private static function bindParameters(&$statement, &$params) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $statement, $params);
-
-		$args = array();
-		$args[] = implode('', array_values($params));
-		foreach ($params as $paramName => $paramType) {
-			$args[] = &$params[$paramName];
-			$params[$paramName] = null;
-		}
-
-		call_user_func_array(array(&$statement, 'bind_param'), $args);
-	}
-
-	/**
-	 * For prepared statements, binds an associatve array. Used for myql.
-	 * 
-	 * @param string $stmt The mysql statement
-	 * @param string $out The output
-	 */
-	private function stmt_bind_assoc(&$stmt, &$out) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $stmt, $out);
-
-		$data = mysqli_stmt_result_metadata($stmt);
-		$fields = array();
-		$out = array();
-
-		$fields[0] = $stmt;
-		$count = 1;
-
-		while ($field = mysqli_fetch_field($data)) {
-			$fields[$count] = &$out[$field -> name];
-			$count++;
-		}
-		@call_user_func_array(mysqli_stmt_bind_result, $fields);
-	}
 
 	/**
 	 * Create a table in the database in which the connection is currently set too.
@@ -2025,46 +1314,24 @@ class Database  {
 		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, 'primary_key' => '', );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'columns' => $columns, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table_name' => $table_name, 
+			'columns' => $columns, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$table_name = $filtered['table_name'];
 		$columns = $filtered['columns'];
 		$options = $filtered['options'];
 
-		$column_query = '';
-		if (!empty($columns) && is_array($columns)) {
-			$first = 1;
-			foreach ($columns as $column_name => $column) {
-				$column_query .= (!$first) ? ',' : '';
-				$column_query .= self::formatColumn($column_name, $column);
-				$first = 0;
-			}
-		}
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		if (!empty($options['primary_key']))
-			$column_query .= ',PRIMARY KEY(' . $options['primary_key'] . ')';
-
-		if (!empty($column_query))
-			$column_query = '(' . $column_query . ')';
-
-		if ($options['format_table'])
-			$table_name = self::formatTableName($table_name);
-
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = 'CREATE TABLE ' . $table_name . ' ' . $column_query . ';';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = 'CREATE TABLE ' . $table_name . ' ' . $column_query . ';';
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = 'CREATE TABLE ' . $table_name . ' ' . $column_query . ';';
-		}
-		
-		if ($options['execute'])
-			Database::query($query);
+		$query = $connection->createTable($table_name, $columns, $options);
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $columns, $options);
 		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
 
-		if ($options['return_query'])
-			return $query;
+		return $query;
 	}
 
 	/**
@@ -2090,31 +1357,23 @@ class Database  {
 		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'column_name' => $column_name, 'column_data' => $column_data, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table_name' => $table_name, 
+			'column_name' => $column_name, 
+			'column_data' => $column_data, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$table_name = $filtered['table_name'];
 		$column_name = $filtered['column_name'];
 		$column_data = $filtered['column_data'];
 		$options = $filtered['options'];
 
-		if ($options['format_table'])
-			$table_name = self::formatTableName($table_name);
-
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' ADD ' . self::formatColumn($column_name, $column_data) . ';';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' ADD COLUMN ' . self::formatColumn($column_name, $column_data) . ';';
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' ADD ' . self::formatColumn($column_name, $column_data) . ';';
-		}
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		if ($options['execute'])
-			Database::query($query);
-
-		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $column_name, $column_data, $options);
-		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
-
-		if ($options['return_query'])
-			return $query;
+		$query = $connection->addColumn($table_name, $column_name, $column_data, $options);
+		
+		return $query;
 	}
 
 	/**
@@ -2156,35 +1415,17 @@ class Database  {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('name' => $name, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'name' => $name, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$name = $filtered['name'];
 		$options = $filtered['options'];
 
-		$precision = (!empty($options['precision'])) ? '(' . $options['precision'] . ')' : '';
-		$null = ($options['not_null'] == true) ? 'NOT NULL' : 'NULL';
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		if(isset($options['default']) && is_callable($options['default'])) {
-			$default = $options['default']();
-		} else if($options['execute_default']){
-			$default = (isset($options['default'])) ? 'DEFAULT ' . $options['default'].'' : '';
-		} else {
-			$default = (isset($options['default'])) ? 'DEFAULT \'' . $options['default'].'\'' : '';
-		}
-		
-		$auto_increment = ($options['auto_increment'] == true) ? self::getAutoIncrement() : '';
-		$unique = ($options['unique'] == true) ? 'UNIQUE' : '';
-
-		if ($options['auto_increment'] == true && self::$dbtype === self::$postgreSQLConnection) {
-			$options['type'] = 'SERIAL';
-		}
-
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = $name . ' ' . self::columnTypeMap($options['type']) . $precision . ' ' . $null . ' ' . $default . ' ' . $auto_increment . ' ' . $unique;
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = $name . ' ' . self::columnTypeMap($options['type']) . $precision . ' ' . $null . ' ' . $default . ' ' . $auto_increment . ' ' . $unique;
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = $name . ' ' . self::columnTypeMap($options['type']) . $precision . ' ' . $null . ' ' . $default . ' ' . $auto_increment . ' ' . $unique;
-		}
+		$query = $connection->formatColumn($name, $options);
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $query);
 		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
@@ -2203,13 +1444,9 @@ class Database  {
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__);
 
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = 'AUTO_INCREMENT';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = '';
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = 'IDENTITY (1,1)';
-		}
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		$query = $connection->getAutoIncrement();
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $query);
 		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
@@ -2217,89 +1454,6 @@ class Database  {
 		return $query;
 	}
 
-	/**
-	 * Maps the column type depending on which database is set. For example, is the database is mysql
-	 * and the type string is passed through, the return value is varchar. If the database is postgresql,
-	 * the return type would be character varying.
-	 *
-	 * @param string $type The type of variabel to be matched
-	 *
-	 * @return string $match The matched type found
-	 * @access public
-	 */
-	private static function columnTypeMap($type) {
-
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $type);
-
-		$type = strtolower($type);
-
-		$type = self::_applyFilter(get_class(), __FUNCTION__, $type, array('event' => 'args'));
-
-		$types = array(
-			'integers' => array(
-				'match' => array('int', 'integer', 'numeric'), 
-				'database' => array('mysql' => 'INT', 'mssql' => 'INT', 'postgresql' => 'INTEGER', 'sqlite' => 'INTEGER')), 
-			'bigintegers' => array(
-				'match' => array('bigint'), 
-				'database' => array('mysql' => 'BIGINT', 'mssql' => 'BIGINT', 'postgresql' => 'BIGINT', 'sqlite' => 'INTEGER')),
-			'double' => array(
-				'match' => array('double', 'float', 'real'), 
-				'database' => array('mysql' => 'DOUBLE', 'mssql' => 'FLOAT', 'postgresql' => 'DOUBLE PRECISION',  'sqlite' => 'REAL')), 
-			'string' => array(
-				'match' => array('string', 'varchar', 'character varying', 'nchar', 'native character', 'nvarchar'), 
-				'database' => array('mysql' => 'VARCHAR', 'mssql' => 'VARCHAR', 'postgresql' => 'CHARACTER VARYING', 'sqlite' => 'TEXT')), 
-			'text' => array(
-				'match' => array('text', 'clob'), 
-				'database' => array('mysql' => 'TEXT', 'mssql' => 'TEXT', 'postgresql' => 'TEXT', 'sqlite' => 'TEXT')), 
-			'blob' => array(
-				'match' => array('blob', 'bytea'), 
-				'database' => array('mysql' => 'BLOB', 'mssql' => 'BLOB', 'postgresql' => 'BYTEA', 'sqlite' => 'TEXT')),
-			'boolean' => array(
-				'match' => array('boolean'), 
-				'database' => array('mysql' => 'BOOLEAN', 'mssql' => 'BIT', 'postgresql' => 'BOOLEAN', 'sqlite' => 'INTEGER')), 
-			'tinyint' => array(
-				'match' => array('tinyint', 'smallint'), 
-				'database' => array('mysql' => 'tinyint', 'mssql' => 'tinyint', 'postgresql' => 'smallint', 'sqlite' => 'INTEGER')), 
-			'timestamp' => array(
-				'match' => array('timestamp'), 
-				'database' => array('mysql' => 'TIMESTAMP', 'mssql' => 'datetime', 'postgresql' => 'TIMESTAMP', 'sqlite' => 'TEXT')), 
-			'date' => array(
-				'match' => array('date', 'date/time', 'datetime'), 
-				'database' => array('mysql' => 'TIMESTAMP', 'mssql' => 'datetime', 'postgresql' => 'TIMESTAMP', 'sqlite' => 'TEXT')), 
-			'serial' => array(
-				'match' => array('serial'), 
-				'database' => array('mysql' => 'SERIAL', 'mssql' => 'unknown', 'postgresql' => 'serial', 'sqlite' => 'INTEGER')), 
-			'bigserial' => array(
-				'match' => array('bigserial'), 
-				'database' => array('mysql' => 'unknown', 'mssql' => 'unknown', 'postgresql' => 'bigserial', 'sqlite' => 'INTEGER')), 
-			'hstore' => array(
-				'match' => array('hstore'), 
-				'database' => array('mysql' => 'unknown', 'mssql' => 'unknown', 'postgresql' => 'hstore', 'sqlite' => 'unknown')),
-			'uuid' => array(
-				'match' => array('uuid', 'guid'), 
-				'database' => array('mysql' => 'unknown', 'mssql' => 'guid', 'postgresql' => 'uuid', 'sqlite' => 'TEXT')),
-			'ip' => array(
-				'match' => array('ip', 'ipv4'), 
-				'database' => array('mysql' => 'varchar', 'mssql' => 'varchar', 'postgresql' => 'cidr', 'sqlite' => 'TEXT')), 
-			'ipv6' => array(
-				'match' => array('ipv6'), 
-				'database' => array('mysql' => 'varchar', 'mssql' => 'varchar', 'postgresql' => 'inet', 'sqlite' => 'TEXT')),
-			'json' => array(
-				'match' => array('json'), 
-				'database' => array('mysql' => 'TEXT', 'mssql' => 'varchar', 'postgresql' => 'json', 'sqlite' => 'TEXT')),
-			);
-			
-
-		foreach ($types as $key => $value) {
-			if (in_array($type, $value['match'])) {
-				$match = $value['database'][self::$dbtype];
-				$match = self::_applyFilter(get_class(), __FUNCTION__, $match, array('event' => 'return'));
-				return $match;
-			}//end if
-		}//end for each
-
-	}//end type map
 	
 	/**
 	 * Remove a column from a table in the database.
@@ -2322,30 +1476,31 @@ class Database  {
 		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'column_name' => $column_name, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table_name' => $table_name, 
+			'column_name' => $column_name, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$table_name = $filtered['table_name'];
 		$column_name = $filtered['column_name'];
 		$options = $filtered['options'];
 
-		if ($options['format_table'])
-			$table_name = self::formatTableName($table_name);
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name . ';';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name . ';';
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name . ';';
-		}
-
-		if ($options['execute'])
-			Database::query($query);
+		$query = $connection->dropColumn($table_name, $column_name, $options);
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $column_name, $options);
 		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
 
-		if ($options['return_query'])
-			return $query;
+		
+		return $query;
+	}
+	
+	public static function columnTypeMap($type) {
+		$connection = self::_getConnection(self::$current_connecton);
+		
+		return $connection->columnTypeMap($type);
 	}
 
 	/**
@@ -2367,76 +1522,26 @@ class Database  {
 		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array('table_name' => $table_name, 'options' => $options), array('event' => 'args'));
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'table_name' => $table_name, 
+			'options' => $options
+		), array('event' => 'args'));
+		
 		$table_name = $filtered['table_name'];
 		$options = $filtered['options'];
 
-		if ($options['format_table'])
-			$table_name = self::formatTableName($table_name);
+		$connection = self::_getConnection(self::$current_connecton);
 		
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = 'DROP TABLE ' . $table_name . ';';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			$query = 'DROP TABLE ' . $table_name . ';';
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = 'DROP TABLE ' . $table_name . ';';
-		}
-
-		if ($options['execute'])
-			Database::query($query);
+		$query = $connection->dropTable($table_name, $options);
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $options);
 		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
-
-		if ($options['return_query'])
-			return $query;
-	}
-
-	/**
-	 * Sets the current MongoDB collection to use
-	 * 
-	 * @param string $table_name Not really a table but a collection in a Mongo Database
-	 * @param array $options Options to pass to Mongo collection
-	 * 					- boolean gridFS Default is false, but if set to true, will use gridFS
-	 * 
-	 * @return object The collection
-	 */
-	protected static function _setMongoCollection($table_name, $options = array()){
 		
-		$defaults = array(
-			'gridFS' => false
-		);
-		
-		$options += $defaults;
-		
-		if(class_exists('\\MongoDB\Driver\Manager')) {
-			$collection = self::$link -> selectCollection(self::$dbname ,$table_name);
-		} else {
-		
-			if($options['gridFS']) {
-				$collection = self::$link -> getGridFS( $table_name );
-			} else {
-				$collection = self::$link -> $table_name;
-			}
-		}
-		
-		return $collection;
-	}
-
-	/**
-	 * Not sure what this function does
-	 * 
-	 *
-	 * @todo dig into the function and redo
-	 */
-	public static function catchDBError() {
-		if (self::$dbtype === self::$mySQLConnection) {
-			$query = 'AUTO_INCREMENT';
-		} else if (self::$dbtype === self::$postgreSQLConnection) {
-			print pg_last_error(self::$link);
-		} else if (self::$dbtype === self::$msSQLConnection) {
-			$query = 'IDENTITY (1,1)';
-		}
+		return $query;
 	}
 	
 }//end class
+
+class NoDatabaseException extends \Exception {
+	
+}
