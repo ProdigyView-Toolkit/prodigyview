@@ -434,6 +434,13 @@ class PostgresqlTest extends TestCase{
 		$this->assertTrue(is_resource($result));
 	}
 	
+	public function testPreparedInsertFindJonWithId() {
+		$this->_db->clearTableData($this->_table);
+		$result = $this->_db->preparedReturnLastInsert($this->_table, 'id', $this->_table, $this->_data[0]);
+		
+		$this->assertEquals($result, 12);
+	}
+	
 	public function testPreparedSelectJonFetchArray() {
 		$this->_db->clearTableData($this->_table);
 		$this->_db->preparedInsert($this->_table, $this->_data[0]);

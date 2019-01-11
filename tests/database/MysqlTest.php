@@ -434,6 +434,13 @@ class MysqlTest extends TestCase{
 		$this->assertTrue($result instanceof \mysqli_result);
 	}
 	
+	public function testPreparedInsertFindJonWithId() {
+		$this->_db->clearTableData($this->_table);
+		$result = $this->_db->preparedReturnLastInsert($this->_table, 'id', $this->_table, $this->_data[0]);
+		
+		$this->assertEquals($result, 1);
+	}
+	
 	public function testPreparedSelectJonFetchArray() {
 		$this->_db->clearTableData($this->_table);
 		$this->_db->preparedInsert($this->_table, $this->_data[0]);

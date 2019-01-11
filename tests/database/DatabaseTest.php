@@ -460,6 +460,13 @@ class DatabaseTest extends TestCase{
 		$this->assertTrue(is_resource($result));
 	}
 	
+	public function testPostgresPreparedInsertFindJonWithId() {
+		Database::clearTableData($this->_table);
+		$result = Database::preparedReturnLastInsert($this->_table, 'id', $this->_table, $this->_data[0]);
+		
+		$this->assertEquals($result, 12);
+	}
+	
 	public function testPostgresPreparedSelectJonFetchArray() {
 		Database::clearTableData($this->_table);
 		Database::preparedInsert($this->_table, $this->_data[0]);
@@ -927,6 +934,13 @@ class DatabaseTest extends TestCase{
 		$result  = Database::preparedSelectStatement($query);
 		
 		$this->assertTrue($result instanceof \mysqli_result);
+	}
+	
+	public function testPreparedInsertFindJonWithId() {
+		Database::clearTableData($this->_table);
+		$result = Database::preparedReturnLastInsert($this->_table, 'id', $this->_table, $this->_data[0]);
+		
+		$this->assertEquals($result, 1);
 	}
 	
 	public function testMysqlPreparedSelectJonFetchArray() {
