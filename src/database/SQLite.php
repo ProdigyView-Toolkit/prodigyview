@@ -47,7 +47,7 @@ class SQLite implements DBInterface {
 		return $this->_database;
 	}
 	
-	public function connect($name, $options = array()) {
+	public function connect(string $name, array $options = array()) {
 		
 		$defaults = array(
 			'port'=> 3306,

@@ -49,7 +49,7 @@ class Mysql implements DBInterface {
 		return $this->_database;
 	}
 	
-	public function setConnection($name, array $options = array()) {
+	public function setConnection(string $name, array $options = array()) {
 		
 		$defaults = array(
 			'port'=> 3306,

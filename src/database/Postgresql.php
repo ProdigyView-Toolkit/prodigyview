@@ -64,7 +64,7 @@ class Postgresql implements DBInterface {
 		return $this->_database;
 	}
 	
-	public function setConnection($name, $options = array()) {
+	public function setConnection(string $name, array $options = array()) {
 			
 		$defaults = array(
 			'port'=> 5432,
