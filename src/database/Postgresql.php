@@ -32,6 +32,10 @@ class Postgresql implements DBInterface {
 	
 	protected $_schema = null;
 	
+	protected $_tablePrefix = null;
+	
+	protected $_tableSuffix = null;
+	
 	protected $_login = null;
 	
 	protected $_password = null;
@@ -66,6 +70,8 @@ class Postgresql implements DBInterface {
 			'port'=> 5432,
 			'schema'=> '',
 			'password' => '',
+			'prefix' => '',
+			'suffix' => '',
 			'connect_type' => PGSQL_CONNECT_FORCE_NEW
 		);
 		
@@ -76,6 +82,8 @@ class Postgresql implements DBInterface {
 		$this->_port = $options['port'];
 		$this->_database = $options['database'];
 		$this->_schema = $options['schema'];
+		$this->_tablePrefix = $options['prefix'];
+		$this->_tableSuffix = $options['suffix'];
 		$this->_login = $options['login'];
 		$this->_password = $options['password'];
 		$this->_connectionType = $options['connect_type'];
@@ -236,8 +244,8 @@ class Postgresql implements DBInterface {
 		
 		$schema_query = '';
 		
-		if($this->getSchema($schema)) {
-			$schema_query = 'table_schema = '. $this->getSchema($schema) . ' AND';
+		if($this->_schema) {
+			$schema_query = 'table_schema = \''. $this->getSchema($schema) . '\' AND';
 		}
 
 		$query = "SELECT * FROM information_schema.columns WHERE {$schema_query} table_name = '$table_name' AND column_name = '$field_name';";
@@ -555,14 +563,16 @@ class Postgresql implements DBInterface {
 							$query .= ' ' . $value . ' ';
 						} else {
 							$placeheld_variables[] = $value;
-							$query .= $key . ' = ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
+							$count+=1;
+							$query .= $key . ' = ' . $this->getPreparedPlaceHolder($count) . ' ';
 						}
 					} else {
 						if (Validator::isInteger($key)) {
 							$query .= ' AND ' . $value . ' ';
 						} else {
 							$placeheld_variables[] = $value;
-							$query .= ' AND ' . $key . ' = ' . $this->getPreparedPlaceHolder($count + 1) . ' ';
+							$count+=1;
+							$query .= ' AND ' . $key . ' = ' . $this->getPreparedPlaceHolder($count) . ' ';
 						}
 					}
 				}
@@ -714,10 +724,10 @@ class Postgresql implements DBInterface {
 	}
 
 	public function formatTableName($table_name, $append_schema = true, $append_prefix = true) {
-		$table_name = $this->$dbprefix . $table_name;
+		$table_name = $this->_tablePrefix . $table_name;
 
 		if ($this->getSchema() && $append_schema) {
-			$table_name = $this->getSchema() . '.' . $table_name;
+			$table_name = $this->getSchema() . $table_name;
 		}
 
 		return $table_name;

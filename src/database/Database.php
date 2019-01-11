@@ -619,7 +619,7 @@ class Database  {
 		
 		$exist = $connection-> tableExist($tablename, $schema);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $exist , $result, $tablename);
+		self::_notify(get_class() . '::' . __FUNCTION__, $exist ,$tablename);
 		
 		return $exist;
 		
@@ -656,7 +656,7 @@ class Database  {
 		
 		$exist = $connection->columnExist($table_name, $field_name);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $exist, $result, $table_name, $field_name);
+		self::_notify(get_class() . '::' . __FUNCTION__, $exist, $table_name, $field_name);
 
 		return $exist;
 		

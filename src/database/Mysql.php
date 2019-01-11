@@ -67,7 +67,6 @@ class Mysql implements DBInterface {
 		$this->_schema = $options['schema'];
 		$this->_login = $options['login'];
 		$this->_password = $options['password'];
-		$this->_connectionType=$options['connect_type'];
 		$this->_socket= $options['socket'];
 		
 	}
