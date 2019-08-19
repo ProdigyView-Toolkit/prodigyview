@@ -400,7 +400,7 @@ class Router {
 		
 		$assigned_route = array();
 		$default_route = array();
-		$assigned_route_options = array();
+		$assigned_route_options = array('listen'=> '*');
 		$default_route_options = array();
 		
 		$method = (isset($_SERVER['REQUEST_METHOD'])) ? $method = $_SERVER['REQUEST_METHOD'] : null;
@@ -455,7 +455,7 @@ class Router {
 		
 		$method = (isset($_SERVER['REQUEST_METHOD'])) ? $method = $_SERVER['REQUEST_METHOD'] : null;
 		
-		if($route_options['listen'] == '*') {
+		if(!isset($route_options['listen']) || (isset($route_options['listen']) && $route_options['listen'] == '*')) {
 			self::$correct_request_method = true;
 		} else {
 			$listen = strtoupper($route_options['listen']);
