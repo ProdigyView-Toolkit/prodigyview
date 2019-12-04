@@ -64,7 +64,7 @@ trait StaticObject {
 	/**
 	 * A collection of items that belong to this class
 	 */
-	protected static $_collection = null;
+	protected static Collection $_collection = null;
 
 	/**
 	 * A collection of dynamically added methods that below to this class
@@ -119,7 +119,7 @@ trait StaticObject {
 
 		$index = self::_applyFilter(get_class(), __FUNCTION__, $index, array('event' => 'args'));
 
-		if (self::$_collection[get_called_class()] === null) {
+		if (!isset(self::$_collection[get_called_class()]) || self::$_collection[get_called_class()] === null) {
 			self::$_collection[get_called_class()] = new Collection();
 		}
 
@@ -216,7 +216,7 @@ trait StaticObject {
 		$name = $filtered['name'];
 		$data = $filtered['data'];
 
-		if (self::$_collection[get_called_class()] === null) {
+		if (!isset(self::$_collection[get_called_class()]) || self::$_collection[get_called_class()] === null) {
 			self::$_collection[get_called_class()] = new Collection();
 		}
 		

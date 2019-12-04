@@ -57,13 +57,13 @@ class Tools {
 		$chars = $filtered['chars'];
 
 		$charLength = (strlen($chars) - 1);
-		$returnString = $chars{rand(0, $charLength)};
+		$returnString = $chars[rand(0, $charLength)];
 
 		for ($i = 1; $i < $char_count; $i = strlen($returnString)) {
 
-			$newchar = $chars{rand(0, $charLength)};
+			$newchar = $chars[rand(0, $charLength)];
 
-			if ($newchar != $returnString{$i - 1}) {
+			if ($newchar != $returnString[$i - 1]) {
 				$returnString .= $newchar;
 			}
 		}//end for
