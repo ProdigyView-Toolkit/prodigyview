@@ -381,7 +381,7 @@ class Libraries {
 				if (empty($allow_extensions)) {
 					include_once ($key);
 				} else {
-					$extensions_allowed = (is_array($allow_extensions)) ? implode($allow_extensions, '|') : $allow_extensions;
+					$extensions_allowed = (is_array($allow_extensions)) ? implode( '|', $allow_extensions) : $allow_extensions;
 
 					if (preg_match('/' . $extensions_allowed . '/', $value['basename'], $matches)) {
 
@@ -419,7 +419,7 @@ class Libraries {
 				
 				foreach ($iterator_iterator as $file) {
 					
-					$extensions_allowed = (is_array($allow_extensions)) ? implode($allow_extensions, '|') : $allow_extensions;
+					$extensions_allowed = (is_array($allow_extensions)) ? implode('|', $allow_extensions) : $allow_extensions;
 
 					if (false === strpos($file->getFilename(), '~') && 0 < strpos($file->getFilename(), '.php') && preg_match('/' . $extensions_allowed . '/', $file->getBasename(), $matches)) {
 
