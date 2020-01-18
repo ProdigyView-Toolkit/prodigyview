@@ -64,7 +64,7 @@ trait StaticObject {
 	/**
 	 * A collection of items that belong to this class
 	 */
-	protected static Collection $_collection = null;
+	protected static $_collection = null;
 
 	/**
 	 * A collection of dynamically added methods that below to this class
