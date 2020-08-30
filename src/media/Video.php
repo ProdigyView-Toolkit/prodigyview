@@ -477,6 +477,26 @@ class Video  {
 		if (isset($options[$input_type . 'force_key_frames'])) {
 			$input_options .= ' -force_key_frames ' . $options[$input_type . 'force_key_frames'];
 		}
+		
+		if (isset($options[$input_type . 'filter_complex'])) {
+			$input_options .= ' -filter_complex ' . $options[$input_type . 'filter_complex'];
+		}
+		
+		if (isset($options[$input_type . 'crf'])) {
+			$input_options .= ' -crf ' . $options[$input_type . 'crf'];
+		}
+		
+		if (isset($options[$input_type . 'bufsize'])) {
+			$input_options .= ' -bufsize ' . $options[$input_type . 'bufsize'];
+		}
+		
+		if (isset($options[$input_type . 'preset'])) {
+			$input_options .= ' -preset ' . $options[$input_type . 'preset'];
+		}
+		
+		if (isset($options[$input_type . 'tune'])) {
+			$input_options .= ' -tune ' . $options[$input_type . 'tune'];
+		}
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $input_options, $options, $input_type);
 		$input_options = self::_applyFilter(get_class(), __FUNCTION__, $input_options, array('event' => 'return'));
