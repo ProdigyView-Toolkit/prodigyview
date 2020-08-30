@@ -486,10 +486,6 @@ class Video  {
 			$input_options .= ' -crf ' . $options[$input_type . 'crf'];
 		}
 		
-		if (isset($options[$input_type . 'bufsize'])) {
-			$input_options .= ' -bufsize ' . $options[$input_type . 'bufsize'];
-		}
-		
 		if (isset($options[$input_type . 'preset'])) {
 			$input_options .= ' -preset ' . $options[$input_type . 'preset'];
 		}
