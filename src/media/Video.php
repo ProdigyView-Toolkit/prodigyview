@@ -493,7 +493,15 @@ class Video  {
 		if (isset($options[$input_type . 'tune'])) {
 			$input_options .= ' -tune ' . $options[$input_type . 'tune'];
 		}
-
+		
+		if (isset($options[$input_type . 'movflags'])) {
+			$input_options .= ' -movflags ' . $options[$input_type . 'movflags'];
+		}
+		
+		if (isset($options[$input_type . 'map'])) {
+			$input_options .= ' -map ' . $options[$input_type . 'map'];
+		}
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $input_options, $options, $input_type);
 		$input_options = self::_applyFilter(get_class(), __FUNCTION__, $input_options, array('event' => 'return'));
 
