@@ -825,7 +825,7 @@ class Database  {
 		
 		$data = $connection->getPagininationOffset($table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by, $fields);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return_array, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
+		self::_notify(get_class() . '::' . __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
 		
 		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
 
