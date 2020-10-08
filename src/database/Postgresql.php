@@ -289,7 +289,7 @@ class Postgresql implements DBInterface {
 
 	public function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count') {
 		if (!empty($where_clause) && !is_array($where_clause))
-			$where_clause .= ' WHERE ' . $args['where'];
+			$where_clause .= ' WHERE ' . $where_clause;
 		else if (is_array($where_clause) && !empty($where_clause)) {
 			$query = ' WHERE ';
 			$first = true;
@@ -316,6 +316,8 @@ class Postgresql implements DBInterface {
 			}
 
 			$where_clause = $query;
+		} else {
+			$where_clause = '';
 		}
 
 		$query = "SELECT $fields FROM $table $join_clause $where_clause";
