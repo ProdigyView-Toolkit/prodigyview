@@ -541,7 +541,9 @@ class Template {
 			'version' => false,
 			'append_url' => true,
 			'libraries' => '',
-			'url' => ''
+			'url' => '',
+			'css' => '',
+			'javascript' => '',
 		);
 		
 		$options += $defaults;
