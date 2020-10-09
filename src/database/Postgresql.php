@@ -324,7 +324,12 @@ class Postgresql implements DBInterface {
 
 		$result = $this->query($query);
 		$total_pages = $this->fetchArray($result);
-		$total_pages = $total_pages['count'];
+		$total_pages = $total_pages['count']/$results_per_page;
+
+		if($total_pages<1){
+			$total_pages = 1;
+		}
+		
 		$from_clause = '';
 
 		//Get The Start Page
