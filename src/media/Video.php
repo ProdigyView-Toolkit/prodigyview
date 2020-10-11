@@ -502,6 +502,14 @@ class Video  {
 			$input_options .= ' -map ' . $options[$input_type . 'map'];
 		}
 		
+		if (isset($options[$input_type . 'max_muxing_queue_size'])) {
+			$input_options .= ' -max_muxing_queue_size ' . $options[$input_type . 'max_muxing_queue_size'];
+		}
+		
+		if (isset($options[$input_type . 'vsync'])) {
+			$input_options .= ' -vsync ' . $options[$input_type . 'vsync'];
+		}
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $input_options, $options, $input_type);
 		$input_options = self::_applyFilter(get_class(), __FUNCTION__, $input_options, array('event' => 'return'));
 
