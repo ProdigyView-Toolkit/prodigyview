@@ -510,6 +510,18 @@ class Video  {
 			$input_options .= ' -vsync ' . $options[$input_type . 'vsync'];
 		}
 		
+		if (isset($options[$input_type . 'attempt_recovery'])) {
+			$input_options .= ' -attempt_recovery ' . $options[$input_type . 'attempt_recovery'];
+		}
+		
+		if (isset($options[$input_type . 'max_recovery_attempts'])) {
+			$input_options .= ' -max_recovery_attempts ' . $options[$input_type . 'max_recovery_attempts'];
+		}
+		
+		if (isset($options[$input_type . 'drop_pkts_on_overflow'])) {
+			$input_options .= ' -drop_pkts_on_overflow ' . $options[$input_type . 'drop_pkts_on_overflow'];
+		}
+		
 		self::_notify(get_class() . '::' . __FUNCTION__, $input_options, $options, $input_type);
 		$input_options = self::_applyFilter(get_class(), __FUNCTION__, $input_options, array('event' => 'return'));
 
