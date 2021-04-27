@@ -56,6 +56,11 @@ class Session {
 	private static $cookie_httponly = false;
 
 	/**
+	 * Determines if the cookie uses same site
+	 */
+	private static $cookie_samesite = null;
+
+	/**
 	 * Encrypt the cookie
 	 */
 	private static $hash_cookie = false;
@@ -74,6 +79,11 @@ class Session {
 	 * The domain for the session
 	 */
 	private static $session_domain = '';
+
+	/**
+	 * The session enforces the same sitte issue
+	 */
+	private static $session_samesite = null;
 
 	/**
 	 * Access the session only over a secure connection
@@ -129,6 +139,7 @@ class Session {
 				'cookie_secure' => false,
 				'cookie_httponly' => false,
 				'cookie_lifetime' => 5000,
+				'cookie_samesite' => null,
 				'hash_cookie' => false,
 				'hash_session' => false,
 				'session_name' => 'pv_session',
@@ -137,7 +148,8 @@ class Session {
 				'session_domain' => $_SERVER['HTTP_HOST'],
 				'session_secure' => false,
 				'session_httponly' => false,
-				'session_start' => true
+				'session_start' => true,
+				'session_samesite' => null,
 			);
 	
 			$session_vars += $defaults;
@@ -149,19 +161,28 @@ class Session {
 			self::$cookie_secure = $session_vars['cookie_secure'];
 			self::$cookie_httponly = $session_vars['cookie_httponly'];
 			self::$cookie_lifetime = $session_vars['cookie_lifetime'];
+			self::$cookie_samesite = $session_vars['cookie_samesite'];
 	
 			self::$session_path = $session_vars['session_path'];
 			self::$session_domain = $session_vars['session_domain'];
 			self::$session_secure = $session_vars['session_secure'];
 			self::$session_httponly = $session_vars['session_httponly'];
 			self::$session_lifetime = $session_vars['session_lifetime'];
+			self::$session_samesite = $session_vars['session_samesite'];
 	
 			self::$hash_cookie = $session_vars['hash_cookie'];
 			self::$hash_session = $session_vars['hash_session'];
 	
 			if (session_status() == PHP_SESSION_NONE) {
 				session_name($session_vars['session_name']);
-				session_set_cookie_params($session_vars['session_lifetime'], $session_vars['session_path'], $session_vars['session_domain'], $session_vars['session_secure'], $session_vars['session_httponly']);
+				session_set_cookie_params([
+					'lifetime' => $session_vars['session_lifetime'], 
+					'path' => $session_vars['session_path'], 
+					'domain' => $session_vars['session_domain'], 
+					'secure' => $session_vars['session_secure'], 
+					'httponly' => $session_vars['session_httponly'],
+					'samesite' => $session_vars['session_samesite'],
+				]);
 			}
 	
 			if ($session_vars['session_start'] && session_status() == PHP_SESSION_NONE) {
@@ -220,7 +241,14 @@ class Session {
 			$value = Security::encrypt($value);
 		}
 		
-		setcookie($name, $value, time() + $cookie_lifetime, $cookie_path, $cookie_domain, $cookie_secure, $cookie_httponly);
+		setcookie($name, $value, array (
+			'expires' => time() + $cookie_lifetime,
+			'path' => $cookie_path,
+			'domain' => $cookie_domain,
+			'secure' => $cookie_secure,
+			'httponly' => $cookie_httponly,
+			'samesite' => $cookie_samesite
+		));
 		
 		self::_notify(get_class() . '::' . __FUNCTION__, $name, $value, $options);
 	}
@@ -452,6 +480,7 @@ class Session {
 			'cookie_secure' => self::$cookie_secure,
 			'cookie_httponly' => self::$cookie_httponly,
 			'cookie_lifetime' => self::$cookie_lifetime,
+			'cookie_samesite' => self::$cookie_samesite,
 			'hash_cookie' => self::$hash_cookie
 		);
 
@@ -472,6 +501,7 @@ class Session {
 			'session_secure' => self::$session_secure,
 			'session_httponly' => self::$session_httponly,
 			'session_lifetime' => self::$session_lifetime,
+			'session_samesite' => self::$session_samesite,
 			'hash_session' => self::$hash_session
 		);
 
