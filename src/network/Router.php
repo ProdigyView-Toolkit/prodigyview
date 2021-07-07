@@ -299,7 +299,42 @@ class Router {
 			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
 		
 		$defaults = array(
-			'listen'=>'POST',
+			'listen'=>'PUT',
+			'route' => $route,
+			'rule'=> $route
+		);
+		
+		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+			'route' => $route,
+			'options' => $options
+		), array('event' => 'args'));
+		
+		$route = $filtered['route'];
+		$options = $filtered['options'];
+		
+		$options += $defaults;
+		
+		self::addRouteRule($options);
+		
+		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+	}
+	
+	/**
+	 * Creates a route that only listens for PUT requests.
+	 * 
+	 * @param string $route The route either as a url or with regular expressions to listen too
+	 * @param string An array of options that define the route.
+	 * 
+	 * @see addRouteRule to see the option
+	 * @return void
+	 */
+	public static function patch(string $route, array $options = array()) {
+		
+		if (self::_hasAdapter(get_class(), __FUNCTION__))
+			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		
+		$defaults = array(
+			'listen'=>'PATCH',
 			'route' => $route,
 			'rule'=> $route
 		);
@@ -334,7 +369,7 @@ class Router {
 			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
 		
 		$defaults = array(
-			'listen'=>'POST',
+			'listen'=>'DELETE',
 			'route' => $route,
 			'rule'=> $route
 		);
