@@ -364,7 +364,7 @@ class Curl {
 		if ($this->_headers) {
 			$final_headers = array();
 			foreach ($this -> _headers as $key => $value) {
-				$final_headers[] = $key . ' : ' . $value;
+				$final_headers[] = $key . ':' . $value;
 			}
 
 			curl_setopt($this->_handler, CURLOPT_HTTPHEADER, $final_headers);
