@@ -8,7 +8,7 @@ class LogTests extends TestCase {
 	
 	private $_test_dir = './log_tests/';
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		if(!file_exists($this -> _test_dir)) {
 			mkdir($this -> _test_dir);
 		}
@@ -16,7 +16,7 @@ class LogTests extends TestCase {
 		Log::init(array('directory' => $this -> _test_dir));
 	}
 	
-	protected function tearDown() {
+	protected function tearDown(): void {
 		FileManager::deleteDirectory($this -> _test_dir);
 	}
 	

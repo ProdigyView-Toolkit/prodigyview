@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class RouterTests extends TestCase {
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		Router::init();
 	}
 	

@@ -1,0 +1,12 @@
+version: "3.4"
+
+services:
+  php:
+    build:
+      context : ./
+      dockerfile : Dockerfile
+      network: host
+    volumes:
+      - ./:/code:delegated
+    container_name: prodigyview
+    

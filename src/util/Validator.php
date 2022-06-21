@@ -1796,7 +1796,7 @@ class Validator {
 		$email = self::_applyFilter(get_class(), __FUNCTION__, $email, array('event' => 'args'));
 		$validation = false;
 
-		if (preg_match("/^[_\.0-9a-zA-Z-]+@([0-9a-zA-Z][0-9a-zA-Z-]+\.)+[a-zA-Z]{2,6}$/i", $email)) {
+		if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 			$validation = true;
 		}
 

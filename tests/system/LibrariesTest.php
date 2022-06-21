@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class LibrariesTests extends TestCase {
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		Libraries::init();
 	}
 	

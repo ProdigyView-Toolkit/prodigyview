@@ -3,14 +3,14 @@ use prodigyview\util\Validator;
 
 use PHPUnit\Framework\TestCase;
 
-class ValidatorTests extends TestCase {
+class ValidationTest extends TestCase {
 
-	protected function setUp() {
+	protected function setUp(): void {
 		
 		Validator::init();
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 
 	}
 
@@ -35,6 +35,18 @@ class ValidatorTests extends TestCase {
 	public function testIntegerDouble() {
 		$result = Validator::check('integer', 3.5);
 		$this->assertFalse($result);
+	}
+
+	public function testEmail() {
+		$result = Validator::check('email', 3.5);
+		$this->assertFalse($result);
+
+		$result = Validator::check('email', 'sfsdsds');
+		$this->assertFalse($result);
+
+		$result = Validator::check('email', 'john@aol.com');
+		$this->assertTrue
+		($result);
 	}
 	
 	/**

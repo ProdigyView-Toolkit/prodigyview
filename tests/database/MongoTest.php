@@ -37,7 +37,7 @@ class MongoTest extends TestCase{
 		array('email' => 'jane@example.com', 'name'=> 'Jane Doe', 'bio' => '2nd Most Common Name Ever')
 	);
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		$this->_db = new Mongo();
 		
 		$this->_db->setConnection($this->_connectionName, array(

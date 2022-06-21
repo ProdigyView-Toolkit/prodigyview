@@ -9,13 +9,13 @@ class CacheTests extends TestCase {
 	
 	private $cacheContent = 'ABCDEFGHIJKLMNOP';
 
-	protected function setUp() {
+	protected function setUp(): void {
 		Cache::init(array(
 			'cache_location' => sys_get_temp_dir ()
 		));
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		Cache::deleteCache($this->cacheKey);
 	}
 

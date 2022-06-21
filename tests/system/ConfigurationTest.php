@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigurationTests extends TestCase {
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		Configuration::init();
 	}
 	

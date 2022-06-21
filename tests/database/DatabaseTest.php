@@ -63,7 +63,7 @@ class DatabaseTest extends TestCase{
 		array('email' => 'jane@example.com', 'name'=> 'Jane Doe', 'bio' => '2nd Most Common Name Ever')
 	);
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		
 		Database::init();
 		
