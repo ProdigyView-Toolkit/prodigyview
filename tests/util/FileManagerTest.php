@@ -20,13 +20,13 @@ class FileManagerTests extends TestCase {
 		'file4.txt',
 	);
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		if(!file_exists($this -> _test_dir)) {
 			mkdir($this -> _test_dir);
 		}
 	}
 	
-	protected function tearDown() {
+	protected function tearDown(): void {
 		FileManager::deleteDirectory($this -> _test_dir);
 	}
 	

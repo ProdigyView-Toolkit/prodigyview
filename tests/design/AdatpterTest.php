@@ -74,13 +74,13 @@ class AdapterTests extends TestCase {
 	
 	private $_object = null;
 	
-	protected function setUp() {
+	protected function setUp(): void  {
 		
 		$this -> _object = new TestInstance();
 		
 	}
 
-	protected function tearDown() {
+	protected function tearDown(): void {
 		
 	}
 

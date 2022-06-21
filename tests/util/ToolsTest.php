@@ -4,7 +4,7 @@ use prodigyview\util\Tools;
 
 use PHPUnit\Framework\TestCase;
 
-class ToolsTests extends TestCase {
+class ToolsTest extends TestCase {
 
 	private $_largeArray = array(
 		'breakfast' => array(

@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
  * 
  * @todo Add testing for encoding
  */
-class ConversionTests extends TestCase {
+class ConversionTest extends TestCase {
 	
 	private $_testArray = null;
 	
@@ -18,7 +18,7 @@ class ConversionTests extends TestCase {
 	
 	private $_testXML = '<?xml version="1.0"?><root><slot_1>SLOT 1</slot_1><item_123>SLOT 2</item_123><sub><item_0>child1</item_0><one>Chid 2</one></sub></root>';
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		$this -> _testArray = array('slot_1' => 'SLOT 1', 123 => 'SLOT 2', 'sub' => array('child1', 'one' => 'Chid 2'));
 		
 		$this -> _testObject = (object) array('slot_1' => 'SLOT 1', 123 => 'SLOT 2', 'sub' => (object) array('child1', 'one' => 'Chid 2'));
@@ -29,6 +29,8 @@ class ConversionTests extends TestCase {
 		$output = Conversions::objectToArray($this -> _testObject);
 		
 		$this->assertEquals($output, $this -> _testArray);
+
+		$this->assertCount(3, $output);
 	}
 	
 	public function testArrayToObject() {
@@ -36,6 +38,8 @@ class ConversionTests extends TestCase {
 		$output = Conversions::arrayToObject($this -> _testArray);
 		
 		$this->assertEquals($output, $this -> _testObject);
+
+		$this->assertCount(3, (array)$output);
 	}
 	
 	public function testArrayToXML() {

@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class SessionTests extends TestCase {
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		$prev = error_reporting(0);
 		Session::init();
 		error_reporting($prev);

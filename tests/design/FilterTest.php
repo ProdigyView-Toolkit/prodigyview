@@ -71,12 +71,12 @@ class FilterTests extends TestCase {
 	
 	private $_object = null;
 	
-	protected function setUp() {
+	protected function setUp(): void {
 		
 		$this -> _object = new FilterInstance();
 	}
 	
-	protected function tearDown() {
+	protected function tearDown(): void {
 		
 	}
 	
