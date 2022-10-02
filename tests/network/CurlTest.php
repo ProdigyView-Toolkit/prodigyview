@@ -7,7 +7,7 @@ class CurlTest extends TestCase {
 	
 	public function testGet() {
 		
-		$url = 'https://ptabdata.uspto.gov/ptab-api/swagger/swagger.json';
+		$url = 'https://developer.uspto.gov/ptab-api/v3/api-docs';
 		
 		$curl = new Curl($url);
 		$curl->send('get');

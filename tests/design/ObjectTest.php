@@ -22,7 +22,7 @@ class StaticTest {
 	}
 }
 
-class ObjectTests extends TestCase {
+class ObjectTest extends TestCase {
 	
 	private $_data = array(
 		'bark' => 'Dog',

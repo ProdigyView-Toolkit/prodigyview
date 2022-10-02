@@ -95,7 +95,7 @@ trait StaticObject {
 		$index = $filtered['index'];
 		$value = $filtered['value'];
 
-		if (self::$_collection[get_called_class()] === null) {
+		if (!isset(self::$_collection[get_called_class()]) || self::$_collection[get_called_class()] === null) {
 			self::$_collection[get_called_class()] = new Collection();
 		}
 

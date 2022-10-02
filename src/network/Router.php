@@ -774,11 +774,13 @@ class Router {
 		}
 		$current_page_url .= '://';
 
-		if ($_SERVER['SERVER_PORT'] != '80') {
+		if (isset($_SERVER['SERVER_PORT']) && isset($_SERVER['HTTP_HOST']) && $_SERVER['SERVER_PORT'] != '80') {
 			$current_page_url .= $_SERVER['HTTP_HOST'] . ':' . $_SERVER['SERVER_PORT'];
-		} else {
+		} else if(isset($_SERVER['HTTP_HOST'])) {
 			$current_page_url .= $_SERVER['HTTP_HOST'];
-		}
+		} else {
+			$current_page_url .= 'http://localhost/';
+		}	
 
 		self::_notify(get_class() . '::' . __FUNCTION__, $current_page_url);
 		$current_page_url = self::_applyFilter(get_class(), __FUNCTION__, $current_page_url, array('event' => 'return'));

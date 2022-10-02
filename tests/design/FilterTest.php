@@ -65,7 +65,7 @@ class FilterStaticTest {
 /**
  * This is the actual test cases run by PHP Unit.
  */
-class FilterTests extends TestCase {
+class FilterTest extends TestCase {
 	
 	private $_testString = 'Farlow Jimmy';
 	

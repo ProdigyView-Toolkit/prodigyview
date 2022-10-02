@@ -4,7 +4,7 @@ use prodigyview\network\Router;
 
 use PHPUnit\Framework\TestCase;
 
-class RouterTests extends TestCase {
+class RouterTest extends TestCase {
 	
 	protected function setUp(): void {
 		Router::init();
