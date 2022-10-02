@@ -22,3 +22,15 @@ filter 2022-10-02 22:58:17 {"object":"static","class":"FilterStaticTest","method
 filter 2022-10-02 22:58:17 {"type":"closure","object":"static","class":"closure","method":false,"trace":"FilterStatic::filter","start_line":false,"end_line":false}
 filter 2022-10-02 22:58:17 {"type":"instance","object":"static","class":"\/code\/tests\/design\/FilterTest.php","method":"filter","trace":"FilterStatic::filter","start_line":47,"end_line":52}
 filter 2022-10-02 22:58:17 {"object":"static","class":"FilterStaticTest","method":"filter","type":"class_method","trace":"FilterStatic::filter"}
+filter 2022-10-02 23:08:52 {"type":"instance","object":"static","class":"\/code\/tests\/design\/FilterTest.php","method":"filter","trace":"FilterInstance::filter","start_line":47,"end_line":52}
+filter 2022-10-02 23:08:52 {"type":"instance","object":"static","class":"\/code\/tests\/design\/FilterTest.php","method":"filter","trace":"FilterStatic::filter","start_line":47,"end_line":52}
+filter 2022-10-02 23:08:52 {"object":"static","class":"FilterStaticTest","method":"filter","type":"class_method","trace":"FilterStatic::filter"}
+filter 2022-10-02 23:08:52 {"type":"closure","object":"static","class":"closure","method":false,"trace":"FilterStatic::filter","start_line":false,"end_line":false}
+filter 2022-10-02 23:08:52 {"type":"instance","object":"static","class":"\/code\/tests\/design\/FilterTest.php","method":"filter","trace":"FilterStatic::filter","start_line":47,"end_line":52}
+filter 2022-10-02 23:08:52 {"object":"static","class":"FilterStaticTest","method":"filter","type":"class_method","trace":"FilterStatic::filter"}
+filter 2022-10-02 23:13:02 {"type":"instance","object":"static","class":"\/code\/tests\/design\/FilterTest.php","method":"filter","trace":"FilterInstance::filter","start_line":47,"end_line":52}
+filter 2022-10-02 23:13:02 {"type":"instance","object":"static","class":"\/code\/tests\/design\/FilterTest.php","method":"filter","trace":"FilterStatic::filter","start_line":47,"end_line":52}
+filter 2022-10-02 23:13:02 {"object":"static","class":"FilterStaticTest","method":"filter","type":"class_method","trace":"FilterStatic::filter"}
+filter 2022-10-02 23:13:02 {"type":"closure","object":"static","class":"closure","method":false,"trace":"FilterStatic::filter","start_line":false,"end_line":false}
+filter 2022-10-02 23:13:02 {"type":"instance","object":"static","class":"\/code\/tests\/design\/FilterTest.php","method":"filter","trace":"FilterStatic::filter","start_line":47,"end_line":52}
+filter 2022-10-02 23:13:02 {"object":"static","class":"FilterStaticTest","method":"filter","type":"class_method","trace":"FilterStatic::filter"}
