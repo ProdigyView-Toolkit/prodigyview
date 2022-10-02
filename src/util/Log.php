@@ -43,7 +43,7 @@ class Log {
 	/**
 	 * The format of the timestamp for the logs
 	 */
-	protected static $_timestampFormat;
+	protected static $_timestampFormat = 'Y-m-d H:i:s';
 
 	/**
 	 * The name of the file the logs are being saved too
@@ -53,7 +53,7 @@ class Log {
 	/**
 	 * The format for saving logs, in terms of priorty, message and date
 	 */
-	protected static $_logFormat;
+	protected static $_logFormat = '{priority} {timestamp} {message}' . "\n";
 	
 	/**
 	 * Protects the class from being initalized multiple times via init
@@ -124,7 +124,9 @@ class Log {
 	 * @return boolean Returns true if the file is successfully written
 	 * @access public
 	 */
-	public static function writeLog(string $priority, string $message, array $options = array()) : bool {
+	public static function writeLog(string $priority
+	
+	, string $message, array $options = array()) : bool {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $priority, $message, $options);

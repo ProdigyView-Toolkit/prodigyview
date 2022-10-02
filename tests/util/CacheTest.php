@@ -3,7 +3,7 @@ use prodigyview\util\Cache;
 
 use PHPUnit\Framework\TestCase;
 
-class CacheTests extends TestCase {
+class CacheTest extends TestCase {
 		
 	private $cacheKey = 'testcache';
 	

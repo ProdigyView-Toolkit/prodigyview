@@ -2,6 +2,7 @@
 namespace prodigyview\util;
 
 use prodigyview\util\Conversions;
+use Traversable;
 
 /**
  * The Collection class acts as a repository for data to be stored, retrieved and iterated over.
@@ -53,7 +54,7 @@ class Collection implements \IteratorAggregate {
 	 * @return Iterator $iterable An iterable object
 	 * @access public
 	 */
-	public function getIterator() {
+	public function getIterator() : Traversable {
 		return new Iterator($this->dataset);
 	}
 
@@ -175,7 +176,7 @@ class Iterator implements \Iterator {
 	 * @return void
 	 * @access public
 	 */
-	public function rewind() {
+	public function rewind() : void {
 		reset($this->data);
 	}
 
@@ -196,7 +197,7 @@ class Iterator implements \Iterator {
 	 * @return mixed $value The data stored in the current index
 	 * @access public
 	 */
-	public function current() {
+	public function current() : mixed {
 		$data = current($this->data);
 		return $data;
 	}
@@ -207,7 +208,7 @@ class Iterator implements \Iterator {
 	 * @return mixed $key
 	 * @access public
 	 */
-	public function key() {
+	public function key() : mixed {
 		$data = key($this->data);
 		return $data;
 	}
@@ -218,9 +219,8 @@ class Iterator implements \Iterator {
 	 * @return mixed $value The data at the location of the next pointer
 	 * @access public
 	 */
-	public function next() {
-		$data = next($this->data);
-		return $data;
+	public function next() : void {
+		next($this->data);
 	}
 
 	/**
@@ -240,7 +240,7 @@ class Iterator implements \Iterator {
 	 * @return mixed $value The validated data
 	 * @access public
 	 */
-	public function valid() {
+	public function valid() : bool {
 		$key = key($this->data);
 		$data = ($key !== NULL && $key !== FALSE);
 		return $data;

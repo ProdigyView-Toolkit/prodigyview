@@ -4,7 +4,7 @@ use prodigyview\util\FileManager;
 
 use PHPUnit\Framework\TestCase;
 
-class LogTests extends TestCase {
+class LogTest extends TestCase {
 	
 	private $_test_dir = './log_tests/';
 	

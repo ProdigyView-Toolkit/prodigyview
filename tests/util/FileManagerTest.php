@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
  * 
  * @todo Finish writing tests
  */
-class FileManagerTests extends TestCase {
+class FileManagerTest extends TestCase {
 	
 	private $_test_dir = './file_manager_tests/';
 	

@@ -3,7 +3,7 @@ use prodigyview\util\Collection;
 
 use PHPUnit\Framework\TestCase;
 
-class CollectionTests extends TestCase {
+class CollectionTest extends TestCase {
 	
 	private $_data = array('small' => 'Cat', 'big' => 'Dog', 1 => 'Ferret', 2 => 'Parrots');
 	

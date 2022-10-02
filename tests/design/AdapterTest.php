@@ -68,7 +68,7 @@ class TestAdapterStatic {
 /**
  * The PHPUnit class to be executed during the test cases.
  */
-class AdapterTests extends TestCase {
+class AdapterTest extends TestCase {
 
 	private $_testString = 'Abc !@#@';
 	

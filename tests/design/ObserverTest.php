@@ -45,7 +45,7 @@ class StaticListener {
 	}
 }
 
-class ObserverTests extends TestCase {
+class ObserverTest extends TestCase {
 
 	public function testInstanceWithClosure() {
 		

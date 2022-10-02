@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
  * 
  * @todo Create more tests
  */
-class CliTests extends TestCase {
+class CliTest extends TestCase {
 
 	private $_command_line_1 = array(
 		'input' => 'file.php --file=test.text --path=none',

@@ -7,7 +7,7 @@ class StaticInstanceObject {
 	use StaticInstance;
 }
 
-class StaticStaticInstanceObjects extends TestCase {
+class StaticInstanceTest extends TestCase {
 	
 	private $_data = array(
 		'bark' => 'Dog',
