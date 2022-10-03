@@ -500,13 +500,13 @@ class Template {
 
 		$libraries = self::getHeader($options);
 
-		$buffer = str_replace($options['site_title'], Template::getSiteTitle(), $buffer);
+		$buffer = str_replace($options['site_title'], (Template::getSiteTitle()) ?: '', $buffer);
 
-		$buffer = str_replace($options['site_keywords'], Template::getSiteKeywords(), $buffer);
+		$buffer = str_replace($options['site_keywords'], (Template::getSiteKeywords()) ?: '', $buffer);
 
-		$buffer = str_replace($options['site_meta'], Template::getSiteMetaTags(), $buffer);
+		$buffer = str_replace($options['site_meta'], (Template::getSiteMetaTags()) ?: '', $buffer);
 
-		$buffer = str_replace($options['site_description'], Template::getSiteMetaDescription(), $buffer);
+		$buffer = str_replace($options['site_description'], (Template::getSiteMetaDescription()) ?: '', $buffer);
 
 		$buffer = str_replace($options['header_addition'], $libraries, $buffer);
 
