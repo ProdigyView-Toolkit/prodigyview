@@ -213,7 +213,7 @@ class Session {
 	 *
 	 * @return void
 	 */
-	public static function writeCookie(string $name, $value, array $options = array()) {
+	public static function writeCookie(string $name, $value = '', array $options = array()) {
 
 		if (self::_hasAdapter(get_class(), __FUNCTION__))
 			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
