@@ -68,13 +68,13 @@ class Mongo implements DBInterface {
 	public function connect() {
 		
 		if(class_exists('\\MongoDB\Driver\Manager')) {	
-			$this->_link = new \MongoDB\Client('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
+			$this->_link = new \MongoDB\Client('mongodb+srv://'.$this->_login.':'.$this->_password.'@'.$this->_host, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
 			$this->_link->selectDatabase($this->_database);
 		} else if(class_exists ('MongoClient')) {
-			$this->_link = new \MongoClient('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host);
+			$this->_link = new \MongoClient('mongodb+srv://'.$this->_login.':'.$this->_password.'@'.$this->_host);
 			$this->_link = $this->_link ->selectDB($this->_database);
 		} else {
-			$this->_link = new Mongo('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host);
+			$this->_link = new Mongo('mongodb+srv://'.$this->_login.':'.$this->_password.'@'.$this->_host);
 			$this->_link = $this->_link ->selectDB($this->_database);
 		}
 		
