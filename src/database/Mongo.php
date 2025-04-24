@@ -67,18 +67,72 @@ class Mongo implements DBInterface {
 	
 	public function connect() {
 		
-		if(class_exists('\\MongoDB\Driver\Manager')) {	
-			$this->_link = new \MongoDB\Client('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host, [], ['typeMap' => ['root' => 'array', 'document' => 'array']]);
-			$this->_link->selectDatabase($this->_database);
-		} else if(class_exists ('MongoClient')) {
-			$this->_link = new \MongoClient('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host);
-			$this->_link = $this->_link ->selectDB($this->_database);
+		if (class_exists('\\MongoDB\\Driver\\Manager')) {
+
+		    // Build the base URI
+		    $uri = 'mongodb://' . $this->_login . ':' . $this->_password . '@' . $this->_host;
+		
+		    // Optional: Add port if provided
+		    if (!empty($this->_port)) {
+		        $uri .= ':' . $this->_port;
+		    }
+		
+		    // Optional: Add default DB to URI
+		    if (!empty($this->_database)) {
+		        $uri .= '/' . $this->_database;
+		    } else {
+		        $uri .= '/';
+		    }
+		
+		    // Append directConnection=true if not already present
+		    if (strpos($uri, 'directConnection=') === false) {
+		        $uri .= (strpos($uri, '?') === false ? '?' : '&') . 'directConnection=true';
+		    }
+		
+		    try {
+		        $this->_link = new \MongoDB\Client(
+		            $uri,
+		            [],
+		            ['typeMap' => ['root' => 'array', 'document' => 'array']]
+		        );
+		        $this->_link->selectDatabase($this->_database);
+		    } catch (\MongoDB\Driver\Exception\Exception $e) {
+		        error_log("MongoDB Connection Error: " . $e->getMessage());
+		        throw $e;
+		    }
+		
+		} else if (class_exists('MongoClient')) {
+		
+		    try {
+		        $uri = 'mongodb://' . $this->_login . ':' . $this->_password . '@' . $this->_host;
+		        if (!empty($this->_port)) {
+		            $uri .= ':' . $this->_port;
+		        }
+		
+		        $this->_link = new \MongoClient($uri);
+		        $this->_link = $this->_link->selectDB($this->_database);
+		    } catch (Exception $e) {
+		        error_log("Legacy MongoClient Error: " . $e->getMessage());
+		        throw $e;
+		    }
+		
 		} else {
-			$this->_link = new Mongo('mongodb://'.$this->_login.':'.$this->_password.'@'.$this->_host);
-			$this->_link = $this->_link ->selectDB($this->_database);
+		
+		    try {
+		        $uri = 'mongodb://' . $this->_login . ':' . $this->_password . '@' . $this->_host;
+		        if (!empty($this->_port)) {
+		            $uri .= ':' . $this->_port;
+		        }
+		
+		        $this->_link = new \Mongo($uri);
+		        $this->_link = $this->_link->selectDB($this->_database);
+		    } catch (Exception $e) {
+		        error_log("Very Old Mongo Error: " . $e->getMessage());
+		        throw $e;
+		    }
+		
 		}
 		
-				
 		return $this->_link;
 	}
 	
