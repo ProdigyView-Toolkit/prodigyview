@@ -75,8 +75,8 @@ class Template {
 	 */
 	public static function init(array $config = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
 			$defaults = array(
@@ -86,13 +86,13 @@ class Template {
 			);
 	
 			$config += $defaults;
-			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+			$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 	
 			self::$siteTitle = $config['site_name'];
 			self::$siteMetaTags = $config['meta_keywords'];
 			self::$siteMetaDescription = $config['meta_description'];
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::_notify(self::class . '::' . __FUNCTION__, $config);
 			
 			self::$_initialized = true;
 		}
@@ -107,11 +107,11 @@ class Template {
 	 */
 	public static function getSiteTitle() : ?string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$siteTitle);
-		$value = self::_applyFilter(get_class(), __FUNCTION__, self::$siteTitle, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, self::$siteTitle);
+		$value = self::_applyFilter(self::class, __FUNCTION__, self::$siteTitle, array('event' => 'return'));
 
 		return $value;
 	}
@@ -125,11 +125,11 @@ class Template {
 	 */
 	public static function getSiteKeywords() : ?string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$siteKeywords);
-		$value = self::_applyFilter(get_class(), __FUNCTION__, self::$siteKeywords, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, self::$siteKeywords);
+		$value = self::_applyFilter(self::class, __FUNCTION__, self::$siteKeywords, array('event' => 'return'));
 
 		return $value;
 	}
@@ -143,11 +143,11 @@ class Template {
 	 */
 	public static function getSiteMetaDescription() : ?string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$siteMetaDescription);
-		$value = self::_applyFilter(get_class(), __FUNCTION__, self::$siteMetaDescription, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, self::$siteMetaDescription);
+		$value = self::_applyFilter(self::class, __FUNCTION__, self::$siteMetaDescription, array('event' => 'return'));
 
 		return $value;
 	}
@@ -161,12 +161,12 @@ class Template {
 	 */
 	public static function getSiteMetaTags() : ?string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$siteMetaTags);
+		self::_notify(self::class . '::' . __FUNCTION__, self::$siteMetaTags);
 		
-		$value = self::_applyFilter(get_class(), __FUNCTION__, self::$siteMetaTags, array('event' => 'return'));
+		$value = self::_applyFilter(self::class, __FUNCTION__, self::$siteMetaTags, array('event' => 'return'));
 
 		return $value;
 	}
@@ -179,14 +179,14 @@ class Template {
 	 */
 	public static function setSiteTitle(string $string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteTitle = $string;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $string);
+		self::_notify(self::class . '::' . __FUNCTION__, $string);
 	}
 
 	/**
@@ -197,14 +197,14 @@ class Template {
 	 */
 	public static function setSiteKeywords(string $string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteKeywords = $string;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $string);
+		self::_notify(self::class . '::' . __FUNCTION__, $string);
 	}
 
 	/**
@@ -217,14 +217,14 @@ class Template {
 	 */
 	public static function appendSiteTitle(string $string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteTitle .= $string;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $string);
+		self::_notify(self::class . '::' . __FUNCTION__, $string);
 	}
 
 	/**
@@ -237,14 +237,14 @@ class Template {
 	 */
 	public static function setSiteMetaTags(string $string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteMetaTags = $string;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $string);
+		self::_notify(self::class . '::' . __FUNCTION__, $string);
 	}
 
 	/**
@@ -256,14 +256,14 @@ class Template {
 	 */
 	public static function appendSiteMetaTags(string $string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteMetaTags .= $string;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $string);
+		self::_notify(self::class . '::' . __FUNCTION__, $string);
 	}
 
 	/**
@@ -276,14 +276,14 @@ class Template {
 	 */
 	public static function setSiteMetaDescription(string $string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteMetaDescription = $string;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $string);
+		self::_notify(self::class . '::' . __FUNCTION__, $string);
 	}
 
 	/**
@@ -296,14 +296,14 @@ class Template {
 	 */
 	public static function appendSiteMetaDescription(string $string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 		
 		self::$siteMetaDescription .= $string;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $string);
+		self::_notify(self::class . '::' . __FUNCTION__, $string);
 	}
 
 	/**
@@ -319,13 +319,13 @@ class Template {
 	 */
 	public static function errorMessage(string $message, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $message, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $message, $options);
 
 		$defaults = array('class' => 'error-message');
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'message' => $message,
 			'options' => $options
 		), array('event' => 'args'));
@@ -335,9 +335,9 @@ class Template {
 
 		$div = Html::div($message, $options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $div, $message, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $div, $message, $options);
 		
-		$div = self::_applyFilter(get_class(), __FUNCTION__, $div, array('event' => 'return'));
+		$div = self::_applyFilter(self::class, __FUNCTION__, $div, array('event' => 'return'));
 
 		return $div;
 	}
@@ -355,13 +355,13 @@ class Template {
 	 */
 	public static function successMessage(string $message, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $message, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $message, $options);
 
 		$defaults = array('class' => 'success-message');
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'message' => $message,
 			'options' => $options
 		), array('event' => 'args'));
@@ -371,9 +371,9 @@ class Template {
 
 		$div = Html::div($message, $options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $div, $message, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $div, $message, $options);
 		
-		$div = self::_applyFilter(get_class(), __FUNCTION__, $div, array('event' => 'return'));
+		$div = self::_applyFilter(self::class, __FUNCTION__, $div, array('event' => 'return'));
 
 		return $div;
 	}
@@ -391,13 +391,13 @@ class Template {
 	 */
 	public static function addFlashMessage(string $type, string $message, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $type, $message, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $type, $message, $options);
 
 		$defaults = array('session' => 'default');
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'type' => $type,
 			'message' => $message,
 			'options' => $options
@@ -409,7 +409,7 @@ class Template {
 
 		self::$flashMessages[$options['session']][$type][] = $message;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $type, $message, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $type, $message, $options);
 	}
 	
 	/**
@@ -420,13 +420,13 @@ class Template {
 	 */
 	public static function getFlashMessages(string $type, array $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $type);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $type);
 		
 		$defaults = array('unset_messages' => true, 'session' => 'default');
 		$options += $defaults;
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'type' => $type,
 			'options' => $options
 		), array('event' => 'args'));
@@ -445,9 +445,9 @@ class Template {
 			}
 		}
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $messages, $type, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $messages, $type, $options);
 		
-		$messages = self::_applyFilter(get_class(), __FUNCTION__, $messages, array('event' => 'return'));
+		$messages = self::_applyFilter(self::class, __FUNCTION__, $messages, array('event' => 'return'));
 		
 		return $messages;
 	}
@@ -477,8 +477,8 @@ class Template {
 	 */
 	public static function updateHeader($buffer, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $buffer, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $buffer, $options);
 
 		$defaults = array(
 			'site_title' => '{SITE_TITLE}',
@@ -490,7 +490,7 @@ class Template {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'buffer' => $buffer,
 			'options' => $options
 		), array('event' => 'args'));
@@ -510,9 +510,9 @@ class Template {
 
 		$buffer = str_replace($options['header_addition'], $libraries, $buffer);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $buffer, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $buffer, $options);
 		
-		$buffer = self::_applyFilter(get_class(), __FUNCTION__, $buffer, array('event' => 'return'));
+		$buffer = self::_applyFilter(self::class, __FUNCTION__, $buffer, array('event' => 'return'));
 
 		return $buffer;
 	}//end  updateHeader
@@ -534,8 +534,8 @@ class Template {
 	 */
 	public static function getHeader(array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $options);
 
 		$defaults = array(
 			'version' => false,
@@ -547,7 +547,7 @@ class Template {
 		);
 		
 		$options += $defaults;
-		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
+		$options = self::_applyFilter(self::class, __FUNCTION__, $options, array('event' => 'args'));
 		
 		extract($options);
 
@@ -569,8 +569,8 @@ class Template {
 
 		$libraries .= Libraries::getOpenscriptQueue();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $libraries, $options);
-		$libraries = self::_applyFilter(get_class(), __FUNCTION__, $libraries, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter(self::class, __FUNCTION__, $libraries, array('event' => 'return'));
 
 		return $libraries;
 	}//end  updateHeader
@@ -592,8 +592,8 @@ class Template {
 	 */
 	public static function getJavaScriptHeader($options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $options);
 
 		$defaults = array(
 			'version' => false,
@@ -603,7 +603,7 @@ class Template {
 		);
 		
 		$options += $defaults;
-		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
+		$options = self::_applyFilter(self::class, __FUNCTION__, $options, array('event' => 'args'));
 		
 		extract($options);
 
@@ -621,8 +621,8 @@ class Template {
 			$libraries .= '<script type="text/javascript" src="' . $url . $javascript . DS . trim($value) . $version . '"></script>';
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $libraries, $options);
-		$libraries = self::_applyFilter(get_class(), __FUNCTION__, $libraries, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter(self::class, __FUNCTION__, $libraries, array('event' => 'return'));
 
 		return $libraries;
 	}//end printJavaScriptHeader
@@ -643,8 +643,8 @@ class Template {
 	 */
 	public static function getCSSHeader(array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $options);
 
 		$defaults = array(
 			'version' => false,
@@ -654,7 +654,7 @@ class Template {
 		);
 		
 		$options += $defaults;
-		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
+		$options = self::_applyFilter(self::class, __FUNCTION__, $options, array('event' => 'args'));
 		extract($options);
 
 		$css = PV_CSS;
@@ -671,8 +671,8 @@ class Template {
 			$libraries .= '<link rel="stylesheet"  type="text/css" href="' . $url . $css . DS . trim($value) . $version . '">';
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $libraries, $options);
-		$libraries = self::_applyFilter(get_class(), __FUNCTION__, $libraries, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $libraries, $options);
+		$libraries = self::_applyFilter(self::class, __FUNCTION__, $libraries, array('event' => 'return'));
 
 		return $libraries;
 	}//end printJavaScriptHeader

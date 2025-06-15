@@ -69,11 +69,11 @@ class Configuration {
 	 */
 	public static function init(array $args = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $args);
 
 		if(!self::$_initialized) {
-			$args = self::_applyFilter(get_class(), __FUNCTION__, $args, array('event' => 'args'));
+			$args = self::_applyFilter(self::class, __FUNCTION__, $args, array('event' => 'args'));
 	
 			if (isset($args['environment'])) {
 				self::$_environment = $args['environment'];
@@ -86,7 +86,7 @@ class Configuration {
 				}
 			}
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $args);
+			self::_notify(self::class . '::' . __FUNCTION__, $args);
 			
 			self::$_initialized = true;
 		}
@@ -107,13 +107,13 @@ class Configuration {
 	 */
 	public static function addConfiguration(string $key, $value, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $value);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $value);
 
 		$defaults = array('environment' => self::$_environment);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'value' => $value,
 			'options' => $options
@@ -126,7 +126,7 @@ class Configuration {
 		$environment = $options['environment'];
 
 		self::addToCollectionWithName($key . '_' . $environment, $value);
-		self::_notify(get_class() . '::' . __FUNCTION__, $key, $value);
+		self::_notify(self::class . '::' . __FUNCTION__, $key, $value);
 	}
 
 	/**
@@ -142,13 +142,13 @@ class Configuration {
 	 */
 	public static function getConfiguration(string $key, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key);
 
 		$defaults = array('environment' => self::$_environment);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'options' => $options
 		), array('event' => 'args'));
@@ -160,8 +160,8 @@ class Configuration {
 
 		$value = self::get($key . '_' . $environment);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $key, $value);
-		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $key, $value);
+		$value = self::_applyFilter(self::class, __FUNCTION__, $value, array('event' => 'return'));
 
 		return $value;
 	}
@@ -176,10 +176,10 @@ class Configuration {
 	 */
 	public static function env(string $value, string $default = '') {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $value, $default);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $value, $default);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'value' => $value,
 			'default' => $default
 		), array('event' => 'args'));
@@ -193,7 +193,7 @@ class Configuration {
 			$env_value = $default;
 		}
 		
-		$env_value = self::_applyFilter(get_class(), __FUNCTION__, $env_value, array('event' => 'return'));
+		$env_value = self::_applyFilter(self::class, __FUNCTION__, $env_value, array('event' => 'return'));
 		
 		return $env_value;
 	}
@@ -209,10 +209,10 @@ class Configuration {
 	 */
 	public static function loadXMLConfiguration(string $file_location, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file_location);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file_location);
 
-		$file_location = self::_applyFilter(get_class(), __FUNCTION__, $file_location, array('event' => 'args'));
+		$file_location = self::_applyFilter(self::class, __FUNCTION__, $file_location, array('event' => 'args'));
 
 		$xml = simplexml_load_file($file_location);
 		
@@ -222,8 +222,8 @@ class Configuration {
 			self::addConfiguration($key, $value);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $node_name, $parameter_array);
-		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $node_name, $parameter_array);
+		$data = self::_applyFilter(self::class, __FUNCTION__, $data, array('event' => 'return'));
 
 		return $data;
 	}

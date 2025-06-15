@@ -104,8 +104,8 @@ class Cache {
 	 */
 	public static function init(array $config = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
 			$defaults = array(
@@ -122,7 +122,7 @@ class Cache {
 			);
 	
 			$config += $defaults;
-			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+			$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 	
 			self::$_cache_format = $config['cache_format'];
 			self::$_cache_location = $config['cache_location'];
@@ -158,7 +158,7 @@ class Cache {
 					self::$_memcache->connect($host, $port, $timeout);
 			}
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::_notify(self::class . '::' . __FUNCTION__, $config);
 			
 			self::$_initialized = true;
 		}
@@ -182,8 +182,8 @@ class Cache {
 	 */
 	public static function writeCache(string $key, $content, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $content, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $content, $options);
 
 		$defaults = array(
 			'cache_format' => self::$_cache_format,
@@ -196,7 +196,7 @@ class Cache {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'content' => $content,
 			'options' => $options
@@ -218,7 +218,7 @@ class Cache {
 		$content = $cache_tag . $content;
 
 		FileManager::writeFile($cache_location . $key, $content);
-		self::_notify(get_class() . '::' . __FUNCTION__, $key, $content, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $key, $content, $options);
 	}
 
 	/**
@@ -238,8 +238,8 @@ class Cache {
 	 */
 	public static function readCache(string $key, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $options);
 
 		$defaults = array(
 			'cache_format' => self::$_cache_format,
@@ -252,7 +252,7 @@ class Cache {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'options' => $options
 		), array('event' => 'args'));
@@ -271,8 +271,8 @@ class Cache {
 		if ($data !== false || $content === 'b:0;')
 			$content = $data;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $content, $key, $options);
-		$content = self::_applyFilter(get_class(), __FUNCTION__, $content, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $content, $key, $options);
+		$content = self::_applyFilter(self::class, __FUNCTION__, $content, array('event' => 'return'));
 
 		return $content;
 	}
@@ -293,8 +293,8 @@ class Cache {
 	 */
 	public static function hasExpired(string $key, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $options);
 
 		$defaults = array(
 			'cache_format' => self::$_cache_format,
@@ -307,7 +307,7 @@ class Cache {
 		$expired = false;
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'options' => $options
 		), array('event' => 'args'));
@@ -331,8 +331,8 @@ class Cache {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $expired, $key, $options);
-		$expired = self::_applyFilter(get_class(), __FUNCTION__, $expired, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $expired, $key, $options);
+		$expired = self::_applyFilter(self::class, __FUNCTION__, $expired, array('event' => 'return'));
 
 		return $expired;
 	}
@@ -353,8 +353,8 @@ class Cache {
 	 */
 	public static function getExpiration(string $key, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $options);
 
 		$defaults = array(
 			'cache_format' => self::$_cache_format,
@@ -367,7 +367,7 @@ class Cache {
 		$expiration = null;
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'options' => $options
 		), array('event' => 'args'));
@@ -386,8 +386,8 @@ class Cache {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $expiration, $key, $options);
-		$expiration = self::_applyFilter(get_class(), __FUNCTION__, $expiration, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $expiration, $key, $options);
+		$expiration = self::_applyFilter(self::class, __FUNCTION__, $expiration, array('event' => 'return'));
 
 		return $expiration;
 	}
@@ -404,13 +404,13 @@ class Cache {
 	 */
 	public static function deleteCache(string $key, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $options);
 
 		$defaults = array('cache_location' => self::$_cache_location);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'options' => $options
 		), array('event' => 'args'));
@@ -421,7 +421,7 @@ class Cache {
 		extract($options);
 
 		FileManager::deleteFile($cache_location . $key);
-		self::_notify(get_class() . '::' . __FUNCTION__, $key, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $key, $options);
 	}
 
 	/**
@@ -440,8 +440,8 @@ class Cache {
 	 */
 	public static function writeMemcache($key, $content, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $content, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $content, $options);
 
 		$defaults = array(
 			'flag' => MEMCACHE_COMPRESSED,
@@ -452,7 +452,7 @@ class Cache {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'content' => $content,
 			'options' => $options
@@ -469,7 +469,7 @@ class Cache {
 		else
 			self::$_memcache->set($key, $content, $flag, $cache_expire);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $key, $content, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $key, $content, $options);
 	}
 
 	/**
@@ -484,13 +484,13 @@ class Cache {
 	 */
 	public static function readMemcache($key, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $options);
 
 		$defaults = array('flags' => MEMCACHE_COMPRESSED, );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'options' => $options
 		), array('event' => 'args'));
@@ -501,8 +501,8 @@ class Cache {
 
 		$content = self::$_memcache->get($key, $flags);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $content, $key, $options);
-		$content = self::_applyFilter(get_class(), __FUNCTION__, $content, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $content, $key, $options);
+		$content = self::_applyFilter(self::class, __FUNCTION__, $content, array('event' => 'return'));
 
 		return $content;
 	}
@@ -519,14 +519,14 @@ class Cache {
 	 */
 	public static function removeMemcache($key, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $options);
 
 		$defaults = array('flush' => false);
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'key' => $key,
 			'options' => $options
 		), array('event' => 'args'));
@@ -540,7 +540,7 @@ class Cache {
 		else
 			self::$_memcache->delete($key);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $key, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $key, $options);
 	}
 
 	/**
@@ -551,13 +551,13 @@ class Cache {
 	 */
 	public static function getMemcacheObject() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$object = self::$_memcache;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $object);
-		$object = self::_applyFilter(get_class(), __FUNCTION__, $object, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $object);
+		$object = self::_applyFilter(self::class, __FUNCTION__, $object, array('event' => 'return'));
 
 		return $object;
 	}

@@ -120,8 +120,8 @@ class Database  {
 	 */
 	public static function init(array $config = array(), bool $lock = true) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
 			
@@ -167,8 +167,8 @@ class Database  {
 	 */
 	public static function addConnection(string $connection_name, array $args) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $connection_name, $args);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $connection_name, $args);
 
 		$defaults = array(
 			'type' => '', 
@@ -177,7 +177,7 @@ class Database  {
 		$args += $defaults;
 		$args = self::_fixConnectionStrings($args);
 
-		$args = self::_applyFilter(get_class(), __FUNCTION__, $args, array('event' => 'args'));
+		$args = self::_applyFilter(self::class, __FUNCTION__, $args, array('event' => 'args'));
 		
 		if($args['type']== self::$mySQLConnection) {
 			$connection = new Mysql();
@@ -193,7 +193,7 @@ class Database  {
 		
 		self::_setConnection($connection_name, $connection);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $connection_name, $args);
+		self::_notify(self::class . '::' . __FUNCTION__, $connection_name, $args);
 	}
 
 	/**
@@ -252,14 +252,14 @@ class Database  {
 	 */
 	public static function setDatabase(string $connection_name, bool $connect = true, bool $close_connection = false) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $profile_id);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $profile_id);
 
 		if($close_connection) {
 			self::closeDB();
 		}
 
-		$connection_name = self::_applyFilter(get_class(), __FUNCTION__, $connection_name, array('event' => 'args'));
+		$connection_name = self::_applyFilter(self::class, __FUNCTION__, $connection_name, array('event' => 'args'));
 		
 		self::$current_connecton = $connection_name;
 		
@@ -267,7 +267,7 @@ class Database  {
 			self::connect();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $connection_name);
+		self::_notify(self::class . '::' . __FUNCTION__, $connection_name);
 	}
 	
 	public static function hasConnection($connection_name) {
@@ -303,8 +303,8 @@ class Database  {
 	 */
 	private static function connect() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
@@ -312,7 +312,7 @@ class Database  {
 			$connection->connection();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__);
+		self::_notify(self::class . '::' . __FUNCTION__);
 	}//end private
 
 	/**
@@ -329,16 +329,16 @@ class Database  {
 	 */
 	public static function query($query) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $query);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $query);
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$result = $connection->query($query);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $query, $result);
+		self::_notify(self::class . '::' . __FUNCTION__, $query, $result);
 		
-		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
+		$result = self::_applyFilter(self::class, __FUNCTION__, $result, array('event' => 'return'));
 
 		return $result;
 	}//end query
@@ -360,10 +360,10 @@ class Database  {
 	 */
 	public static function return_last_insert_query($query, $returnField = '', $returnTable = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $query, $returnField, $returnTable);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $query, $returnField, $returnTable);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'query' => $query, 
 			'returnField' => $returnField, 
 			'returnTable' => $returnTable
@@ -377,9 +377,9 @@ class Database  {
 		
 		$id = $connection->returnLastInsert($query, $returnField, $returnTable);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $id, $query, $returnField, $returnTable);
+		self::_notify(self::class . '::' . __FUNCTION__, $id, $query, $returnField, $returnTable);
 		
-		$id = self::_applyFilter(get_class(), __FUNCTION__, $id, array('event' => 'return'));
+		$id = self::_applyFilter(self::class, __FUNCTION__, $id, array('event' => 'return'));
 
 		return $id;
 	}//end return_last_insert_query
@@ -400,18 +400,18 @@ class Database  {
 	 */
 	public static function resultRowCount($result) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $result);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $result);
 
-		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'args'));
+		$result = self::_applyFilter(self::class, __FUNCTION__, $result, array('event' => 'args'));
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$count = $connection-> resultRowCount($result);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result);
+		self::_notify(self::class . '::' . __FUNCTION__, $count, $result);
 		
-		$count = self::_applyFilter(get_class(), __FUNCTION__, $count, array('event' => 'return'));
+		$count = self::_applyFilter(self::class, __FUNCTION__, $count, array('event' => 'return'));
 
 		return $count;
 	}//end result row count
@@ -431,18 +431,18 @@ class Database  {
 	 */
 	public static function fetchArray($result) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $result);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $result);
 
-		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'args'));
+		$result = self::_applyFilter(self::class, __FUNCTION__, $result, array('event' => 'args'));
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$data = $connection->fetchArray($result);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $data, $result);
+		self::_notify(self::class . '::' . __FUNCTION__, $data, $result);
 		
-		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
+		$data = self::_applyFilter(self::class, __FUNCTION__, $data, array('event' => 'return'));
 
 		return $data;
 	}//end fetchArray
@@ -463,19 +463,19 @@ class Database  {
 	 */
 	public static function fetchFields($result) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $result);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $result);
 
-		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'args'));
+		$result = self::_applyFilter(self::class, __FUNCTION__, $result, array('event' => 'args'));
 		
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$fields = $connection->fetchFields($result);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $fields, $result);
+		self::_notify(self::class . '::' . __FUNCTION__, $fields, $result);
 		
-		$fields = self::_applyFilter(get_class(), __FUNCTION__, $fields, array('event' => 'return'));
+		$fields = self::_applyFilter(self::class, __FUNCTION__, $fields, array('event' => 'return'));
 
 		return $fields;
 
@@ -498,16 +498,16 @@ class Database  {
 	 */
 	public static function makeSafe($string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$string = $connection->makeSafe($string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'return'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'return'));
 
 		return $string;
 
@@ -522,14 +522,14 @@ class Database  {
 	 */
 	public static function closeDB() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$connection->closeDB();
 
-		self::_notify(get_class() . '::' . __FUNCTION__);
+		self::_notify(self::class . '::' . __FUNCTION__);
 
 	}//end close()
 
@@ -550,16 +550,16 @@ class Database  {
 	 */
 	public static function getSchema($append_period = true) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$schema = $connection->getSchema($append_period);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $schema);
+		self::_notify(self::class . '::' . __FUNCTION__, $schema);
 		
-		$schema = self::_applyFilter(get_class(), __FUNCTION__, $schema, array('event' => 'return'));
+		$schema = self::_applyFilter(self::class, __FUNCTION__, $schema, array('event' => 'return'));
 
 		return $schema;
 	}
@@ -575,10 +575,10 @@ class Database  {
 	 */
 	public static function clearTableData($tablename, $options = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $tablename, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $tablename, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'tablename' => $tablename, 
 			'options' => $options
 		), array('event' => 'args'));
@@ -590,7 +590,7 @@ class Database  {
 		
 		$query = $connection->clearTableData($tablename, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $query, $tablename, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $query, $tablename, $options);
 
 	}//end clearTableData
 
@@ -610,16 +610,16 @@ class Database  {
 	 */
 	public static function tableExist($tablename, $schema = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $tablename);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $tablename);
 
-		$tablename = self::_applyFilter(get_class(), __FUNCTION__, $tablename, array('event' => 'args'));
+		$tablename = self::_applyFilter(self::class, __FUNCTION__, $tablename, array('event' => 'args'));
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$exist = $connection-> tableExist($tablename, $schema);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $exist ,$tablename);
+		self::_notify(self::class . '::' . __FUNCTION__, $exist ,$tablename);
 		
 		return $exist;
 		
@@ -641,10 +641,10 @@ class Database  {
 	 */
 	public static function columnExist($table_name, $field_name) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $field_name);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name, $field_name);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table_name' => $table_name, 
 			'field_name' => $field_name
 		), array('event' => 'args'));
@@ -656,7 +656,7 @@ class Database  {
 		
 		$exist = $connection->columnExist($table_name, $field_name);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $exist, $table_name, $field_name);
+		self::_notify(self::class . '::' . __FUNCTION__, $exist, $table_name, $field_name);
 
 		return $exist;
 		
@@ -675,16 +675,16 @@ class Database  {
 	 */
 	public static function getSQLRandomOperator() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$function = $connections->getSQLRandomOperator();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $function);
+		self::_notify(self::class . '::' . __FUNCTION__, $function);
 		
-		$function = self::_applyFilter(get_class(), __FUNCTION__, $function, array('event' => 'return'));
+		$function = self::_applyFilter(self::class, __FUNCTION__, $function, array('event' => 'return'));
 
 		return $function;
 	}//end getSQLRandomOperator
@@ -703,10 +703,10 @@ class Database  {
 	 */
 	public static function formatData($string) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string);
 
-		$string = self::_applyFilter(get_class(), __FUNCTION__, $string, array('event' => 'args'));
+		$string = self::_applyFilter(self::class, __FUNCTION__, $string, array('event' => 'args'));
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
@@ -728,18 +728,18 @@ class Database  {
 	 */
 	public static function dbAverageFunction($field) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $field);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $field);
 
-		$field = self::_applyFilter(get_class(), __FUNCTION__, $field, array('event' => 'args'));
+		$field = self::_applyFilter(self::class, __FUNCTION__, $field, array('event' => 'args'));
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$function = $connection->dbAverageFunction($field);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $function, $field);
+		self::_notify(self::class . '::' . __FUNCTION__, $function, $field);
 		
-		$function = self::_applyFilter(get_class(), __FUNCTION__, $function, array('event' => 'return'));
+		$function = self::_applyFilter(self::class, __FUNCTION__, $function, array('event' => 'return'));
 
 		return $function;
 	}//end getAverageDB
@@ -751,16 +751,16 @@ class Database  {
 	 */
 	public static function getDatabaseType() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$type = $connection->getDatabaseType();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $type);
+		self::_notify(self::class . '::' . __FUNCTION__, $type);
 		
-		$type = self::_applyFilter(get_class(), __FUNCTION__, $type, array('event' => 'return'));
+		$type = self::_applyFilter(self::class, __FUNCTION__, $type, array('event' => 'return'));
 
 		return $type;
 	}
@@ -772,16 +772,16 @@ class Database  {
 	 * @access public
 	 */
 	public static function getConnectionName() {
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$name = $connection->getConnectionName();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $name);
+		self::_notify(self::class . '::' . __FUNCTION__, $name);
 		
-		$name = self::_applyFilter(get_class(), __FUNCTION__, $name, array('event' => 'return'));
+		$name = self::_applyFilter(self::class, __FUNCTION__, $name, array('event' => 'return'));
 
 		return $name;
 	}
@@ -802,10 +802,10 @@ class Database  {
 	 */
 	public static function getPagininationOffset($table, $join_clause = '', $where_clause = '', $current_page = 0, $results_per_page = 20, $order_by = '', $fields = 'COUNT(*) as count') {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table' => $table, 
 			'join_clause' => $join_clause, 
 			'where_clause' => $where_clause, 
@@ -825,9 +825,9 @@ class Database  {
 		
 		$data = $connection->getPagininationOffset($table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by, $fields);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
+		self::_notify(self::class . '::' . __FUNCTION__, $table, $join_clause, $where_clause, $current_page, $results_per_page, $order_by);
 		
-		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
+		$data = self::_applyFilter(self::class, __FUNCTION__, $data, array('event' => 'return'));
 
 		return $data;
 
@@ -841,16 +841,16 @@ class Database  {
 	 */
 	public static function getDatabaseLink() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$link = $connection->getDatabaseLink();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $link);
+		self::_notify(self::class . '::' . __FUNCTION__, $link);
 		
-		$link = self::_applyFilter(get_class(), __FUNCTION__, $link , array('event' => 'return'));
+		$link = self::_applyFilter(self::class, __FUNCTION__, $link , array('event' => 'return'));
 
 		return $link;
 	}//end getDatabaseLink
@@ -868,10 +868,10 @@ class Database  {
 	 */
 	public static function insertStatement($table_name, $data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name, $data, $options);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table_name' => $table_name, 
 			'data' => $data, 
 			'options' => $options
@@ -885,9 +885,9 @@ class Database  {
 		
 		$result = $connection->insertStatement($table_name, $data, $options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table_name, $data, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $result, $table_name, $data, $options);
 		
-		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
+		$result = self::_applyFilter(self::class, __FUNCTION__,  $result , array('event' => 'return'));
 		
 		return $result;
 	}//end insertIntoDatabase
@@ -905,10 +905,10 @@ class Database  {
 	 */
 	public static function updateStatement($table, $data, $wherelist, $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table, $data, $wherelist, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table, $data, $wherelist, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table' => $table, 
 			'data' => $data, 
 			'wherelist' => $wherelist, 
@@ -924,8 +924,8 @@ class Database  {
 
 		$result = $connection->updateStatement($table, $data, $wherelist, $options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $options);
-		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $options);
+		$result = self::_applyFilter(self::class, __FUNCTION__, $result, array('event' => 'return'));
 
 		return $result;
 
@@ -942,10 +942,10 @@ class Database  {
 	 */
 	public static function selectStatement(array $args, array $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $args, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $args, $options);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'args' => $args, 
 			'options' => $options
 		), array('event' => 'args'));
@@ -958,9 +958,9 @@ class Database  {
 		$result = $connection->selectStatement($args, 
 		$options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $result, $args, $options);
 		
-		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
+		$result = self::_applyFilter(self::class, __FUNCTION__,  $result , array('event' => 'return'));
 		
 		return $result;
 	}
@@ -975,10 +975,10 @@ class Database  {
 	 */
 	public static function deleteStatement(array $args, array $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $args, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $args, $options);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'args' => $args, 
 			'options' => $options
 		), array('event' => 'args'));
@@ -990,9 +990,9 @@ class Database  {
 		
 		$result = $connection-> deleteStatement($args,$options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $result, $args, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $result, $args, $options);
 		
-		$result = self::_applyFilter(get_class(), __FUNCTION__,  $result , array('event' => 'return'));
+		$result = self::_applyFilter(self::class, __FUNCTION__,  $result , array('event' => 'return'));
 		
 		return $result;
 	}
@@ -1009,8 +1009,8 @@ class Database  {
 	 */
 	public static function preparedQuery($query, $data, $formats = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $query, $data, $formats);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $query, $data, $formats);
 		
 		
 		$connection = self::_getConnection(self::$current_connecton);
@@ -1031,8 +1031,8 @@ class Database  {
 	 */
 	public static function preparedInsert($table_name, $data, $formats = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $data, $formats);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name, $data, $formats);
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
@@ -1057,10 +1057,10 @@ class Database  {
 	 */
 	public static function preparedReturnLastInsert($table_name, $returnField, $returnTable, $data, $formats = array(), $options = array() ) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $returnField, $returnTable, $data, $formats);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name, $returnField, $returnTable, $data, $formats);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table_name' => $table_name, 
 			'data' => $data, 
 			'returnField' => $returnField, 
@@ -1078,9 +1078,9 @@ class Database  {
 		
 		$id = $connection->preparedReturnLastInsert($table_name, $returnField, $returnTable, $data, $formats, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $id, $table_name, $returnField, $returnTable, $data, $formats);
+		self::_notify(self::class . '::' . __FUNCTION__, $id, $table_name, $returnField, $returnTable, $data, $formats);
 		
-		$id = self::_applyFilter(get_class(), __FUNCTION__, $id, array('event' => 'return'));
+		$id = self::_applyFilter(self::class, __FUNCTION__, $id, array('event' => 'return'));
 		
 		return $id;
 	}//end preparedReturnLastInsert
@@ -1104,10 +1104,10 @@ class Database  {
 	 */
 	public static function preparedSelect($query, $data, array $formats = array(), array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $query, $data, $formats);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $query, $data, $formats);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'query' => $query, 
 			'data' => $data, 
 			'formats' => $formats,  
@@ -1123,9 +1123,9 @@ class Database  {
 		
 		$result = $connection->preparedSelect($query, $data, $formats, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $result, $query, $data, $formats);
+		self::_notify(self::class . '::' . __FUNCTION__, $result, $query, $data, $formats);
 		
-		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
+		$result = self::_applyFilter(self::class, __FUNCTION__, $result, array('event' => 'return'));
 		
 		return $result;
 
@@ -1163,10 +1163,10 @@ class Database  {
 	 */
 	public static function preparedUpdate($table, $data, $wherelist, $formats = array(), $whereformats = array(), $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table, $data, $wherelist, $formats, $whereformats);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table, $data, $wherelist, $formats, $whereformats);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table' => $table, 
 			'data' => $data, 
 			'wherelist' => $wherelist, 
@@ -1184,9 +1184,9 @@ class Database  {
 		
 		$result = $connection->preparedUpdate($table, $data, $wherelist, $formats, $whereformats, $options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $formats, $whereformats);
+		self::_notify(self::class . '::' . __FUNCTION__, $result, $table, $data, $wherelist, $formats, $whereformats);
 		
-		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
+		$result = self::_applyFilter(self::class, __FUNCTION__, $result, array('event' => 'return'));
 
 		return $result;
 
@@ -1205,10 +1205,10 @@ class Database  {
 	 */
 	public static function preparedDelete($table, $wherelist = array(), $whereformats = array(), $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table, $wherelist, $whereformats);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table, $wherelist, $whereformats);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table' => $table, 
 			'wherelist' => $wherelist, 
 			'whereformats' => $whereformats 
@@ -1222,9 +1222,9 @@ class Database  {
 		
 		$result = $connection->preparedDelete($table, $wherelist, $whereformats, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $result, $table, $wherelist, $whereformats);
+		self::_notify(self::class . '::' . __FUNCTION__, $result, $table, $wherelist, $whereformats);
 		
-		$result = self::_applyFilter(get_class(), __FUNCTION__, $result, array('event' => 'return'));
+		$result = self::_applyFilter(self::class, __FUNCTION__, $result, array('event' => 'return'));
 
 		return $result;
 	}//end preparedDelete
@@ -1241,10 +1241,10 @@ class Database  {
 	 */
 	public static function getPreparedPlaceHolder($count = 1) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $count);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $count);
 
-		$count = self::_applyFilter(get_class(), __FUNCTION__, $count, array('event' => 'args'));
+		$count = self::_applyFilter(self::class, __FUNCTION__, $count, array('event' => 'args'));
 
 		if (self::$dbtype === self::$mySQLConnection) {
 			$placeholder = '?';
@@ -1256,7 +1256,7 @@ class Database  {
 			$placeholder = '?';
 		}
 
-		$placeholder = self::_applyFilter(get_class(), __FUNCTION__, $placeholder, array('event' => 'return'));
+		$placeholder = self::_applyFilter(self::class, __FUNCTION__, $placeholder, array('event' => 'return'));
 		
 		return $placeholder;
 
@@ -1276,10 +1276,10 @@ class Database  {
 	 */
 	public static function formatTableName($table_name, $append_schema = true, $append_prefix = true) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name);
 
-		$table_name = self::_applyFilter(get_class(), __FUNCTION__, $table_name, array('event' => 'args'));
+		$table_name = self::_applyFilter(self::class, __FUNCTION__, $table_name, array('event' => 'args'));
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
@@ -1308,13 +1308,13 @@ class Database  {
 	 */
 	public static function createTable($table_name, $columns = array(), $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $columns, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name, $columns, $options);
 
 		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, 'primary_key' => '', );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table_name' => $table_name, 
 			'columns' => $columns, 
 			'options' => $options
@@ -1328,8 +1328,8 @@ class Database  {
 		
 		$query = $connection->createTable($table_name, $columns, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $columns, $options);
-		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $query, $table_name, $columns, $options);
+		$query = self::_applyFilter(self::class, __FUNCTION__, $query, array('event' => 'return'));
 
 		return $query;
 	}
@@ -1351,13 +1351,13 @@ class Database  {
 	 */
 	public static function addColumn($table_name, $column_name, $column_data = array(), $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $column_name, $column_data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name, $column_name, $column_data, $options);
 
 		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table_name' => $table_name, 
 			'column_name' => $column_name, 
 			'column_data' => $column_data, 
@@ -1399,8 +1399,8 @@ class Database  {
 	 */
 	public static function formatColumn($name, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options);
 
 		$defaults = array(
 			'primary_key' => false, 
@@ -1415,7 +1415,7 @@ class Database  {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name, 
 			'options' => $options
 		), array('event' => 'args'));
@@ -1427,8 +1427,8 @@ class Database  {
 		
 		$query = $connection->formatColumn($name, $options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $query);
-		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $query);
+		$query = self::_applyFilter(self::class, __FUNCTION__, $query, array('event' => 'return'));
 		
 		return $query;
 	}
@@ -1441,15 +1441,15 @@ class Database  {
 	 */
 	private static function getAutoIncrement() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$connection = self::_getConnection(self::$current_connecton);
 		
 		$query = $connection->getAutoIncrement();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $query);
-		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $query);
+		$query = self::_applyFilter(self::class, __FUNCTION__, $query, array('event' => 'return'));
 
 		return $query;
 	}
@@ -1470,13 +1470,13 @@ class Database  {
 	 */
 	public static function dropColumn($table_name, $column_name, $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $column_name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name, $column_name, $options);
 
 		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table_name' => $table_name, 
 			'column_name' => $column_name, 
 			'options' => $options
@@ -1490,8 +1490,8 @@ class Database  {
 		
 		$query = $connection->dropColumn($table_name, $column_name, $options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $column_name, $options);
-		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $query, $table_name, $column_name, $options);
+		$query = self::_applyFilter(self::class, __FUNCTION__, $query, array('event' => 'return'));
 
 		
 		return $query;
@@ -1516,13 +1516,13 @@ class Database  {
 	 * @access public
 	 */
 	public static function dropTable($table_name, $options = array()) {
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $table_name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $table_name, $options);
 
 		$defaults = array('format_table' => false, 'execute' => true, 'return_query' => true, );
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'table_name' => $table_name, 
 			'options' => $options
 		), array('event' => 'args'));
@@ -1534,8 +1534,8 @@ class Database  {
 		
 		$query = $connection->dropTable($table_name, $options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $query, $table_name, $options);
-		$query = self::_applyFilter(get_class(), __FUNCTION__, $query, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $query, $table_name, $options);
+		$query = self::_applyFilter(self::class, __FUNCTION__, $query, array('event' => 'return'));
 		
 		return $query;
 	}

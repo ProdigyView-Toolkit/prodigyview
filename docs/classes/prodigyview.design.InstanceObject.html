@@ -279,7 +279,7 @@ class Example extends Object {
             echo $string;
 
             //An observer
-            $this-&gt;_notify(get_class() . '::' . __FUNCTION__, $string);
+            $this-&gt;_notify(self::class . '::' . __FUNCTION__, $string);
         }
     }
 

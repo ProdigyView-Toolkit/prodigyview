@@ -128,8 +128,8 @@ class Session {
 	 */
 	public static function init($session_vars = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $session_vars);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $session_vars);
 
 		if(!self::$_initialized) {
 			
@@ -154,7 +154,7 @@ class Session {
 	
 			$session_vars += $defaults;
 	
-			$session_vars = self::_applyFilter(get_class(), __FUNCTION__, $session_vars, array('event' => 'args'));
+			$session_vars = self::_applyFilter(self::class, __FUNCTION__, $session_vars, array('event' => 'args'));
 	
 			self::$cookie_path = $session_vars['cookie_path'];
 			self::$cookie_domain = $session_vars['cookie_domain'];
@@ -189,7 +189,7 @@ class Session {
 				session_start();
 			}
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $session_vars);
+			self::_notify(self::class . '::' . __FUNCTION__, $session_vars);
 			
 			self::$_initialized = true;
 		}
@@ -215,12 +215,12 @@ class Session {
 	 */
 	public static function writeCookie(string $name, $value = '', array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $value, $options);
 
 		$options += self::getCookieDefaults();
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'value' => $value,
 			'options' => $options
@@ -250,7 +250,7 @@ class Session {
 			'samesite' => $cookie_samesite
 		));
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $name, $value, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $name, $value, $options);
 	}
 
 	/**
@@ -267,12 +267,12 @@ class Session {
 	 */
 	public static function readCookie(string $name, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options);
 
 		$options += self::getCookieDefaults();
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options
 		), array('event' => 'args'));
@@ -295,8 +295,8 @@ class Session {
 		if ($data !== false || $cookie_value === 'b:0;')
 			$cookie_value = $data;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $cookie_value, $name, $options);
-		$cookie_value = self::_applyFilter(get_class(), __FUNCTION__, $cookie_value, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $cookie_value, $name, $options);
+		$cookie_value = self::_applyFilter(self::class, __FUNCTION__, $cookie_value, array('event' => 'return'));
 
 		return $cookie_value;
 	}
@@ -314,12 +314,12 @@ class Session {
 	 */
 	public static function deleteCookie(string $name, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options);
 
 		$options += self::getCookieDefaults();
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options
 		), array('event' => 'args'));
@@ -334,7 +334,7 @@ class Session {
 
 		setcookie($name, NULL, time() - 4800, $cookie_path, $cookie_domain, $cookie_secure, $cookie_httponly);
 		unset($_COOKIE[$name]);
-		self::_notify(get_class() . '::' . __FUNCTION__, $name, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $name, $options);
 	}
 
 	/**
@@ -353,12 +353,12 @@ class Session {
 	 */
 	public static function writeSession(string $name, $value, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $value, $options);
 
 		$options += self::getSessionDefaults();
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'value' => $value,
 			'options' => $options
@@ -380,7 +380,7 @@ class Session {
 		}
 
 		$_SESSION[$name] = $value;
-		self::_notify(get_class() . '::' . __FUNCTION__, $name, $value, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $name, $value, $options);
 	}
 
 	/**
@@ -396,12 +396,12 @@ class Session {
 	 */
 	public static function readSession(string $name, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options);
 
 		$options += self::getSessionDefaults();
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options
 		), array('event' => 'args'));
@@ -425,8 +425,8 @@ class Session {
 		if ($data !== false || $session_value === 'b:0;')
 			$session_value = $data;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $session_value, $name, $options);
-		$session_value = self::_applyFilter(get_class(), __FUNCTION__, $session_value, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $session_value, $name, $options);
+		$session_value = self::_applyFilter(self::class, __FUNCTION__, $session_value, array('event' => 'return'));
 
 		return $session_value;
 	}
@@ -442,12 +442,12 @@ class Session {
 	 */
 	public static function deleteSession(string $name, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options);
 
 		$options += self::getSessionDefaults();
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options
 		), array('event' => 'args'));
@@ -462,7 +462,7 @@ class Session {
 
 		if (isset($_SESSION[$name])) {
 			unset($_SESSION[$name]);
-			self::_notify(get_class() . '::' . __FUNCTION__, $name, $options);
+			self::_notify(self::class . '::' . __FUNCTION__, $name, $options);
 		}
 	}
 

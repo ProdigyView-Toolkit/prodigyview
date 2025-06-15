@@ -87,10 +87,10 @@ class FileManager {
 	 */
 	public static function deleteDirectory($directory) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $directory);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $directory);
 
-		$directory = self::_applyFilter(get_class(), __FUNCTION__, $directory, array('event' => 'args'));
+		$directory = self::_applyFilter(self::class, __FUNCTION__, $directory, array('event' => 'args'));
 
 		if (is_array($directory)) {
 			foreach ($directory as $value) {
@@ -130,12 +130,12 @@ class FileManager {
 	 */
 	public static function getFileSize_NTFS(string $file) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file);
 
-		$file = self::_applyFilter(get_class(), __FUNCTION__, $file, array('event' => 'args'));
+		$file = self::_applyFilter(self::class, __FUNCTION__, $file, array('event' => 'args'));
 		$size = exec("for %v in (\"" . $file . "\") do @echo %~zv");
-		$size = self::_applyFilter(get_class(), __FUNCTION__, $size, array('event' => 'return'));
+		$size = self::_applyFilter(self::class, __FUNCTION__, $size, array('event' => 'return'));
 
 		return $size;
 	}
@@ -150,12 +150,12 @@ class FileManager {
 	 */
 	public static function getFileSize_PERL(string $file) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file);
 
-		$file = self::_applyFilter(get_class(), __FUNCTION__, $file, array('event' => 'args'));
+		$file = self::_applyFilter(self::class, __FUNCTION__, $file, array('event' => 'args'));
 		$size = exec(" perl -e 'printf \"%d\n\",(stat(shift))[7];' " . $file . "");
-		$size = self::_applyFilter(get_class(), __FUNCTION__, $size, array('event' => 'return'));
+		$size = self::_applyFilter(self::class, __FUNCTION__, $size, array('event' => 'return'));
 
 		return $size;
 	}
@@ -176,13 +176,13 @@ class FileManager {
 	 */
 	public static function getFilesInDirectory(string $directory, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $directory, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $directory, $options);
 
 		$defaults = array('verbose' => false);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'directory' => $directory,
 			'options' => $options
 		), array('event' => 'args'));
@@ -225,7 +225,7 @@ class FileManager {
 			}
 		}//end while
 
-		$file_array = self::_applyFilter(get_class(), __FUNCTION__, $file_array, array('event' => 'return'));
+		$file_array = self::_applyFilter(self::class, __FUNCTION__, $file_array, array('event' => 'return'));
 
 		return $file_array;
 	}//end getFilesInDirectory
@@ -244,14 +244,14 @@ class FileManager {
 	 */
 	public static function getFileMimeType(string $file, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file, $options);
 
 		$defaults = array('magic_file' => null);
 
 		$options += $defaults;
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'file' => $file,
 			'options' => $options
 		), array('event' => 'args'));
@@ -276,7 +276,7 @@ class FileManager {
 				$mime_type = $buffer[0];
 		}
 
-		$mime_type = self::_applyFilter(get_class(), __FUNCTION__, $mime_type, array('event' => 'return'));
+		$mime_type = self::_applyFilter(self::class, __FUNCTION__, $mime_type, array('event' => 'return'));
 
 		return $mime_type;
 	}//end getFileMimeType
@@ -294,10 +294,10 @@ class FileManager {
 	 */
 	public static function readFile(string $file, string $mode = 'r', string $encoding = '', bool $stream = true) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file, $mode, $encoding);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file, $mode, $encoding);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'file' => $file,
 			'mode' => $mode,
 			'encoding' => $encoding
@@ -351,10 +351,10 @@ class FileManager {
 	 */
 	public static function writeFile(string $file, $content, string $mode = 'w', string $encoding = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file, $content, $mode, $encoding);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'file' => $file,
 			'mode' => $mode,
 			'encoding' => $encoding,
@@ -397,10 +397,10 @@ class FileManager {
 	 */
 	public static function writeNewFile(string $file, $content, string $mode = 'w', string $encoding = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file, $content, $mode, $encoding);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'file' => $file,
 			'mode' => $mode,
 			'encoding' => $encoding,
@@ -431,10 +431,10 @@ class FileManager {
 	 */
 	public static function rewriteNewFile(string $file, $content, string $mode = 'w', string $encoding = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file, $content, $mode, $encoding);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file, $content, $mode, $encoding);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'file' => $file,
 			'mode' => $mode,
 			'encoding' => $encoding,
@@ -463,10 +463,10 @@ class FileManager {
 	 */
 	public static function copyFile(string $currentFile, string $newFile) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $currentFile, $newFile);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $currentFile, $newFile);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'currentFile' => $currentFile,
 			'newFile' => $newFile
 		), array('event' => 'args'));
@@ -501,10 +501,10 @@ class FileManager {
 	 */
 	public static function copyNewFile(string $currentFile, string $newFile) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $currentFile, $newFile);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $currentFile, $newFile);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'currentFile' => $currentFile,
 			'newFile' => $newFile
 		), array('event' => 'args'));
@@ -529,10 +529,10 @@ class FileManager {
 	 */
 	public static function copyDirectory(string $oldDirectory, string $newDirectory) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $oldDirectory, $newDirectory);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $oldDirectory, $newDirectory);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'oldDirectory' => $oldDirectory,
 			'newDirectory' => $newDirectory
 		), array('event' => 'args'));
@@ -591,10 +591,10 @@ class FileManager {
 	 */
 	public static function copyNewDirectory(string $oldDirectory, string $newDirectory) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $oldDirectory, $newDirectory);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $oldDirectory, $newDirectory);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'oldDirectory' => $oldDirectory,
 			'newDirectory' => $newDirectory
 		), array('event' => 'args'));
@@ -619,10 +619,10 @@ class FileManager {
 	 */
 	public static function copyFileFromUrl(string $url, string $destination, string $filename = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url, $destination, $filename);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url, $destination, $filename);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'url' => $url,
 			'destination' => $destination,
 			'filename' => $filename
@@ -665,8 +665,8 @@ class FileManager {
 	 */
 	public static function getLastestFileInDirectory(string $directory) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $directory);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $directory);
 
 		$lastMod = 0;
 		$lastModFile = '';
@@ -691,8 +691,8 @@ class FileManager {
 	 */
 	public static function deleteFile(string $file) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file);
 
 		if (file_exists($file) && !is_dir($file)) {
 			return unlink($file);

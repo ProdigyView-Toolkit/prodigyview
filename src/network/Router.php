@@ -76,8 +76,8 @@ class Router {
 	 */
 	public static function init(array $config = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
 			$defaults = array(
@@ -87,7 +87,7 @@ class Router {
 			);
 	
 			$config += $defaults;
-			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+			$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 	
 			self::$routes = array();
 			self::$route_parameters = array();
@@ -101,7 +101,7 @@ class Router {
 			self::$default_rule_replace = $config['default_rule_replace'];
 			self::$default_route_replace = $config['default_route_replace'];
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::_notify(self::class . '::' . __FUNCTION__, $config);
 			
 			self::$_initialized = true;
 		}
@@ -118,10 +118,10 @@ class Router {
 	 */
 	public static function activateSSL($url = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url);
 
-		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+		$url = self::_applyFilter(self::class, __FUNCTION__, $url, array('event' => 'args'));
 
 		if ($_SERVER['HTTPS'] != 'on') {
 			$url = 'https://';
@@ -132,7 +132,7 @@ class Router {
 				$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			}
 
-			self::_notify(get_class() . '::' . __FUNCTION__, $url);
+			self::_notify(self::class . '::' . __FUNCTION__, $url);
 			header('Location: ' . $url);
 
 		}//end https!=on
@@ -147,10 +147,10 @@ class Router {
 	 */
 	public static function deactivateSSL($url = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url);
 
-		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+		$url = self::_applyFilter(self::class, __FUNCTION__, $url, array('event' => 'args'));
 
 		if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
 			$url = 'http://';
@@ -161,7 +161,7 @@ class Router {
 				$url .= $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 			}
 
-			self::_notify(get_class() . '::' . __FUNCTION__, $url);
+			self::_notify(self::class . '::' . __FUNCTION__, $url);
 			header('Location: ' . $url);
 		}//end https is on
 
@@ -187,8 +187,8 @@ class Router {
 	 */
 	public static function addRouteRule($route) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $route);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $route);
 
 		$defaults = array(
 			'route' => null,
@@ -208,10 +208,10 @@ class Router {
 		}
 
 		$route += $defaults;
-		$route = self::_applyFilter(get_class(), __FUNCTION__, $route, array('event' => 'args'));
+		$route = self::_applyFilter(self::class, __FUNCTION__, $route, array('event' => 'args'));
 		array_push(self::$routes, $route);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $route);
+		self::_notify(self::class . '::' . __FUNCTION__, $route);
 	}
 
 	/**
@@ -225,8 +225,8 @@ class Router {
 	 */
 	public static function post(string $route, array $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $route, $options);
 		
 		$defaults = array(
 			'listen'=>'POST',
@@ -234,7 +234,7 @@ class Router {
 			'rule'=> $route
 		);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'route' => $route,
 			'options' => $options
 		), array('event' => 'args'));
@@ -246,7 +246,7 @@ class Router {
 		
 		self::addRouteRule($options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $route, $options);
 	}
 	
 	/**
@@ -260,8 +260,8 @@ class Router {
 	 */
 	public static function get(string $route, array $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $route, $options);
 		
 		$defaults = array(
 			'listen'=>'GET',
@@ -269,7 +269,7 @@ class Router {
 			'rule'=> $route
 		);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'route' => $route,
 			'options' => $options
 		), array('event' => 'args'));
@@ -281,7 +281,7 @@ class Router {
 		
 		self::addRouteRule($options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $route, $options);
 	}
 	
 	/**
@@ -295,8 +295,8 @@ class Router {
 	 */
 	public static function put(string $route, array $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $route, $options);
 		
 		$defaults = array(
 			'listen'=>'PUT',
@@ -304,7 +304,7 @@ class Router {
 			'rule'=> $route
 		);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'route' => $route,
 			'options' => $options
 		), array('event' => 'args'));
@@ -316,7 +316,7 @@ class Router {
 		
 		self::addRouteRule($options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $route, $options);
 	}
 	
 	/**
@@ -330,8 +330,8 @@ class Router {
 	 */
 	public static function patch(string $route, array $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $route, $options);
 		
 		$defaults = array(
 			'listen'=>'PATCH',
@@ -339,7 +339,7 @@ class Router {
 			'rule'=> $route
 		);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'route' => $route,
 			'options' => $options
 		), array('event' => 'args'));
@@ -351,7 +351,7 @@ class Router {
 		
 		self::addRouteRule($options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $route, $options);
 	}
 	
 	/**
@@ -365,8 +365,8 @@ class Router {
 	 */
 	public static function delete(string $route, array $options = array()) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $route, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $route, $options);
 		
 		$defaults = array(
 			'listen'=>'DELETE',
@@ -374,7 +374,7 @@ class Router {
 			'rule'=> $route
 		);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'route' => $route,
 			'options' => $options
 		), array('event' => 'args'));
@@ -386,7 +386,7 @@ class Router {
 		
 		self::addRouteRule($options);
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $route, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $route, $options);
 	}
 
 	/**
@@ -401,10 +401,10 @@ class Router {
 	 */
 	public static function setRoute(string $uri = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $uri);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $uri);
 
-		$uri = self::_applyFilter(get_class(), __FUNCTION__, $uri, array('event' => 'args'));
+		$uri = self::_applyFilter(self::class, __FUNCTION__, $uri, array('event' => 'args'));
 		
 		if (empty($uri)) {
 			$uri = $_SERVER['REQUEST_URI'];
@@ -502,7 +502,7 @@ class Router {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $final_route, $route_options);
+		self::_notify(self::class . '::' . __FUNCTION__, $final_route, $route_options);
 
 		if(self::$correct_request_method) {
 			
@@ -552,14 +552,14 @@ class Router {
 	 */
 	public static function getRouteVariable($parameter) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $parameter);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $parameter);
 
-		$parameter = self::_applyFilter(get_class(), __FUNCTION__, $parameter, array('event' => 'args'));
+		$parameter = self::_applyFilter(self::class, __FUNCTION__, $parameter, array('event' => 'args'));
 
 		if (isset(self::$route_parameters[$parameter])) {
-			self::_notify(get_class() . '::' . __FUNCTION__, $parameter, self::$route_parameters[$parameter]);
-			$found_parameter = self::_applyFilter(get_class(), __FUNCTION__, self::$route_parameters[$parameter], array('event' => 'return'));
+			self::_notify(self::class . '::' . __FUNCTION__, $parameter, self::$route_parameters[$parameter]);
+			$found_parameter = self::_applyFilter(self::class, __FUNCTION__, self::$route_parameters[$parameter], array('event' => 'return'));
 
 			return $found_parameter;
 		}
@@ -573,13 +573,13 @@ class Router {
 	 */
 	public static function getRouteVariables() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$data = self::$route_parameters;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $data);
-		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $data);
+		$data = self::_applyFilter(self::class, __FUNCTION__, $data, array('event' => 'return'));
 
 		return $data;
 
@@ -605,13 +605,13 @@ class Router {
 	 */
 	public static function getRoute() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$route = (isset(self::$route_options['route'])) ? self::$route_options['route'] : null;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $route);
-		$route = self::_applyFilter(get_class(), __FUNCTION__, $route, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $route);
+		$route = self::_applyFilter(self::class, __FUNCTION__, $route, array('event' => 'return'));
 
 		return $route;
 	}
@@ -635,10 +635,10 @@ class Router {
 	 */
 	public static function url($url, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'url' => $url,
 			'options' => $options
 		), array('event' => 'args'));
@@ -671,8 +671,8 @@ class Router {
 			//$url=Router::getCurrentBaseUrl().$url;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $url);
-		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $url);
+		$url = self::_applyFilter(self::class, __FUNCTION__, $url, array('event' => 'return'));
 
 		return $url;
 	}//end url
@@ -689,11 +689,11 @@ class Router {
 	 */
 	public static function redirect($url, $exit = true) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $url);
-		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+		self::_notify(self::class . '::' . __FUNCTION__, $url);
+		$url = self::_applyFilter(self::class, __FUNCTION__, $url, array('event' => 'args'));
 
 		if (Validator::isValidUrl($url)) {
 			header('Location: ' . $url);
@@ -714,8 +714,8 @@ class Router {
 	 */
 	public static function isSecureConnection() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		if ($_SERVER['HTTPS'] != 'on')
 			return false;
@@ -733,8 +733,8 @@ class Router {
 	 */
 	public static function getCurrentUrl() : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$current_page_url = 'http';
 
@@ -750,8 +750,8 @@ class Router {
 			$current_page_url .= $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $current_page_url);
-		$current_page_url = self::_applyFilter(get_class(), __FUNCTION__, $current_page_url, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $current_page_url);
+		$current_page_url = self::_applyFilter(self::class, __FUNCTION__, $current_page_url, array('event' => 'return'));
 
 		return $current_page_url;
 	}//end getCurrentCurl
@@ -765,8 +765,8 @@ class Router {
 	 */
 	public static function getCurrentBaseUrl() : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$current_page_url = 'http';
 
@@ -782,8 +782,8 @@ class Router {
 			$current_page_url .= 'http://localhost/';
 		}	
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $current_page_url);
-		$current_page_url = self::_applyFilter(get_class(), __FUNCTION__, $current_page_url, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $current_page_url);
+		$current_page_url = self::_applyFilter(self::class, __FUNCTION__, $current_page_url, array('event' => 'return'));
 
 		return $current_page_url;
 	}//end getCurrentCurl
@@ -799,10 +799,10 @@ class Router {
 	 */
 	public static function formUrlParameters(array $variables) : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $variables);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $variables);
 
-		$variables = self::_applyFilter(get_class(), __FUNCTION__, $variables, array('event' => 'args'));
+		$variables = self::_applyFilter(self::class, __FUNCTION__, $variables, array('event' => 'args'));
 
 		$appendix = '?';
 
@@ -816,8 +816,8 @@ class Router {
 			$first = 0;
 		}//end foreach
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $appendix, $variables);
-		$appendix = self::_applyFilter(get_class(), __FUNCTION__, $appendix, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $appendix, $variables);
+		$appendix = self::_applyFilter(self::class, __FUNCTION__, $appendix, array('event' => 'return'));
 
 		return $appendix;
 
@@ -834,10 +834,10 @@ class Router {
 	 */
 	public static function formUrlPath(array $variables) : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $variables);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $variables);
 
-		$variables = self::_applyFilter(get_class(), __FUNCTION__, $variables, array('event' => 'args'));
+		$variables = self::_applyFilter(self::class, __FUNCTION__, $variables, array('event' => 'args'));
 
 		$appendix = '';
 
@@ -851,8 +851,8 @@ class Router {
 			$first = 0;
 		}//end foreach
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $appendix, $variables);
-		$appendix = self::_applyFilter(get_class(), __FUNCTION__, $appendix, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $appendix, $variables);
+		$appendix = self::_applyFilter(self::class, __FUNCTION__, $appendix, array('event' => 'return'));
 
 		return $appendix;
 

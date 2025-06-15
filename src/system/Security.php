@@ -103,8 +103,8 @@ class Security {
 	 */
 	public static function init(array $args = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $args);
 
 		if(!self::$_initialized) {
 			
@@ -173,12 +173,12 @@ class Security {
 	 */
 	public static function encrypt(string $string, array $options = array()) : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string, $options);
 
 		$options += self::_getEncryptDefaults();
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'string' => $string,
 			'options' => $options
 		), array('event' => 'args'));
@@ -210,8 +210,8 @@ class Security {
 			mcrypt_generic_deinit(self::$cipher);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $encrypted_data, $string, $options);
-		$encrypted_data = self::_applyFilter(get_class(), __FUNCTION__, $encrypted_data, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $encrypted_data, $string, $options);
+		$encrypted_data = self::_applyFilter(self::class, __FUNCTION__, $encrypted_data, array('event' => 'return'));
 
 		return $nonce.$encrypted_data;
 	}
@@ -227,12 +227,12 @@ class Security {
 	 */
 	public static function decrypt(string $string, array $options = array()) : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string, $options);
 
 		$options += self::_getEncryptDefaults();
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'string' => $string,
 			'options' => $options
 		), array('event' => 'args'));
@@ -264,42 +264,42 @@ class Security {
 			mcrypt_generic_deinit(self::$cipher);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $decrypted_data, $string, $options);
-		$decrypted_data = self::_applyFilter(get_class(), __FUNCTION__, $decrypted_data, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $decrypted_data, $string, $options);
+		$decrypted_data = self::_applyFilter(self::class, __FUNCTION__, $decrypted_data, array('event' => 'return'));
 		
 		return $decrypted_data;
 	}
 
 	protected static function _checkIv($iv) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $iv);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $iv);
 
-		$iv = self::_applyFilter(get_class(), __FUNCTION__, $iv, array('event' => 'args'));
+		$iv = self::_applyFilter(self::class, __FUNCTION__, $iv, array('event' => 'args'));
 
 		$ivSize = mcrypt_enc_get_iv_size(self::$cipher);
 		if (strlen($iv) > $ivSize)
 			$iv = substr($iv, 0, $ivSize);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $iv);
-		$iv = self::_applyFilter(get_class(), __FUNCTION__, $iv, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $iv);
+		$iv = self::_applyFilter(self::class, __FUNCTION__, $iv, array('event' => 'return'));
 
 		return ($iv);
 	}
 
 	protected static function _checkKey($key) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key);
 
-		$key = self::_applyFilter(get_class(), __FUNCTION__, $key, array('event' => 'args'));
+		$key = self::_applyFilter(self::class, __FUNCTION__, $key, array('event' => 'args'));
 
 		$keySize = mcrypt_enc_get_key_size(self::$cipher);
 		if (strlen($key) > $keySize)
 			$key = substr($key, 0, $keySize);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $key);
-		$key = self::_applyFilter(get_class(), __FUNCTION__, $key, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $key);
+		$key = self::_applyFilter(self::class, __FUNCTION__, $key, array('event' => 'return'));
 
 		return ($key);
 	}
@@ -313,8 +313,8 @@ class Security {
 	 */
 	protected static function _getEncryptDefaults() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$defaults = array(
 			'mcrypt_algorithm' => self::$mcrypt_algorithm,
@@ -333,7 +333,7 @@ class Security {
 			'open_ssl_tag_length' => self::$open_ssl_tag_length
 		);
 
-		$defaults = self::_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
+		$defaults = self::_applyFilter(self::class, __FUNCTION__, $defaults, array('event' => 'return'));
 
 		return $defaults;
 	}
@@ -360,8 +360,8 @@ class Security {
 	 */
 	public static function checkAuth($fields, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $fields, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $fields, $options);
 
 		$defaults = array(
 			'auth_table' => self::$_auth_table,
@@ -377,7 +377,7 @@ class Security {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'fields' => $fields,
 			'options' => $options
 		), array('event' => 'args'));
@@ -415,8 +415,8 @@ class Security {
 
 		$return = (!empty($row)) ? $row : false;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $fields, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $fields, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}
@@ -433,10 +433,10 @@ class Security {
 	 */
 	public static function hash(string $string, $salt = null) : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string, $salt);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string, $salt);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'string' => $string,
 			'salt' => $salt
 		), array('event' => 'args'));
@@ -447,8 +447,8 @@ class Security {
 		//$hashed_string = crypt( $string, $salt ?: self::$_salt );
 		$hashed_string = password_hash($string, PASSWORD_BCRYPT, array('cost' => 10));
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $hashed_string, $string, $salt);
-		$hashed_string = self::_applyFilter(get_class(), __FUNCTION__, $hashed_string, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $hashed_string, $string, $salt);
+		$hashed_string = self::_applyFilter(self::class, __FUNCTION__, $hashed_string, array('event' => 'return'));
 
 		return $hashed_string;
 	}
@@ -462,15 +462,15 @@ class Security {
 	 */
 	public static function generateToken(int $length = 64) : string {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $length);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $length);
 		
-		$length = self::_applyFilter(get_class(), __FUNCTION__, $length, array('event' => 'args'));
+		$length = self::_applyFilter(self::class, __FUNCTION__, $length, array('event' => 'args'));
 		
 		$token = bin2hex(openssl_random_pseudo_bytes($length));
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $token);
-		$token = self::_applyFilter(get_class(), __FUNCTION__, $token, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $token);
+		$token = self::_applyFilter(self::class, __FUNCTION__, $token, array('event' => 'return'));
 		
 		return $token;
 		
@@ -489,10 +489,10 @@ class Security {
 	 */
 	public static function encodeHmacSignature(string $public, string $key, string $method = 'sha1', bool $raw_output= false) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $public, $key, $method, $raw_output);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $public, $key, $method, $raw_output);
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'public' => $public,
 			'key' => $key,
 			'method' => $method,
@@ -506,8 +506,8 @@ class Security {
 		
 		$hashed_string = base64_encode(hash_hmac($method, $public, $key, $raw_output));
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $hashed_string, $public, $key, $method, $raw_output);
-		$hashed_string = self::_applyFilter(get_class(), __FUNCTION__, $hashed_string, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $hashed_string, $public, $key, $method, $raw_output);
+		$hashed_string = self::_applyFilter(self::class, __FUNCTION__, $hashed_string, array('event' => 'return'));
 		
 		return $hashed_string;
 	}

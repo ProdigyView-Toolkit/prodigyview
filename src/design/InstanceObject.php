@@ -1,6 +1,7 @@
 <?php
 namespace prodigyview\design;
 
+use BadMethodCallException;
 use prodigyview\util\Collection;
 
 /**
@@ -18,7 +19,7 @@ use prodigyview\util\Collection;
  * 			echo $string;
  *
  * 			//An observer
- * 			$this->_notify(get_class() . '::' . __FUNCTION__, $string);
+ * 			$this->_notify(self::class . '::' . __FUNCTION__, $string);
  * 		}
  * 	}
  *
@@ -79,10 +80,10 @@ trait InstanceObject {
 	 */
 	public function __set($index, $value) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $index, $value);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $index, $value);
 
-		$filtered = $this->_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = $this->_applyFilter(self::class, __FUNCTION__, array(
 			'index' => $index,
 			'value' => $value
 		), array('event' => 'args'));
@@ -94,7 +95,7 @@ trait InstanceObject {
 			$this->_collection = new Collection();
 		}
 		$this->_collection->addWithName($index, $value);
-		$this->_notify(get_class() . '::' . __FUNCTION__, $index, $value);
+		$this->_notify(self::class . '::' . __FUNCTION__, $index, $value);
 	}
 
 	/**
@@ -108,10 +109,10 @@ trait InstanceObject {
 	 */
 	public function __get($index) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $index);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $index);
 
-		$index = $this->_applyFilter(get_class(), __FUNCTION__, $index, array('event' => 'args'));
+		$index = $this->_applyFilter(self::class, __FUNCTION__, $index, array('event' => 'args'));
 
 		if ($this->_collection === null) {
 			$this->_collection = new Collection();
@@ -119,8 +120,8 @@ trait InstanceObject {
 
 		$value = $this->_collection->get($index);
 
-		$this->_notify(get_class() . '::' . __FUNCTION__, $value, $index);
-		$value = $this->_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
+		$this->_notify(self::class . '::' . __FUNCTION__, $value, $index);
+		$value = $this->_applyFilter(self::class, __FUNCTION__, $value, array('event' => 'return'));
 
 		return $value;
 	}
@@ -138,10 +139,10 @@ trait InstanceObject {
 	 */
 	public function __call($method, $args = array()) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $method, $args);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $method, $args);
 
-		$filtered = $this->_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = $this->_applyFilter(self::class, __FUNCTION__, array(
 			'method' => $method,
 			'args' => $args
 		), array('event' => 'args'));
@@ -152,10 +153,10 @@ trait InstanceObject {
 		if (isset($this->_methods[$method]))
 			$value = call_user_func_array($this->_methods[$method], $args);
 		else
-			throw new BadMethodCallException('Method \'' . $method . '\' was not found in class ' . get_called_class());
+			throw new BadMethodCallException('Method \'' . $method . '\' was not found in class ' . static::class);
 
-		$this->_notify(get_class() . '::' . __FUNCTION__, $value, $method, $args);
-		$value = $this->_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
+		$this->_notify(self::class . '::' . __FUNCTION__, $value, $method, $args);
+		$value = $this->_applyFilter(self::class, __FUNCTION__, $value, array('event' => 'return'));
 
 		return $value;
 	}
@@ -172,17 +173,17 @@ trait InstanceObject {
 	 */
 	public function addToCollection($data) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $data);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $data);
 
-		$data = $this->_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'args'));
+		$data = $this->_applyFilter(self::class, __FUNCTION__, $data, array('event' => 'args'));
 
 		if ($this->_collection === null) {
 			$this->_collection = new Collection();
 		}
 		
 		$this->_collection->add($data);
-		$this->_notify(get_class() . '::' . __FUNCTION__, $data);
+		$this->_notify(self::class . '::' . __FUNCTION__, $data);
 	}//end
 
 	/**
@@ -199,10 +200,10 @@ trait InstanceObject {
 	 */
 	public function addToCollectionWithName($name, $data) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $name, $data);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $name, $data);
 
-		$filtered = $this->_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = $this->_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'data' => $data
 		), array('event' => 'args'));
@@ -214,7 +215,7 @@ trait InstanceObject {
 			$this->_collection = new Collection();
 		}
 		$this->_collection->addWithName($name, $data);
-		$this->_notify(get_class() . '::' . __FUNCTION__, $name, $data);
+		$this->_notify(self::class . '::' . __FUNCTION__, $name, $data);
 	}//end
 
 	/**
@@ -225,8 +226,8 @@ trait InstanceObject {
 	 */
 	public function getIterator() {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__);
 
 		if ($this->_collection === null) {
 			$this->_collection = new Collection();
@@ -245,10 +246,10 @@ trait InstanceObject {
 	 */
 	public function addMethod($method, $closure) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $method, $closure);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $method, $closure);
 
-		$filtered = $this->_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = $this->_applyFilter(self::class, __FUNCTION__, array(
 			'method' => $method,
 			'closure' => $closure
 		), array('event' => 'args'));
@@ -257,7 +258,7 @@ trait InstanceObject {
 		$closure = $filtered['closure'];
 
 		$this->_methods[$method] = $closure;
-		$this->_notify(get_class() . '::' . __FUNCTION__, $method, $closure);
+		$this->_notify(self::class . '::' . __FUNCTION__, $method, $closure);
 	}
 
 }//end class

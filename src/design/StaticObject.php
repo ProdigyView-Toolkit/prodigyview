@@ -1,6 +1,7 @@
 <?php
 namespace prodigyview\design;
 
+use BadMethodCallException;
 use prodigyview\util\Collection;
 use prodigyview\util\Log;
 
@@ -20,7 +21,7 @@ use prodigyview\util\Log;
  * 			echo $string;
  *
  * 			//An observer
- * 			$this->_notify(get_class() . '::' . __FUNCTION__, $string);
+ * 			$this->_notify(self::class . '::' . __FUNCTION__, $string);
  * 		}
  * 	}
  *
@@ -84,10 +85,10 @@ trait StaticObject {
 	 */
 	public static function set($index, $value) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $index, $value);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $index, $value);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'index' => $index,
 			'value' => $value
 		), array('event' => 'args'));
@@ -95,12 +96,12 @@ trait StaticObject {
 		$index = $filtered['index'];
 		$value = $filtered['value'];
 
-		if (!isset(self::$_collection[get_called_class()]) || self::$_collection[get_called_class()] === null) {
-			self::$_collection[get_called_class()] = new Collection();
+		if (!isset(self::$_collection[static::class]) || self::$_collection[static::class] === null) {
+			self::$_collection[static::class] = new Collection();
 		}
 
-		self::$_collection[get_called_class()]->addWithName($index, $value);
-		self::_notify(get_class() . '::' . __FUNCTION__, $index, $value);
+		self::$_collection[static::class]->addWithName($index, $value);
+		self::_notify(self::class . '::' . __FUNCTION__, $index, $value);
 	}
 
 	/**
@@ -114,19 +115,19 @@ trait StaticObject {
 	 */
 	public static function get($index) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $index);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $index);
 
-		$index = self::_applyFilter(get_class(), __FUNCTION__, $index, array('event' => 'args'));
+		$index = self::_applyFilter(self::class, __FUNCTION__, $index, array('event' => 'args'));
 
-		if (!isset(self::$_collection[get_called_class()]) || self::$_collection[get_called_class()] === null) {
-			self::$_collection[get_called_class()] = new Collection();
+		if (!isset(self::$_collection[static::class]) || self::$_collection[static::class] === null) {
+			self::$_collection[static::class] = new Collection();
 		}
 
-		$value = self::$_collection[get_called_class()]->$index;
+		$value = self::$_collection[static::class]->$index;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $value, $index);
-		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $value, $index);
+		$value = self::_applyFilter(self::class, __FUNCTION__, $value, array('event' => 'return'));
 
 		return $value;
 	}
@@ -144,10 +145,10 @@ trait StaticObject {
 	 */
 	public static function __callStatic($method, $args = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $method, $args);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $method, $args);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'method' => $method,
 			'args' => $args
 		), array('event' => 'args'));
@@ -155,13 +156,13 @@ trait StaticObject {
 		$method = $filtered['method'];
 		$args = $filtered['args'];
 
-		if (isset(self::$_methods[get_called_class()][$method]))
-			$value = call_user_func_array(self::$_methods[get_called_class()][$method], $args);
+		if (isset(self::$_methods[static::class][$method]))
+			$value = call_user_func_array(self::$_methods[static::class][$method], $args);
 		else
-			throw new BadMethodCallException('Method \'' . $method . '\' was not found in class ' . get_called_class());
+			throw new BadMethodCallException('Method \'' . $method . '\' was not found in class ' . static::class);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $value, $method, $args);
-		$value = self::_applyFilter(get_class(), __FUNCTION__, $value, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $value, $method, $args);
+		$value = self::_applyFilter(self::class, __FUNCTION__, $value, array('event' => 'return'));
 
 		return $value;
 	}
@@ -178,17 +179,17 @@ trait StaticObject {
 	 */
 	public static function addToCollection($data) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data);
 
-		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'args'));
+		$data = self::_applyFilter(self::class, __FUNCTION__, $data, array('event' => 'args'));
 		
-		if (self::$_collection[get_called_class()] === null) {
-			self::$_collection[get_called_class()] = new Collection();
+		if (self::$_collection[static::class] === null) {
+			self::$_collection[static::class] = new Collection();
 		}
 		
-		self::$_collection[get_called_class()]->add($data);
-		self::_notify(get_class() . '::' . __FUNCTION__, $data);
+		self::$_collection[static::class]->add($data);
+		self::_notify(self::class . '::' . __FUNCTION__, $data);
 	}//end
 
 	/**
@@ -205,10 +206,10 @@ trait StaticObject {
 	 */
 	public static function addToCollectionWithName($name, $data) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $data);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $data);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'data' => $data
 		), array('event' => 'args'));
@@ -216,12 +217,12 @@ trait StaticObject {
 		$name = $filtered['name'];
 		$data = $filtered['data'];
 
-		if (!isset(self::$_collection[get_called_class()]) || self::$_collection[get_called_class()] === null) {
-			self::$_collection[get_called_class()] = new Collection();
+		if (!isset(self::$_collection[static::class]) || self::$_collection[static::class] === null) {
+			self::$_collection[static::class] = new Collection();
 		}
 		
-		self::$_collection[get_called_class()]->addWithName($name, $data);
-		self::_notify(get_class() . '::' . __FUNCTION__, $name, $data);
+		self::$_collection[static::class]->addWithName($name, $data);
+		self::_notify(self::class . '::' . __FUNCTION__, $name, $data);
 	}//end
 
 	/**
@@ -232,13 +233,13 @@ trait StaticObject {
 	 */
 	public static function getIterator() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
-		if (self::$_collection[get_called_class()] === null) {
-			self::$_collection[get_called_class()] = new Collection();
+		if (self::$_collection[static::class] === null) {
+			self::$_collection[static::class] = new Collection();
 		}
-		return self::$_collection[get_called_class()]->getIterator();
+		return self::$_collection[static::class]->getIterator();
 	}
 
 	/**
@@ -252,10 +253,10 @@ trait StaticObject {
 	 */
 	public static function addMethod($method, $closure) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $method, $closure);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $method, $closure);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'method' => $method,
 			'closure' => $closure
 		), array('event' => 'args'));
@@ -263,8 +264,8 @@ trait StaticObject {
 		$method = $filtered['method'];
 		$closure = $filtered['closure'];
 
-		self::$_methods[get_called_class()][$method] = $closure;
-		self::_notify(get_class() . '::' . __FUNCTION__, $method, $closure);
+		self::$_methods[static::class][$method] = $closure;
+		self::_notify(self::class . '::' . __FUNCTION__, $method, $closure);
 	}
 
 }//end class

@@ -52,10 +52,10 @@ abstract class Application  {
 			$passable_args[$key] = &$arg;
 		}
 
-		if ($this->_hasAdapter(get_called_class(), __FUNCTION__))
-			return $this->_callAdapter(get_called_class(), __FUNCTION__, $command, $passable_args);
+		if ($this->_hasAdapter(static::class, __FUNCTION__))
+			return $this->_callAdapter(static::class, __FUNCTION__, $command, $passable_args);
 
-		$filtered = $this->_applyFilter(get_called_class(), __FUNCTION__, array(
+		$filtered = $this->_applyFilter(static::class, __FUNCTION__, array(
 			'command' => $command,
 			'passable_args' => $passable_args
 		), array('event' => 'args'));
@@ -69,8 +69,8 @@ abstract class Application  {
 			$value = $this->_invokeMethod($this, 'defaultFunction', $passable_args);
 		}
 
-		$this->_notify(get_called_class() . '::' . __FUNCTION__, $value, $command, $passable_args);
-		$value = $this->_applyFilter(get_called_class(), __FUNCTION__, $value, array('event' => 'return'));
+		$this->_notify(static::class . '::' . __FUNCTION__, $value, $command, $passable_args);
+		$value = $this->_applyFilter(static::class, __FUNCTION__, $value, array('event' => 'return'));
 
 		return $value;
 	}

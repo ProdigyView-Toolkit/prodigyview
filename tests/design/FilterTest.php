@@ -14,8 +14,8 @@ class FilterInstance {
 	
 	public function filter($string) {
 		
-		if ($this -> _hasFilter(get_class(), __FUNCTION__))
-			$string = $this -> _applyFilter(get_class(), __FUNCTION__, $string);
+		if ($this -> _hasFilter(self::class, __FUNCTION__))
+			$string = $this -> _applyFilter(self::class, __FUNCTION__, $string);
 		
 		return $string;
 	}
@@ -32,8 +32,8 @@ class FilterStatic {
 	
 	public static function filter($string) {
 		
-		if (self::_hasFilter(get_called_class(), __FUNCTION__))
-			$string = self::_applyFilter(get_called_class(), __FUNCTION__, $string);
+		if (self::_hasFilter(static::class, __FUNCTION__))
+			$string = self::_applyFilter(static::class, __FUNCTION__, $string);
 		
 		return $string;	
 	}

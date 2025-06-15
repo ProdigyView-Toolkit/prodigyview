@@ -14,8 +14,8 @@ class TestInstance {
 	
 	public function execute($string) {
 		
-		if($this-> _hasAdapter(get_class(), __FUNCTION__))
-			return $this -> _callAdapter(get_class(), __FUNCTION__, $string);
+		if($this-> _hasAdapter(self::class, __FUNCTION__))
+			return $this -> _callAdapter(self::class, __FUNCTION__, $string);
 		
 		return $string;
 	}
@@ -32,8 +32,8 @@ class TestStatic {
 	
 	public static function execute($string) {
 		
-		if(self::_hasAdapter(get_called_class(), __FUNCTION__))
-			return self::_callAdapter(get_called_class(), __FUNCTION__, $string);
+		if(self::_hasAdapter(static::class, __FUNCTION__))
+			return self::_callAdapter(static::class, __FUNCTION__, $string);
 		
 		return $string;
 	}

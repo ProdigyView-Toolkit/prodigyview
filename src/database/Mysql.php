@@ -196,7 +196,7 @@ class Mysql implements DBInterface {
 
 		$result = $this->query($query);
 		$count = $this->resultRowCount($result);
-		self::_notify(get_class() . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
+		self::_notify(self::class . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
 
 		if ($count <= 0) {
 			return FALSE;

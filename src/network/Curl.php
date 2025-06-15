@@ -99,8 +99,8 @@ class Curl {
 	 */
 	public function __construct($url) {
 		
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $url);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $url);
 		
 		$url = trim($url);
 		
@@ -124,8 +124,8 @@ class Curl {
 	 */
 	public function send($method, $data = array()) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $method, $data);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $method, $data);
 
 		$method = strtolower(trim($method));
 
@@ -159,8 +159,8 @@ class Curl {
 	 */
 	public function addHeader($key, $value) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $key, $value);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $key, $value);
 
 		$this->_headers[$key] = $value;
 	}
@@ -174,8 +174,8 @@ class Curl {
 	 */
 	public function addFile($file_location) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $file_location);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $file_location);
 
 		$this->_files[] = $file_location;
 	}
@@ -288,8 +288,8 @@ class Curl {
 	 */
 	public function setAuthentication($username, $password) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $username, $password);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $username, $password);
 
 		curl_setopt($this->_handler, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($this->_handler, CURLOPT_USERPWD, $username . ':' . $password);
@@ -316,8 +316,8 @@ class Curl {
 	 */
 	public function setTimeout($timeout) {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__, $timeout);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__, $timeout);
 
 		curl_setopt($this->_handler, CURLOPT_CONNECTTIMEOUT, $timeout);
 		curl_setopt($this->_handler, CURLOPT_TIMEOUT, $timeout);
@@ -382,7 +382,7 @@ class Curl {
 
 		curl_close($this->_handler);
 
-		$this->_notify(get_class() . '::' . __FUNCTION__, $this);
+		$this->_notify(self::class . '::' . __FUNCTION__, $this);
 
 		return $response;
 	}
@@ -394,8 +394,8 @@ class Curl {
 	 */
 	public function getFullResponse() {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__);
 
 		return $this->_response;
 	}
@@ -406,8 +406,8 @@ class Curl {
 	 * @return string
 	 */
 	public function getResponseInfo() {
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__);
 
 		return $this->_response_info;
 	}
@@ -419,8 +419,8 @@ class Curl {
 	 */
 	public function getResponseHeader() {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__);
 
 		return trim(substr($this->_response, 0, $this->_response_info['header_size']));
 
@@ -433,8 +433,8 @@ class Curl {
 	 */
 	public function getResponse() {
 
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__);
 
 		return substr($this->_response, $this->_response_info['header_size']);
 	}
@@ -445,8 +445,8 @@ class Curl {
 	 * @return string
 	 */
 	public function getError() {
-		if ($this->_hasAdapter(get_class(), __FUNCTION__))
-			return $this->_callAdapter(get_class(), __FUNCTION__);
+		if ($this->_hasAdapter(self::class, __FUNCTION__))
+			return $this->_callAdapter(self::class, __FUNCTION__);
 
 		return $this->_error;
 	}

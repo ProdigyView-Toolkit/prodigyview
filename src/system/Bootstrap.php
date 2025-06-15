@@ -40,8 +40,8 @@ class Bootstrap  {
 	 */
 	public static function bootSystem($args = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $args);
 
 		$defaults = array(
 			'initialize_database' => true,
@@ -86,7 +86,7 @@ class Bootstrap  {
 			$config = $args['config'] + $defaults['config'];
 		}
 
-		$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+		$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 
 		self::setErrorReporting($config['report_errors'], $config['log_errors'], $config['error_report_level']);
 
@@ -181,7 +181,7 @@ class Bootstrap  {
 			self::unsetGlobalVariable('_SERVER');
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $config);
+		self::_notify(self::class . '::' . __FUNCTION__, $config);
 	}//end bootSystem
 
 	/**
@@ -208,10 +208,10 @@ class Bootstrap  {
 	 */
 	private static function setErrorReporting($report_errors = FALSE, $log_errors = TRUE, $error_report_level = E_ALL) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $report_errors, $log_errors, $error_report_level);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $report_errors, $log_errors, $error_report_level);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'report_errors' => $report_errors,
 			'log_errors' => $log_errors,
 			'error_report_level' => $error_report_level
@@ -246,7 +246,7 @@ class Bootstrap  {
 			ini_set('error_log', PV_ERROR_LOG);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $report_errors, $log_errors, $error_report_level);
+		self::_notify(self::class . '::' . __FUNCTION__, $report_errors, $log_errors, $error_report_level);
 	}//end setReporting
 
 	/**
@@ -260,10 +260,10 @@ class Bootstrap  {
 	 */
 	private static function unsetGlobalVariable($global) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $global);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $global);
 
-		$global = self::_applyFilter(get_class(), __FUNCTION__, $global, array('event' => 'args'));
+		$global = self::_applyFilter(self::class, __FUNCTION__, $global, array('event' => 'args'));
 
 		foreach ($GLOBALS[$global] as $key => $var) {
 			if ($var === $GLOBALS[$key]) {
@@ -271,7 +271,7 @@ class Bootstrap  {
 			}
 		}//end for
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $global);
+		self::_notify(self::class . '::' . __FUNCTION__, $global);
 	}//end unsetGlobalVariable
 
 	/**
@@ -296,8 +296,8 @@ class Bootstrap  {
 	 */
 	private static function removeMagicQuotes() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		if (get_magic_quotes_gpc()) {
 			array_walk_recursive($_GET, 'stripslashes_gpc');
@@ -306,7 +306,7 @@ class Bootstrap  {
 			array_walk_recursive($_REQUEST, 'stripslashes_gpc');
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__);
+		self::_notify(self::class . '::' . __FUNCTION__);
 	}//end
 
 	/**
@@ -321,14 +321,14 @@ class Bootstrap  {
 	 */
 	private static function setHeaderExpires($expirationMinutes) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $expirationMinutes);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $expirationMinutes);
 
-		$expirationMinutes = self::_applyFilter(get_class(), __FUNCTION__, $expirationMinutes, array('event' => 'args'));
+		$expirationMinutes = self::_applyFilter(self::class, __FUNCTION__, $expirationMinutes, array('event' => 'args'));
 
 		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $expirationMinutes) . 'GMT');
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $expirationMinutes);
+		self::_notify(self::class . '::' . __FUNCTION__, $expirationMinutes);
 	}//end setHeaderExpires
 
 }//end class

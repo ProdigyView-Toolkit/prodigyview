@@ -95,14 +95,14 @@ class Libraries {
 	 */
 	public static function init($config = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
 			$defaults = array('namespaced' => false);
 	
 			$config += $defaults;
-			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+			$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 	
 			self::$javascript_libraries_array = array();
 			self::$css_files_array = array();
@@ -115,7 +115,7 @@ class Libraries {
 				'_autoload'
 			));
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::_notify(self::class . '::' . __FUNCTION__, $config);
 			self::$_initialized = true;
 		}
 	}
@@ -132,14 +132,14 @@ class Libraries {
 	 */
 	public static function enqueueJavascript($script) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $script);
 
-		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		$script = self::_applyFilter(self::class, __FUNCTION__, $script, array('event' => 'args'));
 		
 		self::$javascript_libraries_array[$script] = $script;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $script);
+		self::_notify(self::class . '::' . __FUNCTION__, $script);
 	}
 
 	/**
@@ -154,14 +154,14 @@ class Libraries {
 	 */
 	public static function enqueueCss($script) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $script);
 
-		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		$script = self::_applyFilter(self::class, __FUNCTION__, $script, array('event' => 'args'));
 		
 		self::$css_files_array[$script] = $script;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $script);
+		self::_notify(self::class . '::' . __FUNCTION__, $script);
 	}
 
 	/**
@@ -178,13 +178,13 @@ class Libraries {
 	 */
 	public static function enqueueOpenscript($script) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $script);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $script);
 
-		$script = self::_applyFilter(get_class(), __FUNCTION__, $script, array('event' => 'args'));
+		$script = self::_applyFilter(self::class, __FUNCTION__, $script, array('event' => 'args'));
 		
 		self::$open_javascript .= $script;
-		self::_notify(get_class() . '::' . __FUNCTION__, $script);
+		self::_notify(self::class . '::' . __FUNCTION__, $script);
 	}
 
 	/**
@@ -197,12 +197,12 @@ class Libraries {
 	 */
 	public static function getJavascriptQueue() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$javascript_libraries_array);
+		self::_notify(self::class . '::' . __FUNCTION__, self::$javascript_libraries_array);
 		
-		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$javascript_libraries_array, array('event' => 'return'));
+		$script = self::_applyFilter(self::class, __FUNCTION__, self::$javascript_libraries_array, array('event' => 'return'));
 
 		return $script;
 	}
@@ -217,12 +217,12 @@ class Libraries {
 	 */
 	public static function getCssQueue() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$css_files_array);
+		self::_notify(self::class . '::' . __FUNCTION__, self::$css_files_array);
 		
-		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$css_files_array, array('event' => 'return'));
+		$script = self::_applyFilter(self::class, __FUNCTION__, self::$css_files_array, array('event' => 'return'));
 
 		return $script;
 	}
@@ -235,12 +235,12 @@ class Libraries {
 	 */
 	public static function getOpenscriptQueue() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, self::$open_javascript);
+		self::_notify(self::class . '::' . __FUNCTION__, self::$open_javascript);
 		
-		$script = self::_applyFilter(get_class(), __FUNCTION__, self::$open_javascript, array('event' => 'return'));
+		$script = self::_applyFilter(self::class, __FUNCTION__, self::$open_javascript, array('event' => 'return'));
 
 		return $script;
 	}
@@ -265,8 +265,8 @@ class Libraries {
 	 */
 	public static function addLibrary($folder_name, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $folder_name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $folder_name, $options);
 
 		$defaults = array(
 			'path' => PV_LIBRARIES . $folder_name . DS,
@@ -277,7 +277,7 @@ class Libraries {
 
 		$options += $defaults;
 		
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'folder_name' => $folder_name,
 			'options' => $options
 		), array('event' => 'args'));
@@ -287,7 +287,7 @@ class Libraries {
 
 		self::$libraries[$folder_name] = $options;
 		
-		self::_notify(get_class() . '::' . __FUNCTION__, $folder_name, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $folder_name, $options);
 	}
 
 	/**
@@ -301,8 +301,8 @@ class Libraries {
 	 */
 	public static function loadLibraries() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		self::_buildAutoLoads();
 
@@ -316,7 +316,7 @@ class Libraries {
 			}//end foreach
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__);
+		self::_notify(self::class . '::' . __FUNCTION__);
 	}//end loadLibraries
 
 	/**
@@ -332,10 +332,10 @@ class Libraries {
 	 */
 	public static function loadLibrary($library_name) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $library_name);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $library_name);
 
-		$library_name = self::_applyFilter(get_class(), __FUNCTION__, $library_name, array('event' => 'args'));
+		$library_name = self::_applyFilter(self::class, __FUNCTION__, $library_name, array('event' => 'args'));
 
 		if (isset(self::$libraries[$library_name])) {
 			$library = FileManager::getFilesInDirectory(self::$libraries[$library_name]['path'], array('verbose' => true));
@@ -346,7 +346,7 @@ class Libraries {
 			if (self::$libraries[$library_name]['explicit_load'])
 				self::_loadLibrary($library, self::$libraries[$library_name]['extensions']);
 
-			self::_notify(get_class() . '::' . __FUNCTION__, $library_name);
+			self::_notify(self::class . '::' . __FUNCTION__, $library_name);
 		}//end loadLibrary
 
 	}//end
@@ -363,10 +363,10 @@ class Libraries {
 	 */
 	protected static function _loadLibrary($library, $allow_extensions) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $library, $allow_extensions);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $library, $allow_extensions);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'library' => $library,
 			'allow_extensions' => $allow_extensions
 		), array('event' => 'args'));
@@ -392,7 +392,7 @@ class Libraries {
 			}//end else
 		}//end foreach
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $library, $allow_extensions);
+		self::_notify(self::class . '::' . __FUNCTION__, $library, $allow_extensions);
 	}//end _loadLibrary
 
 	/**
@@ -405,8 +405,8 @@ class Libraries {
 	 */
 	protected static function _buildAutoLoads() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		foreach (self::$libraries as $library) {
 

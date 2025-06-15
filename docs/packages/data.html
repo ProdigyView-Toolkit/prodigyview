@@ -185,7 +185,7 @@ class Example extends Object {
 			echo $string;
 
 			//An observer
-			$this-&gt;_notify(get_class() . &#039;::&#039; . __FUNCTION__, $string);
+			$this-&gt;_notify(self::class . &#039;::&#039; . __FUNCTION__, $string);
 		}
 	}
 
@@ -241,7 +241,7 @@ class Example extends Object {
 			echo $string;
 
 			//An observer
-			$this-&gt;_notify(get_class() . &#039;::&#039; . __FUNCTION__, $string);
+			$this-&gt;_notify(self::class . &#039;::&#039; . __FUNCTION__, $string);
 		}
 	}
 

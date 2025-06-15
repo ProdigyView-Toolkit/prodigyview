@@ -135,7 +135,7 @@ class Postgresql implements DBInterface {
 	 */
 	public function returnLastInsert($query, $returnField = '', $returnTable = '') {
 
-		$result = pg_exec($query . " RETURNING $returnField ");
+		$result = pg_exec($this->link, $query . " RETURNING $returnField ");
 		$row = $this->fetchArray($result);
 		$id = $row[$returnField];
 
@@ -252,7 +252,7 @@ class Postgresql implements DBInterface {
 
 		$result = $this->query($query);
 		$count = $this->resultRowCount($result);
-		$this->_notify(get_class() . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
+		$this->_notify(self::class . '::' . __FUNCTION__, $count, $result, $table_name, $field_name);
 		
 		if ($count <= 0) {
 			return FALSE;
@@ -698,7 +698,7 @@ class Postgresql implements DBInterface {
 			$count = 0;
 			$first = 1;
 			foreach ($wherelist as $key => $value) {
-				$params[$key] = (isset($wherelist[$count])) ? $formats[$count] : 's';
+				$params[$key] = (isset($wherelist[$count])) ? $whereformats[$count] : 's';
 				if ($first) {
 					$query .= $key . '=' . $this->getPreparedPlaceHolder($count + 1) . ' ';
 				} else {
@@ -758,18 +758,19 @@ class Postgresql implements DBInterface {
 
 	public function stmt_bind_assoc(&$stmt, &$out) {
 
-		$data = mysqli_stmt_result_metadata($stmt);
-		$fields = array();
-		$out = array();
+		// pg_execute returns a result resource. The equivalent of fetching a bound 
+		// result in MySQLi is to simply fetch the next associative row from that resource.
+		$row = pg_fetch_assoc($stmt);
 
-		$fields[0] = $stmt;
-		$count = 1;
-
-		while ($field = mysqli_fetch_field($data)) {
-			$fields[$count] = &$out[$field->name];
-			$count++;
+		// Check if a row was successfully fetched
+		if ($row) {
+			$out = $row;
+			return true;
 		}
-		@call_user_func_array(mysqli_stmt_bind_result, $fields);
+
+		// No more rows or an error occurred
+		$out = null;
+		return false;
 
 	}
 
@@ -851,7 +852,7 @@ class Postgresql implements DBInterface {
 
 		$options += $defaults;
 
-		$filtered = $this->_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = $this->_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options
 		), array('event' => 'args'));

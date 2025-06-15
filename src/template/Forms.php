@@ -60,10 +60,10 @@ class Forms {
 	 */
 	public static function input($name, $type, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $type, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $type, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'type' => $type,
 			'options' => $options,
@@ -87,8 +87,8 @@ class Forms {
 			$input = Html::div($input, $css_options);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $type, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $type, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -116,10 +116,10 @@ class Forms {
 	 */
 	public static function button($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -133,8 +133,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'button', $options, $css_options); ;
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -162,10 +162,10 @@ class Forms {
 	 */
 	public static function checkbox($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -179,8 +179,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'checkbox', $options, $css_options); ;
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -208,10 +208,10 @@ class Forms {
 	 */
 	public static function text($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -225,8 +225,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'text', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -254,10 +254,10 @@ class Forms {
 	 */
 	public static function file($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -271,8 +271,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'file', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -300,10 +300,10 @@ class Forms {
 	 */
 	public static function date($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -317,8 +317,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'date', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -346,10 +346,10 @@ class Forms {
 	 */
 	public static function hidden($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -363,8 +363,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'hidden', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -392,10 +392,10 @@ class Forms {
 	 */
 	public static function image($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -409,8 +409,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'image', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -438,10 +438,10 @@ class Forms {
 	 */
 	public static function search($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -455,8 +455,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'search', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -484,10 +484,10 @@ class Forms {
 	 */
 	public static function submit($name, $value = 'Submit', $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -502,8 +502,8 @@ class Forms {
 		$options['value'] = $value;
 
 		$input = self::input($name, 'submit', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -532,10 +532,10 @@ class Forms {
 	 */
 	public static function textfield($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -549,8 +549,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'text', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -579,10 +579,10 @@ class Forms {
 	 */
 	public static function radio($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -596,8 +596,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'radio', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -626,10 +626,10 @@ class Forms {
 	 */
 	public static function time($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -643,8 +643,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'time', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -673,10 +673,10 @@ class Forms {
 	 */
 	public static function url($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -690,8 +690,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'url', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -720,10 +720,10 @@ class Forms {
 	 */
 	public static function range($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -737,8 +737,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'range', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -767,10 +767,10 @@ class Forms {
 	 */
 	public static function reset($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -784,8 +784,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'reset', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -814,10 +814,10 @@ class Forms {
 	 */
 	public static function color($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -831,8 +831,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'color', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -861,10 +861,10 @@ class Forms {
 	 */
 	public static function password($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -878,8 +878,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'password', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -908,10 +908,10 @@ class Forms {
 	 */
 	public static function number($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -925,8 +925,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'number', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -955,10 +955,10 @@ class Forms {
 	 */
 	public static function email($name, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'css_options' => $css_options
@@ -972,8 +972,8 @@ class Forms {
 		$css_options += $css_defaults;
 
 		$input = self::input($name, 'email', $options, $css_options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options, $css_options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options, $css_options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -1002,10 +1002,10 @@ class Forms {
 	 */
 	public static function label($text, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $text, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $text, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'text' => $text,
 			'options' => $options,
 			'css_options' => $css_options
@@ -1034,8 +1034,8 @@ class Forms {
 			return Html::div($label, $css_options);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $label, $text, $options, $css_options);
-		$label = self::_applyFilter(get_class(), __FUNCTION__, $label, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $label, $text, $options, $css_options);
+		$label = self::_applyFilter(self::class, __FUNCTION__, $label, array('event' => 'return'));
 
 		return $label;
 	}
@@ -1055,10 +1055,10 @@ class Forms {
 	 */
 	public static function fieldset($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1068,8 +1068,8 @@ class Forms {
 
 		$tag = Html::generateHtmlTag('fieldset', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1089,10 +1089,10 @@ class Forms {
 	 */
 	public static function legend($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1102,8 +1102,8 @@ class Forms {
 
 		$tag = Html::generateHtmlTag('legend', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1135,10 +1135,10 @@ class Forms {
 	 */
 	public static function select($name, $data, $options = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $data, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $data, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'data' => $data,
 			'options' => $options,
@@ -1194,8 +1194,8 @@ class Forms {
 			return Html::div($tag, $css_options);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $name, $data, $options, $css_options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $name, $data, $options, $css_options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1229,10 +1229,10 @@ class Forms {
 	 */
 	public static function getFormAttributes($attributes = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $attributes);
 
-		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+		$attributes = self::_applyFilter(self::class, __FUNCTION__, $attributes, array('event' => 'args'));
 
 		$return_attributes = '';
 		$accepted_attributes = array(
@@ -1272,8 +1272,8 @@ class Forms {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(self::class, __FUNCTION__, $return_attributes, array('event' => 'return'));
 
 		return $return_attributes;
 	}
@@ -1304,10 +1304,10 @@ class Forms {
 	 */
 	public static function textarea($name, $value, $attributes = array(), $css_options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $value, $attributes, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $value, $attributes, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'value' => $value,
 			'attributes' => $attributes,
@@ -1336,8 +1336,8 @@ class Forms {
 			return Html::div($textarea, $css_options);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $textarea, $name, $value, $attributes, $css_options);
-		$textarea = self::_applyFilter(get_class(), __FUNCTION__, $textarea, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $textarea, $name, $value, $attributes, $css_options);
+		$textarea = self::_applyFilter(self::class, __FUNCTION__, $textarea, array('event' => 'return'));
 
 		return $textarea;
 	}//end getTextArea
@@ -1359,10 +1359,10 @@ class Forms {
 	 */
 	public static function form($name, $data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options,
 			'data' => $data
@@ -1376,8 +1376,8 @@ class Forms {
 		$tag .= $data;
 		$tag .= self::formEnd();
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $name, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $name, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1400,10 +1400,10 @@ class Forms {
 	 */
 	public static function formBegin($name, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1442,8 +1442,8 @@ class Forms {
 
 		$input .= '>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $input, $name, $options);
-		$input = self::_applyFilter(get_class(), __FUNCTION__, $input, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input, $name, $options);
+		$input = self::_applyFilter(self::class, __FUNCTION__, $input, array('event' => 'return'));
 
 		return $input;
 	}
@@ -1458,10 +1458,10 @@ class Forms {
 	 */
 	public static function formEnd($options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $options);
 
-		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
+		$options = self::_applyFilter(self::class, __FUNCTION__, $options, array('event' => 'args'));
 
 		$input = '</form>';
 

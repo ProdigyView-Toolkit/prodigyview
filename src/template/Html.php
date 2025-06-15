@@ -81,8 +81,8 @@ class Html {
 	 */
 	public static function image($location, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $location, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $location, $options);
 
 		$defaults = array(
 			'alt' => '',
@@ -90,7 +90,7 @@ class Html {
 		);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'location' => $location,
 			'options' => $options
 		), array('event' => 'args'));
@@ -141,8 +141,8 @@ class Html {
 
 		$image .= '/>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $image, $location, $options);
-		$image = self::_applyFilter(get_class(), __FUNCTION__, $image, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $image, $location, $options);
+		$image = self::_applyFilter(self::class, __FUNCTION__, $image, array('event' => 'return'));
 
 		return $image;
 	}//end getImageDisplay
@@ -164,10 +164,10 @@ class Html {
 	 */
 	public static function time($time, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $time, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $time, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'time' => $time,
 			'options' => $options
 		), array('event' => 'args'));
@@ -190,8 +190,8 @@ class Html {
 
 		$tag .= '>' . $time . '</time>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $time, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $time, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 
@@ -218,10 +218,10 @@ class Html {
 	 */
 	public static function iframe($src, $data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $time, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $time, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'src' => $src,
 			'data' => $data,
 			'options' => $options
@@ -258,8 +258,8 @@ class Html {
 
 		$tag .= '>' . $data . '</iframe>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $src, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $src, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 
@@ -289,10 +289,10 @@ class Html {
 	 */
 	public static function alink($title, $url, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $title, $url, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $title, $url, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'title' => $title,
 			'url' => $url,
 			'options' => $options
@@ -342,8 +342,8 @@ class Html {
 
 		$link .= '>' . $title . '</a>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $link, $title, $url, $options);
-		$link = self::_applyFilter(get_class(), __FUNCTION__, $link, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $link, $title, $url, $options);
+		$link = self::_applyFilter(self::class, __FUNCTION__, $link, array('event' => 'return'));
 
 		return $link;
 
@@ -371,10 +371,10 @@ class Html {
 	 */
 	public static function link($url, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'url' => $url,
 			'options' => $options
 		), array('event' => 'args'));
@@ -416,8 +416,8 @@ class Html {
 
 		$link .= '/>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $link, $url, $options);
-		$link = self::_applyFilter(get_class(), __FUNCTION__, $link, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $link, $url, $options);
+		$link = self::_applyFilter(self::class, __FUNCTION__, $link, array('event' => 'return'));
 
 		return $link;
 
@@ -441,10 +441,10 @@ class Html {
 	 */
 	public static function meta($name = '', $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'name' => $name,
 			'options' => $options
 		), array('event' => 'args'));
@@ -474,8 +474,8 @@ class Html {
 
 		$link .= '/>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $link, $name, $options);
-		$link = self::_applyFilter(get_class(), __FUNCTION__, $link, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $link, $name, $options);
+		$link = self::_applyFilter(self::class, __FUNCTION__, $link, array('event' => 'return'));
 
 		return $link;
 	}//end meta
@@ -504,8 +504,8 @@ class Html {
 	 */
 	public static function video($src = '', $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $src, $options);
 
 		$defaults = array(
 			'controls' => 'controls',
@@ -514,7 +514,7 @@ class Html {
 		);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'src' => $src,
 			'options' => $options
 		), array('event' => 'args'));
@@ -576,8 +576,8 @@ class Html {
 		$video .= $options['error'];
 		$video .= '</video>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $video, $src, $options);
-		$video = self::_applyFilter(get_class(), __FUNCTION__, $video, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $video, $src, $options);
+		$video = self::_applyFilter(self::class, __FUNCTION__, $video, array('event' => 'return'));
 
 		return $video;
 	}//end getVideoDisplay
@@ -604,8 +604,8 @@ class Html {
 	 */
 	public static function audio($src = '', $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $src, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $src, $options);
 
 		$defaults = array(
 			'controls' => 'controls',
@@ -615,7 +615,7 @@ class Html {
 		
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'src' => $src,
 			'options' => $options
 		), array('event' => 'args'));
@@ -666,8 +666,8 @@ class Html {
 		$audio .= $options['error'];
 		$audio .= '</audio>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $audio, $src, $options);
-		$audio = self::_applyFilter(get_class(), __FUNCTION__, $audio, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $audio, $src, $options);
+		$audio = self::_applyFilter(self::class, __FUNCTION__, $audio, array('event' => 'return'));
 
 		return $audio;
 	}//end getVideoDisplay
@@ -687,10 +687,10 @@ class Html {
 	 */
 	public static function div($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -699,8 +699,8 @@ class Html {
 		$options = $filtered['options'];
 
 		$tag = self::generateHtmlTag('div', $data, $options);
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -720,10 +720,10 @@ class Html {
 	 */
 	public static function h1($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -733,8 +733,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('h1', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -754,10 +754,10 @@ class Html {
 	 */
 	public static function h2($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -767,8 +767,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('h2', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -788,10 +788,10 @@ class Html {
 	 */
 	public static function h3($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -801,8 +801,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('h3', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -822,10 +822,10 @@ class Html {
 	 */
 	public static function h4($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -835,8 +835,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('h4', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -856,10 +856,10 @@ class Html {
 	 */
 	public static function h5($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -869,8 +869,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('h5', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -890,10 +890,10 @@ class Html {
 	 */
 	public static function h6($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -903,8 +903,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('h6', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -924,10 +924,10 @@ class Html {
 	 */
 	public static function p($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -937,8 +937,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('p', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -958,10 +958,10 @@ class Html {
 	 */
 	public static function span($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -971,8 +971,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('span', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -992,10 +992,10 @@ class Html {
 	 */
 	public static function article($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1005,8 +1005,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('article', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1026,10 +1026,10 @@ class Html {
 	 */
 	public static function address($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1039,8 +1039,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('address', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1060,10 +1060,10 @@ class Html {
 	 */
 	public static function strong($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1073,8 +1073,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('strong', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1094,10 +1094,10 @@ class Html {
 	 */
 	public static function summary($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1107,8 +1107,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('summary', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1128,10 +1128,10 @@ class Html {
 	 */
 	public static function details($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1141,8 +1141,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('details', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1162,10 +1162,10 @@ class Html {
 	 */
 	public static function aside($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1175,8 +1175,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('aside', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1196,10 +1196,10 @@ class Html {
 	 */
 	public static function canvas($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1209,8 +1209,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('canvas', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1230,10 +1230,10 @@ class Html {
 	 */
 	public static function li($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1243,8 +1243,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('li', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1264,10 +1264,10 @@ class Html {
 	 */
 	public static function ul($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1277,8 +1277,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('ul', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1298,10 +1298,10 @@ class Html {
 	 */
 	public static function ol($data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1311,8 +1311,8 @@ class Html {
 
 		$tag = self::generateHtmlTag('ol', $data, $options);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $tag, $data, $options);
-		$tag = self::_applyFilter(get_class(), __FUNCTION__, $tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $tag, $data, $options);
+		$tag = self::_applyFilter(self::class, __FUNCTION__, $tag, array('event' => 'return'));
 
 		return $tag;
 	}
@@ -1337,10 +1337,10 @@ class Html {
 	 */
 	public static function progress($value, $max, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $name, $options, $css_options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $name, $options, $css_options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'value' => $value,
 			'max' => $max,
 			'options' => $options
@@ -1359,8 +1359,8 @@ class Html {
 
 		$label .= '></progress>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $label, $value, $max, $options);
-		$label = self::_applyFilter(get_class(), __FUNCTION__, $label, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $label, $value, $max, $options);
+		$label = self::_applyFilter(self::class, __FUNCTION__, $label, array('event' => 'return'));
 
 		return $label;
 	}
@@ -1393,10 +1393,10 @@ class Html {
 	 */
 	public static function getStandardAttributes(array $attributes = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $attributes);
 
-		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+		$attributes = self::_applyFilter(self::class, __FUNCTION__, $attributes, array('event' => 'args'));
 
 		$return_attributes = '';
 		
@@ -1424,8 +1424,8 @@ class Html {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(self::class, __FUNCTION__, $return_attributes, array('event' => 'return'));
 
 		return $return_attributes;
 	}
@@ -1439,10 +1439,10 @@ class Html {
 	 */
 	public static function getEventAttributes(array $attributes = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $attributes);
 
-		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+		$attributes = self::_applyFilter(self::class, __FUNCTION__, $attributes, array('event' => 'args'));
 
 		$return_attributes = '';
 		$accepted_attributes = array(
@@ -1476,8 +1476,8 @@ class Html {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(self::class, __FUNCTION__, $return_attributes, array('event' => 'return'));
 
 		return $return_attributes;
 	}
@@ -1491,10 +1491,10 @@ class Html {
 	 */
 	public static function getMediaEventAttributes($attributes = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $attributes);
 
-		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+		$attributes = self::_applyFilter(self::class, __FUNCTION__, $attributes, array('event' => 'args'));
 
 		$return_attributes = '';
 		$accepted_attributes = array(
@@ -1528,8 +1528,8 @@ class Html {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(self::class, __FUNCTION__, $return_attributes, array('event' => 'return'));
 
 		return $return_attributes;
 	}
@@ -1543,10 +1543,10 @@ class Html {
 	 */
 	public static function getWindowAttributes($attributes = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $attributes);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $attributes);
 
-		$attributes = self::_applyFilter(get_class(), __FUNCTION__, $attributes, array('event' => 'args'));
+		$attributes = self::_applyFilter(self::class, __FUNCTION__, $attributes, array('event' => 'args'));
 
 		$accepted_attributes = array(
 			'onafterprint',
@@ -1576,8 +1576,8 @@ class Html {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return_attributes, $attributes);
-		$return_attributes = self::_applyFilter(get_class(), __FUNCTION__, $return_attributes, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return_attributes, $attributes);
+		$return_attributes = self::_applyFilter(self::class, __FUNCTION__, $return_attributes, array('event' => 'return'));
 
 		return $return_attributes;
 	}
@@ -1594,10 +1594,10 @@ class Html {
 	 */
 	public static function generateHtmlTag($tag, $data, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $tag, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $tag, $data, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'tag' => $tag,
 			'data' => $data,
 			'options' => $options
@@ -1612,8 +1612,8 @@ class Html {
 		$generated_tag .= self::getEventAttributes($options);
 		$generated_tag .= '>' . $data . '</' . $tag . '>';
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $generated_tag, $tag, $data, $options);
-		$generated_tag = self::_applyFilter(get_class(), __FUNCTION__, $generated_tag, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $generated_tag, $tag, $data, $options);
+		$generated_tag = self::_applyFilter(self::class, __FUNCTION__, $generated_tag, array('event' => 'return'));
 
 		return $generated_tag;
 	}
@@ -1629,10 +1629,10 @@ class Html {
 	 */
 	private static function audioContentURL($url, $append_location = false) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url);
 
-		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+		$url = self::_applyFilter(self::class, __FUNCTION__, $url, array('event' => 'args'));
 
 		if (!Validator::isValidURL($url) && $append_location) {
 			$url = PV_AUDIO . $url;
@@ -1651,10 +1651,10 @@ class Html {
 	 */
 	private static function videoContentURL($url, $append_location = false) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url);
 
-		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+		$url = self::_applyFilter(self::class, __FUNCTION__, $url, array('event' => 'args'));
 
 		if (!Validator::isValidURL($url) && $append_location) {
 			$url = PV_VIDEO . $url;

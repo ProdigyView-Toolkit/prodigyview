@@ -36,10 +36,10 @@ class Cli {
 	 */
 	public static function parse($argv = null) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $argv);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $argv);
 
-		$argv = self::_applyFilter(get_class(), __FUNCTION__, $argv, array('event' => 'args'));
+		$argv = self::_applyFilter(self::class, __FUNCTION__, $argv, array('event' => 'args'));
 
 		$argv = ($argv) ? : $_SERVER['argv'];
 
@@ -109,7 +109,7 @@ class Cli {
 
 		self::$args = $out;
 
-		$out = self::_applyFilter(get_class(), __FUNCTION__, $out, array('event' => 'return'));
+		$out = self::_applyFilter(self::class, __FUNCTION__, $out, array('event' => 'return'));
 
 		return $out;
 	}
@@ -124,8 +124,8 @@ class Cli {
 	 */
 	public static function getBoolean($key, $default = false) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $default);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $default);
 
 		if (!isset(self::$args[$key])) {
 			return $default;

@@ -46,18 +46,18 @@ class Response {
 	 */
 	public function init($config = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
 			$default = array('status_messages' => self::getDefaultStatusMessages());
 	
 			$config += $default;
-			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+			$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 	
 			self::$_statusMessages = $config['status_messages'];
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::_notify(self::class . '::' . __FUNCTION__, $config);
 			
 			self::$_initialized = true;
 		}
@@ -80,8 +80,8 @@ class Response {
 	 */
 	public static function createResponse($status, $content = '', $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $status, $body, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $status, $content, $options);
 
 		$defaults = array(
 			'content_type' => 'text/html',
@@ -91,7 +91,7 @@ class Response {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'status' => $status,
 			'content' => $content,
 			'options' => $options
@@ -126,8 +126,8 @@ class Response {
 						</html>';
 		}
 
-		$content = self::_applyFilter(get_class(), __FUNCTION__, $content, array('event' => 'return'));
-		self::_notify(get_class() . '::' . __FUNCTION__, $content, $status, $options);
+		$content = self::_applyFilter(self::class, __FUNCTION__, $content, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $content, $status, $options);
 
 		return $content;
 	}
@@ -147,15 +147,14 @@ class Response {
 	 */
 	public static function setStatusMessages($messages, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $messages, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $messages, $options);
 
 		$defaults = array('use_message_defaults' => true);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'messages' => $messages,
-			'content' => $content,
 			'options' => $options
 		), array('event' => 'args'));
 		
@@ -165,8 +164,8 @@ class Response {
 		if ($options['use_message_defaults'])
 			$messages += self::getDefaultStatusMessages();
 
-		$this->_statusMessages = $messages;
-		self::_notify(get_class() . '::' . __FUNCTION__, $messages, $options);
+		self::$_statusMessages = $messages;
+		self::_notify(self::class . '::' . __FUNCTION__, $messages, $options);
 	}
 
 	/**
@@ -179,15 +178,15 @@ class Response {
 	 */
 	public static function getStatusMessage($status) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $status);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $status);
 
-		$status = self::_applyFilter(get_class(), __FUNCTION__, $status, array('event' => 'args'));
+		$status = self::_applyFilter(self::class, __FUNCTION__, $status, array('event' => 'args'));
 
 		$message = (isset(self::$_statusMessages[$status])) ? self::$_statusMessages[$status] : '';
 
-		$message = self::_applyFilter(get_class(), __FUNCTION__, $message, array('event' => 'return'));
-		self::_notify(get_class() . '::' . __FUNCTION__, $message, $status);
+		$message = self::_applyFilter(self::class, __FUNCTION__, $message, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $message, $status);
 
 		return $message;
 	}
@@ -208,10 +207,10 @@ class Response {
 	 */
 	public static function writeHeader($headers = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $headers);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $headers);
 
-		$headers = self::_applyFilter(get_class(), __FUNCTION__, $headers, array('event' => 'args'));
+		$headers = self::_applyFilter(self::class, __FUNCTION__, $headers, array('event' => 'args'));
 
 		$header_defaults = array(
 			'http_response_code' => null,
@@ -227,7 +226,7 @@ class Response {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $headers);
+		self::_notify(self::class . '::' . __FUNCTION__, $headers);
 	}
 
 	/**
@@ -238,8 +237,8 @@ class Response {
 	 */
 	protected static function getDefaultStatusMessages() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$status = array(
 			100 => 'Continue',
@@ -285,8 +284,8 @@ class Response {
 			505 => 'HTTP Version Not Supported'
 		);
 
-		$status = self::_applyFilter(get_class(), __FUNCTION__, $status, array('event' => 'return'));
-		self::_notify(get_class() . '::' . __FUNCTION__, $status);
+		$status = self::_applyFilter(self::class, __FUNCTION__, $status, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $status);
 
 		return $status;
 	}

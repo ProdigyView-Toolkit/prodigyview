@@ -88,11 +88,11 @@ class Mail {
 	 */
 	public static function init($config = array()) {
 		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if(self::_hasAdapter(self::class, __FUNCTION__) )
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 		
 		if(!self::$_initialized) {
-			$config = self::_applyFilter( get_class(), __FUNCTION__ , $config , array('event'=>'args'));
+			$config = self::_applyFilter( self::class, __FUNCTION__ , $config , array('event'=>'args'));
 			
 			$defaults = array(
 				'smtp_host' => '',
@@ -112,7 +112,7 @@ class Mail {
 			self::$_mailer = $config['mailer'];
 			self::$_default_sender = $config['default_sender'];
 			
-			self::_notify(get_class().'::'.__FUNCTION__, $config);
+			self::_notify(self::class.'::'.__FUNCTION__, $config);
 			
 			self::$_initialized = true;
 		}
@@ -140,10 +140,10 @@ class Mail {
 	 */
 	public static function sendEmail($args=array() ) {
 		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
-			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		if(self::_hasAdapter(self::class, __FUNCTION__) )
+			return self::_callAdapter(self::class, __FUNCTION__, $args);
 		
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
+		$args = self::_applyFilter( self::class, __FUNCTION__ , $args , array('event'=>'args'));
 		
 		if(self::$_mailer == 'smtp'){
 			self::sendEMailSMTP($args);
@@ -152,7 +152,7 @@ class Mail {
 			self::sendEmailPHP($args );
 		}
 		
-		self::_notify(get_class().'::'.__FUNCTION__, $args);
+		self::_notify(self::class.'::'.__FUNCTION__, $args);
 	}
 	
 	
@@ -178,11 +178,11 @@ class Mail {
 	 */
 	public static function sendEmailPHP($args=array()) {
 		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
-			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		if(self::_hasAdapter(self::class, __FUNCTION__) )
+			return self::_callAdapter(self::class, __FUNCTION__, $args);
 		
 		$args += self::getEmailDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
+		$args = self::_applyFilter( self::class, __FUNCTION__ , $args , array('event'=>'args'));
 		
 		$eol = $args['eol'];
 		$to = $args['receiver'];
@@ -279,7 +279,7 @@ Content-Disposition: attachment
 
 		$message = ob_get_clean();
 		mail( $to, $subject, $message, $headers );
-		self::_notify(get_class().'::'.__FUNCTION__, $args);
+		self::_notify(self::class.'::'.__FUNCTION__, $args);
 
 	}//end mailSingleUser
 	
@@ -310,11 +310,11 @@ Content-Disposition: attachment
 	 */
 	public static function sendEMailSMTP($args = array()) {
 		
-		if(self::_hasAdapter(get_class(), __FUNCTION__) )
-			return self::_callAdapter(get_class(), __FUNCTION__, $args);
+		if(self::_hasAdapter(self::class, __FUNCTION__) )
+			return self::_callAdapter(self::class, __FUNCTION__, $args);
 	 	
 		$args += self::getEmailDefaults();
-		$args = self::_applyFilter( get_class(), __FUNCTION__ , $args , array('event'=>'args'));
+		$args = self::_applyFilter( self::class, __FUNCTION__ , $args , array('event'=>'args'));
 		
 		if(is_array($args)){
 			
@@ -411,7 +411,7 @@ Content-Disposition: attachment
 			
 			$smtp = \Mail::factory('smtp', $stmp_info);
 			$mail = $smtp->send($receiver, $headers, $body);
-			self::_notify(get_class().'::'.__FUNCTION__, $args);
+			self::_notify(self::class.'::'.__FUNCTION__, $args);
 			
 			return $mail;
 		}

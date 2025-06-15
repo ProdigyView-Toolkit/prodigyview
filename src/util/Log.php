@@ -81,8 +81,8 @@ class Log {
 	 */
 	public static function init(array $config = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 		
 		if(!self::$_initialized) {
 			$defaults = array(
@@ -94,14 +94,14 @@ class Log {
 	
 			$config += $defaults;
 	
-			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+			$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 	
 			self::$_logDirectory = $config['directory'];
 			self::$_timestampFormat = $config['timestamp_format'];
 			self::$_logFormat = $config['log_format'];
 			self::$_logFile = $config['file'];
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::_notify(self::class . '::' . __FUNCTION__, $config);
 			
 			self::$_initialized = true;
 		}
@@ -128,13 +128,13 @@ class Log {
 	
 	, string $message, array $options = array()) : bool {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $priority, $message, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $priority, $message, $options);
 
 		$defaults = self::_getLogDefaults($priority);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'priority' => $priority,
 			'message' => $message,
 			'options' => $options
@@ -152,8 +152,8 @@ class Log {
 
 		$written = FileManager::writeFile($options['directory'] . $options['file'], $log_message, 'a');
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $written, $priority, $message, $options);
-		$written = self::_applyFilter(get_class(), __FUNCTION__, $written, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $written, $priority, $message, $options);
+		$written = self::_applyFilter(self::class, __FUNCTION__, $written, array('event' => 'return'));
 
 		return $written;
 	}
@@ -171,13 +171,13 @@ class Log {
 	 */
 	public static function readLog(string $priority, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $priority, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $priority, $options);
 
 		$defaults = self::_getLogDefaults($priority);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'priority' => $priority,
 			'options' => $options
 		), array('event' => 'args'));
@@ -190,8 +190,8 @@ class Log {
 		if (is_readable($options['directory'] . $options['file']))
 			$log = FileManager::readFile($options['directory'] . $options['file']);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $log, $priority, $options);
-		$log = self::_applyFilter(get_class(), __FUNCTION__, $log, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $log, $priority, $options);
+		$log = self::_applyFilter(self::class, __FUNCTION__, $log, array('event' => 'return'));
 
 		return $log;
 	}
@@ -206,10 +206,10 @@ class Log {
 	 */
 	protected static function _getLogDefaults($priority = null) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $priority);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $priority);
 
-		$priority = self::_applyFilter(get_class(), __FUNCTION__, $priority, array('event' => 'args'));
+		$priority = self::_applyFilter(self::class, __FUNCTION__, $priority, array('event' => 'args'));
 
 		$defaults = array(
 			'directory' => self::$_logDirectory,
@@ -218,7 +218,7 @@ class Log {
 			'log_format' => self::$_logFormat
 		);
 
-		$defaults = self::_applyFilter(get_class(), __FUNCTION__, $defaults, array('event' => 'return'));
+		$defaults = self::_applyFilter(self::class, __FUNCTION__, $defaults, array('event' => 'return'));
 
 		return $defaults;
 	}

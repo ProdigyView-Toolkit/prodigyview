@@ -91,8 +91,8 @@ class Image {
 	 */
 	public static function init($config = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
 			$defaults = array(
@@ -233,8 +233,8 @@ class Image {
 	 */
 	public static function watermarkImageWithText($image, $watermark, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $image, $watermark, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $image, $watermark, $options);
 
 		$defaults = array(
 			'font' => 'Helvetica',
@@ -258,7 +258,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'image' => $image,
 			'watermark' => $watermark,
 			'options' => $options
@@ -324,8 +324,8 @@ class Image {
 
 		}//end else
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $image, $watermark, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $image, $watermark, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}//end watermarkImage
@@ -361,8 +361,8 @@ class Image {
 	 */
 	public static function watermarkImageWithImage($image, $watermark, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $image, $watermark, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $image, $watermark, $options);
 
 		$defaults = array(
 			'offset_y' => 0,
@@ -383,7 +383,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'image' => $image,
 			'watermark' => $watermark,
 			'options' => $options
@@ -450,8 +450,8 @@ class Image {
 
 		}//end else
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $image, $watermark, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $image, $watermark, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}
@@ -480,8 +480,8 @@ class Image {
 	 */
 	public static function convertImageFormat($image, $format, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $image, $format, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $image, $format, $options);
 
 		$defaults = array(
 			'type' => 'file',
@@ -496,7 +496,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'image' => $image,
 			'format' => $format,
 			'options' => $options
@@ -544,8 +544,8 @@ class Image {
 			$im->destroy();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $image, $format, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $image, $format, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}
@@ -576,8 +576,8 @@ class Image {
 	 */
 	public static function scaleImage($image, $width, $height, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $image, $width, $height, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $image, $width, $height, $options);
 
 		$defaults = array(
 			'bestfit' => false,
@@ -593,7 +593,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'image' => $image,
 			'width' => $width,
 			'height' => $height,
@@ -640,8 +640,8 @@ class Image {
 
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $image, $width, $height, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $image, $width, $height, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}//end scale image
@@ -659,8 +659,8 @@ class Image {
 	 */
 	public static function getImageWidth($image, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $image, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $image, $options);
 
 		$defaults = array(
 			'converter' => self::$_converter,
@@ -669,7 +669,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'image' => $image,
 			'options' => $options
 		), array('event' => 'args'));
@@ -692,8 +692,8 @@ class Image {
 
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $width, $image, $options);
-		$width = self::_applyFilter(get_class(), __FUNCTION__, $width, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $width, $image, $options);
+		$width = self::_applyFilter(self::class, __FUNCTION__, $width, array('event' => 'return'));
 
 		return $width;
 	}//end getImageWidth
@@ -711,8 +711,8 @@ class Image {
 	 */
 	public static function getImageHeight($image, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $image, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $image, $options);
 
 		$defaults = array(
 			'converter' => self::$_converter,
@@ -721,7 +721,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'image' => $image,
 			'options' => $options
 		), array('event' => 'args'));
@@ -743,8 +743,8 @@ class Image {
 
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $height, $image, $options);
-		$height = self::_applyFilter(get_class(), __FUNCTION__, $height, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $height, $image, $options);
+		$height = self::_applyFilter(self::class, __FUNCTION__, $height, array('event' => 'return'));
 
 		return $height;
 	}//end getImageWidth
@@ -777,8 +777,8 @@ class Image {
 	 */
 	public static function animateImage($data, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
 		$defaults = array(
 			'converter' => self::$_converter,
@@ -796,7 +796,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -852,8 +852,8 @@ class Image {
 			$im->destroy();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $data, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $data, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}
@@ -895,8 +895,8 @@ class Image {
 	 */
 	public static function animateText($data, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data, $options);
 
 		$defaults = array(
 			'font' => 'Helvetica',
@@ -924,7 +924,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'data' => $data,
 			'options' => $options
 		), array('event' => 'args'));
@@ -978,8 +978,8 @@ class Image {
 			$im->destroy();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $data, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $data, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}
@@ -1022,8 +1022,8 @@ class Image {
 	 */
 	public static function textToImage($string, $options) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string, $options);
 
 		$defaults = array(
 			'font' => 'Helvetica',
@@ -1052,7 +1052,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'string' => $string,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1104,8 +1104,8 @@ class Image {
 			$im->destroy();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $string, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $string, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}
@@ -1135,8 +1135,8 @@ class Image {
 	 */
 	public static function drawImage($width, $height, $color, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $width, $height, $color, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $width, $height, $color, $options);
 
 		$defaults = array(
 			'converter' => self::$_converter,
@@ -1151,7 +1151,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'color' => $color,
 			'width' => $width,
 			'height' => $height,
@@ -1192,8 +1192,8 @@ class Image {
 			$im->destroy();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $width, $height, $color, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $width, $height, $color, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}
@@ -1229,8 +1229,8 @@ class Image {
 	 */
 	public static function drawEllipse($width, $height, $color, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $width, $height, $color, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $width, $height, $color, $options);
 
 		$defaults = array(
 			'converter' => self::$_converter,
@@ -1251,7 +1251,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'color' => $color,
 			'width' => $width,
 			'height' => $height,
@@ -1297,8 +1297,8 @@ class Image {
 			$im->destroy();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $width, $height, $color, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $width, $height, $color, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}
@@ -1332,8 +1332,8 @@ class Image {
 	 */
 	public static function drawDropShadow($image, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $image, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $image, $options);
 
 		$defaults = array(
 			'offset_y' => 0,
@@ -1358,7 +1358,7 @@ class Image {
 
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'image' => $image,
 			'options' => $options
 		), array('event' => 'args'));
@@ -1404,8 +1404,8 @@ class Image {
 			$im->destroy();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $return, $image, $options);
-		$return = self::_applyFilter(get_class(), __FUNCTION__, $return, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $return, $image, $options);
+		$return = self::_applyFilter(self::class, __FUNCTION__, $return, array('event' => 'return'));
 
 		return $return;
 	}

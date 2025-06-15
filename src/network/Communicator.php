@@ -94,8 +94,8 @@ class Communicator {
 	 */
 	public function __construct($protocol = null) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $protocol);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $protocol);
 
 		if ($protocol) {
 			$this->_protocol = strtolower(trim($protocol));
@@ -120,8 +120,8 @@ class Communicator {
 	 */
 	public function send($method, $url, $data = array(), $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $method, $url, $data, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $method, $url, $data, $options);
 
 		$defaults = array(
 			'timeout' => 500,
@@ -181,8 +181,8 @@ class Communicator {
 	 */
 	public function addHeader($key, $value) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $key, $value);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $key, $value);
 
 		$this->_headers[$key] = $value;
 	}
@@ -196,8 +196,8 @@ class Communicator {
 	 */
 	public function addFile($file_location) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file_location);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file_location);
 
 		$this->_files[] = $file_location;
 	}
@@ -326,8 +326,8 @@ class Communicator {
 	 */
 	public function setAuthentication($username, $password) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $username, $password);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $username, $password);
 
 		curl_setopt($this->_handler, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($this->_handler, CURLOPT_USERPWD, $username . ':' . $password);
@@ -354,8 +354,8 @@ class Communicator {
 	 */
 	public function setTimeout($timeout) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $timeout);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $timeout);
 
 		curl_setopt($this->_handler, CURLOPT_CONNECTTIMEOUT, $timeout);
 		curl_setopt($this->_handler, CURLOPT_TIMEOUT, $timeout);
@@ -410,7 +410,7 @@ class Communicator {
 
 		curl_close($this->_handler);
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $this);
+		self::_notify(self::class . '::' . __FUNCTION__, $this);
 
 		return $response;
 	}
@@ -426,7 +426,7 @@ class Communicator {
 	protected function _sendSoap($method, $data = array()) {
 		$response = $this->_handler->__soapCall($method, array($data));
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $this, $method, $data);
+		self::_notify(self::class . '::' . __FUNCTION__, $this, $method, $data);
 
 		return $response;
 	}
@@ -445,7 +445,7 @@ class Communicator {
 			fclose($this->_handler);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $this, $method);
+		self::_notify(self::class . '::' . __FUNCTION__, $this, $method);
 
 		return $this->_response;
 	}
@@ -457,8 +457,8 @@ class Communicator {
 	 */
 	public function getResponse() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		return $this->_response;
 	}
@@ -469,8 +469,8 @@ class Communicator {
 	 * @return string
 	 */
 	public function getResponseInfo() {
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		return $this->_response_info;
 	}
@@ -482,8 +482,8 @@ class Communicator {
 	 */
 	public function getResponseHeader() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		return trim(substr($this->_response, 0, $this->_response_info['header_size']));
 
@@ -496,8 +496,8 @@ class Communicator {
 	 */
 	public function getResponseBody() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		return substr($this->_response, $this->_response_info['header_size']);
 	}
@@ -508,8 +508,8 @@ class Communicator {
 	 * @return string
 	 */
 	public function getError() {
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		return $this->_error;
 	}

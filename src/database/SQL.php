@@ -273,7 +273,7 @@ trait SQL {
 		foreach ($types as $key => $value) {
 			if (in_array($type, $value['match'])) {
 				$match = $value['database'][$this->_type];
-				$match = $this->_applyFilter(get_class(), __FUNCTION__, $match, array('event' => 'return'));
+				$match = $this->_applyFilter(self::class, __FUNCTION__, $match, array('event' => 'return'));
 				return $match;
 			}//end if
 		}//end for each

@@ -61,11 +61,11 @@ class Validator {
 	 */
 	public static function init(array $config = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 
 		if(!self::$_initialized) {
-			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+			$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 	
 			self::$rules = array();
 	
@@ -248,7 +248,7 @@ class Validator {
 				'function' => 'isRtxFile'
 			);
 	
-			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::_notify(self::class . '::' . __FUNCTION__, $config);
 		
 			self::$_initialized = true;
 		}
@@ -275,10 +275,10 @@ class Validator {
 	 */
 	public static function addRule(string $rule, array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $rule, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $rule, $options);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'rule' => $rule,
 			'options' => $options
 		), array('event' => 'args'));
@@ -295,7 +295,7 @@ class Validator {
 		$options += $defaults;
 		self::$rules[$rule] = $options;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $rule, $options);
+		self::_notify(self::class . '::' . __FUNCTION__, $rule, $options);
 	}
 
 	/**
@@ -309,8 +309,8 @@ class Validator {
 	 */
 	public static function check(string $rule) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $rule);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $rule);
 
 		$args = func_get_args();
 		array_shift($args);
@@ -320,7 +320,7 @@ class Validator {
 			$passable_args[$key] = &$arg;
 		}
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'rule' => $rule,
 			'passasbe_args' => $passable_args
 		), array('event' => 'args'));
@@ -345,9 +345,9 @@ class Validator {
 			$validation = call_user_func_array($function, $passable_args);
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $rule);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $rule);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end check
@@ -362,10 +362,10 @@ class Validator {
 	 */
 	public static function isInteger($int) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $int);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $int);
 
-		$int = self::_applyFilter(get_class(), __FUNCTION__, $int, array('event' => 'args'));
+		$int = self::_applyFilter(self::class, __FUNCTION__, $int, array('event' => 'args'));
 		$validation = false;
 
 		if (is_numeric($int) === TRUE) {
@@ -374,9 +374,9 @@ class Validator {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $int);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $int);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isInteger
@@ -391,10 +391,10 @@ class Validator {
 	 */
 	public static function isDouble($double) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $double);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $double);
 
-		$double = self::_applyFilter(get_class(), __FUNCTION__, $double, array('event' => 'args'));
+		$double = self::_applyFilter(self::class, __FUNCTION__, $double, array('event' => 'args'));
 		$validation = false;
 
 		if (is_numeric($double) === TRUE) {
@@ -403,9 +403,9 @@ class Validator {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $double);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $double);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isInteger
@@ -420,19 +420,19 @@ class Validator {
 	 */
 	public static function isID($id) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $id);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $id);
 
-		$id = self::_applyFilter(get_class(), __FUNCTION__, $id, array('event' => 'args'));
+		$id = self::_applyFilter(self::class, __FUNCTION__, $id, array('event' => 'args'));
 		$validation = false;
 
 		if (self::isInteger($id) || preg_match('{[0-9a-f]{24}}', $id)) {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $id);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $id);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}
@@ -447,10 +447,10 @@ class Validator {
 	 */
 	public static function isAudioFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 
 		$audio_types = array(
 			'audio/basic',
@@ -469,9 +469,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isAudioFile
@@ -486,10 +486,10 @@ class Validator {
 	 */
 	public static function isMidiFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -497,9 +497,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -514,10 +514,10 @@ class Validator {
 	 */
 	public static function isMpegAudioFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -525,9 +525,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -542,10 +542,10 @@ class Validator {
 	 */
 	public static function isAiffFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -553,9 +553,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -570,10 +570,10 @@ class Validator {
 	 */
 	public static function isWavFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -581,9 +581,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -598,10 +598,10 @@ class Validator {
 	 */
 	public static function isRealAudioFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -609,9 +609,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -626,10 +626,10 @@ class Validator {
 	 */
 	public static function isOGGAudioFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -637,9 +637,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -654,10 +654,10 @@ class Validator {
 	 */
 	public static function isImageFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -676,9 +676,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -693,10 +693,10 @@ class Validator {
 	 */
 	public static function isBmpFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -704,9 +704,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -721,10 +721,10 @@ class Validator {
 	 */
 	public static function isGifFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -732,9 +732,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -749,10 +749,10 @@ class Validator {
 	 */
 	public static function isIefFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -760,9 +760,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -777,10 +777,10 @@ class Validator {
 	 */
 	public static function isJpegFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -788,9 +788,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -805,10 +805,10 @@ class Validator {
 	 */
 	public static function isPngFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -816,9 +816,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -833,10 +833,10 @@ class Validator {
 	 */
 	public static function isTiffFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -844,9 +844,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -861,10 +861,10 @@ class Validator {
 	 */
 	public static function isVideoFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -895,9 +895,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -912,10 +912,10 @@ class Validator {
 	 */
 	public static function isMpegVideoFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -923,9 +923,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -940,10 +940,10 @@ class Validator {
 	 */
 	public static function isWmvFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -951,9 +951,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -968,10 +968,10 @@ class Validator {
 	 */
 	public static function isMp4File($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -979,9 +979,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -996,10 +996,10 @@ class Validator {
 	 */
 	public static function isFlvFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -1007,9 +1007,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1024,10 +1024,10 @@ class Validator {
 	 */
 	public static function isQuickTimeFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -1035,9 +1035,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1052,10 +1052,10 @@ class Validator {
 	 */
 	public static function isMovFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -1063,9 +1063,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1080,10 +1080,10 @@ class Validator {
 	 */
 	public static function isMxuFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -1091,9 +1091,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1108,10 +1108,10 @@ class Validator {
 	 */
 	public static function isAviFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -1119,9 +1119,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1136,10 +1136,10 @@ class Validator {
 	 */
 	public static function isOGGVideoFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -1147,9 +1147,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1164,10 +1164,10 @@ class Validator {
 	 */
 	public static function isRealMediaFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -1175,9 +1175,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1192,10 +1192,10 @@ class Validator {
 	 */
 	public static function isAsfFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		
 		$validation = false;
 
@@ -1203,9 +1203,9 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
 		
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1220,18 +1220,18 @@ class Validator {
 	 */
 	public static function isWebMFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'video/webm') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1246,10 +1246,10 @@ class Validator {
 	 */
 	public static function isCompressedFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		$file_types = array(
@@ -1263,8 +1263,8 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1279,18 +1279,18 @@ class Validator {
 	 */
 	public static function isZipFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/zip' || $mimetype == 'application/x-zip') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1305,18 +1305,18 @@ class Validator {
 	 */
 	public static function isGTarFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/x-gtar') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1331,18 +1331,18 @@ class Validator {
 	 */
 	public static function isTarFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/x-tar') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1357,18 +1357,18 @@ class Validator {
 	 */
 	public static function isCssFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'text/css') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1383,18 +1383,18 @@ class Validator {
 	 */
 	public static function isHtmlFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'text/html') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1409,18 +1409,18 @@ class Validator {
 	 */
 	public static function isHtmFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'text/html') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1435,18 +1435,18 @@ class Validator {
 	 */
 	public static function isAscFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'text/plain') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1461,18 +1461,18 @@ class Validator {
 	 */
 	public static function isTxtFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'text/plain') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1487,18 +1487,18 @@ class Validator {
 	 */
 	public static function isRtxFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'text/richtext') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1513,10 +1513,10 @@ class Validator {
 	 */
 	public static function isMicrosoftWordFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		$file_types = array(
@@ -1528,8 +1528,8 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMicrosoftWordFile
@@ -1544,18 +1544,18 @@ class Validator {
 	 */
 	public static function isMicrosoftWordDocFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/msword') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1570,18 +1570,18 @@ class Validator {
 	 */
 	public static function isMicrosoftWordDocxFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1596,10 +1596,10 @@ class Validator {
 	 */
 	public static function isMicrosoftExcelFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		$file_types = array(
@@ -1611,8 +1611,8 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMicrosoftWordFile
@@ -1627,18 +1627,18 @@ class Validator {
 	 */
 	public static function isMicrosoftExcelXLSFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/vnd.ms-excel') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1653,18 +1653,18 @@ class Validator {
 	 */
 	public static function isMicrosoftExcelXLSXFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1679,10 +1679,10 @@ class Validator {
 	 */
 	public static function isMicrosoftPowerPointFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		$file_types = array(
@@ -1694,8 +1694,8 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMicrosoftWordFile
@@ -1711,18 +1711,18 @@ class Validator {
 	 */
 	public static function isMicrosoftPPTFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/vnd.ms-powerpoint') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1738,18 +1738,18 @@ class Validator {
 	 */
 	public static function isMicrosoftPPTXFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1764,18 +1764,18 @@ class Validator {
 	 */
 	public static function isPdfFile($mimetype) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $mimetype);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $mimetype);
 
-		$mimetype = self::_applyFilter(get_class(), __FUNCTION__, $mimetype, array('event' => 'args'));
+		$mimetype = self::_applyFilter(self::class, __FUNCTION__, $mimetype, array('event' => 'args'));
 		$validation = false;
 
 		if ($mimetype == 'application/pdf') {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $mimetype);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $mimetype);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isMidiFile
@@ -1790,18 +1790,18 @@ class Validator {
 	 */
 	public static function isValidEmail($email) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $email);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $email);
 
-		$email = self::_applyFilter(get_class(), __FUNCTION__, $email, array('event' => 'args'));
+		$email = self::_applyFilter(self::class, __FUNCTION__, $email, array('event' => 'args'));
 		$validation = false;
 
 		if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $email);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $email);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isValidEmail
@@ -1816,18 +1816,18 @@ class Validator {
 	 */
 	public static function isValidUrl($url) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url);
 
-		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+		$url = self::_applyFilter(self::class, __FUNCTION__, $url, array('event' => 'args'));
 		$validation = false;
 
 		if (preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $url)) {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $url);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $url);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}
@@ -1842,10 +1842,10 @@ class Validator {
 	 */
 	public static function isActiveUrl($url) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $url);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $url);
 
-		$url = self::_applyFilter(get_class(), __FUNCTION__, $url, array('event' => 'args'));
+		$url = self::_applyFilter(self::class, __FUNCTION__, $url, array('event' => 'args'));
 		$valid_url = @fsockopen($url, 80, $errno, $errstr, 30);
 		$validation = false;
 
@@ -1853,8 +1853,8 @@ class Validator {
 			$validation = true;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $url);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $url);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end isActiveUrl
@@ -1876,13 +1876,13 @@ class Validator {
 	 */
 	public static function checkFileMimeType($file, $mime_text, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $file, $mime_text, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $file, $mime_text, $options);
 
 		$defaults = array('search_method' => 'STRING_POSITION');
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'file' => $file,
 			'options' => $options,
 			'mime_text' => $mime_text
@@ -1910,8 +1910,8 @@ class Validator {
 			}
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $validation, $file, $mime_text, $options);
-		$validation = self::_applyFilter(get_class(), __FUNCTION__, $validation, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $validation, $file, $mime_text, $options);
+		$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
 
 		return $validation;
 	}//end

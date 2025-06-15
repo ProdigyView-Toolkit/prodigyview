@@ -168,7 +168,7 @@ class SQLite implements DBInterface {
 			}
 		}
 		$count = $this->resultRowCount($result);
-		self::_notify(get_class() . '::' . __FUNCTION__, $exist, $result, $table_name, $field_name);
+		self::_notify(self::class . '::' . __FUNCTION__, $exist, $result, $table_name, $field_name);
 
 		return $exist;
 	}

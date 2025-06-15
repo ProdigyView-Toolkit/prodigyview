@@ -45,10 +45,10 @@ class Tools {
 	 */
 	public static function generateRandomString(int $char_count = 15, string $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890') : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $char_count, $chars);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $char_count, $chars);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'char_count' => $char_count,
 			'chars' => $chars
 		), array('event' => 'args'));
@@ -68,8 +68,8 @@ class Tools {
 			}
 		}//end for
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $returnString, $char_count, $chars);
-		$returnString = self::_applyFilter(get_class(), __FUNCTION__, $returnString, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $returnString, $char_count, $chars);
+		$returnString = self::_applyFilter(self::class, __FUNCTION__, $returnString, array('event' => 'return'));
 
 		return $returnString;
 	}
@@ -91,10 +91,10 @@ class Tools {
 	 */
 	public static function truncateText(string $string, int $length = 10, string $trailing = '...', bool $strip_tags = TRUE, string $allowed_tags = '') : string {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $string, $length, $trailing, $strip_tags, $allowed_tags);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $string, $length, $trailing, $strip_tags, $allowed_tags);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'string' => $string,
 			'length' => $length,
 			'trailing' => $trailing,
@@ -120,8 +120,8 @@ class Tools {
 			$truncated = $string . $trailing;
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $truncated, $string, $length, $trailing, $strip_tags, $allowed_tags);
-		$truncated = self::_applyFilter(get_class(), __FUNCTION__, $truncated, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $truncated, $string, $length, $trailing, $strip_tags, $allowed_tags);
+		$truncated = self::_applyFilter(self::class, __FUNCTION__, $truncated, array('event' => 'return'));
 
 		return $truncated;
 	}//end truncateText
@@ -168,10 +168,10 @@ class Tools {
 	 */
 	public static function arraySearchRecursive(string $needle, array $haystack, bool $strict = false, array $path = array()){
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $needle, $haystack, $strict, $path);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $needle, $haystack, $strict, $path);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'needle' => $needle,
 			'haystack' => $haystack,
 			'strict' => $strict,

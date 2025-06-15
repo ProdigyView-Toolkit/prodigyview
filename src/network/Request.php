@@ -67,8 +67,8 @@ class Request {
 	 */
 	public function __construct(array $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $options);
 
 		$defaults = array(
 			'process_request' => true,
@@ -80,7 +80,7 @@ class Request {
 
 		$options += $defaults;
 
-		$options = self::_applyFilter(get_class(), __FUNCTION__, $options, array('event' => 'args'));
+		$options = self::_applyFilter(self::class, __FUNCTION__, $options, array('event' => 'args'));
 
 		$this->_request_data = array();
 
@@ -100,7 +100,7 @@ class Request {
 			$this->parseHeaders();
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $this);
+		self::_notify(self::class . '::' . __FUNCTION__, $this);
 
 		return $this;
 	}
@@ -116,8 +116,8 @@ class Request {
 	 */
 	public function processRequest() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$this->_request_method = strtolower($_SERVER[$this->_request_method]);
 
@@ -154,8 +154,8 @@ class Request {
 	 */
 	public function parseHeaders() {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 		
 		foreach ($_SERVER as $key => $value) {
 			if (substr($key, 0, 5) <> 'HTTP_') {
@@ -178,14 +178,14 @@ class Request {
 	 */
 	public function setRequestData($data) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $data);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $data);
 
-		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'args'));
+		$data = self::_applyFilter(self::class, __FUNCTION__, $data, array('event' => 'args'));
 
 		$this->_request_data = $data;
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $data);
+		self::_notify(self::class . '::' . __FUNCTION__, $data);
 	}
 
 	/**
@@ -201,10 +201,10 @@ class Request {
 	 */
 	public function getRequestData($format = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $format);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $format);
 
-		$format = self::_applyFilter(get_class(), __FUNCTION__, $format, array('event' => 'args'));
+		$format = self::_applyFilter(self::class, __FUNCTION__, $format, array('event' => 'args'));
 
 		switch ($format) {
 			case 'json' :
@@ -234,8 +234,8 @@ class Request {
 				break;
 		}
 
-		$data = self::_applyFilter(get_class(), __FUNCTION__, $data, array('event' => 'return'));
-		self::_notify(get_class() . '::' . __FUNCTION__, $data, $format);
+		$data = self::_applyFilter(self::class, __FUNCTION__, $data, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $data, $format);
 
 		return $data;
 	}
@@ -248,13 +248,13 @@ class Request {
 	 */
 	public function getRequestMethod() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		$method = $this->_request_method;
 
-		$method = self::_applyFilter(get_class(), __FUNCTION__, $method, array('event' => 'return'));
-		self::_notify(get_class() . '::' . __FUNCTION__, $method);
+		$method = self::_applyFilter(self::class, __FUNCTION__, $method, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $method);
 
 		return $method;
 	}
@@ -269,13 +269,13 @@ class Request {
 	 */
 	public function setRequestMethod($method) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $method);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $method);
 
-		$method = self::_applyFilter(get_class(), __FUNCTION__, $method, array('event' => 'args'));
+		$method = self::_applyFilter(self::class, __FUNCTION__, $method, array('event' => 'args'));
 
 		$this->_request_method = $method;
-		self::_notify(get_class() . '::' . __FUNCTION__, $method);
+		self::_notify(self::class . '::' . __FUNCTION__, $method);
 	}
 
 	/**
@@ -286,8 +286,8 @@ class Request {
 	 */
 	public function isMobile() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		return (isset($_SERVER['HTTP_X_WAP_PROFILE']) || isset($_SERVER['HTTP_PROFILE']) || preg_match($this->_mobile_devices, strtolower($_SERVER['HTTP_USER_AGENT'])));
 	}
@@ -300,15 +300,15 @@ class Request {
 	 */
 	public function getMobileDevice() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		preg_match($this->_mobile_devices, strtolower($_SERVER['HTTP_USER_AGENT']), $matches);
 
 		$device = (isset($matches[0]) && !empty($matches[0])) ? $matches[0] : false;
 
-		$device = self::_applyFilter(get_class(), __FUNCTION__, $device, array('event' => 'return'));
-		self::_notify(get_class() . '::' . __FUNCTION__, $device);
+		$device = self::_applyFilter(self::class, __FUNCTION__, $device, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $device);
 
 		return $device;
 	}
@@ -321,8 +321,8 @@ class Request {
 	 */
 	public function isAjaxRequest() {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__);
 
 		if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
 			return true;
@@ -339,12 +339,12 @@ class Request {
 	 */
 	public function getHeader($header) {
 		
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $header);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $header);
 		
 		$found_value = false;
 		
-		$header = self::_applyFilter(get_class(), __FUNCTION__, $header, array('event' => 'args'));
+		$header = self::_applyFilter(self::class, __FUNCTION__, $header, array('event' => 'args'));
 		
 		$header = str_replace(' ', '-', ucwords(str_replace('_', ' ', strtolower($header))));
 		
@@ -352,8 +352,8 @@ class Request {
 			$found_value = $this -> _headers[$header];
 		}
 		
-		$found_value = self::_applyFilter(get_class(), __FUNCTION__, $found_value, array('event' => 'return'));
-		self::_notify(get_class() . '::' . __FUNCTION__, $header, $found_value);
+		$found_value = self::_applyFilter(self::class, __FUNCTION__, $found_value, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $header, $found_value);
 		
 		return $found_value;
 	}

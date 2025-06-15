@@ -28,7 +28,7 @@ trait Singleton {
 	 */
 	public static function getInstance($data = null) {
 
-		$class = get_called_class();
+		$class = static::class;
 
 		if (!isset(self::$_instances[$class])) {
 			self::$_instances[$class] = new $class($data);

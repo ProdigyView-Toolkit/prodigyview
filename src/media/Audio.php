@@ -54,18 +54,18 @@ class Audio {
 	 */
 	public static function init($config = array()) {
 			
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $config);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $config);
 		
 		if(!self::$_initialized) {
 	
 			$defaults = array('converter' => 'ffmpeg');
 	
 			$config += $defaults;
-			$config = self::_applyFilter(get_class(), __FUNCTION__, $config, array('event' => 'args'));
+			$config = self::_applyFilter(self::class, __FUNCTION__, $config, array('event' => 'args'));
 	
 			self::$converter = $config['converter'];
-			self::_notify(get_class() . '::' . __FUNCTION__, $config);
+			self::_notify(self::class . '::' . __FUNCTION__, $config);
 			
 			self::$_initialized = true;
 		}
@@ -97,8 +97,8 @@ class Audio {
 	 */
 	public static function convertAudioFile($current_file_location, $new_file_location, $options = array()) {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $current_file_location, $new_file_location, $options);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $current_file_location, $new_file_location, $options);
 
 		if (!is_array($options)) {
 			$options = array();
@@ -107,7 +107,7 @@ class Audio {
 		$defaults = array('converter' => self::$converter);
 		$options += $defaults;
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'current_file_location' => $current_file_location,
 			'new_file_location' => $new_file_location,
 			'options' => $options
@@ -123,7 +123,7 @@ class Audio {
 		$output_options = self::setEncodingOptions($options, 'output_');
 
 		exec("$converter $input_options -i $current_file_location -y $output_options $new_file_location ");
-		self::_notify(get_class() . '::' . __FUNCTION__, $current_file_location, $new_file_location, $options, $input_options, $output_options);
+		self::_notify(self::class . '::' . __FUNCTION__, $current_file_location, $new_file_location, $options, $input_options, $output_options);
 	}//end convertAudioFile
 
 	/**
@@ -149,10 +149,10 @@ class Audio {
 	 */
 	public static function setEncodingOptions($options = array(), $input_type = '') {
 
-		if (self::_hasAdapter(get_class(), __FUNCTION__))
-			return self::_callAdapter(get_class(), __FUNCTION__, $options, $input_type);
+		if (self::_hasAdapter(self::class, __FUNCTION__))
+			return self::_callAdapter(self::class, __FUNCTION__, $options, $input_type);
 
-		$filtered = self::_applyFilter(get_class(), __FUNCTION__, array(
+		$filtered = self::_applyFilter(self::class, __FUNCTION__, array(
 			'input_type' => $input_type,
 			'options' => $options
 		), array('event' => 'args'));
@@ -230,8 +230,8 @@ class Audio {
 			$input_options .= ' -absf ' . $options[$input_type . 'absf'];
 		}
 
-		self::_notify(get_class() . '::' . __FUNCTION__, $input_options, $options, $input_type);
-		$input_options = self::_applyFilter(get_class(), __FUNCTION__, $input_options, array('event' => 'return'));
+		self::_notify(self::class . '::' . __FUNCTION__, $input_options, $options, $input_type);
+		$input_options = self::_applyFilter(self::class, __FUNCTION__, $input_options, array('event' => 'return'));
 
 		return $input_options;
 	}//end setEncodingOptions
