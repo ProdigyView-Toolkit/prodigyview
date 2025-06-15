@@ -253,7 +253,7 @@ class Database  {
 	public static function setDatabase(string $connection_name, bool $connect = true, bool $close_connection = false) {
 
 		if (self::_hasAdapter(self::class, __FUNCTION__))
-			return self::_callAdapter(self::class, __FUNCTION__, $profile_id);
+			return self::_callAdapter(self::class, __FUNCTION__, $connection_name, $connect, $close_connection);
 
 		if($close_connection) {
 			self::closeDB();
@@ -680,7 +680,7 @@ class Database  {
 		
 		$connection = self::_getConnection(self::$current_connecton);
 		
-		$function = $connections->getSQLRandomOperator();
+		$function = $connection->getSQLRandomOperator();
 
 		self::_notify(self::class . '::' . __FUNCTION__, $function);
 		
