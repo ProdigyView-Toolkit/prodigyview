@@ -232,6 +232,10 @@ class Database  {
 		if(isset($args['dbport'])) {
 			$args['port']=$args['dbport'];
 		}
+
+		if(isset($args['dbssl'])) {
+			$args['sslmode']=$args['dbssl'];
+		}
 		
 		return $args;
 	}

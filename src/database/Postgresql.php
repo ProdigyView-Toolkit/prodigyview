@@ -47,6 +47,8 @@ class Postgresql implements DBInterface {
 	protected $_type = 'postgresql';
 	
 	protected $_fetchDataResultType = PGSQL_ASSOC;
+
+	protected $_sslmode = 'prefer'; 
 	
 	public function getHost() {
 		return $this->_host;
@@ -72,7 +74,8 @@ class Postgresql implements DBInterface {
 			'password' => '',
 			'prefix' => '',
 			'suffix' => '',
-			'connect_type' => PGSQL_CONNECT_FORCE_NEW
+			'connect_type' => PGSQL_CONNECT_FORCE_NEW,
+			'sslmode' => 'prefer'
 		);
 		
 		$options += $defaults;
@@ -87,6 +90,7 @@ class Postgresql implements DBInterface {
 		$this->_login = $options['login'];
 		$this->_password = $options['password'];
 		$this->_connectionType = $options['connect_type'];
+		$this->_sslmode = $options['sslmode'];
 		
 		//Change the result type
 		if(isset($options['fetch_data_result_type'])) {
@@ -99,10 +103,20 @@ class Postgresql implements DBInterface {
 	
 	public function connect() {
 		
-		$this->_link = pg_connect('host=' . $this->_host  . ' port=' . $this->_port . ' dbname=' . $this->_database . ' user=' . $this->_login . ' password=' . $this->_password, $this->_connectionType );
+		// UPDATED CONNECTION STRING TO INCLUDE SSLMODE
+		$connectionString = sprintf(
+			"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
+			$this->_host,
+			$this->_port,
+			$this->_database,
+			$this->_login,
+			$this->_password,
+			$this->_sslmode
+		);
+
+		$this->_link = pg_connect($connectionString, $this->_connectionType);
 		
 		return $this->_link;
-		
 	}
 	
 	public function isActive() {
