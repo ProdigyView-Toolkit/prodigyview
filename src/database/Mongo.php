@@ -66,42 +66,52 @@ class Mongo implements DBInterface {
 	}
 	
 	public function connect() {
-		
-		if (class_exists('\\MongoDB\\Driver\\Manager')) {
-
-		    // Build the base URI
-		    $uri = 'mongodb://' . $this->_login . ':' . $this->_password . '@' . $this->_host;
-		
-		    // Optional: Add port if provided
-		    if (!empty($this->_port)) {
-		        $uri .= ':' . $this->_port;
-		    }
-		
-		    // Optional: Add default DB to URI
-		    if (!empty($this->_database)) {
-		        $uri .= '/' . $this->_database;
-		    } else {
-		        $uri .= '/';
-		    }
-		
-		    // Append directConnection=true if not already present
-		    if (strpos($uri, 'directConnection=') === false) {
-		        $uri .= (strpos($uri, '?') === false ? '?' : '&') . 'directConnection=true';
-		    }
-		
-		    try {
-		        $this->_link = new \MongoDB\Client(
-		            $uri,
-		            [],
-		            ['typeMap' => ['root' => 'array', 'document' => 'array']]
-		        );
-		        $this->_link->selectDatabase($this->_database);
-		    } catch (\MongoDB\Driver\Exception\Exception $e) {
-		        error_log("MongoDB Connection Error: " . $e->getMessage());
-		        throw $e;
-		    }
-		
-		} else if (class_exists('MongoClient')) {
+	    if (class_exists('\\MongoDB\\Driver\\Manager')) {
+	
+	        $login = $this->_login;
+	        // URL Encode the password to handle Azure '+' and '/' characters
+	        $password = urlencode($this->_password);
+	        $host = $this->_host;
+	       
+	        $port = !empty($this->_port) ? $this->_port : '27017';
+	        $db = $this->_database;
+	
+	        // Build the base URI
+	        $uri = "mongodb://{$login}:{$password}@{$host}:{$port}/{$db}";
+	    
+	        // If Azure mandatory parameters
+	        $params = [];
+	        if (strpos($host, 'azure.com') !== false) {
+	            $params['ssl'] = 'true';
+	            $params['replicaSet'] = 'globaldb';
+	            $params['retrywrites'] = 'false';
+	            $params['authMechanism'] = 'SCRAM-SHA-1';
+	        } else {
+	            $params['directConnection'] = 'true';
+	        }
+	
+	        $uri .= '?' . http_build_query($params);
+	
+	        try {
+	            $driverOptions = [];
+	            if (strpos($host, 'azure.com') !== false) {
+	                // Explicitly enable TLS in the driver options
+	                $driverOptions['tls'] = true;
+	            }
+	
+	            $this->_link = new \MongoDB\Client(
+	                $uri,
+	                $driverOptions,
+	                ['typeMap' => ['root' => 'array', 'document' => 'array']]
+	            );
+	            $this->_link->selectDatabase($this->_database);
+	        } catch (\Exception $e) {
+	            error_log("MongoDB Connection Error: " . $e->getMessage());
+	            throw $e;
+	        }
+	    }
+	    return $this->_link;
+	} else if (class_exists('MongoClient')) {
 		
 		    try {
 		        $uri = 'mongodb://' . $this->_login . ':' . $this->_password . '@' . $this->_host;
