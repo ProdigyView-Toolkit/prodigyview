@@ -109,8 +109,6 @@ class Mongo implements DBInterface {
 	            error_log("MongoDB Connection Error: " . $e->getMessage());
 	            throw $e;
 	        }
-	    }
-	    return $this->_link;
 	} else if (class_exists('MongoClient')) {
 		
 		    try {
