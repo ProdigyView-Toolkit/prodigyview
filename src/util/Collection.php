@@ -91,6 +91,19 @@ class Collection implements \IteratorAggregate {
 	}
 
 	/**
+	 * PHP magic function that assigns a named index in the collection.
+	 *
+	 * @param string $index An index/key that will be associated with the passed value
+	 * @param mixed $value The value to store
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public function __set($index, $value) {
+		$this->addWithName($index, $value);
+	}
+
+	/**
 	 * Same as the magic function __get.
 	 *
 	 * @param string $index An index/key that will be used to find the value, if present
