@@ -149,7 +149,7 @@ class Postgresql implements DBInterface {
 	 */
 	public function returnLastInsert($query, $returnField = '', $returnTable = '') {
 
-		$result = pg_exec($this->link, $query . " RETURNING $returnField ");
+		$result = pg_exec($this->_link, $query . " RETURNING $returnField ");
 		$row = $this->fetchArray($result);
 		$id = $row[$returnField];
 

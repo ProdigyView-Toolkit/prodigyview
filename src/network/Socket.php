@@ -48,7 +48,7 @@ class Socket {
 	/**
 	 * Constructor for creating the socket connection.
 	 */
-	public function __construct(string $host =null, int $port = 0, array $options = array()) {
+	public function __construct(?string $host = null, int $port = 0, array $options = array()) {
 		
 		$defaults = array(
 			'domain' => AF_INET,

@@ -47,13 +47,15 @@ class SQLite implements DBInterface {
 		return $this->_database;
 	}
 	
-	public function connect(string $name, array $options = array()) {
+	public function setConnection(string $name, array $options = array()) {
 		
 		$defaults = array(
-			'port'=> 3306,
+			'host'=> '',
+			'port'=> null,
+			'database'=> 'mysqlitedb.db',
 			'schema'=> '',
-			'password' => '',
-			'socket' => ini_get("mysqli.default_socket")
+			'login' => '',
+			'path' => null
 		);
 		
 		$options += $defaults;
@@ -61,14 +63,33 @@ class SQLite implements DBInterface {
 		$this->_connectionName = $name;
 		$this->_host = $options['host'];
 		$this->_port = $options['port'];
-		$this->_database = $options['database'];
+		// Keep "database" for parity with the other drivers, while allowing
+		// "path" for callers that think of SQLite as a file.
+		$this->_database = ($options['path'] !== null) ? $options['path'] : $options['database'];
 		$this->_schema = $options['schema'];
 		$this->_login = $options['login'];
 		
-		$this->_link = new SQLite3('mysqlitedb.db');
+	}
+	
+	public function connect($name = null, array $options = array()) {
+		
+		// Older code could call connect($name, $options) directly. Preserve
+		// that path while also satisfying DBInterface::connect() for PHP 8.5.
+		if($name !== null) {
+			$this->setConnection($name, $options);
+		} else if($this->_database === null) {
+			$this->setConnection('sqlite', $options);
+		}
+		
+		$this->_link = new \SQLite3($this->_database);
 				
 		return $this->_link;
 		
+	}
+	
+	public function isActive() {
+		
+		return $this->_link instanceof \SQLite3;
 	}
 
 	public function query($query) {
@@ -86,7 +107,7 @@ class SQLite implements DBInterface {
 
 	public function resultRowCount($result) {
 		$data = $result->fetchArray();
-		$count = $data['count'];
+		$count = (isset($data['count'])) ? $data['count'] : (int) !empty($data);
 		
 
 		return $count;
@@ -113,7 +134,9 @@ class SQLite implements DBInterface {
 	}
 
 	public function closeDB() {
-		$this->_link->close();
+		if($this->isActive()) {
+			$this->_link->close();
+		}
 	}
 
 	public function getSchema($append_period = true) {
@@ -143,13 +166,9 @@ class SQLite implements DBInterface {
 
 		$result = $this->query($query);
 		
-		$count = $this->resultRowCount($result);
+		$row = $this->fetchArray($result);
 
-		if ($count <= 0 && empty($count)) {
-			return FALSE;
-		}
-
-		return TRUE;
+		return !empty($row);
 	}
 
 	public function columnExist($table_name, $field_name) {
@@ -163,18 +182,17 @@ class SQLite implements DBInterface {
 		$result = $this->query($query);
 		
 		while($col = $this->fetchArray($result)) {
-			if($col == $field_name) {
+			if(isset($col['name']) && $col['name'] == $field_name) {
 				$exist = true;
 			}
 		}
-		$count = $this->resultRowCount($result);
 		self::_notify(self::class . '::' . __FUNCTION__, $exist, $result, $table_name, $field_name);
 
 		return $exist;
 	}
 
 	public function getSQLRandomOperator() {
-		$function = 'RAND()';
+		$function = 'RANDOM()';
 
 		return $function;
 	}
@@ -333,10 +351,7 @@ class SQLite implements DBInterface {
 		$query .= $values . ' VALUES' . $placeholders;
 
 		$stmt = $this->_link->prepare($query);
-		
-		foreach ($data as $key => $value) {
-			$stmt->bindValue(':'.$key, $value, SQLITE3_TEXT);
-		}//end foreach;
+		$this->bindSQLiteValues($stmt, $data);
 		
 		$result = $stmt->execute();
 		
@@ -381,14 +396,10 @@ class SQLite implements DBInterface {
 		$query .= $values . $placeholders;
 
 		$stmt = $this->_link->prepare($query);
-		
-		foreach ($data as $key => $value) {
-			$stmt->bindValue(':'.$key, $value, SQLITE3_TEXT);
-		}//end foreach;
-		
+		$this->bindSQLiteValues($stmt, $data);
 		
 		$stmt->execute();
-		$id = $this->_link->insert_id;
+		$id = $this->_link->lastInsertRowID();
 
 		return $id;
 	}
@@ -411,19 +422,8 @@ class SQLite implements DBInterface {
 		}
 
 		$stmt = $this->_link->prepare($query);
-
-		if (!empty($params)) {
-			$this->bindParameters($stmt, $params);
-			foreach ($data as $key => $value) {
-				$params[$key] = $value;
-			}
-		}
-
-		$stmt->execute();
-		$stmt->store_result();
-		$this->_row = array();
-		$this->stmt_bind_assoc($stmt, $this->_row);
-		$result = $stmt;
+		$this->bindSQLiteValues($stmt, $data);
+		$result = $stmt->execute();
 
 		return $result;
 	}
@@ -578,11 +578,7 @@ class SQLite implements DBInterface {
 		$template_name = md5($query);
 
 		$stmt = $this->_link->prepare($query);
-		$this->bindParameters($stmt, $params);
-
-		foreach ($params_holder as $key => $value) {
-			$params[$key] = $value;
-		}
+		$this->bindSQLiteValues($stmt, $params_holder);
 
 		$result = $stmt->execute();
 
@@ -610,23 +606,17 @@ class SQLite implements DBInterface {
 			}//end foreach
 		}
 
-		$template_name = md5($query);
-
 		$stmt = $this->_link->prepare($query);
 		
-		$this->bindParameters($stmt, $params);
-		
-		foreach ($wherelist as $key => $value) {
-			$params[$key] = $value;
-		}
+		$this->bindSQLiteValues($stmt, array_values($wherelist));
 
 		$result = $stmt->execute();
 
 		return $result;
 	}
 
-	public function getPreparedPlaceHolder($key) {
-		$placeholder = ':'.$key;
+	public function getPreparedPlaceHolder($count = 1) {
+		$placeholder = ':'.$count;
 
 		return $placeholder;
 	}
@@ -655,6 +645,34 @@ class SQLite implements DBInterface {
 			&$statement,
 			'bind_param'
 		), $args);
+	}
+	
+	protected function bindSQLiteValues(\SQLite3Stmt $statement, array $values) {
+		
+		$position = 1;
+		
+		foreach($values as $key => $value) {
+			$placeholder = is_string($key) ? ':' . ltrim($key, ':') : ':' . $position;
+			$statement->bindValue($placeholder, $value, $this->getSQLiteType($value));
+			$position++;
+		}
+	}
+	
+	protected function getSQLiteType($value) {
+		
+		if(is_int($value)) {
+			return SQLITE3_INTEGER;
+		}
+		
+		if(is_float($value)) {
+			return SQLITE3_FLOAT;
+		}
+		
+		if($value === null) {
+			return SQLITE3_NULL;
+		}
+		
+		return SQLITE3_TEXT;
 	}
 
 	public function stmt_bind_assoc(&$stmt, &$out) {
@@ -689,6 +707,12 @@ class SQLite implements DBInterface {
 			foreach ($columns as $column_name => $column) {
 				$column_query .= (!$first) ? ',' : '';
 				$column_query .= $this->formatColumn($column_name, $column);
+				if(!empty($column['auto_increment']) && !empty($column['primary_key']) && $options['primary_key'] == $column_name) {
+					// SQLite requires AUTOINCREMENT to be declared inline with
+					// the primary key. Avoid appending a second table-level
+					// primary key for schemas shared with other SQL drivers.
+					$options['primary_key'] = '';
+				}
 				$first = 0;
 			}
 		}
@@ -747,6 +771,10 @@ class SQLite implements DBInterface {
 		);
 
 		$options += $defaults;
+		
+		if($options['auto_increment'] == true && $options['primary_key'] == true) {
+			return $name . ' INTEGER PRIMARY KEY AUTOINCREMENT';
+		}
 
 		$precision = (!empty($options['precision'])) ? '(' . $options['precision'] . ')' : '';
 		$null = ($options['not_null'] == true) ? 'NOT NULL' : 'NULL';
@@ -767,7 +795,7 @@ class SQLite implements DBInterface {
 	}
 
 	public function getAutoIncrement() {
-		$query = 'AUTO_INCREMENT';
+		$query = '';
 
 		return $query;
 	}

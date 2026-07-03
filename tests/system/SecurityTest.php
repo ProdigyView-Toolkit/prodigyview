@@ -4,7 +4,7 @@ use prodigyview\system\Security;
 
 use PHPUnit\Framework\TestCase;
 
-class SecurityTests extends TestCase {
+class SecurityTest extends TestCase {
 	
 	protected function setUp(): void {
 		Security::init();

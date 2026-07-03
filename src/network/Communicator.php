@@ -67,6 +67,12 @@ class Communicator {
 	 * The data to send to send
 	 */
 	protected $_data = null;
+	
+	/**
+	 * Store the active endpoint so CURL response parsing can distinguish HTTP
+	 * headers from local file/socket style responses.
+	 */
+	protected $_url = '';
 
 	/**
 	 * An error response if communication fales
@@ -211,6 +217,7 @@ class Communicator {
 	 * @return void
 	 */
 	public function openConnection($url, $options = array()) {
+		$this->_url = $url;
 
 		if ($this->_protocol === 'soap') {
 			$this->_handler = new SoapClient($url, $options);
@@ -264,7 +271,10 @@ class Communicator {
 	 * @param array $data Data to be sent
 	 */
 	protected function _get($url, $data = array()) {
-		$url .= '?' . http_build_query($data);
+		if(!empty($data)) {
+			$url .= '?' . http_build_query($data);
+		}
+		$this->_url = $url;
 		curl_setopt($this->_handler, CURLOPT_URL, $url);
 		return $this->_sendCurl();
 	}
@@ -386,8 +396,11 @@ class Communicator {
 	 * @return mixed $response
 	 */
 	protected function _sendCurl() {
+		$scheme = parse_url((string)$this->_url, PHP_URL_SCHEME);
+		$include_headers = in_array($scheme, array('http', 'https'), true);
+		
 		curl_setopt($this->_handler, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($this->_handler, CURLOPT_HEADER, 1);
+		curl_setopt($this->_handler, CURLOPT_HEADER, $include_headers ? 1 : 0);
 
 		if ($this->_headers) {
 			$final_headers = array();
@@ -408,7 +421,13 @@ class Communicator {
 
 		$this->_response_info = curl_getinfo($this->_handler);
 
-		curl_close($this->_handler);
+		// curl_close() is deprecated on PHP 8.5 because CurlHandle objects are
+		// closed automatically. Keep the legacy close for PHP 7 runtimes.
+		if(PHP_VERSION_ID < 80000) {
+			curl_close($this->_handler);
+		}
+		$this->_handler = null;
+		$this->connectionActive = false;
 
 		self::_notify(self::class . '::' . __FUNCTION__, $this);
 

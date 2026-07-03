@@ -586,7 +586,7 @@ class Mongo implements DBInterface {
 	}
 
 	public function formatColumn($name, $options = array()) {
-		
+		return '';
 	}
 
 	public function getAutoIncrement() {

@@ -4,7 +4,7 @@ use prodigyview\system\Configuration;
 
 use PHPUnit\Framework\TestCase;
 
-class ConfigurationTests extends TestCase {
+class ConfigurationTest extends TestCase {
 	
 	protected function setUp(): void {
 		Configuration::init();

@@ -110,7 +110,7 @@ class Conversions {
 	 * 
 	 * @return string $xml
 	 */
-	public static function arrayToXml(array $data, \SimpleXMLElement &$xml_data = null, string $numeric_key_name = 'item_' , string $simple_xml_data = '<root/>') : string {
+	public static function arrayToXml(array $data, ?\SimpleXMLElement &$xml_data = null, string $numeric_key_name = 'item_' , string $simple_xml_data = '<root/>') : string {
 		
 		if(!$xml_data) {
 			$xml_data = new \SimpleXMLElement($simple_xml_data);

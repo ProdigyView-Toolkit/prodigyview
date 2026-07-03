@@ -4,7 +4,7 @@ use prodigyview\system\Libraries;
 
 use PHPUnit\Framework\TestCase;
 
-class LibrariesTests extends TestCase {
+class LibrariesTest extends TestCase {
 	
 	protected function setUp(): void {
 		Libraries::init();

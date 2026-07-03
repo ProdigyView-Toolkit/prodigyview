@@ -48,6 +48,34 @@ include_once ('/path/to/toolkit/src/_classLoader.php');
 
 And you are done with the installation.
 
+## PHP 8.5 And Database Test Environment
+
+The Docker environment in this repository targets PHP 8.5 and includes the
+extensions used by the database layer: MySQLi/PDO MySQL, PostgreSQL/PDO
+PostgreSQL, SQLite/PDO SQLite, and MongoDB. The compose stack also starts
+MySQL, PostgreSQL, and MongoDB services using the credentials already expected
+by the database tests.
+
+```bash
+docker compose up -d --build
+docker compose exec php composer install
+docker compose exec php vendor/bin/phpunit -c tests/phpunit.xml tests
+```
+
+SQLite tests run in memory inside the PHP container. MySQL, PostgreSQL, and
+MongoDB tests use the `mysql`, `postgres`, and `mongodb` compose service names.
+This keeps the test matrix aligned with the toolkit's design goal of letting
+applications choose the storage technology without changing model or database
+facade call sites.
+
+The PHPUnit suite also includes edge coverage for the toolkit's extension
+patterns. Adapter tests verify argument shape and adapter removal, filter tests
+verify event-specific chains, observer tests verify no-op and clear behavior,
+validator tests verify unknown and custom rules, and template tests verify empty
+library queues. These checks are especially important before a PHP upgrade
+because production applications often customize behavior through these pattern
+hooks instead of subclassing the toolkit directly.
+
 ## Learning Resources
 Before getting into the examples below, there are several materials available to help you learn how to use the toolkit:
 
@@ -135,7 +163,5 @@ https://medium.com/helium-mvc/observer-design-pattern-others-apps-are-following-
 
 #### Intercepting Filters
 The Intercepting Design Pattern allows both pre-processing and post-processing of variables within a function.
-
-
 
 

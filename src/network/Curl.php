@@ -232,7 +232,9 @@ class Curl {
 	protected function _get($data = array()) {
 		$url = $this->_url;
 		
-		$url .= '?' . http_build_query($data);
+		if(!empty($data)) {
+			$url .= '?' . http_build_query($data);
+		}
 		curl_setopt($this->_handler, CURLOPT_URL, $url);
 		return $this->_sendCurl();
 	}
@@ -358,8 +360,11 @@ class Curl {
 	 * @return mixed $response
 	 */
 	protected function _sendCurl() {
+		$scheme = parse_url((string)$this->_url, PHP_URL_SCHEME);
+		$include_headers = in_array($scheme, array('http', 'https'), true);
+		
 		curl_setopt($this->_handler, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($this->_handler, CURLOPT_HEADER, 1);
+		curl_setopt($this->_handler, CURLOPT_HEADER, $include_headers ? 1 : 0);
 
 		if ($this->_headers) {
 			$final_headers = array();
@@ -380,7 +385,13 @@ class Curl {
 
 		$this->_response_info = curl_getinfo($this->_handler);
 
-		curl_close($this->_handler);
+		// curl_close() is deprecated on PHP 8.5 because CurlHandle objects are
+		// closed automatically. Keep the legacy close for PHP 7 runtimes.
+		if(PHP_VERSION_ID < 80000) {
+			curl_close($this->_handler);
+		}
+		$this->_handler = null;
+		$this->connectionActive = false;
 
 		$this->_notify(self::class . '::' . __FUNCTION__, $this);
 

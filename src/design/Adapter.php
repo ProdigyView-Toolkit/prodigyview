@@ -90,7 +90,7 @@ trait Adapter {
 
 		if (class_exists($trigger_class) || is_object($trigger_class)) {
 
-			$reflection = new ReflectionClass($trigger_class);
+			$reflection = new \ReflectionClass($trigger_class);
 
 			foreach ($reflection->getMethods() as $method) {
 

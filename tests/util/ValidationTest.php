@@ -189,4 +189,29 @@ class ValidationTest extends TestCase {
 		$this->assertTrue($result);
 	}
 
+	public function testUnknownRuleFailsWithoutRuntimeWarning() {
+		$this->assertFalse(Validator::check('edge_rule_that_does_not_exist', 'value'));
+	}
+
+	public function testCustomClosureRuleReceivesAllArguments() {
+		Validator::addRule('edge_between', array(
+			'function' => function($value, $minimum, $maximum) {
+				return $value >= $minimum && $value <= $maximum;
+			}
+		));
+
+		$this->assertTrue(Validator::check('edge_between', 5, 1, 9));
+		$this->assertFalse(Validator::check('edge_between', 10, 1, 9));
+	}
+
+	public function testCustomPregMatchRuleRejectsPartialMatches() {
+		Validator::addRule('edge_slug', array(
+			'type' => 'preg_match',
+			'rule' => '/^[a-z0-9-]+$/'
+		));
+
+		$this->assertSame(1, Validator::check('edge_slug', 'safe-slug-123'));
+		$this->assertSame(0, Validator::check('edge_slug', 'Unsafe Slug'));
+	}
+
 }

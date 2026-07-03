@@ -7,7 +7,7 @@ class CurlTest extends TestCase {
 	
 	public function testGet() {
 		
-		$url = 'https://developer.uspto.gov/ptab-api/v3/api-docs';
+		$url = 'file://' . realpath(__DIR__ . '/fixtures/curl_get.json');
 		
 		$curl = new Curl($url);
 		$curl->send('get');

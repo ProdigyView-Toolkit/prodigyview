@@ -4,7 +4,7 @@ use prodigyview\system\Session;
 
 use PHPUnit\Framework\TestCase;
 
-class SessionTests extends TestCase {
+class SessionTest extends TestCase {
 	
 	protected function setUp(): void {
 		$prev = error_reporting(0);

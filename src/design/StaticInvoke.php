@@ -101,7 +101,7 @@ trait StaticInvoke {
 	private static function _prepareLogData($data) {
 
 		foreach ($data as $key => $value) {
-			if ($value instanceof Closure) {
+			if ($value instanceof \Closure) {
 				$closure = new \ReflectionFunction($value);
 				$data[$key] = $closure->getFileName();
 				$data['start_line'] = $closure->getStartLine();

@@ -183,6 +183,11 @@ class Database  {
 			$connection = new Mysql();
 		} else if($args['type']== self::$postgreSQLConnection) {
 			$connection = new Postgresql();
+		} else if($args['type']== self::$sqLiteConnection) {
+			// SQLite uses the same connection registry as the networked
+			// drivers, so Helium models can switch storage backends without
+			// changing their database facade calls.
+			$connection = new SQLite();
 		} else if($args['type']== self::$mongoConnection) {
 			$connection = new Mongo();
 		} else if(!empty($args['class'])) {

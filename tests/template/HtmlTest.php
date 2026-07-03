@@ -5,7 +5,7 @@ use prodigyview\util\Tools;
 
 use PHPUnit\Framework\TestCase;
 
-class HtmlTests extends TestCase {
+class HtmlTest extends TestCase {
 	
 	public function testStandardAttributesEmpty() {
 		

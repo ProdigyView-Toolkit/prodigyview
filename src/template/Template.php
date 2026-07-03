@@ -559,15 +559,15 @@ class Template {
 			$version = '?pvversion=' . $options['version'];
 		}
 
-		foreach (Libraries::getCssQueue() as $value) {
+		foreach ((array) Libraries::getCssQueue() as $value) {
 			$libraries .= '<link rel="stylesheet"  type="text/css" href="' . $url . $css . DS . trim($value) . $version . '">';
 		}
 
-		foreach (Libraries::getJavascriptQueue() as $value) {
+		foreach ((array) Libraries::getJavascriptQueue() as $value) {
 			$libraries .= '<script type="text/javascript" src="' . $url . DS . $javascript . DS . trim($value) . $version . '"></script>';
 		}
 
-		$libraries .= Libraries::getOpenscriptQueue();
+		$libraries .= Libraries::getOpenscriptQueue() ?: '';
 
 		self::_notify(self::class . '::' . __FUNCTION__, $libraries, $options);
 		$libraries = self::_applyFilter(self::class, __FUNCTION__, $libraries, array('event' => 'return'));

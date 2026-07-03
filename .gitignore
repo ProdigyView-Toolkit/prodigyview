@@ -2,3 +2,4 @@
 .DS_Store
 .settings
 /vendor
+/tests/.phpunit.result.cache

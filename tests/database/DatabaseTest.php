@@ -63,6 +63,16 @@ class DatabaseTest extends TestCase{
 		array('email' => 'jane@example.com', 'name'=> 'Jane Doe', 'bio' => '2nd Most Common Name Ever')
 	);
 	
+	private function isPostgresqlResult($result) {
+		// PHP 8 converted ext/pgsql result resources into PgSql\Result objects.
+		return is_resource($result) || (class_exists('PgSql\\Result') && $result instanceof \PgSql\Result);
+	}
+	
+	private function isPostgresqlConnection($connection) {
+		// Keep this compatible with PHP 7 resource handles and PHP 8 objects.
+		return is_resource($connection) || (class_exists('PgSql\\Connection') && $connection instanceof \PgSql\Connection);
+	}
+	
 	protected function setUp(): void {
 		
 		Database::init();
@@ -370,7 +380,7 @@ class DatabaseTest extends TestCase{
 		
 		$result  = Database::selectStatement($query);
 		
-		$this->assertTrue(is_resource($result));
+		$this->assertTrue($this->isPostgresqlResult($result));
 	}
 	
 	public function testPostgresSelectJonFetchArray() {
@@ -457,7 +467,7 @@ class DatabaseTest extends TestCase{
 		$result  = Database::preparedSelectStatement($query);
 		
 		
-		$this->assertTrue(is_resource($result));
+		$this->assertTrue($this->isPostgresqlResult($result));
 	}
 	
 	public function testPostgresPreparedInsertFindJonWithId() {
@@ -547,7 +557,7 @@ class DatabaseTest extends TestCase{
 	public function testPostgresLink() {
 		$link = Database::getDatabaseLink();
 		
-		$this->assertTrue(is_resource($link));
+		$this->assertTrue($this->isPostgresqlConnection($link));
 	}
 	
 	public function testMysqlConnectionVariables() {

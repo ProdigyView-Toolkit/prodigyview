@@ -382,10 +382,13 @@ class Mysql implements DBInterface {
 			$type .= 's';
 		}
 
+		// PHP 8 treats string keys in call_user_func_array as named arguments.
+		// Keep the public data array untouched, but bind mysqli values by
+		// position so column names are not interpreted as parameter names.
 		call_user_func_array(array(
 			$stmt,
 			'bind_param'
-		), array_merge(array($type), $refs));
+		), array_merge(array($type), array_values($refs)));
 
 		return $stmt->execute();
 

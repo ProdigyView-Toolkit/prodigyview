@@ -299,7 +299,7 @@ class Validator {
 	}
 
 	/**
-	 * Checks a value passed to a rule if the rule exist. If there is no rule, true will be returned.
+	 * Checks a value passed to a rule. Missing rules fail validation.
 	 *
 	 * @param string $rule The name of the rule to check against
 	 * @param array $value The value to check against the rule
@@ -330,7 +330,11 @@ class Validator {
 		$validation = false;
 
 		if (!isset(self::$rules[$rule])) {
-			$validation = false;
+			// Unknown rules should fail validation without dereferencing the rule registry.
+			self::_notify(self::class . '::' . __FUNCTION__, $validation, $rule);
+			$validation = self::_applyFilter(self::class, __FUNCTION__, $validation, array('event' => 'return'));
+
+			return $validation;
 		}
 
 		if (self::$rules[$rule]['type'] == 'validator') {
@@ -398,7 +402,7 @@ class Validator {
 		$validation = false;
 
 		if (is_numeric($double) === TRUE) {
-			if ((double)$double == $double) {
+			if ((float)$double == $double) {
 				$validation = true;
 			}
 		}
